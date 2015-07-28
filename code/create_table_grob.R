@@ -1,0 +1,47 @@
+###########################################################################
+#  Title: FHWA HPMS Score Card Generator
+#   Date: July 2015
+# Author: Jeff Dumont
+#
+#
+# Description:
+#
+# This function creates a generic table grob object to be used througout
+# the score card, but primarily on the summary pages.
+#
+###########################################################################
+
+create_table_grob <- function(result,variable_type)
+{
+     
+     result[,groupCat:=gF_SYSTEM_levels[as.numeric(result[,groupCat])]]
+     setnames(result,"groupCat","Functional\nSystem")
+     setnames(result,"count","N")
+     setnames(result,"count.na","N (NA)")
+     setnames(result,"miles","Total Measured\nLane Miles")
+     setnames(result,"expandedmiles","Total Expanded\nLane Miles")
+     
+     result[,mean:=NULL]
+     
+     if(variable_type < 3)
+     {
+          
+          setnames(result,"min","Min")
+          #setnames(result,"mean","Mean")
+          setnames(result,"median","Median")
+          setnames(result,"max","Max")
+     }
+     
+     ob <- tableGrob(result,
+                     rows=NULL, 
+                     core.just = "right",
+                     col.just="right",
+                     gpar.coretext = gpar(col = "black",fontsize=5.15),
+                     gpar.coltext = gpar(col = "black",fontsize=4.8, fontface = "bold"),
+                     padding.h=unit(0.1,units="inches"),padding.v=unit(0.1,units="inches")
+     )
+     
+     ob <- vertically_align(ob)
+     
+     return(ob)
+}
