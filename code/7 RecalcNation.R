@@ -6,11 +6,14 @@
 #
 # Description:
 #
-# Author needs to add a description!
+# This script contains functions for summarizing the HPMS data across all
+# states for a given year.
 #
 ###########################################################################
 
-updateNation <- function(years = getAllStateYears()) { # TODO: replace this argument with something more intelligent - i.e. modify import output to indicate the years of data it worked with. otherwise, the next function will take a long time as more data is imported
+# TODO: replace this argument with something more intelligent - i.e. modify import output to indicate the years of data it worked with.
+# Otherwise, the next function will take a long time as more data is imported
+updateNation <- function(years = getAllStateYears()) {
   
   # Check if any year in 'years' has had any state data added/deleted/modified
   cat("\n\nUpdating national statistics...")
@@ -39,6 +42,7 @@ updateNation <- function(years = getAllStateYears()) { # TODO: replace this argu
 }
 
 # Given a year, summarize the national statistics of all states
+# TODO: this function needs to actually do something at some point...
 SummarizeNation <- function(year) {
   
   # Load data and summarize
