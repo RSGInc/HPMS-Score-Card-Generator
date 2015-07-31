@@ -19,6 +19,8 @@ Run <- function() {
   # This while keeps the tool running until the user hits esc
   while (TRUE) {
     
+    success <- FALSE
+    
     # Initial user task choice
     whitespace(gSpaces)
     task <- getUserInput(valid = 1:2, prompt = "What would you like to do?\n\n(1) Import new data\n(2) Generate score card from previously imported data\n\nPlease enter your selection: ")
@@ -51,27 +53,33 @@ Run <- function() {
       whitespace(gSpaces)
       sctask <- getUserInput(valid = 1:2, prompt = "Score card generation options:\n\n(1) One card at a time\n(2) All available states in a given year\n\nPlease enter a 1 or 2: ")
       
-      # Specify score card save location
-      whitespace(gSpaces)
-      cat("Please use the windows dialog to select a folder in which to save the scorecard(s).")
-      assign("savepath", value = choose.dir(caption = "Select a folder to save the scorecard(s)."), envir = .GlobalEnv)
+      # Sscore card save location
+      savepath <- "output/"
       
       # Generate a single score card
       if (sctask == 1) {
         
-        # Select data to generate score card and assign to global 'all' variable for Jeff D's code to use
-        assign("all", value = getStateDataSets(), envir = .GlobalEnv)
+        # Select data to generate score card
+        data.list <- getStateDataSets()
         
         # Select a year of national data to compare against and assign to global 'national variable for Jeff D's code to use
-        assign("national", value = getNationalDataSet(), envir = .GlobalEnv)
+        # TODO: Jeff's code needs to actually use this at some point
+        national <- getNationalDataSet()
         
-        # Generate score card (Dumont's functions)
-        cat("This is where Jeff Dumont's work would fit in...\n\n")
+        # Load the population data
+        population <- readRDS("resources/dat/population.RDS")
         
-        tryCatch(expr = {create_pdf(args)}, # need to link this function correctly at some point
-                 error = function(e) {warning("Unable to create PDF score card.\n\nA common cause of this warning is that the folder the tool is trying to save to already contains a score card PDF for this combination of data selections and is currently in use. Ensure the PDF is not in use and try again.", immediate. = TRUE, call. = FALSE)})
-        
-        # try(create_pdf()) # need to link this at some point
+        # Generate score card
+        whitespace(gSpaces)
+        tryCatch(expr = {suppressWarnings(create_pdf(data = data.list[["dat"]],
+                                                     state = data.list[["state_code"]],
+                                                     year = data.list[["year_selection"]],
+                                                     year_compare = data.list[["year_compare"]],
+                                                     population = population,
+                                                     national = national,
+                                                     path = savepath));
+                                          success <- TRUE},
+                 error = function(e) {e; warning("Unable to create PDF score card.\n\nA common cause of this warning is that the folder the tool is trying to save to already contains a score card PDF for this combination of data selections and is currently in use. Ensure the PDF is not in use and try again.", immediate. = TRUE, call. = FALSE)})
         
       } else if (sctask == 2) {
         
@@ -79,9 +87,13 @@ Run <- function() {
         
       }
       
-      # Save resulting PDF
+      # Detect whether score card generation was successful and return to main menu
       whitespace(4)
-      getUserInput("Score card generation complete! Press 'Enter' to continue.")
+      if (success) {
+        getUserInput("Score card generation complete! Press 'Enter' to continue.")
+      } else {
+        getUserInput("No score cards generated. Press 'Enter' to continue.")
+      }
     
     }
     
@@ -130,18 +142,38 @@ getStateDataSets <- function() {
     year_compare <- getUserInput(valid = years_for_comparison, prompt = "What year of STATE data would you like to compare against?\nEnter the associated year (e.g., 2013): ", warning.text = "That is not a valid response. Note that a comparison data set must be older.\n")
   }
   
-  # Load the data sets
+  # Load the analysis and comparison year data sets
   cat("\nPreparing state selections...\n\n")
   dat <- readRDS(paste0("data/", getStateLabel(state_selection), "/", year_selection, ".RDS"))
-  dat[, year_record := year_selection]
+  dat[, year_record := as.numeric(year_selection)]
   if (!is.null(year_compare)) {
     dat.compare <- readRDS(paste0("data/", getStateLabel(state_selection), "/", year_compare, ".RDS"))
-    dat.compare[, year_record := year_compare]
+    dat.compare[, year_record := as.numeric(year_compare)]
     dat <- rbind(dat, dat.compare, fill = TRUE)
   }
-  dat[, state_code := getStateNumFromCode(state_selection)]
   
-  return(dat)
+  # Attempt to load the data associated with the four previous years
+  dat.prev <- list()
+  cc <- 1
+  for (i in 1:4) {
+    
+    # If the comparison year is one of the previous four, we already have it ==> skip
+    if (as.numeric(year_selection) - i != as.numeric(year_compare)) {
+      
+      suppressWarnings(expr = {tryCatch(expr = {dat.prev[[cc]] <- readRDS(paste0("data/", getStateLabel(state_selection), "/", as.numeric(year_selection) - i, ".RDS")); cc <- cc + 1},
+                                        error = function(e) {})})
+    }
+    
+  }
+  
+  # Append to analysis and comparison years
+  dat.prev <- do.call(rbind, dat.prev)
+  dat <- rbind(dat, dat.prev, fill = TRUE)
+  
+  return(list(dat = dat,
+              year_selection = as.numeric(year_selection),
+              year_compare = as.numeric(year_compare),
+              state_code = getStateNumFromCode(state_selection)))
   
 }
 
