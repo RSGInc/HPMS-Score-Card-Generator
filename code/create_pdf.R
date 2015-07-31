@@ -11,23 +11,35 @@
 ###########################################################################
 
 # TODO: needs to accept an argument pointing to where the file should be saved.
-create_pdf <- function(data,state,year,year_compare, population)
+create_pdf <- function(data, state, year, year_compare, population, national = NULL, path)
 {
-     pdf(file = paste0(gState_Labels[index==state,label],"_",year,"_",year_compare,".pdf"), width = 13.333, height = 7.5)
+  
+     cat("Creating score card...\n\n")
+     cat(paste(getStateLabelFromNum(state), "-", year, "vs.", year_compare, "\n\n"))
+     
+     # Score card file name and path
+     pdfname <- paste0(getStateLabelFromNum(state), "_A", year, "_C", year_compare, ".pdf")   
+     pdfname <- gsub(x = pdfname, pattern = "\\s", replace = "_")
+     pdfpath <- paste0(path, pdfname)
+  
+     pdf(file = pdfpath, width = 13.333, height = 7.5)
      
      showtext.begin() # this controls the issues with the fonts
      
-     # first page
+     # Create title page
+     cat("Title page...")
      create_title_page(data,state,year,year_compare)
-     cat("***** Finished creating title page\n")
+     cat(" complete!\n")
      
-     # second page
+     # Pavement: Detailed Review
+     cat("Pavement review...")
      create_page2(data,state,year,year_compare,population=population)
-     cat("***** Finished creating page 2\n")
+     cat(" complete!\n")
      
-     # third page and on
+     # Pavement: Detailed Review
+     cat("Traffic review...")
      create_page3(data,state,year,year_compare)
-     cat("***** Finished creating page 3\n")
+     cat(" complete!\n")
      
      # create summary pages organize by type
      # I	19 mod 3 = 1
@@ -39,6 +51,7 @@ create_pdf <- function(data,state,year,year_compare, population)
      # O	2        = 2
      
      # inventory
+     cat("Inventory data items...")
      todo <- matrix((1:81)[gVariables[,Grouping]=="I"],ncol=3,byrow=TRUE)
      for(i in 1:6)
      {
@@ -46,11 +59,13 @@ create_pdf <- function(data,state,year,year_compare, population)
           x2 <- todo[i,2]
           x3 <- todo[i,3]
           create_page_summary(data,state,year,year_compare,x1=x1,x2=x2,x3=x3, title="inventory",icontext="i")
+          cat(".")
      }
      create_page_summary(data,state,year,year_compare,x1=todo[i+1,1],title="inventory",icontext="i")
-     cat("***** Finished creating inventory data items\n")
+     cat(" complete!\n")
      
      # Pavement
+     cat("Pavement data items...")
      todo <- matrix((1:81)[gVariables[,Grouping]=="P"],ncol=3,byrow=TRUE)
      for(i in 1:4)
      {
@@ -58,11 +73,13 @@ create_pdf <- function(data,state,year,year_compare, population)
           x2 <- todo[i,2]
           x3 <- todo[i,3]
           create_page_summary(data,state,year,year_compare,x1=x1,x2=x2,x3=x3, title="pavement",icontext="p")
+          cat(".")
      }
      create_page_summary(data,state,year,year_compare,x1=todo[i+1,1], title="pavement",icontext="p")
-     catt("***** Finished creating pavement data items\n")
+     cat(" complete!\n")
 
      # Traffic
+     cat("Traffic data items...")
      todo <- matrix((1:81)[gVariables[,Grouping]=="T"],ncol=3,byrow=TRUE)
      for(i in 1:5)
      {
@@ -70,11 +87,13 @@ create_pdf <- function(data,state,year,year_compare, population)
           x2 <- todo[i,2]
           x3 <- todo[i,3]
           create_page_summary(data,state,year,year_compare,x1=x1,x2=x2,x3=x3, title="traffic",icontext="t")
+          cat(".")
      }
      create_page_summary(data,state,year,year_compare,x1=todo[i+1,1], title="traffic",icontext="t")
-     cat("***** Finished creating traffic data items\n")     
+     cat(" complete!\n")
      
      # Geometric
+     cat("Geometric data items...")
      todo <- matrix((1:81)[gVariables[,Grouping]=="G"],ncol=3,byrow=TRUE)
      for(i in 1:7)
      {
@@ -82,11 +101,13 @@ create_pdf <- function(data,state,year,year_compare, population)
           x2 <- todo[i,2]
           x3 <- todo[i,3]
           create_page_summary(data,state,year,year_compare,x1=x1,x2=x2,x3=x3, title="geometric",icontext="g")
+          cat(".")
      }
      create_page_summary(data,state,year,year_compare,x1=todo[i+1,1],x2=todo[i+1,2], title="geometric",icontext="g")
-     cat("***** Finished creating geometric data items\n")
+     cat(" complete!\n")
      
      # Route
+     cat("Route data items...")
      todo <- matrix((1:81)[gVariables[,Grouping]=="R"],ncol=3,byrow=TRUE)
      for(i in 1:1)
      {
@@ -94,10 +115,12 @@ create_pdf <- function(data,state,year,year_compare, population)
           x2 <- todo[i,2]
           x3 <- todo[i,3]
           create_page_summary(data,state,year,year_compare,x1=x1,x2=x2,x3=x3, title="route",icontext="r")
+          cat(".")
      }
-     cat("***** Finished creating route data items\n")
+     cat(" complete!\n")
      
      # Special network
+     cat("Special network data items...")
      todo <- matrix((1:81)[gVariables[,Grouping]=="SN"],ncol=3,byrow=TRUE)
      for(i in 1:1)
      {
@@ -105,9 +128,10 @@ create_pdf <- function(data,state,year,year_compare, population)
           x2 <- todo[i,2]
           x3 <- todo[i,3]
           create_page_summary(data,state,year,year_compare,x1=x1,x2=x2,x3=x3, title="special network",icontext="sn")
+          cat(".")
      }
      create_page_summary(data,state,year,year_compare,x1=todo[i+1,1], title="special network",icontext="sn")
-     cat("***** Finished creating special network data items\n")
+     cat(" complete!\n")
      
      
      #######
@@ -119,6 +143,7 @@ create_pdf <- function(data,state,year,year_compare, population)
      showtext.end()
      dev.off()
      
-     cat(paste0("***** ",gState_Labels[index==state,label]," PDF Complete\n"))
+     whitespace(4)
+     cat(paste0("Score card complete!\n\n", pdfname, " written to the output folder."))
      
 }
