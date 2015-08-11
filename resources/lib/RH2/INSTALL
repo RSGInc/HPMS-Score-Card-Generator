@@ -1,0 +1,10 @@
+This package requires that java be installed but otherwise has no special
+installation requirements.  In particular, the package includes a copy of H2 
+so H2 need not be separately installed.
+
+If do you wish to use a version of H2 other than the one included in the 
+package then do something like this (or place the option statement in your 
+.Rprofile file).
+
+	library(RH2)
+	options(RH2.jars = "C:/tmp2/h2-1.3.154.jar")
