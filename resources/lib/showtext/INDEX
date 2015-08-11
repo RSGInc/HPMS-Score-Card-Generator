@@ -1,0 +1,5 @@
+showtext.auto           Automatically Using 'showtext' for New Graphics
+                        Devices
+showtext.begin          Rendering Text for R Graphics Devices
+showtext.end            Turning Off 'showtext' Text Rendering
+showtext.opts           Setting Options for 'showtext' package
