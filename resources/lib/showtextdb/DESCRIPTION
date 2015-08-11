@@ -1,0 +1,17 @@
+Package: showtextdb
+Type: Package
+Title: Font Files for the 'showtext' Package
+Version: 1.0
+Date: 2015-03-09
+Author: Yixuan Qiu and authors/contributors of the included fonts. See file
+    AUTHORS for details.
+Maintainer: Yixuan Qiu <yixuan.qiu@cos.name>
+Description: Providing font files that are needed by the 'showtext' package.
+Depends: sysfonts
+License: Apache License (>= 2.0)
+Copyright: see file COPYRIGHTS
+Packaged: 2015-03-10 01:08:39 UTC; qyx
+NeedsCompilation: no
+Repository: CRAN
+Date/Publication: 2015-03-10 07:01:27
+Built: R 3.2.1; ; 2015-07-28 03:10:54 UTC; windows
