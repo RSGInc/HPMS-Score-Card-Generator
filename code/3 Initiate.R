@@ -79,7 +79,7 @@ Run <- function() {
                                                      national = national,
                                                      path = savepath));
                                           success <- TRUE},
-                 error = function(e) {e; warning("Unable to create PDF score card.\n\nA common cause of this warning is that the folder the tool is trying to save to already contains a score card PDF for this combination of data selections and is currently in use. Ensure the PDF is not in use and try again.", immediate. = TRUE, call. = FALSE)})
+                 error = function(e) {e; dev.off(); warning("Unable to create PDF score card.\n\nA common cause of this warning is that the folder the tool is trying to save to already contains a score card PDF for this combination of data selections and is currently in use. Ensure the PDF is not in use and try again.", immediate. = TRUE, call. = FALSE)})
         
       } else if (sctask == 2) {
         
