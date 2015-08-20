@@ -114,6 +114,7 @@ deleteAllData <- function() {
   unlink(paste0("data/", getSavedStates()), recursive = TRUE)
   unlink(paste0("resources/fss/", dir("resources/fss/", pattern = "*.RDS")))
   unlink(paste0("data/+National/", dir("data/+National/", pattern = "*.RDS")))
+  unlink(paste0("resources/sc/", dir("resources/sc/", pattern = "*.pdf")))
   unlink(paste0("output/", dir("output/", pattern = "*.pdf")))
   
 }
