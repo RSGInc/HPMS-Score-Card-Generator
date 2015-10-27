@@ -93,9 +93,7 @@ create_summary_report <- function(
      result[,count:=string_format(count)]
      result[,count.na:=string_format(count.na)]
      result[,miles:=string_format(miles)]
-     result[,miles:=string_format(expandedmiles)]
-     
-    
+     result[,expandedmiles:=string_format(expandedmiles)]
      
      # merges in the empty f_systems so full tables are displayed
      if(nrow(result)> 0)
@@ -125,6 +123,6 @@ create_summary_report <- function(
           return(ob)
      } else
      {
-          return(textGrob("No Data",gp=gpar(fontsize=15, col="Red")))
+          return(textGrob(NoDataString,gp=gpar(fontsize=12, col="Red")))
      }
 }

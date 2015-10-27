@@ -52,93 +52,86 @@ create_pdf <- function(data, state, year, year_compare, population, national = N
      
      # inventory
      cat("Inventory data items...")
-     todo <- matrix((1:81)[gVariables[,Grouping]=="I"],ncol=3,byrow=TRUE)
+     todo <- matrix((1:nrow(gVariables))[gVariables[,Grouping]=="I"],ncol=3,byrow=TRUE)
      for(i in 1:6)
      {
           x1 <- todo[i,1]
           x2 <- todo[i,2]
           x3 <- todo[i,3]
-          create_page_summary(data,state,year,year_compare,x1=x1,x2=x2,x3=x3, title="inventory",icontext="i")
+          create_page_summary(data,state,year,year_compare,x1=x1,x2=x2,x3=x3, title="inventory",icontext="i",page=3+i)
           cat(".")
      }
-     create_page_summary(data,state,year,year_compare,x1=todo[i+1,1],title="inventory",icontext="i")
+     #create_page_summary(data,state,year,year_compare,x1=todo[i+1,1],title="inventory",icontext="i",page=3+i+1)
      cat(" complete!\n")
      
      # Pavement
      cat("Pavement data items...")
-     todo <- matrix((1:81)[gVariables[,Grouping]=="P"],ncol=3,byrow=TRUE)
+     todo <- matrix((1:nrow(gVariables))[gVariables[,Grouping]=="P"],ncol=3,byrow=TRUE)
      for(i in 1:4)
      {
           x1 <- todo[i,1]
           x2 <- todo[i,2]
           x3 <- todo[i,3]
-          create_page_summary(data,state,year,year_compare,x1=x1,x2=x2,x3=x3, title="pavement",icontext="p")
+          create_page_summary(data,state,year,year_compare,x1=x1,x2=x2,x3=x3, title="pavement",icontext="p",page=10+i)
           cat(".")
      }
-     create_page_summary(data,state,year,year_compare,x1=todo[i+1,1], title="pavement",icontext="p")
+     create_page_summary(data,state,year,year_compare,x1=todo[i+1,1], title="pavement",icontext="p",page=11+i)
      cat(" complete!\n")
 
      # Traffic
      cat("Traffic data items...")
-     todo <- matrix((1:81)[gVariables[,Grouping]=="T"],ncol=3,byrow=TRUE)
-     for(i in 1:5)
+     todo <- matrix((1:nrow(gVariables))[gVariables[,Grouping]=="T"],ncol=3,byrow=TRUE)
+     for(i in 1:4)
      {
           x1 <- todo[i,1]
           x2 <- todo[i,2]
           x3 <- todo[i,3]
-          create_page_summary(data,state,year,year_compare,x1=x1,x2=x2,x3=x3, title="traffic",icontext="t")
+          create_page_summary(data,state,year,year_compare,x1=x1,x2=x2,x3=x3, title="traffic",icontext="t",page=15+i)
           cat(".")
      }
-     create_page_summary(data,state,year,year_compare,x1=todo[i+1,1], title="traffic",icontext="t")
+     create_page_summary(data,state,year,year_compare,x1=todo[i+1,1],x2=todo[i+1,2], title="traffic",icontext="t",page=16+i)
      cat(" complete!\n")
      
      # Geometric
      cat("Geometric data items...")
-     todo <- matrix((1:81)[gVariables[,Grouping]=="G"],ncol=3,byrow=TRUE)
+     todo <- matrix((1:nrow(gVariables))[gVariables[,Grouping]=="G"],ncol=3,byrow=TRUE)
      for(i in 1:7)
      {
           x1 <- todo[i,1]
           x2 <- todo[i,2]
           x3 <- todo[i,3]
-          create_page_summary(data,state,year,year_compare,x1=x1,x2=x2,x3=x3, title="geometric",icontext="g")
+          create_page_summary(data,state,year,year_compare,x1=x1,x2=x2,x3=x3, title="geometric",icontext="g",page=21+i)
           cat(".")
      }
-     create_page_summary(data,state,year,year_compare,x1=todo[i+1,1],x2=todo[i+1,2], title="geometric",icontext="g")
+     create_page_summary(data,state,year,year_compare,x1=todo[i+1,1],x2=todo[i+1,2], title="geometric",icontext="g",page=29)
      cat(" complete!\n")
      
      # Route
      cat("Route data items...")
-     todo <- matrix((1:81)[gVariables[,Grouping]=="R"],ncol=3,byrow=TRUE)
+     todo <- matrix((1:nrow(gVariables))[gVariables[,Grouping]=="R"],ncol=3,byrow=TRUE)
      for(i in 1:1)
      {
           x1 <- todo[i,1]
           x2 <- todo[i,2]
           x3 <- todo[i,3]
-          create_page_summary(data,state,year,year_compare,x1=x1,x2=x2,x3=x3, title="route",icontext="r")
+          create_page_summary(data,state,year,year_compare,x1=x1,x2=x2,x3=x3, title="route",icontext="r",page=29+i)
           cat(".")
      }
      cat(" complete!\n")
      
      # Special network
      cat("Special network data items...")
-     todo <- matrix((1:81)[gVariables[,Grouping]=="SN"],ncol=3,byrow=TRUE)
+     todo <- matrix((1:nrow(gVariables))[gVariables[,Grouping]=="SN"],ncol=3,byrow=TRUE)
      for(i in 1:1)
      {
           x1 <- todo[i,1]
           x2 <- todo[i,2]
           x3 <- todo[i,3]
-          create_page_summary(data,state,year,year_compare,x1=x1,x2=x2,x3=x3, title="special network",icontext="sn")
+          create_page_summary(data,state,year,year_compare,x1=x1,x2=x2,x3=x3, title="special network",icontext="sn",page=30+i)
           cat(".")
      }
-     create_page_summary(data,state,year,year_compare,x1=todo[i+1,1], title="special network",icontext="sn")
+     create_page_summary(data,state,year,year_compare,x1=todo[i+1,1], title="special network",icontext="sn",page=32)
      cat(" complete!\n")
-     
-     
-     #######
-     # Other
-     #todo <- matrix((1:81)[gVariables[,Grouping]=="O"]],ncol=3,byrow=TRUE)
-     #create_page_summary(state,year,year_compare,x1=todo[1,1],x2=todo[1,2], color="#00B0F0",title="Other Data Items")
-     #print("***** Finished creating other data items")
      
      showtext.end()
      dev.off()

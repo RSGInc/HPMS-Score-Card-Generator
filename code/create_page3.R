@@ -65,10 +65,10 @@ create_page3 <- function(
           arrangeGrob(
                rectGrob(gp = gpar(fill = "white", col = "white")),
                textGrob("",just="right",gp=gpar(fontsize=12, col="Black")),
-               textGrob("AADT",just="centre",gp=gpar(fontsize=12, col="slategray",fontface="bold")),
-               textGrob("FAADT",just="centre",gp=gpar(fontsize=12, col="slategray",fontface="bold")),
-               textGrob("AADT_COMBINATION",just="centre",gp=gpar(fontsize=12, col="slategray",fontface="bold")),
-               textGrob("AADT_SINGLE_UNIT",just="centre",gp=gpar(fontsize=12, col="slategray",fontface="bold")),
+               textGrob("Annual Average Daily Traffic",just="centre",gp=gpar(fontsize=12, col="slategray",fontface="bold")),
+               textGrob("Future AADT",just="centre",gp=gpar(fontsize=12, col="slategray",fontface="bold")),
+               textGrob("Combination Truck AADT",just="centre",gp=gpar(fontsize=12, col="slategray",fontface="bold")),
+               textGrob("Single Unit Truck and Bus AADT",just="centre",gp=gpar(fontsize=12, col="slategray",fontface="bold")),
                rectGrob(gp = gpar(fill = "white", col = "white")),
                nrow=1,widths=unit(c(0.167,1.5,rep(11.336/4,4),0.33),units="inches")
           ),               
@@ -113,5 +113,7 @@ create_page3 <- function(
      
      grid.text(paste0(year_compare,"-",year," Sections"),x=0.12,y=0.260,hjust=1,gp=gpar(fontsize=10, col="slategray"))
      grid.text("Sections\nwith the same value\nas previous year",x=0.12,y=0.22,hjust=1,gp=gpar(fontsize=7, fontface="italic",col="slategray"))
+     
+     add_page_number(3)
      
 }

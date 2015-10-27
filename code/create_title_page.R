@@ -340,4 +340,6 @@ create_title_page <- function(data,state,year,year_compare=NULL)
                     #gpar.coltext = gpar(col = "black",fontsize=7, fontface = "bold"),
                     #padding.h=unit(0.1,units="inches"),padding.v=unit(0.1,units="inches")
      #)
+     
+     add_page_number(1)
 }

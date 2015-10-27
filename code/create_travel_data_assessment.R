@@ -103,7 +103,7 @@ create_travel_data_assessment <- function(
           p1 <- crossbarPlot(faadt.compare)
      } else
      {
-          p1 <- textGrob("No Data", gp = gpar(fontsize = 16, col = "red"))
+          p1 <- textGrob(NoDataString, gp = gpar(fontsize = 12, col = "red"))
      }
      
      if(nrow(aadt_combo.compare)> 0)
@@ -111,7 +111,7 @@ create_travel_data_assessment <- function(
           p2 <- crossbarPlot(aadt_combo.compare)
      } else
      {
-          p2 <- textGrob("No Data", gp = gpar(fontsize = 16, col = "red"))
+          p2 <- textGrob(NoDataString, gp = gpar(fontsize = 12, col = "red"))
      }
 
      if(nrow(aadt_su.compare)> 0)
@@ -119,7 +119,7 @@ create_travel_data_assessment <- function(
           p3 <- crossbarPlot(aadt_su.compare)
      } else
      {
-          p3 <- textGrob("No Data", gp = gpar(fontsize = 16, col = "red"))
+          p3 <- textGrob(NoDataString, gp = gpar(fontsize = 12, col = "red"))
      }
 
      ob <- arrangeGrob(

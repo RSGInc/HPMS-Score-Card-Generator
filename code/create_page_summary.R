@@ -17,7 +17,8 @@ create_page_summary <- function(
      year_compare=NULL,
      x1,x2=NULL,x3=NULL, 
      color="white",
-     title,icontext)
+     title,icontext,
+     page)
 {
      
      width <- unit(c(1.6333,0.05,4-0.5/3,0.05,4-0.5/3,0.05,4-0.5/3,0.05),units="inches")
@@ -100,11 +101,11 @@ create_page_summary <- function(
           arrangeGrob(
                rectGrob(gp=gpar(fill=color, col = "white")),
                rectGrob(gp=gpar(fill="white", col = "white")),
-               create_travel_yoy_density(data,state,year,year_compare,gVariables[x1,Name]),
+               create_travel_yoy_density(data,state,year,year_compare,gVariables[x1,Name],gVariables[x1,National_Data_Comparison]),
                rectGrob(gp=gpar(fill="white", col = "white")),
                if(show2)
                {
-                    create_travel_yoy_density(data,state,year,year_compare,gVariables[x2,Name])
+                    create_travel_yoy_density(data,state,year,year_compare,gVariables[x2,Name],gVariables[x2,National_Data_Comparison])
                } else 
                {
                     rectGrob(gp=gpar(fill="white", col = "white"))
@@ -112,7 +113,7 @@ create_page_summary <- function(
                rectGrob(gp=gpar(fill="white", col = "white")),
                if(show3)
                {
-                    create_travel_yoy_density(data,state,year,year_compare,gVariables[x3,Name])
+                    create_travel_yoy_density(data,state,year,year_compare,gVariables[x3,Name],gVariables[x3,National_Data_Comparison])
                } else 
                {
                     rectGrob(gp=gpar(fill="white", col = "white"))
@@ -150,11 +151,13 @@ create_page_summary <- function(
      
      add_summary_row_labels(year,year_compare)
      
-     add_summary_col_labels(paste0(gVariables[x1,Name]," (",gVariables[x1,Extent],")"),1)
+          add_summary_col_labels(paste0(gVariables[x1,Item_Number]," - ",gVariables[x1,Label]," (",gVariables[x1,Extent],")"),1)
      if(show2){
-          add_summary_col_labels(paste0(gVariables[x2,Name]," (",gVariables[x2,Extent],")"),2)
+          add_summary_col_labels(paste0(gVariables[x2,Item_Number]," - ",gVariables[x2,Label]," (",gVariables[x2,Extent],")"),2)
      }
      if(show3){
-          add_summary_col_labels(paste0(gVariables[x3,Name]," (",gVariables[x3,Extent],")"),3)
+          add_summary_col_labels(paste0(gVariables[x3,Item_Number]," - ",gVariables[x3,Label]," (",gVariables[x3,Extent],")"),3)
      }
+     
+     add_page_number(page)
 }

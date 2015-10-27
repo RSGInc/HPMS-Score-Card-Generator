@@ -94,34 +94,11 @@ create_travel_data_yoy <- function(
           }
           
           # custom axis labels
-          p <- ggplot(report, aes(x=bin2,fill=color)) + geom_bar(width=0.5,stat="bin")
+          p <- ggplot(report, aes(x=bin2,fill=color,weight=end_point.x-begin_point.x)) + geom_bar(width=0.5,stat="bin")
           
           if(histtype==1)
           {
-               p <- p + scale_x_discrete("", breaks=factor(c(1:23,NA),levels=c(1:23,NA),labels=c("< -100%",
-                                                                                                 "-100%",
-                                                                                                 "-90%",
-                                                                                                 "-80%",
-                                                                                                 "-70%",
-                                                                                                 "-60%",
-                                                                                                 "-50%",
-                                                                                                 "-40%",
-                                                                                                 "-30%",
-                                                                                                 "-20%",
-                                                                                                 "-10%",
-                                                                                                 "0%",
-                                                                                                 "10%",
-                                                                                                 "20%",
-                                                                                                 "30%",
-                                                                                                 "40%",
-                                                                                                 "50%",
-                                                                                                 "60%",
-                                                                                                 "70%",
-                                                                                                 "80%",
-                                                                                                 "90%",
-                                                                                                 "100%",
-                                                                                                 "> 100%","N/A"
-               ),exclude=NULL), drop=FALSE)
+               p <- p + scale_x_discrete("", breaks=factor(c(1:17,NA),levels=c(1:17,NA),labels=c("< -100%","-100%","-75%","-50%","-25%","-15%","-5%","-1%","0%","1%","5%","15%","25%","50%","75%","100%","> 100%","N/A"),exclude=NULL), drop=FALSE)
           } else
           {
                p <- p + scale_x_discrete("", breaks=factor(c(1:2,NA),levels=c(1:2,NA),labels=c("No Change","Changed","NA"),exclude=NULL), drop=FALSE)
@@ -132,7 +109,7 @@ create_travel_data_yoy <- function(
           {
                p <- p + 
                     scale_fill_manual("",
-                                      values=c("Same"="red","Reduction"="gray50","increase"="gray50","NA"="white"))
+                                      values=c("Same"="red","Reduction"="gray50","Increase"="gray50","NA"="white"))
                
                #p <- p + geom_text("+",x=0.8,y=0,colour="slategray")
                #p <- p + geom_text("-",x=0.4,y=0,colour="slategray")
@@ -165,7 +142,7 @@ create_travel_data_yoy <- function(
      } else
      {
           # nothing to report because data are missing
-          return(textGrob("No Data",gp=gpar(fontsize=15, col="Red")))
+          return(textGrob(NoDataString,gp=gpar(fontsize=12, col="Red")))
      }
      
 }

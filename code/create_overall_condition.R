@@ -107,7 +107,7 @@ create_overall_condition <- function(data,state,year,population)
           p1 <- create_donut_chart(results.interstate)
      } else
      {
-          p1 <- textGrob("No Data",gp=gpar(fontsize=15, col="Red"))
+          p1 <- textGrob(NoDataString,gp=gpar(fontsize=12, col="Red"))
      }
      
      if(nrow(results.nhs)>0)
@@ -115,7 +115,7 @@ create_overall_condition <- function(data,state,year,population)
           p2 <- create_donut_chart(results.nhs)
      } else
      {
-          p2 <- textGrob("No Data",gp=gpar(fontsize=15, col="Red"))
+          p2 <- textGrob(NoDataString,gp=gpar(fontsize=12, col="Red"))
      }
      
      if(nrow(results.fsystem1)>0)
@@ -123,7 +123,7 @@ create_overall_condition <- function(data,state,year,population)
           p3 <- create_donut_chart(results.fsystem1)
      } else
      {
-          p3 <- textGrob("No Data",gp=gpar(fontsize=15, col="Red"))
+          p3 <- textGrob(NoDataString,gp=gpar(fontsize=12, col="Red"))
      }
      
      if(nrow(results.fsystem2)>0)
@@ -131,7 +131,7 @@ create_overall_condition <- function(data,state,year,population)
           p4 <- create_donut_chart(results.fsystem2)
      } else
      {
-          p4 <- textGrob("No Data",gp=gpar(fontsize=15, col="Red"))
+          p4 <- textGrob(NoDataString,gp=gpar(fontsize=12, col="Red"))
      }
      
      obj <- arrangeGrob(

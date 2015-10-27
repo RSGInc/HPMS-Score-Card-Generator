@@ -16,11 +16,10 @@ densityPlot <- function(
      d3=NULL,
      title="",
      minvalue,
-     maxvalue,
-     densitytype)
+     maxvalue)
 {
      
-     adjustment <- c(1,1)[densitytype]
+     adjustment <- 1#c(1,1)[densitytype]
      
      if(nrow(d1)>2|nrow(d2)>2) # we have something to report (density plots require at least 3 points to draw)
      {
@@ -29,18 +28,18 @@ densityPlot <- function(
           
           if(nrow(d1)>0)
           {
-               p <- p + geom_density(data = d1, color="red", linetype="solid", size=0.2,fill="white",adjust=adjustment)
+               p <- p + geom_density(data = d1, color="red", linetype="solid", size=0.2,fill="white",adjust=adjustment,aes(weights=(end_point-begin_point)/sum(end_point-begin_point)))
 
           }
           
           if(nrow(d2)>0)
           {
-               p <- p + geom_density(data = d2, color ="blue", linetype="dashed", size=0.2,fill="white",adjust=adjustment)
+               p <- p + geom_density(data = d2, color ="blue", linetype="dashed", size=0.2,fill="white",adjust=adjustment,aes(weights=(end_point-begin_point)/sum(end_point-begin_point)))
           }
           
-          if(nrow(d3)>0)
+          if(!is.null(d3))
           {
-               p <- p + geom_density(data = d3, color ="black", linetype="dotted", size=0.2,fill="white",adjust=adjustment)
+               p <- p + geom_density(data = d3, color ="black", linetype="dotted", size=0.2,fill="white",adjust=adjustment,aes(weights=(end_point-begin_point)/sum(end_point-begin_point)))
           }
           
           p <- p + ggtitle(title)
