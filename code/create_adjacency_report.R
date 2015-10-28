@@ -15,12 +15,13 @@ create_adjacency_report <- function(
      data,
      state,
      year,
-     variable,
-     highlight_threshold=10
+     variable
 )
 {
      
-     d.l <- data[data_item==variable&state_code==state&year_record==year,,]
+     highlight_threshold    <- gVariables[Name==variable,AH_Thresh]
+  
+     d.l <- data[data_item==variable&state_code==state&year_record==year&FACILITY_TYPE!=4,,]
      
      d.r <- d.l
      
@@ -55,7 +56,7 @@ create_adjacency_report <- function(
      
      
      
-     d.l <- data[data_item==variable&state_code==state&year_record==year&Interstate==1,,]
+     d.l <- data[data_item==variable&state_code==state&year_record==year&Interstate==1&FACILITY_TYPE!=4,,]
      
      d.r <- d.l
      
@@ -83,7 +84,7 @@ create_adjacency_report <- function(
      report.2[,groupCat:=1]
      
      
-     d.l <- data[data_item==variable&state_code==state&year_record==year&NHS==1,,]
+     d.l <- data[data_item==variable&state_code==state&year_record==year&NHS==1&FACILITY_TYPE!=4,,]
      
      d.r <- d.l
      

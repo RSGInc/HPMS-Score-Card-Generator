@@ -27,8 +27,8 @@ create_travel_data_yoy <- function(
 )
 {
      
-     var.1    <- data[state_code==state&year_record==year&data_item==variable,list(route_id,begin_point,end_point,value_numeric,F_SYSTEM)]
-     var.2    <- data[state_code==state&year_record==yearcomparison&data_item==variable,list(route_id,begin_point,end_point,value_numeric,F_SYSTEM)]
+     var.1    <- data[state_code==state&year_record==year&data_item==variable&FACILITY_TYPE!=4,list(route_id,begin_point,end_point,value_numeric,F_SYSTEM)]
+     var.2    <- data[state_code==state&year_record==yearcomparison&data_item==variable&FACILITY_TYPE!=4,list(route_id,begin_point,end_point,value_numeric,F_SYSTEM)]
      
      #var.yoy <- merge(var.1,var.2,by=c("route_id","begin_point","end_point"),all.x=TRUE, all.y=FALSE)
      

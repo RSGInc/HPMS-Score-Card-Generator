@@ -19,29 +19,34 @@ create_summary_report <- function(
 {
      
      # functional system aggregation
-     result1 <- data[state_code==state&year_record==year&data_item==variable,,]
+     result1 <- data[state_code==state&year_record==year&data_item==variable&FACILITY_TYPE!=4,,]
      
      result1[,miles:=sum(end_point-begin_point),by=list(F_SYSTEM)]
+     result1[,lanemiles:=sum((end_point-begin_point)*THROUGH_LANES,na.rm = TRUE),by=list(F_SYSTEM)]
      if(variable_extent %in% c("SP","FE*"))
      {
           result1[,expandedmiles:=sum((end_point-begin_point)*expansion_factor,na.rm = TRUE),by=list(F_SYSTEM)]
+          result1[,expandedlanemiles:=sum((end_point-begin_point)*THROUGH_LANES*expansion_factor,na.rm = TRUE),by=list(F_SYSTEM)]
           if(variable_extent_fs==4) # F_SYSTEM 1 is unexpanded
           {
                result1[F_SYSTEM==1,expandedmiles:=NA]     
+               result1[F_SYSTEM==1,expandedlanemiles:=NA]     
           }
           if(variable_extent_fs==2) # F_SYSTEM 1 is unexpanded
           {
                result1[Interstate==1,expandedmiles:=NA]     
+               result1[Interstate==1,expandedlanemiles:=NA]     
           }          
      } else
      {
           result1[,expandedmiles:=NA,]
+          result1[,expandedlanemiles:=NA,]
      }
      
      result1 <- switch(variable_type,
-                      result1[,summaryFunc(value_numeric),by=list(F_SYSTEM,miles,expandedmiles)],
-                      result1[,summaryFunc(as.Date(value_date)),by=list(F_SYSTEM,miles,expandedmiles)],
-                      result1[,summaryFunc(value_numeric)[1:2],by=list(F_SYSTEM,miles,expandedmiles)]
+                      result1[,summaryFunc(value_numeric),by=list(F_SYSTEM,miles,expandedmiles,lanemiles,expandedlanemiles)],
+                      result1[,summaryFunc(as.Date(value_date)),by=list(F_SYSTEM,miles,expandedmiles,lanemiles,expandedlanemiles)],
+                      result1[,summaryFunc(value_numeric)[1:2],by=list(F_SYSTEM,miles,expandedmiles,lanemiles,expandedlanemiles)]
      )
      
      result1[,groupCat:=F_SYSTEM+2]
@@ -49,41 +54,47 @@ create_summary_report <- function(
      result1 <- result1[!is.na(miles),]
      
      # interstate aggregation
-     result2 <- data[Interstate==1&state_code==state&year_record==year&data_item==variable,,]
+     result2 <- data[Interstate==1&state_code==state&year_record==year&data_item==variable&FACILITY_TYPE!=4,,]
      
      result2[,miles:=sum(end_point-begin_point),]
+     result2[,lanemiles:=sum((end_point-begin_point)*THROUGH_LANES,na.rm = TRUE)]
      if(variable_extent %in% c("SP"))
      {
           result2[,expandedmiles:=sum((end_point-begin_point)*expansion_factor),]
+          result2[,expandedlanemiles:=sum((end_point-begin_point)*THROUGH_LANES*expansion_factor,na.rm = TRUE)]
      } else
      {
           result2[,expandedmiles:=NA,]
+          result2[,expandedlanemiles:=NA,]
      }
      
      result2 <- switch(variable_type,
-                       result2[,summaryFunc(value_numeric),by=list(miles,expandedmiles)],
-                       result2[,summaryFunc(as.Date(value_date)),by=list(miles,expandedmiles)],
-                       result2[,summaryFunc(value_numeric)[1:2],by=list(miles,expandedmiles)]
+                       result2[,summaryFunc(value_numeric),by=list(miles,expandedmiles,lanemiles,expandedlanemiles)],
+                       result2[,summaryFunc(as.Date(value_date)),by=list(miles,expandedmiles,lanemiles,expandedlanemiles)],
+                       result2[,summaryFunc(value_numeric)[1:2],by=list(miles,expandedmiles,lanemiles,expandedlanemiles)]
      )
      
      result2[,groupCat:=1]
      
      # NHS aggregation
-     result3 <- data[NHS==1&state_code==state&year_record==year&data_item==variable,,]
+     result3 <- data[NHS==1&state_code==state&year_record==year&data_item==variable&FACILITY_TYPE!=4,,]
      
      result3[,miles:=sum(end_point-begin_point),]
+     result3[,lanemiles:=sum((end_point-begin_point)*THROUGH_LANES,na.rm = TRUE)]
      if(variable_extent %in% c("SP"))
      {
           result3[,expandedmiles:=sum((end_point-begin_point)*expansion_factor),]
+          result3[,expandedlanemiles:=sum((end_point-begin_point)*THROUGH_LANES*expansion_factor),]
      } else
      {
           result3[,expandedmiles:=NA,]
+          result3[,expandedlanemiles:=NA,]
      }
      
      result3 <- switch(variable_type,
-                       result3[,summaryFunc(value_numeric),by=list(miles,expandedmiles)],
-                       result3[,summaryFunc(as.Date(value_date)),by=list(miles,expandedmiles)],
-                       result3[,summaryFunc(value_numeric)[1:2],by=list(miles,expandedmiles)]
+                       result3[,summaryFunc(value_numeric),by=list(miles,expandedmiles,lanemiles,expandedlanemiles)],
+                       result3[,summaryFunc(as.Date(value_date)),by=list(miles,expandedmiles,lanemiles,expandedlanemiles)],
+                       result3[,summaryFunc(value_numeric)[1:2],by=list(miles,expandedmiles,lanemiles,expandedlanemiles)]
      )
      
      result3[,groupCat:=2]

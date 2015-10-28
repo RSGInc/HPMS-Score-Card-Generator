@@ -65,10 +65,10 @@ create_page3 <- function(
           arrangeGrob(
                rectGrob(gp = gpar(fill = "white", col = "white")),
                textGrob("",just="right",gp=gpar(fontsize=12, col="Black")),
-               textGrob("Annual Average Daily Traffic",just="centre",gp=gpar(fontsize=12, col="slategray",fontface="bold")),
-               textGrob("Future AADT",just="centre",gp=gpar(fontsize=12, col="slategray",fontface="bold")),
-               textGrob("Combination Truck AADT",just="centre",gp=gpar(fontsize=12, col="slategray",fontface="bold")),
-               textGrob("Single Unit Truck and Bus AADT",just="centre",gp=gpar(fontsize=12, col="slategray",fontface="bold")),
+               textGrob("21 - Annual Average Daily Traffic (FE+R)",just="centre",gp=gpar(fontsize=10, col="slategray",fontface="bold")),
+               textGrob("28 - Future AADT (SP)",just="centre",gp=gpar(fontsize=10, col="slategray",fontface="bold")),
+               textGrob("24 - Combination Truck AADT (FE*)",just="centre",gp=gpar(fontsize=10, col="slategray",fontface="bold")),
+               textGrob("25 - Single Unit Truck and Bus AADT (FE*)",just="centre",gp=gpar(fontsize=10, col="slategray",fontface="bold")),
                rectGrob(gp = gpar(fill = "white", col = "white")),
                nrow=1,widths=unit(c(0.167,1.5,rep(11.336/4,4),0.33),units="inches")
           ),               
@@ -77,13 +77,13 @@ create_page3 <- function(
                rectGrob(gp = gpar(fill = "white", col = "white")),
                rectGrob(gp = gpar(fill = "white", col = "white")),
                create_table(
-                    create_adjacency_report(data,state,year,"AADT",5)),
+                    create_adjacency_report(data,state,year,"AADT")),
                create_table(
-                    create_adjacency_report(data,state,year,"FAADT",5)),
+                    create_adjacency_report(data,state,year,"FUTURE_AADT")),
                create_table(
-                    create_adjacency_report(data,state,year,"AADT_COMBINATION",5)),
+                    create_adjacency_report(data,state,year,"AADT_COMBINATION")),
                create_table(
-                    create_adjacency_report(data,state,year,"AADT_SINGLE_UNIT",5)),
+                    create_adjacency_report(data,state,year,"AADT_SINGLE_UNIT")),
                rectGrob(gp = gpar(fill = "white", col = "white")),
                nrow = 1,widths=unit(c(0.167,1.5,rep(11.336/4,4),0.33),units="inches")),
           
@@ -91,13 +91,13 @@ create_page3 <- function(
                rectGrob(gp = gpar(fill = "white", col = "white")),
                rectGrob(gp = gpar(fill = "white", col = "white")),
                create_table(
-                    create_yearoveryear_report(data,state,year,"AADT",year_compare,10)),
+                    create_yearoveryear_report(data,state,year,"AADT",year_compare)),
                create_table(
-                    create_yearoveryear_report(data,state,year,"FAADT",year_compare,10)),
+                    create_yearoveryear_report(data,state,year,"FUTURE_AADT",year_compare)),
                create_table(
-                    create_yearoveryear_report(data,state,year,"AADT_COMBINATION",year_compare,10)),
+                    create_yearoveryear_report(data,state,year,"AADT_COMBINATION",year_compare)),
                create_table(
-                    create_yearoveryear_report(data,state,year,"AADT_SINGLE_UNIT",year_compare,10)),
+                    create_yearoveryear_report(data,state,year,"AADT_SINGLE_UNIT",year_compare)),
                rectGrob(gp = gpar(fill = "white", col = "white")),
                nrow = 1,widths=unit(c(0.167,1.5,rep(11.336/4,4),0.33),units="inches")),
           

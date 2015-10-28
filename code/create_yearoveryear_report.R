@@ -16,14 +16,14 @@ create_yearoveryear_report <- function(
      state,
      year,
      variable,
-     yearcomparison,
-     highlight_threshold=10
+     yearcomparison
 )
 {
      
-
-     var.1    <- data[state_code==state&year_record==year&data_item==variable,list(route_id,begin_point,end_point,value_numeric,F_SYSTEM,NHS,Interstate)]
-     var.2    <- data[state_code==state&year_record==yearcomparison&data_item==variable,list(route_id,begin_point,end_point,value_numeric)]
+     highlight_threshold    <- gVariables[Name==variable,YOYH_Thresh]
+  
+     var.1    <- data[state_code==state&year_record==year&data_item==variable&FACILITY_TYPE!=4,list(route_id,begin_point,end_point,value_numeric,F_SYSTEM,NHS,Interstate)]
+     var.2    <- data[state_code==state&year_record==yearcomparison&data_item==variable&FACILITY_TYPE!=4,list(route_id,begin_point,end_point,value_numeric)]
      
      var.yoy <- sqldf("
                       select 

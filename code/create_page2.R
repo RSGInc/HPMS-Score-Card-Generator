@@ -39,10 +39,10 @@ create_page2 <- function(
           arrangeGrob(
                rectGrob(gp = gpar(fill = "white", col = "white")),
                textGrob("",just="right",gp=gpar(fontsize=12, col="Black")),
-               textGrob("Faulting",just="centre",gp=gpar(fontsize=12, col="slategray",fontface="bold")),
-               textGrob("Cracking Percent",just="centre",gp=gpar(fontsize=12, col="slategray",fontface="bold")),
-               textGrob("Rutting",just="centre",gp=gpar(fontsize=12, col="slategray",fontface="bold")),
-               textGrob("International Roughness Index",just="centre",gp=gpar(fontsize=12, col="slategray",fontface="bold")),
+               textGrob("51 - Faulting (SP)",just="centre",gp=gpar(fontsize=10, col="slategray",fontface="bold")),
+               textGrob("52 - Cracking Percent (SP)",just="centre",gp=gpar(fontsize=10, col="slategray",fontface="bold")),
+               textGrob("50 - Rutting (SP)",just="centre",gp=gpar(fontsize=10, col="slategray",fontface="bold")),
+               textGrob("47 - International Roughness Index (47)",just="centre",gp=gpar(fontsize=10, col="slategray",fontface="bold")),
                rectGrob(gp = gpar(fill = "white", col = "white")),
                nrow=1,widths=unit(c(0.167,1.5,rep(11.336/4,4),0.33),units="inches")
           ),
@@ -51,13 +51,13 @@ create_page2 <- function(
                rectGrob(gp = gpar(fill = "white", col = "white")),
                rectGrob(gp = gpar(fill = "white", col = "white")),
                create_table(
-                    create_outlier_report(data,state,year,"FAULTING",1,0,1)),
+                    create_outlier_report(data,state,year,"FAULTING")),
                create_table(
-                    create_outlier_report(data,state,year,"CRACKING_PERCENT",100,0,1)),
+                    create_outlier_report(data,state,year,"CRACKING_PERCENT")),
                create_table(
-                    create_outlier_report(data,state,year,"RUTTING",1,0,1)),
+                    create_outlier_report(data,state,year,"RUTTING")),
                create_table(
-                    create_outlier_report(data,state,year,"IRI",400,30,1)),
+                    create_outlier_report(data,state,year,"IRI")),
                rectGrob(gp = gpar(fill = "white", col = "white")),
                nrow = 1,widths=unit(c(0.167,1.5,rep(11.336/4,4),0.33),units="inches")),
           # second row of tables
@@ -65,13 +65,13 @@ create_page2 <- function(
                rectGrob(gp = gpar(fill = "white", col = "white")),
                rectGrob(gp = gpar(fill = "white", col = "white")),
                create_table(
-                    create_adjacency_report(data,state,year,"FAULTING",5)),
+                    create_adjacency_report(data,state,year,"FAULTING")),
                create_table(
-                    create_adjacency_report(data,state,year,"CRACKING_PERCENT",5)),
+                    create_adjacency_report(data,state,year,"CRACKING_PERCENT")),
                create_table(
-                    create_adjacency_report(data,state,year,"RUTTING",5)),
+                    create_adjacency_report(data,state,year,"RUTTING")),
                create_table(
-                    create_adjacency_report(data,state,year,"IRI",5)),
+                    create_adjacency_report(data,state,year,"IRI")),
                rectGrob(gp = gpar(fill = "white", col = "white")),
                nrow = 1,widths=unit(c(0.167,1.5,rep(11.336/4,4),0.33),units="inches")),
           # third row of results   
@@ -79,13 +79,13 @@ create_page2 <- function(
                rectGrob(gp = gpar(fill = "white", col = "white")),
                rectGrob(gp = gpar(fill = "white", col = "white")),
                create_table(
-                    create_yearoveryear_report(data,state,year,"FAULTING",year_compare,10)),
+                    create_yearoveryear_report(data,state,year,"FAULTING",year_compare)),
                create_table(
-                    create_yearoveryear_report(data,state,year,"CRACKING_PERCENT",year_compare,10)),
+                    create_yearoveryear_report(data,state,year,"CRACKING_PERCENT",year_compare)),
                create_table(
-                    create_yearoveryear_report(data,state,year,"RUTTING",year_compare,10)),
+                    create_yearoveryear_report(data,state,year,"RUTTING",year_compare)),
                create_table(
-                    create_yearoveryear_report(data,state,year,"IRI",year_compare,10)),
+                    create_yearoveryear_report(data,state,year,"IRI",year_compare)),
                rectGrob(gp = gpar(fill = "white", col = "white")),
                nrow = 1,widths=unit(c(0.167,1.5,rep(11.336/4,4),0.33),units="inches")),
           nrow=9,heights = unit(c(0.6,0.03,1.25,0.03,0.1,0.25,rep(5.24/3,3)),units="inches"))

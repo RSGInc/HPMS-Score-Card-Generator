@@ -24,10 +24,10 @@ create_travel_data_assessment <- function(
      # AADT_SINGLE_UNIT = Single Unit Trucks/Buses
      # FUTURE_AADT
      
-     aadt    <- data[state_code==state&year_record==year&data_item=="AADT",list(route_id,begin_point,end_point,value_numeric,F_SYSTEM,NHS,Interstate)]
-     aadt_cu <- data[state_code==state&year_record==year&data_item=="AADT_COMBINATION",list(route_id,begin_point,end_point,value_numeric,F_SYSTEM,NHS,Interstate)]
-     aadt_su <- data[state_code==state&year_record==year&data_item=="AADT_SINGLE_UNIT",list(route_id,begin_point,end_point,value_numeric,F_SYSTEM,NHS,Interstate)]
-     faadt   <- data[state_code==state&year_record==year&data_item=="FUTURE_AADT",list(route_id,begin_point,end_point,value_numeric,F_SYSTEM,NHS,Interstate)]
+     aadt    <- data[state_code==state&year_record==year&data_item=="AADT"&FACILITY_TYPE!=4,list(route_id,begin_point,end_point,value_numeric,F_SYSTEM,NHS,Interstate)]
+     aadt_cu <- data[state_code==state&year_record==year&data_item=="AADT_COMBINATION"&FACILITY_TYPE!=4,list(route_id,begin_point,end_point,value_numeric,F_SYSTEM,NHS,Interstate)]
+     aadt_su <- data[state_code==state&year_record==year&data_item=="AADT_SINGLE_UNIT"&FACILITY_TYPE!=4,list(route_id,begin_point,end_point,value_numeric,F_SYSTEM,NHS,Interstate)]
+     faadt   <- data[state_code==state&year_record==year&data_item=="FUTURE_AADT"&FACILITY_TYPE!=4,list(route_id,begin_point,end_point,value_numeric,F_SYSTEM,NHS,Interstate)]
      
      comparison <- merge(aadt,aadt_cu,by=c("route_id","begin_point","end_point","F_SYSTEM","Interstate","NHS"),all.y=TRUE,all.x=FALSE)     
      setnames(comparison,"value_numeric.x","AADT")
@@ -43,11 +43,11 @@ create_travel_data_assessment <- function(
      {
           x <- (x - diff)
           return(list(
-               min=min(x),
-               lq=quantile(x,c(0.25)),
-               mq=quantile(x,c(0.5)),
-               uq=quantile(x,c(0.75)),
-               max=max(x)
+               min=min(x,na.rm=TRUE),
+               lq=quantile(x,c(0.25),na.rm=TRUE),
+               mq=quantile(x,c(0.5),na.rm=TRUE),
+               uq=quantile(x,c(0.75),na.rm=TRUE),
+               max=max(x,na.rm=TRUE)
                )
           )
      }

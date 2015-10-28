@@ -21,8 +21,8 @@ create_travel_yoy_density <- function(
 )
 {
      
-     var.1    <- data[state_code==state&year_record==year&data_item==variable&!is.na(value_numeric)&F_SYSTEM!=7&!is.na(F_SYSTEM),list(route_id,begin_point,end_point,value_numeric,F_SYSTEM,Interstate,NHS)]
-     var.2    <- data[state_code==state&year_record==yearcomparison&data_item==variable&!is.na(value_numeric)&F_SYSTEM!=7&!is.na(F_SYSTEM),list(route_id,begin_point,end_point,value_numeric,F_SYSTEM,Interstate,NHS)]
+     var.1    <- data[state_code==state&year_record==year&data_item==variable&FACILITY_TYPE!=4&!is.na(value_numeric)&F_SYSTEM!=7&!is.na(F_SYSTEM),list(route_id,begin_point,end_point,value_numeric,F_SYSTEM,Interstate,NHS)]
+     var.2    <- data[state_code==state&year_record==yearcomparison&data_item==variable&FACILITY_TYPE!=4&!is.na(value_numeric)&F_SYSTEM!=7&!is.na(F_SYSTEM),list(route_id,begin_point,end_point,value_numeric,F_SYSTEM,Interstate,NHS)]
      
      if(nrow(var.1)>2|nrow(var.2)>2) # we have something to report (density plots require at least 3 points to draw)
      {

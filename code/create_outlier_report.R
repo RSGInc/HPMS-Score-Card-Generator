@@ -15,16 +15,17 @@ create_outlier_report <- function(
     data, 
     state,
      year,
-     variable,
-     outlier_threshold_high,
-     outlier_threshold_low,
-     highlight_threshold=10
+     variable
 )
 {
      
+     outlier_threshold_high <- gVariables[Name==variable,Outlier_Max]
+     outlier_threshold_low  <- gVariables[Name==variable,Outlier_Min]
+     highlight_threshold    <- gVariables[Name==variable,OH_Thresh]
+  
      d.l <- data[ data_item==variable&
                       state_code==state&
-                      year_record==year,,]    
+                      year_record==year&FACILITY_TYPE!=4,,]    
      
      result.1 <- d.l[(value_numeric>outlier_threshold_high|value_numeric<outlier_threshold_low),
                    list(miles=round(sum(end_point-begin_point,na.rm=TRUE),2),.N),
@@ -46,7 +47,7 @@ create_outlier_report <- function(
      
      d.l <- data[ data_item==variable&
                       state_code==state&
-                      year_record==year&Interstate==1,,]    
+                      year_record==year&Interstate==1&FACILITY_TYPE!=4,,]    
      
      result.2 <- d.l[(value_numeric>outlier_threshold_high|value_numeric<outlier_threshold_low),
                      list(miles=round(sum(end_point-begin_point,na.rm=TRUE),2),.N),
@@ -65,7 +66,7 @@ create_outlier_report <- function(
      
      d.l <- data[ data_item==variable&
                       state_code==state&
-                      year_record==year&NHS==1,,]    
+                      year_record==year&NHS==1&FACILITY_TYPE!=4,,]    
      
      result.3 <- d.l[(value_numeric>outlier_threshold_high|value_numeric<outlier_threshold_low),
                      list(miles=round(sum(end_point-begin_point,na.rm=TRUE),2),.N),

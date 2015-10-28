@@ -20,7 +20,10 @@ create_table_grob <- function(result,variable_type)
      setnames(result,"count.na","N (NA)")
      setnames(result,"miles","Total \nCenterline Miles")
      setnames(result,"expandedmiles","Total Expanded\nCenterline Miles")
-     
+     setnames(result,"lanemiles","Total \nLane Miles")
+     setnames(result,"expandedlanemiles","Total Expanded\nLane Miles")
+
+          
      result[,mean:=NULL]
      
      if(variable_type < 3)
