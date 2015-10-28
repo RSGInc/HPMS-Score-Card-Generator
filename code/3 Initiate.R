@@ -44,7 +44,7 @@ Run <- function() {
       }
       
       whitespace(4)
-      getUserInput("Data import complete! Press 'Enter' to continue.")
+      getUserInput("Data import complete! Press 'Enter' to continue. Press 'Esc' to Exit.")
       
     # Generate score card(s)
     } else if (task == 2) {
@@ -90,9 +90,9 @@ Run <- function() {
       # Detect whether score card generation was successful and return to main menu
       whitespace(4)
       if (success) {
-        getUserInput("Score card generation complete! Press 'Enter' to continue.")
+        getUserInput("Score card generation complete! Press 'Enter' to continue. Press 'Esc' to Exit.")
       } else {
-        getUserInput("No score cards generated. Press 'Enter' to continue.")
+        getUserInput("No score cards generated. Press 'Enter' to continue. Press 'Esc' to Exit.")
       }
     
     }
@@ -151,7 +151,7 @@ getStateDataSets <- function() {
     dat.compare[, year_record := as.numeric(year_compare)]
     dat <- rbind(dat, dat.compare, fill = TRUE)
   }
-  
+  dat <<- dat
   # Attempt to load the data associated with the four previous years
   dat.prev <- list()
   cc <- 1

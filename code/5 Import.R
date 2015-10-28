@@ -104,8 +104,39 @@ FormatDataSet <- function(dat) {
                                   !c("F_SYSTEM.begin_point", "F_SYSTEM.end_point"), with = FALSE]
   
   # Merge data on itself to get the NHS variable
-  data.formatted <- data.table(sqldf("select A.*, B.value_numeric as NHS from [data.collapsed] A left join [data.collapsed] B on A.route_id = B.route_id and A.year_record = B.year_record and A.state_code = B.state_code and A.begin_point <= B.end_point and A.begin_point >= B.begin_point and A.end_point <= B.end_point and A.end_point >= B.begin_point and B.data_item = 'NHS'"))
-  
+  data.formatted <- data.table(
+    sqldf("select A.*, B.value_numeric as NHS 
+           from [data.collapsed] A 
+           left join [data.collapsed] B on A.route_id = B.route_id and 
+                                           A.year_record = B.year_record and 
+                                           A.state_code = B.state_code and 
+                                           A.begin_point <= B.end_point and 
+                                           A.begin_point >= B.begin_point and 
+                                           A.end_point <= B.end_point and 
+                                           A.end_point >= B.begin_point and B.data_item = 'NHS'"))
+
+  data.formatted <- data.table(
+    sqldf("select A.*, B.value_numeric as FACILITY_TYPE 
+           from [data.formatted] A 
+           left join [data.formatted] B on A.route_id = B.route_id and 
+                                           A.year_record = B.year_record and 
+                                           A.state_code = B.state_code and 
+                                           A.begin_point <= B.end_point and 
+                                           A.begin_point >= B.begin_point and 
+                                           A.end_point <= B.end_point and 
+                                           A.end_point >= B.begin_point and B.data_item = 'FACILITY_TYPE'"))
+
+  data.formatted <- data.table(
+    sqldf("select A.*, B.value_numeric as THROUGH_LANES 
+           from [data.formatted] A 
+           left join [data.formatted] B on A.route_id = B.route_id and 
+                                           A.year_record = B.year_record and 
+                                           A.state_code = B.state_code and 
+                                           A.begin_point <= B.end_point and 
+                                           A.begin_point >= B.begin_point and 
+                                           A.end_point <= B.end_point and 
+                                           A.end_point >= B.begin_point and B.data_item = 'THROUGH_LANES'"))
+      
   # Recode Interstate, NHS, and F_SYSTEM variables
   data.formatted[, Interstate := c(1,0,0,0,0,0,0)[F_SYSTEM]]
   data.formatted[, NHS := c(1,0,0,0,0,0,0)[NHS]]
@@ -113,7 +144,20 @@ FormatDataSet <- function(dat) {
   
   # TODO: merge on sample panel data for expansion factors. Not necessarily here.
   # For now, just include a column of missing expansion factors
-  data.formatted[, expansion_factor := NA]
+  sp <- data.table(read.table("resources\\dat\\SamplePanel.csv",sep="|",header=TRUE,stringsAsFactors=FALSE))
+
+  data.formatted <- data.table(
+    sqldf("select A.*, B.expansion_factor as expansion_factor
+           from [data.formatted] A 
+           left join [sp] B on A.route_id = B.route_id and 
+                                           A.year_record = B.year_record and 
+                                           A.state_code = B.state_code and 
+                                           A.begin_point <= B.end_point and 
+                                           A.begin_point >= B.begin_point and 
+                                           A.end_point <= B.end_point and 
+                                           A.end_point >= B.begin_point"))
+  
+  #data.formatted[, expansion_factor := NA]
   
   gc()
   
