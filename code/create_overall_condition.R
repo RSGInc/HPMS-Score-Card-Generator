@@ -109,7 +109,7 @@ create_overall_condition <- function(data,state,year,population)
        results.fsystem1   <- table(condition[F_SYSTEM==1,  factor(overallscore,levels=c("G","F","P"))])
        results.fsystem2   <- table(condition[F_SYSTEM==2,  factor(overallscore,levels=c("G","F","P"))])
        
-       if(nrow(results.interstate)>0)
+       if(sum(results.interstate)>0)
        {
             p1 <- create_donut_chart(results.interstate)
        } else
@@ -117,7 +117,7 @@ create_overall_condition <- function(data,state,year,population)
             p1 <- textGrob(NoDataString,gp=gpar(fontsize=12, col="Red"))
        }
        
-       if(nrow(results.nhs)>0)
+       if(sum(results.nhs)>0)
        {
             p2 <- create_donut_chart(results.nhs)
        } else
@@ -125,7 +125,7 @@ create_overall_condition <- function(data,state,year,population)
             p2 <- textGrob(NoDataString,gp=gpar(fontsize=12, col="Red"))
        }
        
-       if(nrow(results.fsystem1)>0)
+       if(sum(results.fsystem1)>0)
        {
             p3 <- create_donut_chart(results.fsystem1)
        } else
@@ -133,7 +133,7 @@ create_overall_condition <- function(data,state,year,population)
             p3 <- textGrob(NoDataString,gp=gpar(fontsize=12, col="Red"))
        }
        
-       if(nrow(results.fsystem2)>0)
+       if(sum(results.fsystem2)>0)
        {
             p4 <- create_donut_chart(results.fsystem2)
        } else

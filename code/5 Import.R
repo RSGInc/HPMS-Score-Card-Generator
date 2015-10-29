@@ -93,21 +93,22 @@ FormatDataSet <- function(dat) {
   cat(".")
   
   # Merge data on itself to get the F_SYSTEM variable
-  # POSSIBLE TODO: write this as an sqldf function (see below; sqldf is slower but better on memory)
-  data.expanded <- merge(dat,
-                         dat[data_item == "F_SYSTEM", .(route_id, F_SYSTEM.begin_point = begin_point, F_SYSTEM.end_point = end_point, F_SYSTEM = value_numeric)],
-                         by = "route_id", all.x = TRUE, allow.cartesian = TRUE)
-  
-  # TODO: Could use a more explicit way of matching F_SYSTEM values to road segments
-  # Currently, we're losing about 1-3% of records from mismatches
-  data.collapsed <- data.expanded[begin_point <= F_SYSTEM.end_point & begin_point >= F_SYSTEM.begin_point & end_point <= F_SYSTEM.end_point & end_point >= F_SYSTEM.begin_point,
-                                  !c("F_SYSTEM.begin_point", "F_SYSTEM.end_point"), with = FALSE]
+  data.formatted <- data.table(
+    sqldf("select A.*, B.value_numeric as F_SYSTEM 
+           from [dat] A 
+           left join [dat] B on A.route_id = B.route_id and 
+                                           A.year_record = B.year_record and 
+                                           A.state_code = B.state_code and 
+                                           A.begin_point <= B.end_point and 
+                                           A.begin_point >= B.begin_point and 
+                                           A.end_point <= B.end_point and 
+                                           A.end_point >= B.begin_point and B.data_item = 'F_SYSTEM'"))
   
   # Merge data on itself to get the NHS variable
   data.formatted <- data.table(
     sqldf("select A.*, B.value_numeric as NHS 
-           from [data.collapsed] A 
-           left join [data.collapsed] B on A.route_id = B.route_id and 
+           from [data.formatted] A 
+           left join [data.formatted] B on A.route_id = B.route_id and 
                                            A.year_record = B.year_record and 
                                            A.state_code = B.state_code and 
                                            A.begin_point <= B.end_point and 
@@ -137,10 +138,20 @@ FormatDataSet <- function(dat) {
                                            A.end_point <= B.end_point and 
                                            A.end_point >= B.begin_point and B.data_item = 'THROUGH_LANES'"))
       
+  #F_SYSTEM Codes
+  # 1 Interstate
+  # 2 Principal Arterial - Other Freeways and Expressways
+  # 3 Principal Arterial - Other
+  # 4 Minor Arterial
+  # 5 Major Collector
+  # 6 Minor Collector
+  # 7 Local
+  
   # Recode Interstate, NHS, and F_SYSTEM variables
   data.formatted[, Interstate := c(1,0,0,0,0,0,0)[F_SYSTEM]]
   data.formatted[, NHS := c(1,0,0,0,0,0,0)[NHS]]
-  data.formatted[, F_SYSTEM := c(1,1,1,2,2,2,NA)[F_SYSTEM]]
+  data.formatted[, NHS := NHS * (1 - Interstate)]
+  data.formatted[, F_SYSTEM := c(NA,1,1,1,2,2,NA)[F_SYSTEM]]
   
   # TODO: merge on sample panel data for expansion factors. Not necessarily here.
   # For now, just include a column of missing expansion factors

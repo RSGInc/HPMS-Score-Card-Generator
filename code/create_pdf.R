@@ -28,7 +28,7 @@ create_pdf <- function(data, state, year, year_compare, population, national = N
      
      # Create title page
      cat("Title page...")
-     create_title_page(data,state,year,year_compare)
+     #create_title_page(data,state,year,year_compare)
      cat(" complete!\n")
      
      # Pavement: Detailed Review
@@ -36,20 +36,27 @@ create_pdf <- function(data, state, year, year_compare, population, national = N
      create_page2(data,state,year,year_compare,population=population)
      cat(" complete!\n")
      
-     # Pavement: Detailed Review
+     # Traffic: Detailed Review
      cat("Traffic review...")
      create_page3(data,state,year,year_compare)
      cat(" complete!\n")
      
-     # create summary pages organize by type
-     # I	19 mod 3 = 1
-     # R	3        = 0 
-     # T	16       = 1
-     # G	23       = 2
-     # P	14       = 1
-     # SN	4        = 1
-     # O	2        = 2
+     # Ramps: Detailed Review
+     cat("Ramps review...")
+     todo <- matrix((1:nrow(gVariables))[gVariables[,RampAnalysis]=="Y"],ncol=3,byrow=TRUE)
+     for(i in 1:1)
+     {
+          x1 <- todo[i,1]
+          x2 <- todo[i,2]
+          x3 <- todo[i,3]
+          create_page_summary(data,state,year,year_compare,x1=x1,x2=x2,x3=x3, title="ramps: detailed review",icontext="r",page=3+i,ramps=TRUE)
+          cat(".")
+     }
+     create_page_summary(data,state,year,year_compare,x1=todo[i+1,1],x2=todo[i+1,2], title="ramps: detailed review",icontext="r",page=5,ramps=TRUE)
+     cat(" complete!\n")
+    
      
+     # data summary pages
      # inventory
      cat("Inventory data items...")
      todo <- matrix((1:nrow(gVariables))[gVariables[,Grouping]=="I"],ncol=3,byrow=TRUE)
@@ -58,10 +65,9 @@ create_pdf <- function(data, state, year, year_compare, population, national = N
           x1 <- todo[i,1]
           x2 <- todo[i,2]
           x3 <- todo[i,3]
-          create_page_summary(data,state,year,year_compare,x1=x1,x2=x2,x3=x3, title="inventory",icontext="i",page=3+i)
+          create_page_summary(data,state,year,year_compare,x1=x1,x2=x2,x3=x3, title="inventory",icontext="i",page=5+i)
           cat(".")
      }
-     #create_page_summary(data,state,year,year_compare,x1=todo[i+1,1],title="inventory",icontext="i",page=3+i+1)
      cat(" complete!\n")
      
      # Pavement
@@ -72,10 +78,10 @@ create_pdf <- function(data, state, year, year_compare, population, national = N
           x1 <- todo[i,1]
           x2 <- todo[i,2]
           x3 <- todo[i,3]
-          create_page_summary(data,state,year,year_compare,x1=x1,x2=x2,x3=x3, title="pavement",icontext="p",page=10+i)
+          create_page_summary(data,state,year,year_compare,x1=x1,x2=x2,x3=x3, title="pavement",icontext="p",page=11+i)
           cat(".")
      }
-     create_page_summary(data,state,year,year_compare,x1=todo[i+1,1], title="pavement",icontext="p",page=11+i)
+     create_page_summary(data,state,year,year_compare,x1=todo[i+1,1], title="pavement",icontext="p",page=12+i)
      cat(" complete!\n")
 
      # Traffic
@@ -86,10 +92,10 @@ create_pdf <- function(data, state, year, year_compare, population, national = N
           x1 <- todo[i,1]
           x2 <- todo[i,2]
           x3 <- todo[i,3]
-          create_page_summary(data,state,year,year_compare,x1=x1,x2=x2,x3=x3, title="traffic",icontext="t",page=15+i)
+          create_page_summary(data,state,year,year_compare,x1=x1,x2=x2,x3=x3, title="traffic",icontext="t",page=16+i)
           cat(".")
      }
-     create_page_summary(data,state,year,year_compare,x1=todo[i+1,1],x2=todo[i+1,2], title="traffic",icontext="t",page=16+i)
+     create_page_summary(data,state,year,year_compare,x1=todo[i+1,1],x2=todo[i+1,2], title="traffic",icontext="t",page=17+i)
      cat(" complete!\n")
      
      # Geometric

@@ -1,1 +1,0 @@
-NoDataString <- "Data item may not be required\nfor this State, follow up with\nState DOT and FHWA to confirm."

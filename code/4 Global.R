@@ -44,11 +44,13 @@ gSpaces <- 100
 # F system names for better reporting
 #######################################################################
 gF_SYSTEM_levels <- c("Interstate",
-                      "NHS",
-                      "PAS",
-                      "Lower Level Systems"
+                      "Non-Interstate\nNHS",
+                      "Other/Minor\nArterials",
+                      "Collectors\n+ Locals"
 )
 
-gVariables <- data.table(read.table("resources\\dat\\data_elements.csv",sep=",",header=TRUE,stringsAsFactors=FALSE))
+gVariables       <- data.table(read.table("resources\\dat\\data_elements.csv",sep=",",header=TRUE,stringsAsFactors=FALSE))
+gVariablesLabels <- data.table(read.table("resources\\dat\\data_labels.csv",  sep=",",header=TRUE,stringsAsFactors=FALSE))
 
 
+NoDataString <- "Data item may not be required\nfor this State, follow up with\nState DOT and FHWA to confirm."

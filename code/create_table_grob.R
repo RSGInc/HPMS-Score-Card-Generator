@@ -15,17 +15,20 @@ create_table_grob <- function(result,variable_type)
 {
      
      result[,groupCat:=gF_SYSTEM_levels[as.numeric(result[,groupCat])]]
+     
+     # no longer printed these to save space
+     result[,count:=NULL]
+     result[,count.na:=NULL]
+     result[,mean:=NULL]
+
      setnames(result,"groupCat","Functional\nSystem")
-     setnames(result,"count","N")
-     setnames(result,"count.na","N (NA)")
+     #setnames(result,"count","N")
+     #setnames(result,"count.na","N (NA)")
      setnames(result,"miles","Total \nCenterline Miles")
      setnames(result,"expandedmiles","Total Expanded\nCenterline Miles")
      setnames(result,"lanemiles","Total \nLane Miles")
      setnames(result,"expandedlanemiles","Total Expanded\nLane Miles")
 
-          
-     result[,mean:=NULL]
-     
      if(variable_type < 3)
      {
           

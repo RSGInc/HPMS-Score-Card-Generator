@@ -19,18 +19,27 @@
 create_travel_data_yoy <- function(
     data, 
     state,
-     year,
-     yearcomparison,
-     variable,
-     histtype,
-     fontsize=6
+    year,
+    yearcomparison,
+    variable,
+    histtype,
+    fontsize=6,
+    ramps
 )
 {
      
-     var.1    <- data[state_code==state&year_record==year&data_item==variable&FACILITY_TYPE!=4,list(route_id,begin_point,end_point,value_numeric,F_SYSTEM)]
-     var.2    <- data[state_code==state&year_record==yearcomparison&data_item==variable&FACILITY_TYPE!=4,list(route_id,begin_point,end_point,value_numeric,F_SYSTEM)]
+     if(ramps)
+     {
+        var.1    <- data[state_code==state&year_record==year          &data_item==variable&FACILITY_TYPE==4,list(route_id,begin_point,end_point,value_numeric,F_SYSTEM)]
+        var.2    <- data[state_code==state&year_record==yearcomparison&data_item==variable&FACILITY_TYPE==4,list(route_id,begin_point,end_point,value_numeric,F_SYSTEM)]
+     } else {
+        var.1    <- data[state_code==state&year_record==year          &data_item==variable&FACILITY_TYPE!=4,list(route_id,begin_point,end_point,value_numeric,F_SYSTEM)]
+        var.2    <- data[state_code==state&year_record==yearcomparison&data_item==variable&FACILITY_TYPE!=4,list(route_id,begin_point,end_point,value_numeric,F_SYSTEM)]       
+     }   
      
-     #var.yoy <- merge(var.1,var.2,by=c("route_id","begin_point","end_point"),all.x=TRUE, all.y=FALSE)
+     expectedChange <- gVariables[Name==variable,YOY_Change]
+  
+      #var.yoy <- merge(var.1,var.2,by=c("route_id","begin_point","end_point"),all.x=TRUE, all.y=FALSE)
      
      # this does the merge at the most disaggregate level
      #var.yoy <- merge(var.1,var.2,by=c("route_id"),all.x=TRUE, all.y=FALSE,allow.cartesian=T)
@@ -107,17 +116,25 @@ create_travel_data_yoy <- function(
           
           if(histtype==1)
           {
-               p <- p + 
-                    scale_fill_manual("",
-                                      values=c("Same"="red","Reduction"="gray50","Increase"="gray50","NA"="white"))
+              if(expectedChange=="Y")
+              {
+                p <- p + scale_fill_manual("",values=c("Same"="red","Reduction"="gray50","Increase"="gray50","NA"="white"))
+              } else
+              {
+                p <- p + scale_fill_manual("",values=c("Same"="gray50","Reduction"="red","Increase"="red","NA"="white"))
+              }
                
                #p <- p + geom_text("+",x=0.8,y=0,colour="slategray")
                #p <- p + geom_text("-",x=0.4,y=0,colour="slategray")
           } else
           {
-               p <- p + 
-                    scale_fill_manual("",
-                                      values=c("Yes"="red","No"="gray50","NA"="white"))
+              if(expectedChange=="Y")
+              {
+                p <- p + scale_fill_manual("",values=c("Yes"="gray50","No"="red","NA"="white"))
+              } else
+              {
+                p <- p + scale_fill_manual("",values=c("Yes"="red","No"="gray50","NA"="white"))
+              } 
           }
           
           p <- p + scale_y_continuous()

@@ -15,11 +15,16 @@ create_summary_report <- function(
      data,
      state,
      year,
-     variable, variable_type, variable_extent,variable_extent_fs)
+     variable, variable_type, variable_extent,variable_extent_fs,ramps)
 {
      
      # functional system aggregation
-     result1 <- data[state_code==state&year_record==year&data_item==variable&FACILITY_TYPE!=4,,]
+     if(ramps)
+     {
+        result1 <- data[state_code==state&year_record==year&data_item==variable&FACILITY_TYPE==4,,]
+     } else {
+        result1 <- data[state_code==state&year_record==year&data_item==variable&FACILITY_TYPE!=4,,]
+     }
      
      result1[,miles:=sum(end_point-begin_point),by=list(F_SYSTEM)]
      result1[,lanemiles:=sum((end_point-begin_point)*THROUGH_LANES,na.rm = TRUE),by=list(F_SYSTEM)]
@@ -54,7 +59,12 @@ create_summary_report <- function(
      result1 <- result1[!is.na(miles),]
      
      # interstate aggregation
-     result2 <- data[Interstate==1&state_code==state&year_record==year&data_item==variable&FACILITY_TYPE!=4,,]
+     if(ramps)
+     {
+        result2 <- data[Interstate==1&state_code==state&year_record==year&data_item==variable&FACILITY_TYPE==4,,]
+     } else {
+        result2 <- data[Interstate==1&state_code==state&year_record==year&data_item==variable&FACILITY_TYPE!=4,,]
+     }
      
      result2[,miles:=sum(end_point-begin_point),]
      result2[,lanemiles:=sum((end_point-begin_point)*THROUGH_LANES,na.rm = TRUE)]
@@ -77,7 +87,12 @@ create_summary_report <- function(
      result2[,groupCat:=1]
      
      # NHS aggregation
-     result3 <- data[NHS==1&state_code==state&year_record==year&data_item==variable&FACILITY_TYPE!=4,,]
+     if(ramps)
+     {
+        result3 <- data[NHS==1&state_code==state&year_record==year&data_item==variable&FACILITY_TYPE==4,,]
+     } else {
+        result3 <- data[NHS==1&state_code==state&year_record==year&data_item==variable&FACILITY_TYPE!=4,,]
+     }
      
      result3[,miles:=sum(end_point-begin_point),]
      result3[,lanemiles:=sum((end_point-begin_point)*THROUGH_LANES,na.rm = TRUE)]
