@@ -11,7 +11,7 @@
 ###########################################################################
 
 # A user-called function to generate a score card either by importing new data or
-# specifying previously imported data sets.
+# specifying previously imported datasets.
 Run <- function() {
   
   whitespace()
@@ -33,9 +33,9 @@ Run <- function() {
       files <- choose.files(caption = "Select one or more data files to import.")
       ImportOkay <- ImportFiles(files)
       
-      # If no imported data sets came in okay, warn the user
+      # If no imported datasets came in okay, warn the user
       if (!ImportOkay) {
-        warning("None of the supplied files appeared to be in the proper format. No data sets imported.", immediate. = TRUE, call. = FALSE)
+        warning("None of the supplied files appeared to be in the proper format. No datasets imported.", immediate. = TRUE, call. = FALSE)
       } else {
         
         # Check if any of the new data means we need to update the national summaries
@@ -101,8 +101,8 @@ Run <- function() {
   
 }
 
-# Prompt the user for the state and year associated with the primary and comparison data sets and
-# return those data sets for use in the score card generation process.
+# Prompt the user for the state and year associated with the primary and comparison datasets and
+# return those datasets for use in the score card generation process.
 getStateDataSets <- function() {
   
   # Get states for which there is data available
@@ -115,7 +115,7 @@ getStateDataSets <- function() {
   if (!length(states) > 0) stop("No data found. Please import data before attempting to generate score cards.", call. = FALSE)
   
   # Print the options to the user
-  cat("State Data Sets Available:\n\n")
+  cat("State Datasets Available:\n\n")
   cat(paste0("(", state_codes, ") ", states, collapse = "\n"))
   cat("\n\n")
   
@@ -127,7 +127,7 @@ getStateDataSets <- function() {
   years <- getSavedStateYears(getStateLabel(state_selection))
   
   # Print the options to the user
-  cat(paste0("\nData Sets Available for ", getStateLabel(state_selection), ":\n\n"))
+  cat(paste0("\nDatasets Available for ", getStateLabel(state_selection), ":\n\n"))
   cat(paste0(years, collapse = "\n"))
   cat("\n\n")
   
@@ -139,10 +139,10 @@ getStateDataSets <- function() {
   years_for_comparison <- years[years < year_selection]
   year_compare <- NULL
   if (length(years_for_comparison) > 0) {
-    year_compare <- getUserInput(valid = years_for_comparison, prompt = "What year of STATE data would you like to compare against?\nEnter the associated year (e.g., 2013): ", warning.text = "That is not a valid response. Note that a comparison data set must be older.\n")
+    year_compare <- getUserInput(valid = years_for_comparison, prompt = "What year of STATE data would you like to compare against?\nEnter the associated year (e.g., 2013): ", warning.text = "That is not a valid response. Note that a comparison dataset must be older.\n")
   }
   
-  # Load the analysis and comparison year data sets
+  # Load the analysis and comparison year datasets
   cat("\nPreparing state selections...\n\n")
   dat <- readRDS(paste0("data/", getStateLabel(state_selection), "/", year_selection, ".RDS"))
   dat[, year_record := as.numeric(year_selection)]
@@ -178,21 +178,21 @@ getStateDataSets <- function() {
 }
 
 # Prompt the user for the national year data associated with the comparison they would like to make
-# return that data set for use in the score card generation process.
+# return that dataset for use in the score card generation process.
 getNationalDataSet <- function() {
   
   # Get the years for which there is national data available
   nat_years <- getSavedNatYears()
   
   # Print the options to the user
-  cat(paste0("\nAvailable national data sets:\n\n"))
+  cat(paste0("\nAvailable national datasets:\n\n"))
   cat(paste0(nat_years, collapse = "\n"))
   cat("\n\n")
   
   # Get the user's year selection
-  nat_compare <- getUserInput(valid = nat_years, prompt = "What year of NATIONAL data would you like to compare against?\nEnter the associated year (e.g., 2013): ", warning.text = "That is not a valid response. Note that a comparison data set must be older.\n")
+  nat_compare <- getUserInput(valid = nat_years, prompt = "What year of NATIONAL data would you like to compare against?\nEnter the associated year (e.g., 2013): ", warning.text = "That is not a valid response. Note that a comparison dataset must be older.\n")
   
-  # Load the data set
+  # Load the dataset
   nat <- readRDS(paste0("data/+National/", nat_compare, ".RDS"))
   
   return(nat)
