@@ -37,7 +37,8 @@ getSavedNatYears <- function() {
 
 # Get a list of states that have had at least one data set previously processed
 getSavedStates <- function() {
-  dir("data", pattern = "^[^\\+]")
+  states <- dir("data", pattern = "^[^\\+]")
+  states[!states == "README"]
 }
 
 # Get a list of years that a state has data processed for
