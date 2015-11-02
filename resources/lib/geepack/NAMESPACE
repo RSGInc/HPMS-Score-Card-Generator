@@ -1,0 +1,20 @@
+useDynLib(geepack)
+
+
+# maintained by Soren
+export(geeglm, fixed2Zcor, anovageePrim2)
+S3method(anova, geeglm)
+S3method(print, geeglm)
+S3method(residuals, geeglm)
+S3method(summary, geeglm)
+S3method(print, summary.geeglm)
+
+
+# maintained by Jun
+export(geese, geese.fit, ordgee, geese.control)
+export(genZcor, genZodds)
+export(relRisk)
+export(compCoef)
+S3method(print, geese)
+S3method(summary, geese)
+S3method(print, summary.geese)

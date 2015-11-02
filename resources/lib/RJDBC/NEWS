@@ -1,0 +1,121 @@
+0.2-5	2014-12-18
+    *	fix bug in dbUnloadDriver() returning NULL instead of FALSE
+
+    *	added block argument to fetch() currently defaulting to 2048
+	which controls the fetch size.
+	Note that 0.2-4 has set this to the stride which was much too
+	big for some databases therefore it is now configurable.
+	(issue #10)
+
+    *	recover if setFetchSize() fails since some drivers don't take
+	it as a hint and fail regardless (issue #11)
+
+
+0.2-4	2014-06-26
+    *	set fetch size to match the capacity for better performance
+	with some drivers. (thanks Jesse Rohland)
+
+    *	close DB objects explicitly (issue #4) to avoid Oracle DB
+	running out of resources
+
+    *	add support for dbHasCompleted() even in older DBI versions
+
+
+0.2-3	2013-12-12
+    *	fix duplicate connection object (issue #1)
+
+
+0.2-2	2013-12-03
+    *	add dbGetTables() and dbGetFields() which are similar to
+	dbListTable() and dbListFields() but return a full data frame
+	as obtained from the corresponding JDBC calls.
+
+    *	add support for stored procedure call JDBC syntax.
+	Currently only IN parameters are supported since
+	DBI doesn't provide a way to retrieve OUT parameters.
+
+    *	JDBC now uses path.expand() on the classPath components
+
+
+0.2-1	2012-11-30
+    *	add support for dbWriteTable(..., append=TRUE)
+
+    *	pass any additional arguments to dbConnect() as properties to
+	the connection
+
+    *	use prepared statements only if parameters are passed,
+	otherwise use simple statements (this allows to work around
+	bugs in	drivers that do not support prepared statements
+	properly)
+
+    *	dbGetQuery() explicitly closes the statement before it returns
+	to work arround issues in the Teradata driver.
+
+
+0.2-0	2011-05-16
+    *	use Java code to fetch results -- it should result in much higher
+	throughput in pulling result sets from the database. It is
+	also more efficient to use fetch() with n specified
+	(especially if you know it in advance) than relying on
+	n = -1. The latter will try first run with n = 32k and then
+	continue with n = 512k chunks and paste the results which is
+	inherently slow (still much faster than the 0.1-x way which
+	was fetching one record at a time).
+
+
+0.1-6	2011-03-09
+    *	fix a typo in dbClearResult
+
+    *	map NAs in query parameters into NULLs
+	(thanks to Axel Klenk)
+
+    *	explicitly close statements right away (Oracle seems to need this)
+	(thanks to Axel Klenk)
+
+    *	add "stat" slot (Statement object) to JDBCResult class to make sure
+	the statement lives long enough to not close the result set
+
+    *	convert NULLs into NAs in numeric columns
+
+0.1-5	2007-10-01
+    *	instantiate driver's class and use a call to 'connect' as a
+	fall-back if the DriverManager fails to find a proper driver.
+
+    *	fix SQL syntax in dbWriteTable (superfluous semicolon)
+
+    *	fix a typo in prepared statement code
+	(thanks to Carl Grant for the last two bugfixes)
+
+0.1-4	2007-03-05
+    *	added SQL error information to most JDBC errors
+
+    *	use .jfindClass to load drivers
+
+0.1-3	2007-02-21
+    *	remove beforeFirst() as some DBMS don't like it. This also
+	allows a sequential use of fetch() with a limit to load data
+	in chunks.
+
+    *	fix a bug that caused NULL entries in string columns to fail
+	in fetch()
+
+0.1-2	2007-01-23
+    *	fix dbDisconnect return value and update manuals
+
+0.1-1	2007-01-17
+    *	added pre-compiled statements and proper dbWriteTable
+
+0.1-0	(not released)
+    *	drop pgsql access, switch to DBI
+
+0.0-3	2006-03-05
+    *	add direct insert support for pgsql
+
+0.0-2	2005-10-12
+    *	added converson of tables to data.frames
+
+0.0-1	2005-05-02
+    *	added type conversion (int, double, string)
+
+0.0-0	2004-11-02
+    *	first public release

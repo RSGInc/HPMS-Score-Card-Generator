@@ -1,0 +1,15 @@
+.Rhistory
+.Rproj.user
+
+# Ignore everything in the output folder except the README file
+# Leaving the README file ensures git will maintain the folder hierarchy
+output/*
+!output/README
+
+# Ignore everything in the data folder except the +National/README file
+data/*
+!data/+National/README
+
+# Ignore everything in the resources/fss folder except the README file
+resources/fss/*
+!resources/fss/README

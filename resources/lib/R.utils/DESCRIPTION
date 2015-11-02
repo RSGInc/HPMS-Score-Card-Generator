@@ -1,0 +1,21 @@
+Package: R.utils
+Version: 2.1.0
+Depends: R (>= 2.5.0), R.oo (>= 1.19.0)
+Imports: methods, utils, tools, R.methodsS3 (>= 1.7.0)
+Suggests: digest (>= 0.6.8)
+Date: 2015-05-27
+Title: Various Programming Utilities
+Authors@R: c(person("Henrik", "Bengtsson", role=c("aut", "cre", "cph"),
+                                          email = "henrikb@braju.com"))
+Author: Henrik Bengtsson [aut, cre, cph]
+Maintainer: Henrik Bengtsson <henrikb@braju.com>
+Description: Utility functions useful when programming and developing R packages.
+License: LGPL (>= 2.1)
+LazyLoad: TRUE
+URL: https://github.com/HenrikBengtsson/R.utils
+BugReports: https://github.com/HenrikBengtsson/R.utils/issues
+NeedsCompilation: no
+Packaged: 2015-05-28 04:29:46 UTC; hb
+Repository: CRAN
+Date/Publication: 2015-05-28 07:55:56
+Built: R 3.2.1; ; 2015-06-30 16:22:51 UTC; windows

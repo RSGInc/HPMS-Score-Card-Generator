@@ -1,0 +1,27 @@
+Package: showtext
+Type: Package
+Title: Using Fonts More Easily in R Graphs
+Version: 0.4-2
+Date: 2015-05-23
+Author: Yixuan Qiu and authors/contributors of the
+    included software. See file AUTHORS for details.
+Maintainer: Yixuan Qiu <yixuan.qiu@cos.name>
+Description: Making it easy to use various types of fonts
+    ('TrueType', 'OpenType', Type 1, web fonts, etc.) in R graphs, and
+    supporting most output formats of R graphics including PNG, PDF and
+    SVG. Text glyphs will be converted into polygons or raster images,
+    hence after the plot has been created, it no longer relies on the font files.
+    No external software such as Ghostscript is needed to use this package.
+Depends: sysfonts
+Imports: showtextdb
+SystemRequirements: zlib, libpng, FreeType
+URL: https://github.com/yixuan/showtext
+BugReports: https://github.com/yixuan/showtext/issues
+License: Apache License (>= 2.0)
+Copyright: see file COPYRIGHTS
+NeedsCompilation: yes
+Packaged: 2015-05-23 20:25:07 UTC; qyx
+Repository: CRAN
+Date/Publication: 2015-05-24 07:57:13
+Built: R 3.2.1; x86_64-w64-mingw32; 2015-07-28 03:39:54 UTC; windows
+Archs: i386, x64

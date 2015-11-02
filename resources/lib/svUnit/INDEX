@@ -1,0 +1,18 @@
+Log                     SciViews R log management functions
+checkEquals             SciViews R Unit assertions (check functions)
+guiTestReport           Report or give feedback to the GUI client about
+                        running test units
+is.svTestData           Objects of class 'svTestData' contain results
+                        from running a test
+koUnit_isAutoTest       Interact with the test unit GUI in
+                        Komodo/SciViews-K
+svSuite                 Create and run test suites by collecting
+                        together unit tests and function tests defined
+                        in objects
+svSuiteData             Objects of class 'svSuiteData' contain results
+                        from running test suites
+svTest                  Create, attach to and manipulate test functions
+                        in R objects
+svUnit-package          A framework for test cases, test units and test
+                        suites in R
+unitTests.svUnit        Unit tests for the package svUnit
