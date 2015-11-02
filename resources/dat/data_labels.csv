@@ -1,9 +1,9 @@
 Item Number,Name,NumLevels,Code1,Code2,Code3,Code4,Code5,Code6,Code7,Code8,Code9,Code10,Code11,CodeX,CodeA,CodeB,CodeC,CodeD,CodeE,CodeF,CodeG
 1,F_SYSTEM,7,Interstate,Principal Arterial – Other Freeways and Expressways,Principal Arterial – Other,Minor Arterial,Major Collector,Minor Collector,Local,,,,,,,,,,,,
 2,URBAN_CODE,0,N/A,,,,,,,,,,,,,,,,,,
-3,FACILITY_TYPE,6,One-Way Roadway,Two-Way Roadway,Ramp,Non Mainline,Non Inventory Direction,Planned/Unbuilt,,,,,,,,,,,,,
+3,FACILITY_TYPE,6,One-Way Roadway,Two-Way Roadway,N/A,Ramp,Non Mainline,Non Inventory Direction,Planned/Unbuilt,,,,,,,,,,,,
 4,STRUCTURE_TYPE,3,Section is a Bridge,Section is a Tunnel,Section is a Causeway,,,,,,,,,,,,,,,,
-5,ACCESS_CONTROL,3,Full Access Control,Partial Access Control,No Access Control,,,,,,,,,,,,,,,,
+5,ACCESS_CONTROL,3,Full\nAccess\nControl,Partial\nAccess\nControl,No\nAccess\nControl,,,,,,,,,,,,,,,,
 6,OWNERSHIP,0,N/A,,,,,,,,,,,,,,,,,,
 7,THROUGH_LANES,0,N/A,,,,,,,,,,,,,,,,,,
 8,HOV_TYPE,3,Full-time HOV,Part-time HOV,Part-time HOV,,,,,,,,,,,,,,,,

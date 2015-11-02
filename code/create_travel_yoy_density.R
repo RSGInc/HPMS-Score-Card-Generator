@@ -88,9 +88,26 @@ create_travel_yoy_density <- function(
             p3 <- barPlot(var.1[F_SYSTEM==1]  ,var.2[F_SYSTEM==1]  ,d3=national3,labels,title=gF_SYSTEM_levels[3])
             p4 <- barPlot(var.1[F_SYSTEM==2]  ,var.2[F_SYSTEM==2]  ,d3=national4,labels,title=gF_SYSTEM_levels[4])
             
+            if(is(p1)=="gg")
+            {
+              #p1 <- p1 + plot.margin=unit(c(-0.0625, 0,      0,     -0.0625), "cm")
+            }
+            if(is(p2)=="gg")
+            {
+              #p2 <- p2 + plot.margin=unit(c(-0.0625,-0.0625, 0,      0     ), "cm")
+            }
+            if(is(p3)=="gg")
+            {
+              #p3 <- p3 + plot.margin=unit(c( 0,      0     ,-0.0625,-0.0625), "cm")
+            }
+            if(is(p4)=="gg")
+            {
+              #p4 <- p4 + plot.margin=unit(c( 0,     -0.0625,-0.0625, 0     ), "cm")
+            }
+            
             obj <- arrangeGrob(p1,p2,p3,p4,ncol=2,nrow=2)
               
-            obj <- textGrob("New chart type",gp=gpar(fontsize=12, col="Red"))  
+            #obj <- textGrob("New chart type",gp=gpar(fontsize=12, col="Red"))  
           }
           return(obj)
      } else

@@ -31,12 +31,13 @@ barPlot <- function(
         d <- d[,value_numeric:=labels[value_numeric]]
         
         d <- d[,value_numeric:=factor(value_numeric)]
+        d <- d[,value_numeric:=factor(value_numeric,levels=rev(levels(value_numeric)))]
         d <- d[,         type:=factor(type)]
         
         p <- d[,sum(end_point-begin_point),by=list(type,value_numeric)]
         
         p <- ggplot(p,aes(x=value_numeric,y=V1,fill=type))
-        p <- p + geom_bar(width=0.25,stat="identity",position=position_dodge(0.8))
+        p <- p + geom_bar(aes(width=0.25),stat="identity",position=position_dodge(0.8))
         p <- p + coord_flip()
         p <- p + ggtitle(title)
         p <- p + scale_fill_manual("",values=c("red"="red","blue"="blue","black"="black"))
@@ -44,7 +45,7 @@ barPlot <- function(
         p <- p + theme_minimal() + 
                  theme(
                       axis.text.x=element_text(size=6, hjust = 0,colour="slategray"),
-                      axis.text.y=element_text(size = 0, angle = 0, hjust = 0), 
+                      axis.text.y=element_text(size = 5.5, angle = 0, hjust = 1,colour="slategray"), 
                       strip.text.x = element_text(size = 8, angle = 0),
                       strip.text.y = element_text(size = 8, angle = 0),
                       axis.ticks=element_blank(),

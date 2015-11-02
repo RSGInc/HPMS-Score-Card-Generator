@@ -52,5 +52,14 @@ gF_SYSTEM_levels <- c("Interstate",
 gVariables       <- data.table(read.table("resources\\dat\\data_elements.csv",sep=",",header=TRUE,stringsAsFactors=FALSE))
 gVariablesLabels <- data.table(read.table("resources\\dat\\data_labels.csv",  sep=",",header=TRUE,stringsAsFactors=FALSE))
 
+gVariablesLabels[Name=="F_SYSTEM",Code2:="Principal Arterial -\nOther Freeways and Expressways"]
+gVariablesLabels[Name=="F_SYSTEM",Code3:="Principal Arterial -\nOther"]
+gVariablesLabels[Name=="F_SYSTEM",Code4:="Minor\nArterial"]
+gVariablesLabels[Name=="F_SYSTEM",Code5:="Major\nCollector"]
+gVariablesLabels[Name=="F_SYSTEM",Code6:="Minor\nCollector"]
+
+gVariablesLabels[Name=="ACCESS_CONTROL",Code1:="Full\nAccess\nControl"]
+gVariablesLabels[Name=="ACCESS_CONTROL",Code2:="Partial\nAccess\nControl"]
+gVariablesLabels[Name=="ACCESS_CONTROL",Code3:="No\nAccess\nControl"]
 
 NoDataString <- "Data item may not be required\nfor this State, follow up with\nState DOT and FHWA to confirm."
