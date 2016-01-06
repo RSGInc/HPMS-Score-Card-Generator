@@ -169,6 +169,7 @@ FormatDataSet <- function(dat) {
                                            A.end_point >= B.begin_point"))
   
   #data.formatted[, expansion_factor := NA]
+  #data <- data.formatted
   
   gc()
   

@@ -73,39 +73,25 @@ create_travel_yoy_density <- function(
             obj <- arrangeGrob(p1,p2,p3,p4,ncol=2,nrow=2)
           }
           else {
-            labels <- c()
-            l <- unlist(gVariablesLabels[Name==variable,list(Code1,Code2,Code3,Code4,Code5,Code6,Code7,Code8,Code9,Code10,Code11)])
-            for(i in 1:11)
-            {
-              if(l[i]!="")
-              {
-                labels <- c(labels,l[i])
-              }
-            }
             
-            p1 <- barPlot(var.1[Interstate==1],var.2[Interstate==1],d3=national1,labels,title=gF_SYSTEM_levels[1])
-            p2 <- barPlot(var.1[NHS==1]       ,var.2[NHS==1]       ,d3=national2,labels,title=gF_SYSTEM_levels[2])
-            p3 <- barPlot(var.1[F_SYSTEM==1]  ,var.2[F_SYSTEM==1]  ,d3=national3,labels,title=gF_SYSTEM_levels[3])
-            p4 <- barPlot(var.1[F_SYSTEM==2]  ,var.2[F_SYSTEM==2]  ,d3=national4,labels,title=gF_SYSTEM_levels[4])
+            labels <- 1:7
             
-            if(is(p1)=="gg")
-            {
-              #p1 <- p1 + plot.margin=unit(c(-0.0625, 0,      0,     -0.0625), "cm")
-            }
-            if(is(p2)=="gg")
-            {
-              #p2 <- p2 + plot.margin=unit(c(-0.0625,-0.0625, 0,      0     ), "cm")
-            }
-            if(is(p3)=="gg")
-            {
-              #p3 <- p3 + plot.margin=unit(c( 0,      0     ,-0.0625,-0.0625), "cm")
-            }
-            if(is(p4)=="gg")
-            {
-              #p4 <- p4 + plot.margin=unit(c( 0,     -0.0625,-0.0625, 0     ), "cm")
-            }
-            
-            obj <- arrangeGrob(p1,p2,p3,p4,ncol=2,nrow=2)
+            p11 <- barPlot(var.1[Interstate==1],labels,title=gF_SYSTEM_levels[1],barcolor="slategray",bottomMargin=-0.5,showLabel=TRUE)
+            p12 <- barPlot(var.1[NHS==1]       ,labels,title=gF_SYSTEM_levels[2],barcolor="slategray",bottomMargin=-0.5)
+            p13 <- barPlot(var.1[F_SYSTEM==1]  ,labels,title=gF_SYSTEM_levels[3],barcolor="slategray",bottomMargin=-0.5)
+            p14 <- barPlot(var.1[F_SYSTEM==2]  ,labels,title=gF_SYSTEM_levels[4],barcolor="slategray",bottomMargin=-0.5)
+
+            p21 <- barPlot(var.2[Interstate==1],labels,title="",barcolor="gray",showLabel=TRUE)
+            p22 <- barPlot(var.2[NHS==1]       ,labels,title="",barcolor="gray")
+            p23 <- barPlot(var.2[F_SYSTEM==1]  ,labels,title="",barcolor="gray")
+            p24 <- barPlot(var.2[F_SYSTEM==2]  ,labels,title="",barcolor="gray")
+
+            p31 <- barPlot(national1,labels,title="",barcolor="black",topMargin=-0.5,showLabel=TRUE)
+            p32 <- barPlot(national2,labels,title="",barcolor="black",topMargin=-0.5)
+            p33 <- barPlot(national3,labels,title="",barcolor="black",topMargin=-0.5)
+            p34 <- barPlot(national4,labels,title="",barcolor="black",topMargin=-0.5)
+                        
+            obj <- arrangeGrob(p11,p12,p13,p14,p21,p22,p23,p24,p31,p32,p33,p34,ncol=4,nrow=3)
               
             #obj <- textGrob("New chart type",gp=gpar(fontsize=12, col="Red"))  
           }

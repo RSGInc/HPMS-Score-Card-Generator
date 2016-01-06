@@ -100,17 +100,20 @@ create_travel_data_yoy <- function(
                report[as.numeric(bin2)==1,color:=factor("No")]
                report[as.numeric(bin2)==2,color:=factor("Yes")]
                report[is.na(bin2) ,color:=factor("NA")]
+               report <- report[,sum(end_point.x-begin_point.x),by=.(color)]
           }
           
           # custom axis labels
-          p <- ggplot(report, aes(x=bin2,fill=color,weight=end_point.x-begin_point.x)) + geom_bar(width=0.5,stat="bin")
           
           if(histtype==1)
           {
+               p <- ggplot(report, aes(x=bin2,fill=color,weight=end_point.x-begin_point.x)) + geom_bar(width=0.5,stat="bin")
                p <- p + scale_x_discrete("", breaks=factor(c(1:17,NA),levels=c(1:17,NA),labels=c("< -100%","-100%","-75%","-50%","-25%","-15%","-5%","-1%","0%","1%","5%","15%","25%","50%","75%","100%","> 100%","N/A"),exclude=NULL), drop=FALSE)
           } else
           {
-               p <- p + scale_x_discrete("", breaks=factor(c(1:2,NA),levels=c(1:2,NA),labels=c("No Change","Changed","NA"),exclude=NULL), drop=FALSE)
+               p <- ggplot(report, aes(x=1,y=V1,fill=color)) + geom_bar(stat="identity",width=1) 
+              #p <- p + scale_x_discrete("", breaks=factor(c(1:2,NA),levels=c(1:2,NA),labels=c("No Change","Changed","NA"),exclude=NULL), drop=FALSE)
+               p <- p + coord_flip()               
           }
           
           
@@ -141,17 +144,30 @@ create_travel_data_yoy <- function(
           
           p <- p + theme(axis.line=element_blank(),
                          #axis.text.x=element_blank(),
-                         axis.text.y=element_text(hjust = 1,size=fontsize),
+                         #axis.text.y=element_text(hjust = 1,size=fontsize),
                          #axis.ticks=element_blank(),
                          axis.title.x=element_blank(),
                          axis.title.y=element_blank(),
-                         axis.text.x = element_text(angle = 90, hjust = 1,size=fontsize),
+                         #axis.text.x = element_text(angle = 90, hjust = 1,size=fontsize),
                          legend.position="none",
                          panel.background=element_blank(),
                          panel.border=element_blank(),
                          panel.grid.major=element_blank(),
                          panel.grid.minor=element_blank(),
                          plot.background=element_blank())
+          
+          if(histtype==1)
+          {
+            p <- p + theme(
+                          axis.text.y=element_text(hjust = 1,size=fontsize),
+                          axis.text.x = element_text(angle = 90, hjust = 1,size=fontsize))
+          } else 
+          {
+             p <- p + theme(
+                          axis.text.y=element_blank(),
+                          axis.text.x = element_blank(),
+                          axis.ticks = element_blank())
+          }
           
           #p <- vertically_align(p)
           
