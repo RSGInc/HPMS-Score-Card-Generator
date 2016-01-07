@@ -27,7 +27,15 @@ create_travel_data_yoy <- function(
     ramps
 )
 {
-     
+#    To help with the debugging     
+#    year<<-year
+#    yearcomparison<<-yearcomparison
+#    variable<<-variable
+#    state<<-state
+#    histtype<<-histtype
+#    data<<-data
+  
+  
      if(ramps)
      {
         var.1    <- data[state_code==state&year_record==year          &data_item==variable&FACILITY_TYPE==4,list(route_id,begin_point,end_point,value_numeric,F_SYSTEM)]
@@ -76,7 +84,7 @@ create_travel_data_yoy <- function(
      var.yoy <- data.table(var.yoy)
      
      # removing the NAs
-     var.yoy <- var.yoy[!is.na(value_numeric.x)&!is.na(value_numeric.y),]
+     #var.yoy <- var.yoy[!is.na(value_numeric.x)&!is.na(value_numeric.y),]
                         
      if(nrow(var.yoy)>0) # we have something to report
      {
@@ -99,8 +107,14 @@ create_travel_data_yoy <- function(
                report <- var.yoy[,bin2:=factor(1+1*(value_numeric.x!=value_numeric.y),levels=c(1,2),labels=c("No Change","Changed"))]
                report[as.numeric(bin2)==1,color:=factor("No")]
                report[as.numeric(bin2)==2,color:=factor("Yes")]
-               report[is.na(bin2) ,color:=factor("NA")]
+               report[is.na(bin2)        ,color:=factor("NA")]
                report <- report[,sum(end_point.x-begin_point.x),by=.(color)]
+               report <- report[,V1:=V1/sum(V1)]
+               report[,color2:=color]
+               
+               report[,color:=factor(color,labels=paste0(round(V1,2)*100,"%"))]
+               
+               
           }
           
           # custom axis labels
@@ -121,26 +135,35 @@ create_travel_data_yoy <- function(
           {
               if(expectedChange=="Y")
               {
-                p <- p + scale_fill_manual("",values=c("Same"="red","Reduction"="gray50","Increase"="gray50","NA"="white"))
+                p <- p + scale_fill_manual("",values=c("Same"="red","Reduction"="gray50","Increase"="gray50","NA"="black"))
               } else
               {
-                p <- p + scale_fill_manual("",values=c("Same"="gray50","Reduction"="red","Increase"="red","NA"="white"))
+                p <- p + scale_fill_manual("",values=c("Same"="gray50","Reduction"="red","Increase"="red","NA"="black"))
               }
-               
-               #p <- p + geom_text("+",x=0.8,y=0,colour="slategray")
-               #p <- p + geom_text("-",x=0.4,y=0,colour="slategray")
+              p <- p + scale_y_continuous() 
+              
           } else
           {
+              colors <- c("red","gray50","black")
               if(expectedChange=="Y")
               {
-                p <- p + scale_fill_manual("",values=c("Yes"="gray50","No"="red","NA"="white"))
+                names(colors)[1]<-toString(report[color2=="No", color])
+                names(colors)[2]<-toString(report[color2=="Yes",color])
+                names(colors)[3]<-toString(report[color2=="NA", color])
+                p <- p + scale_fill_manual("",values=colors)
               } else
               {
-                p <- p + scale_fill_manual("",values=c("Yes"="red","No"="gray50","NA"="white"))
+                names(colors)[1]<-toString(report[color2=="Yes",color])
+                names(colors)[2]<-toString(report[color2=="No", color])
+                names(colors)[3]<-toString(report[color2=="NA", color])
+                names(colors)<-levels(report[,color])
+                p <- p + scale_fill_manual("",values=colors)
+                
               } 
+              p <- p + scale_y_continuous(labels=percent)
           }
           
-          p <- p + scale_y_continuous()
+         
           
           p <- p + theme(axis.line=element_blank(),
                          #axis.text.x=element_blank(),
@@ -149,7 +172,7 @@ create_travel_data_yoy <- function(
                          axis.title.x=element_blank(),
                          axis.title.y=element_blank(),
                          #axis.text.x = element_text(angle = 90, hjust = 1,size=fontsize),
-                         legend.position="none",
+                         #legend.position="none",
                          panel.background=element_blank(),
                          panel.border=element_blank(),
                          panel.grid.major=element_blank(),
@@ -159,15 +182,19 @@ create_travel_data_yoy <- function(
           if(histtype==1)
           {
             p <- p + theme(
-                          axis.text.y=element_text(hjust = 1,size=fontsize),
+                          axis.text.y = element_text(hjust = 1,size=fontsize),
+                          legend.position = "none",
                           axis.text.x = element_text(angle = 90, hjust = 1,size=fontsize))
           } else 
           {
              p <- p + theme(
-                          axis.text.y=element_blank(),
-                          axis.text.x = element_blank(),
-                          axis.ticks = element_blank())
-          }
+                          axis.text.y     = element_blank(),
+                          axis.text.x     = element_blank(),
+                          axis.ticks      = element_blank(),
+                          legend.position = "bottom",
+                          plot.margin=unit(c(0.5,0.05,0.5,0.05),"cm"))
+             
+            }
           
           #p <- vertically_align(p)
           
