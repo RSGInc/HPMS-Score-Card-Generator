@@ -19,7 +19,9 @@ create_table_grob <- function(result,variable_type)
      # no longer printed these to save space
      result[,count:=NULL]
      result[,count.na:=NULL]
-     result[,mean:=NULL]
+     #result[,mean:=NULL]
+     result[,min:=NULL]
+     result[,max:=NULL]
 
      setnames(result,"groupCat","Functional\nSystem")
      #setnames(result,"count","N")
@@ -32,10 +34,10 @@ create_table_grob <- function(result,variable_type)
      if(variable_type < 3)
      {
           
-          setnames(result,"min","Min")
-          #setnames(result,"mean","Mean")
+          #setnames(result,"min","Min")
+          setnames(result,"mean","Mean")
           setnames(result,"median","Median")
-          setnames(result,"max","Max")
+          #setnames(result,"max","Max")
      }
      
      ob <- tableGrob(result,

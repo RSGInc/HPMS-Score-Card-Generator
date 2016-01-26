@@ -46,8 +46,30 @@ updateNation <- function(years = getAllStateYears()) {
 SummarizeNation <- function(year) {
   
   # Load data and summarize
-  cat(".")
-  return(list())
+  RDSfiles <- getStatePaths(year)
+  
+  # variables
+  #variables <- gVariables[National_Data_Comparison=="Y",Name]
+  variables <- gVariables[,Name]
+  
+  # create a folder
+  dir.create(paste0("data\\+National\\",year), showWarnings = FALSE, recursive = FALSE, mode = "0777")
+  
+  sumDT <- NULL
+  cat("Processing national data. This will take a while to complete.\n")
+  for(variable in variables)
+  {
+    for(stateRDS in 1:length(RDSfiles))
+    {
+      sumDT <- rbind(sumDT,readRDS(RDSfiles[stateRDS])[data_item==variable,])
+        
+    }
+    saveRDS(sumDT,file=paste0("data\\+National\\",year,"\\",variable,".rds"))
+    sumDT <- NULL
+    cat(paste0("Completed: ",variable,"\n"))
+  }
+  
+  return(NULL)
   
 }
 

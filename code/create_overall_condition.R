@@ -78,19 +78,16 @@ create_overall_condition <- function(data,state,year,population)
        # faulting: 3,4,9,10
        # CRCP: 5
        
-       #condition[,oscore:=NA]
-       #if(nrow(rutting)>0&nrow(iri)>0&nrow(cracking)>0)
-       #{
-            condition[surface %in% c(2,6,7,8) &!is.na(rscore)&!is.na(cscore)&!is.na(iscore),oscore:=paste0(rscore,cscore,iscore)]
-       #}
-       #if(nrow(faulting)>0&nrow(iri)>0&nrow(cracking)>0)
-       #{
-            condition[surface %in% c(3,4,9,10)&!is.na(fscore)&!is.na(cscore)&!is.na(iscore),oscore:=paste0(fscore,cscore,iscore)]
-       #}
-       #if(nrow(iri)>0&nrow(cracking)>0)
-       #{
-            condition[surface %in% c(5)       &               !is.na(cscore)&!is.na(iscore),oscore:=paste0(       cscore,iscore)]
-       #}
+       
+       # asphalt 
+       condition[surface %in% c(2,6,7,8) &!is.na(rscore)&!is.na(cscore)&!is.na(iscore),oscore:=paste0(rscore,cscore,iscore)]
+
+       # jointed concrete
+       # added surface type 11 (other) as concrete to match Max Grogg's process
+       condition[surface %in% c(3,4,9,10,11)&!is.na(fscore)&!is.na(cscore)&!is.na(iscore),oscore:=paste0(fscore,cscore,iscore)]
+
+       # Continuously reinforced concrete
+       condition[surface %in% c(5)       &               !is.na(cscore)&!is.na(iscore),oscore:=paste0(       cscore,iscore)]
        
        countChar <- function(x,stringtofind)
        {

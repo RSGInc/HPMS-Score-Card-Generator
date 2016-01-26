@@ -114,6 +114,19 @@ create_page3 <- function(
      grid.text(paste0(year_compare,"-",year," Sections"),x=0.12,y=0.260,hjust=1,gp=gpar(fontsize=10, col="slategray"))
      grid.text("Sections\nwith the same value\nas previous year",x=0.12,y=0.22,hjust=1,gp=gpar(fontsize=7, fontface="italic",col="slategray"))
      
+     grid.text("Extreme Values: future aadt values > 3 * current\n or less than current",x=0.03,y=0.715,hjust=0,gp=gpar(fontsize=6.5, fontface="italic",col="slategray"))
+     
+     grid.text(paste0("% > ",gVariables[Name=="AADT",AH_Thresh]," are highlighted"),            x=0.16,y=0.37,hjust=0,gp=gpar(fontsize=7.5, fontface="italic",col="slategray"))
+     grid.text(paste0("% > ",gVariables[Name=="FUTURE_AADT",AH_Thresh]," are highlighted"),     x=0.37,y=0.37,hjust=0,gp=gpar(fontsize=7.5, fontface="italic",col="slategray"))
+     grid.text(paste0("% > ",gVariables[Name=="AADT_COMBINATION",AH_Thresh]," are highlighted"),x=0.585,y=0.37,hjust=0,gp=gpar(fontsize=7.5, fontface="italic",col="slategray"))
+     grid.text(paste0("% > ",gVariables[Name=="AADT_SINGLE_UNIT",AH_Thresh]," are highlighted"),x=0.7975,y=0.37,hjust=0,gp=gpar(fontsize=7.5, fontface="italic",col="slategray"))
+
+     grid.text(paste0("% > ",gVariables[Name=="AADT",YOYH_Thresh]," are highlighted"),            x=0.16,y=0.135,hjust=0,gp=gpar(fontsize=7.5, fontface="italic",col="slategray"))
+     grid.text(paste0("% > ",gVariables[Name=="FUTURE_AADT",YOYH_Thresh]," are highlighted"),     x=0.37,y=0.135,hjust=0,gp=gpar(fontsize=7.5, fontface="italic",col="slategray"))
+     grid.text(paste0("% > ",gVariables[Name=="AADT_COMBINATION",YOYH_Thresh]," are highlighted"),x=0.585,y=0.135,hjust=0,gp=gpar(fontsize=7.5, fontface="italic",col="slategray"))
+     grid.text(paste0("% > ",gVariables[Name=="AADT_SINGLE_UNIT",YOYH_Thresh]," are highlighted"),x=0.7975,y=0.135,hjust=0,gp=gpar(fontsize=7.5, fontface="italic",col="slategray"))
+
+     
      add_page_number(3)
      
 }

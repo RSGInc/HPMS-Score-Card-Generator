@@ -30,7 +30,11 @@ cut_custom <- function(x)
           1 * (x >  75) +
           1 * (x > 100)       
      
-     return(factor(bin,levels=1:17,
+    
+     bin[is.na(bin)] <- 18   
+     
+     
+     return(factor(bin,levels=1:18,
                    labels=c("< -100%",
                             "-100%",
                             "-75%",
@@ -47,6 +51,7 @@ cut_custom <- function(x)
                             "50%",
                             "75%",
                             "100%",
-                            "> 100%"
+                            "> 100%",
+                            "No Match"
                    )))
 }

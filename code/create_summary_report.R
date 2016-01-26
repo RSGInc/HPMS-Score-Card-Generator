@@ -120,7 +120,11 @@ create_summary_report <- function(
      result[,count.na:=string_format(count.na)]
      result[,miles:=string_format(miles)]
      result[,expandedmiles:=string_format(expandedmiles)]
+     result[,lanemiles:=string_format(lanemiles)]
+     result[,expandedlanemiles:=string_format(expandedlanemiles)]
+
      
+          
      # merges in the empty f_systems so full tables are displayed
      if(nrow(result)> 0)
      {

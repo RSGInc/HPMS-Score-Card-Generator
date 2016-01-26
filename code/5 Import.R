@@ -21,6 +21,11 @@ ImportFiles <- function(files = choose.files()) {
     cat(paste0("\nProcessing ", basename(file), "...\n"))
     data <- ReadFile(file)
     
+    setnames(data, 
+             c("Year_Record", "State_Code", "Route_ID","Begin_Point", "End_Point", "Data_Item","Value_Numeric", "Value_Text", "Value_Date"),
+             c("year_record", "state_code", "route_id","begin_point", "end_point", "data_item","value_numeric", "value_text", "value_date")
+            )
+    
     if (is.null(data)) {
       success <- c(success, FALSE)
     } else {
@@ -56,9 +61,9 @@ ImportFiles <- function(files = choose.files()) {
 ReadFile <- function(file) {
   
   # These are the expected columns and classes
-  colClasses <- c("year_record" = "integer", "state_code" = "integer", "route_id" = "factor",
-                  "begin_point" = "numeric", "end_point" = "numeric", "data_item" = "factor",
-                  "value_numeric" = "numeric", "value_text" = "character", "value_date" = "character")
+  colClasses <- c("Year_Record" = "integer", "State_Code" = "integer", "Route_ID" = "factor",
+                  "Begin_Point" = "numeric", "End_Point" = "numeric", "Data_Item" = "factor",
+                  "Value_Numeric" = "numeric", "Value_Text" = "character", "Value_Date" = "character")
   
   # Try to load the data
   tryCatch(expr = {dat <- fread(file, colClasses = colClasses);

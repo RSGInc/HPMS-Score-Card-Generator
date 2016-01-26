@@ -44,9 +44,9 @@ gSpaces <- 100
 # F system names for better reporting
 #######################################################################
 gF_SYSTEM_levels <- c("Interstate",
-                      "Non-Interstate\nNHS",
-                      "Other/Minor\nArterials",
-                      "Collectors\n+ Locals"
+                      "Non-Interstate NHS",
+                      "Other/Minor Arterials",
+                      "Collectors + Locals"
 )
 
 gVariables       <- data.table(read.table("resources\\dat\\data_elements.csv",sep=",",header=TRUE,stringsAsFactors=FALSE))

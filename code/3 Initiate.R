@@ -39,7 +39,8 @@ Run <- function() {
       } else {
         
         # Check if any of the new data means we need to update the national summaries
-        updateNation()
+        # we are not automatically going to do this
+        #updateNation()
         
       }
       
@@ -151,7 +152,10 @@ getStateDataSets <- function() {
     dat.compare[, year_record := as.numeric(year_compare)]
     dat <- rbind(dat, dat.compare, fill = TRUE)
   }
-  dat <<- dat
+  
+  
+  dat <<- dat # this is useful for debugging plotting issues
+  
   # Attempt to load the data associated with the four previous years
   dat.prev <- list()
   cc <- 1
