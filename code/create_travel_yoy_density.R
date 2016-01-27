@@ -46,10 +46,12 @@ create_travel_yoy_density <- function(
           minvalue <- min(minvalue1,minvalue2,minvalue3)
           maxvalue <- max(maxvalue1,maxvalue2,maxvalue3)
           
-          d1 <- density(var.1[,value_numeric],weights=var.1[,(end_point-begin_point)/sum(end_point-begin_point)])
-          d2 <- density(var.2[,value_numeric],weights=var.2[,(end_point-begin_point)/sum(end_point-begin_point)])
-          d3 <- density(national[,value_numeric],weights=national[,(end_point-begin_point)/sum(end_point-begin_point)])
+          d1 <- density(var.1[,value_numeric],weights=var.1[,(end_point-begin_point)/sum(end_point-begin_point)],na.rm = TRUE)
+          d2 <- density(var.2[,value_numeric],weights=var.2[,(end_point-begin_point)/sum(end_point-begin_point)],na.rm = TRUE)
+          d3 <- density(national[,value_numeric],weights=national[!is.na(value_numeric),(end_point-begin_point)/sum(end_point-begin_point)],na.rm = TRUE)
           
+          minvalue <- min(d1$x,d2$x,d3$x)
+          maxvalue <- max(d1$x,d2$x,d3$x)
           ymax <- max(d1$y,d2$y,d3$y)*1.10
           
           

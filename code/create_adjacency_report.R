@@ -37,6 +37,11 @@ create_adjacency_report <- function(
      
      result <- d.adj[value_numeric.x==value_numeric.y,list(miles=round(sum(end_point.x-begin_point.x),2),.N),by=list(F_SYSTEM.x)]
      
+     result <- merge(data.table(F_SYSTEM.x=c(1,2)),result,by="F_SYSTEM.x",all.x=TRUE)
+     
+     result[is.na(miles),miles:=0]
+     result[is.na(N),N:=0]
+     
      setnames(result,"F_SYSTEM.x","F_SYSTEM")
      #setnames(result,"V1","miles")
      
@@ -115,12 +120,14 @@ create_adjacency_report <- function(
      
      report <- data.table(Name=report$groupCat,report)
      
+     report[,miles:=string_format(miles)]
+     report[,N:=string_format(N)]
+     
      if(nrow(report)>0)
      {
           report <- merge(data.table(groupCat=1:4),report,by="groupCat",all.x=T)
           report <- data.table(melt(report,id.vars="groupCat"))
           report[,highlight:=ifelse(variable=="perc_miles"&as.numeric(value)>highlight_threshold,1,0)]
-          report[variable=="miles",value:=string_format(value)]
           report[variable=="perc_miles"&!is.na(value),value:=paste0(value,"%")]
           report[variable=="Name",value:=gF_SYSTEM_levels[as.numeric(value)],]
           report[variable=="Name",variable:="Functional\nSystem",]

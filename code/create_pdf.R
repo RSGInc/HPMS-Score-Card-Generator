@@ -13,6 +13,7 @@
 # TODO: needs to accept an argument pointing to where the file should be saved.
 create_pdf <- function(data, state, year, year_compare, population, national = NULL, path)
 {
+     TS <- Sys.time()
   
      cat("Creating score card...\n\n")
      cat(paste(getStateLabelFromNum(state), "-", year, "vs.", year_compare, "\n\n"))
@@ -28,21 +29,25 @@ create_pdf <- function(data, state, year, year_compare, population, national = N
      
      # Create title page
      cat("Title page...")
+     ts <- Sys.time()
      #create_title_page(data,state,year,year_compare)
-     cat(" complete!\n")
+     cat(paste0(" completed in: ",round(difftime(Sys.time(),ts,units="secs"),2)," seconds!\n"))
      
      # Pavement: Detailed Review
      cat("Pavement review...")
+     ts <- Sys.time()
      create_page2(data,state,year,year_compare,population=population)
-     cat(" complete!\n")
+     cat(paste0(" completed in: ",round(difftime(Sys.time(),ts,units="secs"),2)," seconds!\n"))
      
      # Traffic: Detailed Review
      cat("Traffic review...")
+     ts <- Sys.time()
      create_page3(data,state,year,year_compare)
-     cat(" complete!\n")
+     cat(paste0(" completed in: ",round(difftime(Sys.time(),ts,units="secs"),2)," seconds!\n"))
      
      # Ramps: Detailed Review
      cat("Ramps review...")
+     ts <- Sys.time()
      todo <- matrix((1:nrow(gVariables))[gVariables[,RampAnalysis]=="Y"],ncol=3,byrow=TRUE)
      for(i in 1:1)
      {
@@ -53,12 +58,13 @@ create_pdf <- function(data, state, year, year_compare, population, national = N
           cat(".")
      }
      create_page_summary(data,state,year,year_compare,x1=todo[i+1,1],x2=todo[i+1,2], title="ramps: detailed review",icontext="r",page=5,ramps=TRUE)
-     cat(" complete!\n")
+     cat(paste0(" completed in: ",round(difftime(Sys.time(),ts,units="secs"),2)," seconds!\n"))
     
      
      # data summary pages
      # inventory
      cat("Inventory data items...")
+     ts <- Sys.time()
      todo <- matrix((1:nrow(gVariables))[gVariables[,Grouping]=="I"],ncol=3,byrow=TRUE)
      for(i in 1:6)
      {
@@ -68,10 +74,11 @@ create_pdf <- function(data, state, year, year_compare, population, national = N
           create_page_summary(data,state,year,year_compare,x1=x1,x2=x2,x3=x3, title="inventory",icontext="i",page=5+i)
           cat(".")
      }
-     cat(" complete!\n")
+     cat(paste0(" completed in: ",round(difftime(Sys.time(),ts,units="secs"),2)," seconds!\n"))
      
      # Pavement
      cat("Pavement data items...")
+     ts <- Sys.time()
      todo <- matrix((1:nrow(gVariables))[gVariables[,Grouping]=="P"],ncol=3,byrow=TRUE)
      for(i in 1:4)
      {
@@ -82,10 +89,11 @@ create_pdf <- function(data, state, year, year_compare, population, national = N
           cat(".")
      }
      create_page_summary(data,state,year,year_compare,x1=todo[i+1,1], title="pavement",icontext="p",page=12+i)
-     cat(" complete!\n")
+     cat(paste0(" completed in: ",round(difftime(Sys.time(),ts,units="secs"),2)," seconds!\n"))
 
      # Traffic
      cat("Traffic data items...")
+     ts <- Sys.time()
      todo <- matrix((1:nrow(gVariables))[gVariables[,Grouping]=="T"],ncol=3,byrow=TRUE)
      for(i in 1:4)
      {
@@ -96,10 +104,11 @@ create_pdf <- function(data, state, year, year_compare, population, national = N
           cat(".")
      }
      create_page_summary(data,state,year,year_compare,x1=todo[i+1,1],x2=todo[i+1,2], title="traffic",icontext="t",page=17+i)
-     cat(" complete!\n")
+     cat(paste0(" completed in: ",round(difftime(Sys.time(),ts,units="secs"),2)," seconds!\n"))
      
      # Geometric
      cat("Geometric data items...")
+     ts <- Sys.time()
      todo <- matrix((1:nrow(gVariables))[gVariables[,Grouping]=="G"],ncol=3,byrow=TRUE)
      for(i in 1:7)
      {
@@ -110,10 +119,11 @@ create_pdf <- function(data, state, year, year_compare, population, national = N
           cat(".")
      }
      create_page_summary(data,state,year,year_compare,x1=todo[i+1,1],x2=todo[i+1,2], title="geometric",icontext="g",page=29)
-     cat(" complete!\n")
+     cat(paste0(" completed in: ",round(difftime(Sys.time(),ts,units="secs"),2)," seconds!\n"))
      
      # Route
      cat("Route data items...")
+     ts <- Sys.time()
      todo <- matrix((1:nrow(gVariables))[gVariables[,Grouping]=="R"],ncol=3,byrow=TRUE)
      for(i in 1:1)
      {
@@ -123,10 +133,11 @@ create_pdf <- function(data, state, year, year_compare, population, national = N
           create_page_summary(data,state,year,year_compare,x1=x1,x2=x2,x3=x3, title="route",icontext="r",page=29+i)
           cat(".")
      }
-     cat(" complete!\n")
+     cat(paste0(" completed in: ",round(difftime(Sys.time(),ts,units="secs"),2)," seconds!\n"))
      
      # Special network
      cat("Special network data items...")
+     ts <- Sys.time()
      todo <- matrix((1:nrow(gVariables))[gVariables[,Grouping]=="SN"],ncol=3,byrow=TRUE)
      for(i in 1:1)
      {
@@ -137,12 +148,12 @@ create_pdf <- function(data, state, year, year_compare, population, national = N
           cat(".")
      }
      create_page_summary(data,state,year,year_compare,x1=todo[i+1,1], title="special network",icontext="sn",page=32)
-     cat(" complete!\n")
+     cat(paste0(" completed in: ",round(difftime(Sys.time(),ts,units="secs"),2)," seconds!\n"))
      
      showtext.end()
      dev.off()
      
      whitespace(4)
-     cat(paste0("Score card complete!\n\n", pdfname, " written to the output folder."))
+     cat(paste0("Score card completed in ",round(difftime(Sys.time(),TS,units="secs")/60,2)," minutes!\n\n", pdfname, " written to the output folder."))
      
 }

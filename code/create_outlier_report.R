@@ -35,6 +35,7 @@ create_outlier_report <- function(
      
      report.1 <- merge(total.1,result.1,by="F_SYSTEM",all.x=TRUE,all.y=FALSE)
      report.1[is.na(miles),miles:=0] # setting values to 0 where there are no merges. this mean that the state had no lane miles outside the thresholds set
+     report.1[is.na(N),N:=0]
      
      report.1[,perc_miles:=ifelse(is.na(miles),0,as.character(round(miles/totalmiles,2)*100))]
      
@@ -87,12 +88,14 @@ create_outlier_report <- function(
      
      report <- data.table(Name=report$groupCat,report)
      
+     report[,miles:=string_format(miles)]
+     report[,N:=string_format(N)]
+     
      if(nrow(report)>0)
      {
           report <- merge(data.table(groupCat=1:4),report,by="groupCat",all.x=T)
           report <- data.table(melt(report,id.vars="groupCat"))
           report[,highlight:=ifelse(variable=="perc_miles"&as.numeric(value)>highlight_threshold,1,0)]
-          report[variable=="miles",value:=string_format(value)]
           report[variable=="perc_miles"&!is.na(value),value:=paste0(value,"%")]
           report[variable=="Name",value:=gF_SYSTEM_levels[as.numeric(value)],]
           report[variable=="Name",variable:="Functional\nSystem",]

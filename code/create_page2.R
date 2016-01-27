@@ -104,20 +104,20 @@ create_page2 <- function(
      grid.text(paste0(year_compare,"-",year," Sections"),x=0.12,y=0.22,hjust=1,gp=gpar(fontsize=10, col="slategray"))
      grid.text("Sections\nwith the same value\nas previous year",x=0.12,y=0.18,hjust=1,gp=gpar(fontsize=7, fontface="italic",col="slategray"))
 
-     grid.text(paste0("Outliers: <",gVariables[Name=="FAULTING",Outlier_Min],        " | >",gVariables[Name=="FAULTING",Outlier_Max],"\"",        " (% > ",gVariables[Name=="FAULTING",OH_Thresh]," are highlighted)"),        x=0.16,y=0.56,hjust=0,gp=gpar(fontsize=7.5, fontface="italic",col="slategray"))
-     grid.text(paste0("Outliers: <",gVariables[Name=="CRACKING_PERCENT",Outlier_Min]," | >",gVariables[Name=="CRACKING_PERCENT",Outlier_Max],"%", " (% > ",gVariables[Name=="CRACKING_PERCENT",OH_Thresh]," are highlighted)"),x=0.37,y=0.56,hjust=0,gp=gpar(fontsize=7.5, fontface="italic",col="slategray"))
-     grid.text(paste0("Outliers: <",gVariables[Name=="RUTTING",Outlier_Min],         " | >",gVariables[Name=="RUTTING",Outlier_Max],"\"",         " (% > ",gVariables[Name=="RUTTING",OH_Thresh]," are highlighted)"),         x=0.585,y=0.56,hjust=0,gp=gpar(fontsize=7.5, fontface="italic",col="slategray"))
-     grid.text(paste0("Outliers: <",gVariables[Name=="IRI",Outlier_Min],             " | >",gVariables[Name=="IRI",Outlier_Max],"",               " (% > ",gVariables[Name=="IRI",OH_Thresh]," are highlighted)"),             x=0.7975,y=0.56,hjust=0,gp=gpar(fontsize=7.5, fontface="italic",col="slategray"))
+     grid.text(paste0("Outliers: <",gVariables[Name=="FAULTING",Outlier_Min],        " | >",gVariables[Name=="FAULTING",Outlier_Max],"\"",        " (% > ",gVariables[Name=="FAULTING",OH_Thresh]," are highlighted)"),        x=0.16,y=0.56,hjust=0,gp=gpar(fontsize=5.75, fontface="italic",col="slategray"))
+     grid.text(paste0("Outliers: <",gVariables[Name=="CRACKING_PERCENT",Outlier_Min]," | >",gVariables[Name=="CRACKING_PERCENT",Outlier_Max],"%", " (% > ",gVariables[Name=="CRACKING_PERCENT",OH_Thresh]," are highlighted)"),x=0.37,y=0.56,hjust=0,gp=gpar(fontsize=5.75, fontface="italic",col="slategray"))
+     grid.text(paste0("Outliers: <",gVariables[Name=="RUTTING",Outlier_Min],         " | >",gVariables[Name=="RUTTING",Outlier_Max],"\"",         " (% > ",gVariables[Name=="RUTTING",OH_Thresh]," are highlighted)"),         x=0.585,y=0.56,hjust=0,gp=gpar(fontsize=5.75, fontface="italic",col="slategray"))
+     grid.text(paste0("Outliers: <",gVariables[Name=="IRI",Outlier_Min],             " | >",gVariables[Name=="IRI",Outlier_Max],"",               " (% > ",gVariables[Name=="IRI",OH_Thresh]," are highlighted)"),             x=0.7975,y=0.56,hjust=0,gp=gpar(fontsize=5.75, fontface="italic",col="slategray"))
 
-     grid.text(paste0("% > ",gVariables[Name=="FAULTING",AH_Thresh]," are highlighted"),        x=0.16,y=0.33,hjust=0,gp=gpar(fontsize=7.5, fontface="italic",col="slategray"))
-     grid.text(paste0("% > ",gVariables[Name=="CRACKING_PERCENT",AH_Thresh]," are highlighted"),x=0.37,y=0.33,hjust=0,gp=gpar(fontsize=7.5, fontface="italic",col="slategray"))
-     grid.text(paste0("% > ",gVariables[Name=="RUTTING",AH_Thresh]," are highlighted"),         x=0.585,y=0.33,hjust=0,gp=gpar(fontsize=7.5, fontface="italic",col="slategray"))
-     grid.text(paste0("% > ",gVariables[Name=="IRI",AH_Thresh]," are highlighted"),             x=0.7975,y=0.33,hjust=0,gp=gpar(fontsize=7.5, fontface="italic",col="slategray"))
+     grid.text(paste0("% > ",gVariables[Name=="FAULTING",AH_Thresh]," are highlighted"),        x=0.16,y=0.33,hjust=0,gp=gpar(fontsize=5.75, fontface="italic",col="slategray"))
+     grid.text(paste0("% > ",gVariables[Name=="CRACKING_PERCENT",AH_Thresh]," are highlighted"),x=0.37,y=0.33,hjust=0,gp=gpar(fontsize=5.75, fontface="italic",col="slategray"))
+     grid.text(paste0("% > ",gVariables[Name=="RUTTING",AH_Thresh]," are highlighted"),         x=0.585,y=0.33,hjust=0,gp=gpar(fontsize=5.75, fontface="italic",col="slategray"))
+     grid.text(paste0("% > ",gVariables[Name=="IRI",AH_Thresh]," are highlighted"),             x=0.7975,y=0.33,hjust=0,gp=gpar(fontsize=5.75, fontface="italic",col="slategray"))
 
-     grid.text(paste0("% > ",gVariables[Name=="FAULTING",YOYH_Thresh]," are highlighted"),        x=0.16,y=0.1,hjust=0,gp=gpar(fontsize=7.5, fontface="italic",col="slategray"))
-     grid.text(paste0("% > ",gVariables[Name=="CRACKING_PERCENT",YOYH_Thresh]," are highlighted"),x=0.37,y=0.1,hjust=0,gp=gpar(fontsize=7.5, fontface="italic",col="slategray"))
-     grid.text(paste0("% > ",gVariables[Name=="RUTTING",YOYH_Thresh]," are highlighted"),         x=0.585,y=0.1,hjust=0,gp=gpar(fontsize=7.5, fontface="italic",col="slategray"))
-     grid.text(paste0("% > ",gVariables[Name=="IRI",YOYH_Thresh]," are highlighted"),             x=0.7975,y=0.1,hjust=0,gp=gpar(fontsize=7.5, fontface="italic",col="slategray"))
+     grid.text(paste0("% > ",gVariables[Name=="FAULTING",YOYH_Thresh]," are highlighted"),        x=0.16,y=0.1,hjust=0,gp=gpar(fontsize=5.75, fontface="italic",col="slategray"))
+     grid.text(paste0("% > ",gVariables[Name=="CRACKING_PERCENT",YOYH_Thresh]," are highlighted"),x=0.37,y=0.1,hjust=0,gp=gpar(fontsize=5.75, fontface="italic",col="slategray"))
+     grid.text(paste0("% > ",gVariables[Name=="RUTTING",YOYH_Thresh]," are highlighted"),         x=0.585,y=0.1,hjust=0,gp=gpar(fontsize=5.75, fontface="italic",col="slategray"))
+     grid.text(paste0("% > ",gVariables[Name=="IRI",YOYH_Thresh]," are highlighted"),             x=0.7975,y=0.1,hjust=0,gp=gpar(fontsize=5.75, fontface="italic",col="slategray"))
 
      add_page_number(2)
      

@@ -27,7 +27,7 @@ densityPlot <- function(
      
      adjustment <- 1#c(1,1)[densitytype]
      
-     if(nrow(d1)>2|nrow(d2)>2) # we have something to report (density plots require at least 3 points to draw)
+     if((nrow(d1)>2|nrow(d2)>2)&!is.null(minvalue)) # we have something to report (density plots require at least 3 points to draw)
      {
           
           #p <- ggplot(data = d1, aes(x = value_numeric))
@@ -54,7 +54,7 @@ densityPlot <- function(
           
           if(nrow(d1)>2)
           {
-               p1 <- p1 + geom_density(data = d1, color="slategray", linetype="solid", size=0.25,fill="white",adjust=adjustment,aes(weights=(end_point-begin_point)/sum(end_point-begin_point)))
+               p1 <- p1 + geom_density(data = d1, color="slategray", linetype="solid", size=0.25,fill="slategray",adjust=adjustment,aes(weights=(end_point-begin_point)/sum(end_point-begin_point)))
                #p1 <- p1 + stat_density(geom="line",data = d1, color="slategray", linetype="solid", size=0.35,fill="white",adjust=adjustment,aes(weights=(end_point-begin_point)/sum(end_point-begin_point)))
                if(showLabel)
                {
@@ -72,7 +72,7 @@ densityPlot <- function(
           
           if(nrow(d2)>2)
           {
-               p2 <- p2 + geom_density(data = d2, color ="gray75", linetype="solid", size=0.25,fill="white",adjust=adjustment,aes(weights=(end_point-begin_point)/sum(end_point-begin_point)))
+               p2 <- p2 + geom_density(data = d2, color ="gray75", linetype="solid", size=0.25,fill="gray75",adjust=adjustment,aes(weights=(end_point-begin_point)/sum(end_point-begin_point)))
                #p2 <- p2 + stat_density(geom="line",data = d2, color ="gray75", linetype="solid", size=0.35,fill="white",adjust=adjustment,aes(weights=(end_point-begin_point)/sum(end_point-begin_point)))
                if(showLabel)
                {
@@ -88,7 +88,7 @@ densityPlot <- function(
           
           if(!is.null(d3))
           {
-               p3 <- p3 + geom_density(data = d3, color ="black", linetype="solid", size=0.25,fill="white",adjust=adjustment,aes(weights=(end_point-begin_point)/sum(end_point-begin_point)))
+               p3 <- p3 + geom_density(data = d3, color ="black", linetype="solid", size=0.25,fill="black",adjust=adjustment,aes(weights=(end_point-begin_point)/sum(end_point-begin_point)))
                #p3 <- p3 + stat_density(geom="line",data = d3, color ="black", linetype="solid", size=0.35,fill="white",adjust=adjustment,aes(weights=(end_point-begin_point)/sum(end_point-begin_point)))
                if(showLabel)
                {
@@ -129,7 +129,12 @@ densityPlot <- function(
           mp <- (maxvalue-minvalue)/2
           yp <- ymax/1.10
           
-          p1 <- p1 + annotate("text", x =mp, y=yp, label = title,size=2.1, hjust=1, face="bold",colour = "slategray")
+          if(is.na(mp))
+          {
+            mp <- 0.5
+          }
+          
+          p1 <- p1 + annotate("text", x=mp, y=ymax, label = title,size=2.1, hjust=0.5, face="bold",colour = "slategray")
           
           p2 <- p2 +     #geom_density(data = var.national,color="black", linetype="twodash", size=0.25) +
                theme_minimal() + 
@@ -179,7 +184,7 @@ densityPlot <- function(
      } else
      {
           return(
-            arrangeGrob(textGrob(paste0(title,"\ndata is not available"),just="top",gp=gpar(fontsize=7, fontface="bold",col = "red")),
+            arrangeGrob(textGrob(paste0(title,"\ndata is not available or appropriate"),just="top",gp=gpar(fontsize=7, fontface="bold",col = "red")),
                         heights=unit(1,units="npc"))
           )
      }

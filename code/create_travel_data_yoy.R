@@ -47,6 +47,15 @@ create_travel_data_yoy <- function(
      
      expectedChange <- gVariables[Name==variable,YOY_Change]
   
+     if(expectedChange=="Y")
+     {
+       ff1<-"*"
+       ff2<-""
+     } else {
+       ff2<-"*"
+       ff1<-""
+     }
+     
       #var.yoy <- merge(var.1,var.2,by=c("route_id","begin_point","end_point"),all.x=TRUE, all.y=FALSE)
      
      # this does the merge at the most disaggregate level
@@ -96,10 +105,10 @@ create_travel_data_yoy <- function(
                
                # need to use geom_bar and construct a custom histogram
                report[, bin2 := cut_custom(change)] # using custom function to have more control
-              
-               report <- report[,V1:=sum(end_point.x-begin_point.x)]
-               report <- report[,end_point.x:=end_point.x/V1]
-               report <- report[,begin_point.x:=begin_point.x/V1]
+               totalmiles<-report[,sum(end_point.x-begin_point.x)]
+               #report <- report[,V1:=sum(end_point.x-begin_point.x)]
+               report <- report[,end_point.x:=end_point.x/totalmiles]
+               report <- report[,begin_point.x:=begin_point.x/totalmiles]
                report[change< -1e-3 ,color:=factor("Reduction")]
                report[change>=-1e-3&change<=1e3,color:=factor("Same")]
                report[change>1e-3 ,color:=factor("Increase")]
@@ -112,12 +121,13 @@ create_travel_data_yoy <- function(
                report[as.numeric(bin2)==2,color:=factor("Yes")]
                report[is.na(bin2)        ,color:=factor("NA")]
                report <- report[,sum(end_point.x-begin_point.x),by=.(color)]
-               report <- report[,V1:=V1/sum(V1)]
+               totalmiles <- report[,sum(V1)]
+               report <- report[,V1:=V1/totalmiles]
                report[,color2:=color]
                report <- merge(data.table(color2=factor(c("No","Yes","NA"))),report,by="color2",all.x=TRUE)
                
                report[is.na(color),V1:=0]
-               #report[is.na(color),color:=color2]
+               report[is.na(color),color:=color2]
                #report[,color:=factor(color,labels=paste0(round(V1,2)*100,"%"))]
                
                
@@ -129,43 +139,20 @@ create_travel_data_yoy <- function(
           {
                p <- ggplot(report, aes(x=bin2,fill=color,weight=end_point.x-begin_point.x)) + geom_bar(width=0.75,stat="bin")
                p <- p + scale_x_discrete("", breaks=factor(c(1:17,18),levels=c(1:17,18),labels=c("< -100%","-100%","-75%","-50%","-25%","-15%","-5%","-1%","0%","1%","5%","15%","25%","50%","75%","100%","> 100%","No Match"),exclude=NULL), drop=FALSE)
+               p <- p + scale_fill_manual("",values=c("Same"="slategray","Reduction"="gray50","Increase"="gray50","No Match"="black"))
+               p <- p + scale_y_continuous(labels=percent,limits=c(0,1)) 
+
           } else
           {
-               p <- ggplot(report[c(2,3,1),], aes(x=1,y=V1,fill=color)) + geom_bar(stat="identity",width=1) 
+              p <- ggplot(report[c(2,3,1),], aes(x=1,y=V1,fill=color)) + geom_bar(stat="identity",width=1) 
               #p <- p + scale_x_discrete("", breaks=factor(c(1:2,NA),levels=c(1:2,NA),labels=c("No Change","Changed","NA"),exclude=NULL), drop=FALSE)
-               p <- p + coord_flip()               
-          }
-          
-          
-          if(histtype==1)
-          {
-              if(expectedChange=="Y")
-              {
-                p <- p + scale_fill_manual("",values=c("Same"="slategray","Reduction"="gray50","Increase"="gray50","NA"="black"))
-              } else
-              {
-                p <- p + scale_fill_manual("",values=c("Same"="slategray","Reduction"="gray50","Increase"="gray50","NA"="black"))
-              }
-              p <- p + scale_y_continuous(labels=percent) 
-              
-          } else
-          {
+              p <- p + coord_flip()   
               colors <- c("slategray","gray50","black")
-              if(expectedChange=="Y")
-              {
-                names(colors)[1]<-toString(report[color2=="No", color])
-                names(colors)[2]<-toString(report[color2=="Yes",color])
-                names(colors)[3]<-toString(report[color2=="NA", color])
-                p <- p + scale_fill_manual("",values=colors)
-              } else
-              {
-                names(colors)[1]<-toString(report[color2=="No",color])
-                names(colors)[2]<-toString(report[color2=="Yes", color])
-                names(colors)[3]<-toString(report[color2=="NA", color])
-                names(colors)<-levels(report[,color])
-                p <- p + scale_fill_manual("",values=colors)
-                
-              } 
+              names(colors)[1]<-toString(report[color2=="No",color])
+              names(colors)[2]<-toString(report[color2=="Yes", color])
+              names(colors)[3]<-toString(report[color2=="NA", color])
+              #names(colors)<-levels(report[,color])
+              p <- p + scale_fill_manual("",values=colors)
               p <- p + scale_y_continuous(labels=percent)
           }
           
@@ -188,7 +175,15 @@ create_travel_data_yoy <- function(
             p <- p + theme(
                           axis.text.y = element_text(hjust = 1,size=fontsize),
                           legend.position = "none",
-                          axis.text.x = element_text(angle = 90, hjust = 1,size=fontsize))
+                          axis.text.x = element_text(angle = 90, vjust = 0.5,size=fontsize))
+            p <- arrangeGrob(
+                              p,
+                              arrangeGrob(textGrob(paste0("*Total of ",string_format(totalmiles)," centerline miles."),hjust=0.5 ,vjust=0  ,gp=gpar(fontsize=4.5, col="gray50"))),
+                              nrow=2,
+                              heights=unit(c(0.90,0.1),units="npc"),
+                              widths=unit(1,units="npc")
+                            )
+            
           } else 
           {
              p <- p + theme(
@@ -200,17 +195,21 @@ create_travel_data_yoy <- function(
                           plot.margin=unit(c(0.5,0.05,0.5,0.05),"cm"))
              
              p <- arrangeGrob(p,
-                              arrangeGrob(textGrob(paste0(report[color2=="No",paste0(round(V1,3)*100,"%")]),hjust=0   ,vjust=0  ,gp=gpar(fontsize=17, col="slategray",fontface="bold")),
-                                          textGrob(paste0(report[color2=="Yes",paste0(round(V1,3)*100,"%")]),hjust=0.5,vjust=0  ,gp=gpar(fontsize=17, col="gray50",fontface="bold")),
-                                          textGrob(paste0(report[color2=="NA",paste0(round(V1,3)*100,"%")]),hjust=1   ,vjust=0  ,gp=gpar(fontsize=17, col="black",fontface="bold")),
-                                       ncol=3),
-                              arrangeGrob(textGrob("of all miles\nstayed the same" ,hjust=0   ,vjust=0  ,gp=gpar(fontsize=5.5, col="slategray")),
-                                          textGrob("of all miles\nchanged"         ,hjust=0.5 ,vjust=0  ,gp=gpar(fontsize=5.5, col="gray50")),
-                                          textGrob("of all miles\nwere not matched",hjust=1   ,vjust=0  ,gp=gpar(fontsize=5.5, col="black")),
-                                       ncol=3),
-                              heights=unit(c(0.5,0.25,0.25),units="npc"),
+                              arrangeGrob(textGrob(paste0(report[color2=="No",paste0(round(V1,3)*100,"%",ff1)]),hjust=0.5   ,vjust=0  ,gp=gpar(fontsize=17, col="slategray",fontface="bold")),
+                                          textGrob(paste0(report[color2=="Yes",paste0(round(V1,3)*100,"%",ff2)]),hjust=0.5,vjust=0  ,gp=gpar(fontsize=17, col="gray50",fontface="bold")),
+                                          textGrob(paste0(report[color2=="NA",paste0(round(V1,3)*100,"%")]),hjust=0.5   ,vjust=0  ,gp=gpar(fontsize=17, col="black",fontface="bold")),
+                                       ncol=3,widths=unit(c(0.4,0.2,0.4),units="npc")),
+                              arrangeGrob(textGrob("of all miles\nstayed the same" ,hjust=0.5   ,vjust=0  ,gp=gpar(fontsize=5.5, col="slategray",fontface="bold")),
+                                          textGrob("of all miles\nchanged"         ,hjust=0.5 ,vjust=0  ,gp=gpar(fontsize=5.5, col="gray50",fontface="bold")),
+                                          textGrob("of all miles\nwere not matched",hjust=0.5   ,vjust=0  ,gp=gpar(fontsize=5.5, col="black",fontface="bold")),
+                                       ncol=3,widths=unit(c(0.4,0.2,0.4),units="npc")),
+                              arrangeGrob(textGrob(paste0("*Total of ",string_format(totalmiles)," centerline miles."),hjust=0.5 ,vjust=0  ,gp=gpar(fontsize=4.5, col="gray50"))),
+                              nrow=4,
+                              heights=unit(c(0.45,0.25,0.20,0.1),units="npc"),
                               widths=unit(1,units="npc")
                               )
+             
+                  
              
             }
           

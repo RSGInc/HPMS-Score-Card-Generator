@@ -79,7 +79,7 @@ barPlot <- function(
         
         if(showAxis)
         {
-          p <- p + theme(axis.text.x=element_text(size=4.5, angle=90,hjust = 1,colour="slategray"))  
+          p <- p + theme(axis.text.x=element_text(size=4.5, angle=90,hjust = 0.5,colour="slategray"))  
         } else
         {
           p <- p + theme(axis.text.x=element_blank())
