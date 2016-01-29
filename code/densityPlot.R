@@ -56,6 +56,7 @@ densityPlot <- function(
           {
                p1 <- p1 + geom_density(data = d1, color="slategray", linetype="solid", size=0.25,fill="slategray",adjust=adjustment,aes(weights=(end_point-begin_point)/sum(end_point-begin_point)))
                #p1 <- p1 + stat_density(geom="line",data = d1, color="slategray", linetype="solid", size=0.35,fill="white",adjust=adjustment,aes(weights=(end_point-begin_point)/sum(end_point-begin_point)))
+               #p1 <- p1 + geom_freqpoly(color="slategray",aes(weights=(end_point-begin_point)/sum(end_point-begin_point)))
                if(showLabel)
                {
                   p1 <- p1 + ylab(year1)
@@ -73,7 +74,9 @@ densityPlot <- function(
           if(nrow(d2)>2)
           {
                p2 <- p2 + geom_density(data = d2, color ="gray75", linetype="solid", size=0.25,fill="gray75",adjust=adjustment,aes(weights=(end_point-begin_point)/sum(end_point-begin_point)))
-               #p2 <- p2 + stat_density(geom="line",data = d2, color ="gray75", linetype="solid", size=0.35,fill="white",adjust=adjustment,aes(weights=(end_point-begin_point)/sum(end_point-begin_point)))
+               #p2 <- p2 + geom_histogram(color="gray75",aes(weights=(end_point-begin_point)/sum(end_point-begin_point))) 
+               #p2 <- p2 + geom_freqpoly(color="gray75",aes(weights=(end_point-begin_point)/sum(end_point-begin_point))) 
+              #p2 <- p2 + stat_density(geom="line",data = d2, color ="gray75", linetype="solid", size=0.35,fill="white",adjust=adjustment,aes(weights=(end_point-begin_point)/sum(end_point-begin_point)))
                if(showLabel)
                {
                   p2 <- p2 + ylab(year2)
@@ -89,6 +92,8 @@ densityPlot <- function(
           if(!is.null(d3))
           {
                p3 <- p3 + geom_density(data = d3, color ="black", linetype="solid", size=0.25,fill="black",adjust=adjustment,aes(weights=(end_point-begin_point)/sum(end_point-begin_point)))
+               #p3 <- p3 + geom_histogram(color="slategray",aes(weights=(end_point-begin_point)/sum(end_point-begin_point)))
+               #p3 <- p3 + geom_freqpoly(color="black",aes(weights=(end_point-begin_point)/sum(end_point-begin_point))) 
                #p3 <- p3 + stat_density(geom="line",data = d3, color ="black", linetype="solid", size=0.35,fill="white",adjust=adjustment,aes(weights=(end_point-begin_point)/sum(end_point-begin_point)))
                if(showLabel)
                {
@@ -106,76 +111,79 @@ densityPlot <- function(
           
           p1 <- p1 +     #geom_density(data = var.national,color="black", linetype="twodash", size=0.25) +
                theme_minimal() + 
-               scale_y_continuous(limits=c(0,ymax))+ 
+               scale_y_continuous(limits=c(0,ymax*1.4))+#,labels=percent,breaks=c(0,ceiling(ymax/25)*25))+ 
                scale_x_continuous(labels = comma,limits=c(minvalue,maxvalue)) +
                #xlim(c(minvalue,maxvalue))+
                theme(
                     axis.text.x=element_blank(),#element_text(size=6, hjust = 0,colour="slategray"),
-                    axis.text.y=element_blank(),#element_text(size=6, angle = 0, hjust = 0,colour="slategray"), 
+                    axis.text.y=element_blank(),#element_text(size=4.5, angle = 0, hjust = 0,colour="gray75"), 
                     strip.text.x = element_text(size = 8, angle = 0),
                     strip.text.y = element_text(size = 8, angle = 0),
                     axis.ticks=element_blank(),
                     axis.title.x=element_blank(),
                     axis.title.y=element_text(size=5, face="bold", angle = 90, hjust = 0.5,colour="slategray"),
-                    plot.title = element_blank(),#element_text(size=6.1, face="bold",colour = "slategray"),
+                    plot.title = element_text(size=6.1, face="bold",colour = "slategray"),
                     panel.grid.major = element_blank(),
                     panel.grid.minor = element_blank(),
                     panel.border = element_blank(),
                     panel.background = element_blank(),
                     axis.line = element_line(colour = "white"),
-                    plot.margin = unit(c(topMargin,leftMargin,bottomMargin,rightMargin), "cm")
+                    plot.margin = unit(c(topMargin=0,leftMargin,bottomMargin,rightMargin), "cm")
                )
           
           mp <- (maxvalue-minvalue)/2
-          yp <- ymax/1.10
+          yp <- ymax*0.98
           
           if(is.na(mp))
           {
             mp <- 0.5
           }
           
-          p1 <- p1 + annotate("text", x=mp, y=ymax, label = title,size=2.1, hjust=0.5, face="bold",colour = "slategray")
+          #p1 <- p1 + ggtitle(title)
+          #p2 <- p2 + ggtitle(title)
+          #p3 <- p3 + ggtitle(title)
+          p1 <- p1 + annotate("text", x=mp, y=yp, label = title,size=2.1, hjust=0.5, face="bold",colour = "slategray")
           
           p2 <- p2 +     #geom_density(data = var.national,color="black", linetype="twodash", size=0.25) +
                theme_minimal() + 
-               scale_y_continuous(limits=c(0,ymax))+ 
+               scale_y_continuous(limits=c(0,ymax*1.4))+#,labels=percent,breaks=c(0,ceiling(ymax/25)*25))+ 
                scale_x_continuous(labels = comma,limits=c(minvalue,maxvalue)) +
                theme(
                     axis.text.x=element_blank(),#element_text(size=6, hjust = 0,colour="slategray"),
-                    axis.text.y=element_blank(),#element_text(size=6, angle = 0, hjust = 0,colour="slategray"), 
+                    axis.text.y=element_blank(),#element_text(size=4.5, angle = 0, hjust = 0,colour="gray75"), 
                     strip.text.x = element_text(size = 8, angle = 0),
                     strip.text.y = element_text(size = 8, angle = 0),
                     axis.ticks=element_blank(),
                     axis.title.x=element_blank(),
                     axis.title.y=element_text(size=5, face="bold", angle = 90, hjust = 0.5,colour="gray75"),
-                    plot.title = element_text(size=6.1, face="bold",colour = "slategray"),
+                    plot.title = element_text(size=6.1, face="bold",colour = "white"),
                     panel.grid.major = element_blank(),
                     panel.grid.minor = element_blank(),
                     panel.border = element_blank(),
                     panel.background = element_blank(),
                     axis.line = element_line(colour = "white"),
-                    plot.margin = unit(c(topMargin,leftMargin,bottomMargin,rightMargin), "cm")
+                    plot.margin = unit(c(topMargin=0,leftMargin,bottomMargin=0,rightMargin), "cm")
                )
           
           p3 <- p3 +     #geom_density(data = var.national,color="black", linetype="twodash", size=0.25) +
                theme_minimal() + 
-               scale_y_continuous(limits=c(0,ymax))+ 
+               scale_y_continuous(limits=c(0,ymax*1.4))+#,labels=percent,breaks=c(0,ceiling(ymax/25)*25))+ 
                scale_x_continuous(labels = comma,limits=c(minvalue,maxvalue))  +
                theme(
                     axis.text.x=element_text(size=4.5, angle=90, hjust = 1,colour="slategray"),
-                    axis.text.y=element_blank(),#element_text(size=6, angle = 0, hjust = 0,colour="slategray"), 
+                    axis.text.y=element_blank(),#element_text(size=4.5, angle = 0, hjust = 0,colour="black"), 
                     strip.text.x = element_text(size = 8, angle = 0),
                     strip.text.y = element_text(size = 8, angle = 0),
                     axis.ticks=element_blank(),
                     axis.title.x=element_blank(),
                     axis.title.y=element_text(size=5, face="bold", angle = 90, hjust = 0.5,colour="black"),
-                    plot.title = element_text(size=6.1, face="bold",colour = "slategray"),
+                    plot.title = element_text(size=6.1, face="bold",colour = "white"),
                     panel.grid.major = element_blank(),
                     panel.grid.minor = element_blank(),
                     panel.border = element_blank(),
                     panel.background = element_blank(),
                     axis.line = element_line(colour = "white"),
-                    plot.margin = unit(c(topMargin,leftMargin,bottomMargin,rightMargin), "cm")
+                    plot.margin = unit(c(topMargin,leftMargin,bottomMargin=0,rightMargin), "cm")
                )
           
           p <- arrangeGrob(p1,p2,p3,nrow=3)

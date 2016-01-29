@@ -67,10 +67,44 @@ create_overall_condition <- function(data,state,year,population)
        iri[(iri>=95)       & (iri<=threshold),iscore:= "F"] # fair
        iri[(iri> threshold)                  ,iscore:= "P"] # poor
        
-       condition <- merge(surface,  rutting, by=c("route_id","begin_point","end_point"),all.x=TRUE,all.y=FALSE)
-       condition <- merge(condition,faulting,by=c("route_id","begin_point","end_point"),all.x=TRUE,all.y=FALSE)
-       condition <- merge(condition,cracking,by=c("route_id","begin_point","end_point"),all.x=TRUE,all.y=FALSE)
-       condition <- merge(condition,iri,     by=c("route_id","begin_point","end_point"),all.x=TRUE,all.y=FALSE)
+       #condition <- merge(surface,  rutting, by=c("route_id","begin_point","end_point"),all.x=TRUE,all.y=FALSE)
+       #condition <- merge(condition,faulting,by=c("route_id","begin_point","end_point"),all.x=TRUE,all.y=FALSE)
+       #condition <- merge(condition,cracking,by=c("route_id","begin_point","end_point"),all.x=TRUE,all.y=FALSE)
+       #condition <- merge(condition,iri,     by=c("route_id","begin_point","end_point"),all.x=TRUE,all.y=FALSE)
+       
+       condition <- sqldf("select A.*, B.cracking, B.cscore
+                          from iri A 
+                          left join cracking B on 
+                            A.route_id = B.route_id and (
+                            ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
+                            ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
+                          )")
+       
+       condition <- sqldf("select A.*, B.faulting, B.fscore
+                          from condition A 
+                         left join faulting B on 
+                          A.route_id = B.route_id and (
+                         ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
+                         ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
+                     )")
+       
+       condition <- sqldf("select A.*, B.rutting, B.rscore
+                          from condition A 
+                          left join rutting B on 
+                            A.route_id = B.route_id and (
+                            ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
+                            ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
+                          )")
+       
+       condition <- sqldf("select A.*, B.surface,B.Interstate,B.NHS
+                          from condition A 
+                          left join surface B on 
+                            A.route_id = B.route_id and (
+                            ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
+                            ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
+                          )")
+       
+      condition <- data.table(condition)
        
        #table 4.5 in the manual is very useful
        
@@ -101,74 +135,67 @@ create_overall_condition <- function(data,state,year,population)
        
        condition[,overallscore:=c(NA,"G","F","P")[1+overallscore]]    
        
-       results.interstate <- table(condition[Interstate==1,factor(overallscore,levels=c("G","F","P"))])
-       results.nhs        <- table(condition[NHS==1,       factor(overallscore,levels=c("G","F","P"))])
-       results.fsystem1   <- table(condition[F_SYSTEM==1,  factor(overallscore,levels=c("G","F","P"))])
-       results.fsystem2   <- table(condition[F_SYSTEM==2,  factor(overallscore,levels=c("G","F","P"))])
+       #results.interstate <- table(condition[Interstate==1,factor(overallscore,levels=c("G","F","P"))])
+       #results.nhs        <- table(condition[NHS==1,       factor(overallscore,levels=c("G","F","P"))])
+       #results.fsystem1   <- table(condition[F_SYSTEM==1,  factor(overallscore,levels=c("G","F","P"))])
+       #results.fsystem2   <- table(condition[F_SYSTEM==2,  factor(overallscore,levels=c("G","F","P"))])
        
-       if(sum(results.interstate)>0)
+       results.interstate <- condition[Interstate==1,list(.N,miles=sum(end_point-begin_point)), by=.(overallscore)]
+       results.NHS        <- condition[NHS==1,list(.N,miles=sum(end_point-begin_point)), by=.(overallscore)]
+       
+       if(nrow(results.interstate)>0)
        {
-            p1 <- create_donut_chart(results.interstate)
+            #p1 <- create_donut_chart(results.interstate)
+            p1 <- barOCPlot(results.interstate,"Interstate")
        } else
        {
             p1 <- textGrob(NoDataString,gp=gpar(fontsize=12, col="Red"))
        }
        
-       if(sum(results.nhs)>0)
+       if(nrow(results.NHS)>0)
        {
-            p2 <- create_donut_chart(results.nhs)
+            #p2 <- create_donut_chart(results.nhs)
+            p2 <- barOCPlot(results.NHS,"NHS")
        } else
        {
             p2 <- textGrob(NoDataString,gp=gpar(fontsize=12, col="Red"))
        }
        
-       if(sum(results.fsystem1)>0)
-       {
-            p3 <- create_donut_chart(results.fsystem1)
-       } else
-       {
-            p3 <- textGrob(NoDataString,gp=gpar(fontsize=12, col="Red"))
-       }
-       
-       if(sum(results.fsystem2)>0)
-       {
-            p4 <- create_donut_chart(results.fsystem2)
-       } else
-       {
-            p4 <- textGrob(NoDataString,gp=gpar(fontsize=12, col="Red"))
-       }
-       
        obj <- arrangeGrob(
-                           # row 1
-                           rectGrob(gp=gpar(fill="white",col="white")), 
-                           rectGrob(gp=gpar(fill="white",col="white")), 
-                           rectGrob(gp=gpar(fill="white",col="white")), 
-                           rectGrob(gp=gpar(fill="white",col="white")), 
-                           rectGrob(gp=gpar(fill="white",col="white")), 
+                textGrob("The algorithm applies the MAP-21\ncondition rule to classify\nsections as good, fair or poor.",gp=gpar(col="slategray",fontface="bold",fontsize=9,hjust=0)),
+                p1,p2,ncol=3,nrow=1,widths=unit(c(0.2,0.4,0.4),units="npc"))
+       
+       #obj <- arrangeGrob(
+      #                     # row 1
+      #                     rectGrob(gp=gpar(fill="white",col="white")), 
+      #                     rectGrob(gp=gpar(fill="white",col="white")), 
+      #                     rectGrob(gp=gpar(fill="white",col="white")), 
+      #                     rectGrob(gp=gpar(fill="white",col="white")), 
+      #                     rectGrob(gp=gpar(fill="white",col="white")), 
                            
                            # row 2
-                           rectGrob(gp=gpar(fill="white",col="white")), 
-                           textGrob("Interstate",gp=gpar(col="slategray",fontface="bold",fontsize=9)),
-                           textGrob("National Highway System",gp=gpar(col="slategray",fontface="bold",fontsize=9)),
-                           textGrob("Principal Arterial Systems",gp=gpar(col="slategray",fontface="bold",fontsize=9)),
-                           textGrob("Lower Level Systems",gp=gpar(col="slategray",fontface="bold",fontsize=9)),
+      #                     rectGrob(gp=gpar(fill="white",col="white")), 
+      #                     textGrob("Interstate",gp=gpar(col="slategray",fontface="bold",fontsize=9)),
+      #                     textGrob("National Highway System",gp=gpar(col="slategray",fontface="bold",fontsize=9)),
+      #                     textGrob("Principal Arterial Systems",gp=gpar(col="slategray",fontface="bold",fontsize=9)),
+      #                     textGrob("Lower Level Systems",gp=gpar(col="slategray",fontface="bold",fontsize=9)),
             
                            # row 3
                            # labels
-                           arrangeGrob(rectGrob(gp=gpar(fill="white",col="white"))          ,rectGrob(gp=gpar(fill="white",col="white")),
-                                       textGrob("Good",hjust=1,gp=gpar(col="slategray")),            rectGrob(,gp=gpar(fill="gray65",col="gray65")),
-                                       rectGrob(gp=gpar(fill="white",col="white"))          ,rectGrob(gp=gpar(fill="white",col="white")),
-                                       textGrob("Fair",hjust=1,gp=gpar(col="slategray")),            rectGrob(gp=gpar(fill="gray85",col="gray85"))        ,
-                                       rectGrob(gp=gpar(fill="white",col="white"))          ,rectGrob(gp=gpar(fill="white",col="white")),
-                                       textGrob("Poor",hjust=1,gp=gpar(col="slategray")),            rectGrob(gp=gpar(fill="red",col="red"))          ,
-                                       rectGrob(gp=gpar(fill="white",col="white"))          ,rectGrob(gp=gpar(fill="white",col="white")),
-                                       ncol=2,nrow=7,widths=unit(c(0.8,0.2),units="npc"),heights=c(0.1,0.7/3,0.05,0.7/3,0.05,0.7/3,0.1)
-                           ),
-                           # plots
-                          p1,p2,p3,p4,
-                          ncol=5,nrow=3,
-                          heights=c(0.05,0.1,0.85),
-                          widths=unit(c(0.15,rep(0.85/4,4)),units="npc"))
+      #                     arrangeGrob(rectGrob(gp=gpar(fill="white",col="white"))          ,rectGrob(gp=gpar(fill="white",col="white")),
+      #                                 textGrob("Good",hjust=1,gp=gpar(col="slategray")),            rectGrob(,gp=gpar(fill="gray65",col="gray65")),
+      #                                 rectGrob(gp=gpar(fill="white",col="white"))          ,rectGrob(gp=gpar(fill="white",col="white")),
+      #                                 textGrob("Fair",hjust=1,gp=gpar(col="slategray")),            rectGrob(gp=gpar(fill="gray85",col="gray85"))        ,
+      #                                 rectGrob(gp=gpar(fill="white",col="white"))          ,rectGrob(gp=gpar(fill="white",col="white")),
+      #                                 textGrob("Poor",hjust=1,gp=gpar(col="slategray")),            rectGrob(gp=gpar(fill="red",col="red"))          ,
+      #                                 rectGrob(gp=gpar(fill="white",col="white"))          ,rectGrob(gp=gpar(fill="white",col="white")),
+      #                                 ncol=2,nrow=7,widths=unit(c(0.8,0.2),units="npc"),heights=c(0.1,0.7/3,0.05,0.7/3,0.05,0.7/3,0.1)
+      #                     ),
+      #                     # plots
+      #                    p1,p2,p1,p2,
+      #                    ncol=5,nrow=3,
+      #                    heights=c(0.05,0.1,0.85),
+      #                    widths=unit(c(0.15,rep(0.85/4,4)),units="npc"))
        
        return(obj)
      }

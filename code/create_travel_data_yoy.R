@@ -178,7 +178,7 @@ create_travel_data_yoy <- function(
                           axis.text.x = element_text(angle = 90, vjust = 0.5,size=fontsize))
             p <- arrangeGrob(
                               p,
-                              arrangeGrob(textGrob(paste0("*Total of ",string_format(totalmiles)," centerline miles."),hjust=0.5 ,vjust=0  ,gp=gpar(fontsize=4.5, col="gray50"))),
+                              arrangeGrob(textGrob(paste0("Total of ",string_format(totalmiles)," centerline miles."),hjust=0.5 ,vjust=0  ,gp=gpar(fontsize=4.5, col="gray50"))),
                               nrow=2,
                               heights=unit(c(0.90,0.1),units="npc"),
                               widths=unit(1,units="npc")
@@ -203,7 +203,7 @@ create_travel_data_yoy <- function(
                                           textGrob("of all miles\nchanged"         ,hjust=0.5 ,vjust=0  ,gp=gpar(fontsize=5.5, col="gray50",fontface="bold")),
                                           textGrob("of all miles\nwere not matched",hjust=0.5   ,vjust=0  ,gp=gpar(fontsize=5.5, col="black",fontface="bold")),
                                        ncol=3,widths=unit(c(0.4,0.2,0.4),units="npc")),
-                              arrangeGrob(textGrob(paste0("*Total of ",string_format(totalmiles)," centerline miles."),hjust=0.5 ,vjust=0  ,gp=gpar(fontsize=4.5, col="gray50"))),
+                              arrangeGrob(textGrob(paste0("Total of ",string_format(totalmiles)," centerline miles."),hjust=0.5 ,vjust=0  ,gp=gpar(fontsize=5, col="gray50"))),
                               nrow=4,
                               heights=unit(c(0.45,0.25,0.20,0.1),units="npc"),
                               widths=unit(1,units="npc")

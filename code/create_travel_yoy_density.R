@@ -54,7 +54,10 @@ create_travel_yoy_density <- function(
           maxvalue <- max(d1$x,d2$x,d3$x)
           ymax <- max(d1$y,d2$y,d3$y)*1.10
           
-          
+          #ymax <- max(var.1[,V1:=(end_point-begin_point)/sum(end_point-begin_point)][,sum(V1),by=.(value_numeric)][,V1],
+          #    var.2[,V1:=(end_point-begin_point)/sum(end_point-begin_point)][,sum(V1),by=.(value_numeric)][,V1],
+          #    national[,V1:=(end_point-begin_point)/sum(end_point-begin_point)][,sum(V1),by=.(value_numeric)][,V1]
+          #)
           #if(includeNational=="Y")
           #{
                
@@ -76,7 +79,7 @@ create_travel_yoy_density <- function(
               p1 <- densityPlot(d1=var.1[Interstate==1],d2=var.2[Interstate==1],d3=national[Interstate==1],title=gF_SYSTEM_levels[1],minvalue=minvalue,maxvalue=maxvalue,year1=year,year2=yearcomparison,showLabel=TRUE,ymax=ymax)
               p2 <- densityPlot(var.1[NHS==1]       ,var.2[NHS==1]       ,d3=national[NHS==1]       ,title=gF_SYSTEM_levels[2],minvalue=minvalue,maxvalue=maxvalue,year1=year,year2=yearcomparison,ymax=ymax)
               p3 <- densityPlot(var.1[F_SYSTEM==1]  ,var.2[F_SYSTEM==1]  ,d3=national[F_SYSTEM==1]  ,title=gF_SYSTEM_levels[3],minvalue=minvalue,maxvalue=maxvalue,year1=year,year2=yearcomparison,showLabel=TRUE,ymax=ymax)
-              p4 <- densityPlot(var.1[F_SYSTEM==2]  ,var.2[F_SYSTEM==2]  ,d3=national[F_SYSTEM==2]  ,title=gF_SYSTEM_levels[4],minvalue=minvalue,maxvalue=maxvalue,year1=year,year2=yearcomparison,ymax=ymax)
+              p4 <- densityPlot(d1=var.1[F_SYSTEM==2,]  ,d2=var.2[F_SYSTEM==2,]  ,d3=national[F_SYSTEM==2,]  ,title=gF_SYSTEM_levels[4],minvalue=minvalue,maxvalue=maxvalue,year1=year,year2=yearcomparison,ymax=ymax)
             }
             obj <- arrangeGrob(p1,p2,p3,p4,ncol=2,nrow=2)
           }

@@ -22,6 +22,11 @@ getStateLabelFromNum <- function(num) {
   return(gState_Labels[index %in% num, label])
 }
 
+getStateAbbrFromNum <- function(num) {
+  return(gState_Labels[index %in% num, abbr])
+}
+
+
 getStateCode <- function(state) {
   return(gState_Labels[label %in% state, abbr])
 }

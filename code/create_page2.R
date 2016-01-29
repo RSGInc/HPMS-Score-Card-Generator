@@ -93,7 +93,7 @@ create_page2 <- function(
      add_header(state,year,"pavement: detailed review","p")
 
      grid.text("Overall Condition",x=0.12,y=0.87,hjust=1,gp=gpar(fontsize=10, col="slategray"))
-     grid.text("Represented as percent\nof total lane miles",x=0.12,y=0.83,hjust=1,gp=gpar(fontsize=8, col="slategray"))
+     grid.text("Represented as percent\nof total centerline miles",x=0.12,y=0.83,hjust=1,gp=gpar(fontsize=8, col="slategray"))
      
      grid.text("Outliers",hjust=1,x=0.12,y=0.67,gp=gpar(fontsize=10, col="slategray"))
      grid.text("Sections\nwith outlying values",x=0.12,y=0.63,hjust=1,gp=gpar(fontsize=7, fontface="italic",col="slategray"))

@@ -19,13 +19,13 @@ create_pdf <- function(data, state, year, year_compare, population, national = N
      cat(paste(getStateLabelFromNum(state), "-", year, "vs.", year_compare, "\n\n"))
      
      # Score card file name and path
-     pdfname <- paste0(getStateLabelFromNum(state), "_A", year, "_C", year_compare, ".pdf")   
+     pdfname <- paste0(getStateAbbrFromNum(state), "_A", year, "_C", year_compare,"_",format(Sys.time(), "%Y%m%d_%k%M%S"), ".pdf")   
      pdfname <- gsub(x = pdfname, pattern = "\\s", replace = "_")
      pdfpath <- paste0(path, pdfname)
   
      pdf(file = pdfpath, width = 13.333, height = 7.5)
      
-     showtext.begin() # this controls the issues with the fonts
+     #showtext.begin() # this controls the issues with the fonts
      
      # Create title page
      cat("Title page...")
@@ -150,7 +150,7 @@ create_pdf <- function(data, state, year, year_compare, population, national = N
      create_page_summary(data,state,year,year_compare,x1=todo[i+1,1], title="special network",icontext="sn",page=32)
      cat(paste0(" completed in: ",round(difftime(Sys.time(),ts,units="secs"),2)," seconds!\n"))
      
-     showtext.end()
+     #showtext.end()
      dev.off()
      
      whitespace(4)
