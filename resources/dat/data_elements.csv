@@ -70,8 +70,8 @@ TOLL_TYPE,16,Toll Type,I,Y,N,N,1,2,FE**,0,,,,,,N
 TRUCK,66,National Truck Network,SN,Y,Y,N,1,2,FE**,0,,,,,,N
 TURN_LANES_L,13,Left Turn Lanes,I,Y,Y,N,1,1,SP,0,,,,,,N
 TURN_LANES_R,12,Right Turn Lanes,I,Y,Y,N,1,1,SP,0,,,,,,N
-URBAN_CODE,2,Urban Code,I,Y,N,N,1,2,FE + R,0,,,,,,N
-WIDENING_OBSTACLE,41,Widening Obstacle,G,Y,Y,N,1,2,SP,0,,,,,,Y
+URBAN_CODE,2,Urban Code,I,Y,N,N,1,2,FE + R,0,,,,,,Y
+WIDENING_OBSTACLE,41,Widening Obstacle,G,Y,Y,N,1,2,SP,0,,,,,,N
 WIDENING_POTENTIAL,42,Widening Potential,G,Y,Y,N,1,2,SP,0,,,,,,N
 YEAR_LAST_CONSTRUCTION,55,Year of Last Construction,P,Y,Y,N,2,2,SP,0,,,,,,N
 YEAR_LAST_IMPROV,54,Year of Last Improvement,P,Y,Y,Y,2,2,SP,0,,,,,,N

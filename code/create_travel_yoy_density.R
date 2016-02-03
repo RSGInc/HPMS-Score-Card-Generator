@@ -35,24 +35,43 @@ create_travel_yoy_density <- function(
      {
           national  <- readRDS(paste0("data\\+National\\",yearcomparison,"\\",variable,".rds"))
           
-          minvalue1 <- var.1[,min(value_numeric)]
-          minvalue2 <- var.2[,min(value_numeric)]
-          minvalue3 <- national[,min(value_numeric)]
-          
-          maxvalue1 <- var.1[,max(value_numeric)]
-          maxvalue2 <- var.2[,max(value_numeric)]
-          maxvalue3 <- national[,max(value_numeric)]
+          if(nrow(var.1[!is.na(value_numeric),])>2)
+          {
+            d1 <- density(var.1[,value_numeric],weights=var.1[,(end_point-begin_point)/sum(end_point-begin_point)],na.rm = TRUE)
+            minvalue1 <- min(d1$x)
+            maxvalue1 <- max(d1$x)
+            ymax1     <- max(d1$y)
+          } else {
+            minvalue1 <- NULL
+            maxvalue1 <- NULL
+            ymax1     <- NULL
+          }
+          if(nrow(var.2[!is.na(value_numeric),])>2)
+          {
+            d2 <- density(var.2[,value_numeric],weights=var.2[,(end_point-begin_point)/sum(end_point-begin_point)],na.rm = TRUE)
+            minvalue2 <- min(d2$x)
+            maxvalue2 <- max(d2$x)
+            ymax2     <- max(d2$y)
+          } else {
+            minvalue2 <- NULL
+            maxvalue2 <- NULL
+            ymax2     <- NULL
+          }
+          if(nrow(national[!is.na(value_numeric),])>2)
+          {
+              d3 <- density(national[,value_numeric],weights=national[!is.na(value_numeric),(end_point-begin_point)/sum(end_point-begin_point)],na.rm = TRUE)
+              minvalue3 <- min(d3$x)
+              maxvalue3 <- max(d3$x)
+              ymax3     <- max(d3$y)
+          } else {
+            minvalue3 <- NULL
+            maxvalue3 <- NULL
+            ymax3     <- NULL
+          }          
           
           minvalue <- min(minvalue1,minvalue2,minvalue3)
           maxvalue <- max(maxvalue1,maxvalue2,maxvalue3)
-          
-          d1 <- density(var.1[,value_numeric],weights=var.1[,(end_point-begin_point)/sum(end_point-begin_point)],na.rm = TRUE)
-          d2 <- density(var.2[,value_numeric],weights=var.2[,(end_point-begin_point)/sum(end_point-begin_point)],na.rm = TRUE)
-          d3 <- density(national[,value_numeric],weights=national[!is.na(value_numeric),(end_point-begin_point)/sum(end_point-begin_point)],na.rm = TRUE)
-          
-          minvalue <- min(d1$x,d2$x,d3$x)
-          maxvalue <- max(d1$x,d2$x,d3$x)
-          ymax <- max(d1$y,d2$y,d3$y)*1.10
+          ymax     <- max(ymax1,ymax2,ymax3)*1.10
           
           #ymax <- max(var.1[,V1:=(end_point-begin_point)/sum(end_point-begin_point)][,sum(V1),by=.(value_numeric)][,V1],
           #    var.2[,V1:=(end_point-begin_point)/sum(end_point-begin_point)][,sum(V1),by=.(value_numeric)][,V1],

@@ -132,8 +132,8 @@ create_adjacency_report <- function(
           report[variable=="Name",value:=gF_SYSTEM_levels[as.numeric(value)],]
           report[variable=="Name",variable:="Functional\nSystem",]
           report[variable=="N",variable:="Number of\nSections",]
-          report[variable=="miles",variable:="Total Lane\nMiles",]
-          report[variable=="perc_miles",variable:="% of All\nLane Miles\nSubmitted",]
+          report[variable=="miles",variable:="Total Centerline\nMiles",]
+          report[variable=="perc_miles",variable:="% of All\n Miles\nSubmitted",]
           report[is.na(highlight),highlight:=0]
           return(report)
      } else

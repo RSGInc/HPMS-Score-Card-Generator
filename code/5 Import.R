@@ -160,8 +160,13 @@ FormatDataSet <- function(dat) {
   
   # TODO: merge on sample panel data for expansion factors. Not necessarily here.
   # For now, just include a column of missing expansion factors
-  sp <- data.table(read.table("resources\\dat\\SamplePanel.csv",sep="|",header=TRUE,stringsAsFactors=FALSE))
 
+  sp <- data.table(read.table(spfile,sep="|",header=TRUE,stringsAsFactors=FALSE))
+
+  setnames(sp,
+          c("Year_Record", "State_Code", "Route_ID","Begin_Point", "End_Point", "Sample_ID","Expansion_Factor"),
+          c("year_record", "state_code", "route_id","begin_point", "end_point", "sample_id","expansion_factor"))
+  
   data.formatted <- data.table(
     sqldf("select A.*, B.expansion_factor as expansion_factor
            from [data.formatted] A 

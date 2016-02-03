@@ -22,7 +22,7 @@ create_page_summary <- function(
      ramps=FALSE)
 {
      
-     width <- unit(c(1.6333,0.05,4-0.5/3,0.05,4-0.5/3,0.05,4-0.5/3,0.05),units="inches")
+     width <- unit(c(1.5,0.05,4-(0.5-0.1333)/3,0.05,4-(0.5-0.1333)/3,0.05,4-(0.5-0.1333)/3,0.05),units="inches")
      
      show2 <- show3 <- TRUE
      

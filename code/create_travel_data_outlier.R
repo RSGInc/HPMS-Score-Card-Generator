@@ -58,8 +58,8 @@ create_travel_data_outlier <- function(
           report[,miles:=string_format(miles)]
           report[,perc_miles:=paste0(perc_miles,"%")]
           setnames(report,"groupCat","Functional\nSystem")
-          setnames(report,"miles","Total lane\nMiles")
-          setnames(report,"perc_miles","% of lane \nMiles")
+          setnames(report,"miles","Total Centerline\nMiles")
+          setnames(report,"perc_miles","% of \nMiles")
           
           ob <- tableGrob(report,
                           rows=NULL, 

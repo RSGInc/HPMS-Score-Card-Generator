@@ -23,7 +23,7 @@ Run <- function() {
     
     # Initial user task choice
     whitespace(gSpaces)
-    task <- getUserInput(valid = 1:2, prompt = "What would you like to do?\n\n(1) Import new data\n(2) Generate score card from previously imported data\n\nPlease enter your selection: ")
+    task <- getUserInput(valid = 1:3, prompt = "What would you like to do?\n\n(1) Import new state data\n(2) Generate score card from previously imported data\n(3) Import new population data\n\nPlease enter your selection: ")
     
     # Import new data
     if (task == 1) {
@@ -31,6 +31,10 @@ Run <- function() {
       whitespace(gSpaces)
       cat("Please use the windows dialog to select one or more data files to import.\n\n")
       files <- choose.files(caption = "Select one or more data files to import.")
+      
+      cat("Please use the windows dialog to select one sample panel data file to import.\n\n")
+      spfile <<- choose.files(caption = "Select one sample panel data file to import.",multi=FALSE)
+      
       ImportOkay <- ImportFiles(files)
       
       # If no imported data sets came in okay, warn the user
@@ -68,7 +72,8 @@ Run <- function() {
         national <- getNationalDataSet()
         
         # Load the population data
-        population <- readRDS("resources/dat/population.RDS")
+        #population2 <<- readRDS(paste0("resources/dat/population.RDS"))#readRDS(paste0("resources/dat/",data.list[["year_selection"]],"_population.RDS"))
+        population <- readRDS(paste0("resources/dat/",data.list[["year_selection"]],"_population.RDS"))
         
         # Generate score card
         whitespace(gSpaces)
@@ -96,9 +101,31 @@ Run <- function() {
         getUserInput("No score cards generated. Press 'Enter' to continue. Press 'Esc' to Exit.")
       }
     
+    } else if (task == 3) {
+      
+      whitespace(gSpaces)
+      
+      year <- getUserInput("Please enter the year associated with the data: ") 
+      
+      whitespace(gSpaces)
+      cat("Please use the windows dialog to select one or more data files to import.\n\n")
+      file <- choose.files(caption = "Select one file to import.",multi=FALSE)
+      
+      population <- read.table(file,sep=",",header=TRUE,colClasses=)
+      
+      population <- data.table(urban_code=population[order(population[,"UACE"]),"UACE"],pop=population[order(population[,"UACE"]),"Total.UCAE.Pop"])
+      
+      population <- population[,.(pop=unique(pop)),by=urban_code]
+      
+      saveRDS(population,file=paste0("resources/dat/",year,"_population.rds"))
+      whitespace(4)
+      getUserInput("Data import complete! Press 'Enter' to continue. Press 'Esc' to Exit.")
+      
     }
+      
     
-  }
+    
+  } # while
   
 }
 

@@ -114,7 +114,7 @@ create_travel_data_assessment <- function(
           p2 <- textGrob(NoDataString, gp = gpar(fontsize = 12, col = "red"))
      }
 
-     if(nrow(aadt_su.compare)> 0)
+     if(nrow(aadt_su.compare[!is.na(mq),])> 0)
      {
           p3 <- crossbarPlot(aadt_su.compare)
      } else
