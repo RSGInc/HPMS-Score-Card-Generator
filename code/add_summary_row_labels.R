@@ -17,6 +17,8 @@ add_summary_row_labels <- function(year,yearcompare)
      grid.text("Distributions", x = 0.105, y = 0.53, just = "right", gp = gpar(col = "slategray", fontface = "bold", fontsize = 10))
      grid.text("Plotting data distributions for\ncurrent year, previous year,\nand previous nation", x = 0.105, y = 0.49, just = "right", gp = gpar(col = "slategray", fontface = "italic", fontsize = 7))
      
+     grid.text("Sample panel data are unexpanded.", x = 0.105, y = 0.37, just = "right", gp = gpar(col = "slategray", fontface = "italic", fontsize = 6))
+     
      grid.text("Relative Changes\nat the Section Level", x = 0.105, y = 0.15, just = "right", gp = gpar(col = "slategray", fontface = "bold", fontsize = 10))
      grid.text("Summarize how data\nchanged year over year\nat the section level\n*indicates where a \nlow % is expected", x = 0.105, y = 0.075, just = "right", gp = gpar(col = "slategray", fontface = "italic", fontsize = 7))
 

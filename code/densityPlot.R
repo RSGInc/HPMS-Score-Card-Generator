@@ -25,6 +25,7 @@ densityPlot <- function(
      ymax)
 {
      
+     ymax <- max(2.5*ymax,ymax + 0.05)
      adjustment <- 1#c(1,1)[densitytype]
      
      if((nrow(d1)>2|nrow(d2)>2)&!is.null(minvalue)) # we have something to report (density plots require at least 3 points to draw)
@@ -111,7 +112,7 @@ densityPlot <- function(
           
           p1 <- p1 +     #geom_density(data = var.national,color="black", linetype="twodash", size=0.25) +
                theme_minimal() + 
-               scale_y_continuous(limits=c(0,ymax*1.4))+#,labels=percent,breaks=c(0,ceiling(ymax/25)*25))+ 
+               scale_y_continuous(limits=c(0,ymax))+#,labels=percent,breaks=c(0,ceiling(ymax/25)*25))+ 
                scale_x_continuous(labels = comma,limits=c(minvalue,maxvalue)) +
                #xlim(c(minvalue,maxvalue))+
                theme(
@@ -131,7 +132,7 @@ densityPlot <- function(
                     plot.margin = unit(c(topMargin=0,leftMargin,bottomMargin,rightMargin), "cm")
                )
           
-          mp <- (maxvalue-minvalue)/2
+          mp <- (maxvalue+minvalue)/2
           yp <- ymax*0.98
           
           if(is.na(mp))
@@ -146,7 +147,7 @@ densityPlot <- function(
           
           p2 <- p2 +     #geom_density(data = var.national,color="black", linetype="twodash", size=0.25) +
                theme_minimal() + 
-               scale_y_continuous(limits=c(0,ymax*1.4))+#,labels=percent,breaks=c(0,ceiling(ymax/25)*25))+ 
+               scale_y_continuous(limits=c(0,ymax))+#,labels=percent,breaks=c(0,ceiling(ymax/25)*25))+ 
                scale_x_continuous(labels = comma,limits=c(minvalue,maxvalue)) +
                theme(
                     axis.text.x=element_blank(),#element_text(size=6, hjust = 0,colour="slategray"),
@@ -167,7 +168,7 @@ densityPlot <- function(
           
           p3 <- p3 +     #geom_density(data = var.national,color="black", linetype="twodash", size=0.25) +
                theme_minimal() + 
-               scale_y_continuous(limits=c(0,ymax*1.4))+#,labels=percent,breaks=c(0,ceiling(ymax/25)*25))+ 
+               scale_y_continuous(limits=c(0,ymax))+#,labels=percent,breaks=c(0,ceiling(ymax/25)*25))+ 
                scale_x_continuous(labels = comma,limits=c(minvalue,maxvalue))  +
                theme(
                     axis.text.x=element_text(size=4.5, angle=90, hjust = 1,colour="slategray"),
@@ -192,7 +193,7 @@ densityPlot <- function(
      } else
      {
           return(
-            arrangeGrob(textGrob(paste0(title,"\ndata is not available or appropriate"),just="top",gp=gpar(fontsize=7, fontface="bold",col = "red")),
+            arrangeGrob(textGrob(paste0(title,"\ndata are not available or appropriate"),just="top",gp=gpar(fontsize=7, fontface="bold",col = "red")),
                         heights=unit(1,units="npc"))
           )
      }

@@ -205,7 +205,7 @@ create_travel_data_yoy <- function(
                                        ncol=3,widths=unit(c(0.4,0.2,0.4),units="npc")),
                               arrangeGrob(textGrob(paste0("Total of ",string_format(totalmiles)," centerline miles."),hjust=0.5 ,vjust=0  ,gp=gpar(fontsize=5, col="gray50"))),
                               nrow=4,
-                              heights=unit(c(0.45,0.25,0.20,0.1),units="npc"),
+                              heights=unit(c(0.45,0.27,0.20,0.08),units="npc"),
                               widths=unit(1,units="npc")
                               )
              
