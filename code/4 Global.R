@@ -14,7 +14,7 @@
 ###########################################################################
 
 # Load additional fonts
-font.add.google("EB Garamond", "Garamond")
+#font.add.google("EB Garamond", "Garamond")
 
 # State Labels & Codes
 gState_Labels <- data.table(

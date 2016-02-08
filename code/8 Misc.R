@@ -37,7 +37,7 @@ getStateNumFromCode <- function(code) {
 
 # Get a list of national data years that have been previously processed
 getSavedNatYears <- function() {
-  file_path_sans_ext(dir("data/+National", pattern = "*.RDS"))
+  file_path_sans_ext(dir("data/+National", pattern = "20*"))
 }
 
 # Get a list of states that have had at least one data set previously processed

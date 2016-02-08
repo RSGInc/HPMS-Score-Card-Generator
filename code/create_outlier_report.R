@@ -56,6 +56,10 @@ create_outlier_report <- function(
      
      total.2 <- d.l[ ,list(totalmiles=round(sum(end_point-begin_point),2)),]
      
+     if(nrow(result.2)==0)
+     {
+       result.2 <- data.table(miles=0,N=0)
+     }
      report.2 <- data.table(result.2,total.2)
      report.2[is.na(miles),miles:=0] # setting values to 0 where there are no merges. this mean that the state had no lane miles outside the thresholds set
      
@@ -72,6 +76,11 @@ create_outlier_report <- function(
      result.3 <- d.l[(value_numeric>outlier_threshold_high|value_numeric<outlier_threshold_low),
                      list(miles=round(sum(end_point-begin_point,na.rm=TRUE),2),.N),
                      ]
+     
+     if(nrow(result.3)==0)
+     {
+       result.3 <- data.table(miles=0,N=0)
+     }
      
      total.3 <- d.l[ ,list(totalmiles=round(sum(end_point-begin_point),2)),]
      

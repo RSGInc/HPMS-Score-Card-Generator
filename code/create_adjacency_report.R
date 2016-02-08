@@ -79,6 +79,11 @@ create_adjacency_report <- function(
      
      total <- d.l[ ,list(totalmiles=round(sum(end_point-begin_point),2)),]
      
+     if(nrow(result)==0)
+     {
+       result <- data.table(miles=0,N=0)
+     }
+     
      report.2 <- data.table(result,total)
      report.2[is.na(miles),miles:=0] # setting values to 0 where there are no merges. this mean that the state had no lane miles outside the thresholds set
      
@@ -106,6 +111,11 @@ create_adjacency_report <- function(
      result <- d.adj[value_numeric.x==value_numeric.y,list(miles=round(sum(end_point.x-begin_point.x),2),.N),]
 
      total <- d.l[ ,list(totalmiles=round(sum(end_point-begin_point),2)),]
+     
+     if(nrow(result)==0)
+     {
+       result <- data.table(miles=0,N=0)
+     }
      
      report.3 <- data.table(result,total)
      report.3[is.na(miles),miles:=0] # setting values to 0 where there are no merges. this mean that the state had no lane miles outside the thresholds set

@@ -69,7 +69,8 @@ Run <- function() {
         
         # Select a year of national data to compare against and assign to global 'national variable for Jeff D's code to use
         # TODO: Jeff's code needs to actually use this at some point
-        national <- getNationalDataSet()
+        #national <- getNationalDataSet()
+        national<-NULL
         
         # Load the population data
         #population2 <<- readRDS(paste0("resources/dat/population.RDS"))#readRDS(paste0("resources/dat/",data.list[["year_selection"]],"_population.RDS"))
