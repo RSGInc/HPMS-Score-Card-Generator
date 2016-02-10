@@ -35,11 +35,22 @@ create_travel_yoy_density <- function(
      {
           national  <- readRDS(paste0("data\\+National\\",yearcomparison,"\\",variable,".rds"))
           
+          if(ramps)
+          {
+            national <- national[FACILITY_TYPE==4,]
+          } else {
+            national <- national[FACILITY_TYPE!=4,]
+          }
+          
           if(nrow(var.1[!is.na(value_numeric),])>2)
           {
             d1 <- density(var.1[,value_numeric],weights=var.1[,(end_point-begin_point)/sum(end_point-begin_point)],na.rm = TRUE)
-            minvalue1 <- 1.05*min(d1$x)#quantile(var.1[,value_numeric],0.01)#min(d1$x)
-            maxvalue1 <- 0.95*max(d1$x)#quantile(var.1[,value_numeric],0.99)#max(d1$x)
+            minvalue1 <- quantile(var.1[,value_numeric],0.05)#min(d1$x)
+            maxvalue1 <- quantile(var.1[,value_numeric],0.95)#max(d1$x)
+            if(minvalue1==maxvalue1)
+            {
+              maxvalue1<-1 + minvalue1
+            }
             ymax1     <- max(d1$y)
           } else {
             minvalue1 <- NULL
@@ -49,8 +60,12 @@ create_travel_yoy_density <- function(
           if(nrow(var.2[!is.na(value_numeric),])>2)
           {
             d2 <- density(var.2[,value_numeric],weights=var.2[,(end_point-begin_point)/sum(end_point-begin_point)],na.rm = TRUE)
-            minvalue2 <- 1.05*min(d2$x)#quantile(var.2[,value_numeric],0.01)#min(d2$x)
-            maxvalue2 <- 0.95*max(d2$x)#quantile(var.2[,value_numeric],0.99)#
+            minvalue2 <- quantile(var.2[,value_numeric],0.05)#min(d2$x)
+            maxvalue2 <- quantile(var.2[,value_numeric],0.95)#
+            if(minvalue2==maxvalue2)
+            {
+              maxvalue2<-1 + minvalue2
+            }
             ymax2     <- max(d2$y)
           } else {
             minvalue2 <- NULL
@@ -95,20 +110,25 @@ create_travel_yoy_density <- function(
               p4 <- densityPlot(var.1[F_SYSTEM==2]  ,var.2[F_SYSTEM==2]  ,d3=national[F_SYSTEM==2],title=gF_SYSTEM_levels[4],minvalue,maxvalue,year,yearcomparison,ymax=ymax)
             } else
             {
-              p1 <- densityPlot(d1=var.1[Interstate==1],d2=var.2[Interstate==1],d3=national[Interstate==1],title=gF_SYSTEM_levels[1],minvalue=minvalue,maxvalue=maxvalue,year1=year,year2=yearcomparison,showLabel=TRUE,ymax=ymax)
-              p2 <- densityPlot(var.1[NHS==1]       ,var.2[NHS==1]       ,d3=national[NHS==1]       ,title=gF_SYSTEM_levels[2],minvalue=minvalue,maxvalue=maxvalue,year1=year,year2=yearcomparison,ymax=ymax)
-              p3 <- densityPlot(var.1[F_SYSTEM==1]  ,var.2[F_SYSTEM==1]  ,d3=national[F_SYSTEM==1]  ,title=gF_SYSTEM_levels[3],minvalue=minvalue,maxvalue=maxvalue,year1=year,year2=yearcomparison,showLabel=TRUE,ymax=ymax)
-              p4 <- densityPlot(d1=var.1[F_SYSTEM==2,]  ,d2=var.2[F_SYSTEM==2,]  ,d3=national[F_SYSTEM==2,]  ,title=gF_SYSTEM_levels[4],minvalue=minvalue,maxvalue=maxvalue,year1=year,year2=yearcomparison,ymax=ymax)
+              p1 <- densityPlot(d1=var.1[Interstate==1],d2=var.2[Interstate==1] ,d3=national[Interstate==1] ,title=gF_SYSTEM_levels[1],minvalue=minvalue,maxvalue=maxvalue,year1=year,year2=yearcomparison,showLabel=TRUE,ymax=ymax)
+              p2 <- densityPlot(var.1[NHS==1]          ,var.2[NHS==1]           ,d3=national[NHS==1]        ,title=gF_SYSTEM_levels[2],minvalue=minvalue,maxvalue=maxvalue,year1=year,year2=yearcomparison,ymax=ymax)
+              p3 <- densityPlot(var.1[F_SYSTEM==1]     ,var.2[F_SYSTEM==1]      ,d3=national[F_SYSTEM==1]   ,title=gF_SYSTEM_levels[3],minvalue=minvalue,maxvalue=maxvalue,year1=year,year2=yearcomparison,showLabel=TRUE,ymax=ymax)
+              p4 <- densityPlot(d1=var.1[F_SYSTEM==2,] ,d2=var.2[F_SYSTEM==2,]  ,d3=national[F_SYSTEM==2,]  ,title=gF_SYSTEM_levels[4],minvalue=minvalue,maxvalue=maxvalue,year1=year,year2=yearcomparison,ymax=ymax)
             }
-            obj <- arrangeGrob(p1,p2,p3,p4,ncol=2,nrow=2)
+            obj <- arrangeGrob(p1,p2,p3,p4,ncol=2,nrow=2,widths=unit(rep(3.77776666666667/2,2),units="inches"))
           }
           else {
             
             labels <- 1:7
             
             scale <- max(c(var.1[,sum(end_point-begin_point),by=list(F_SYSTEM,Interstate,NHS,value_numeric)][,max(V1)],
-                       var.2[,sum(end_point-begin_point),by=list(F_SYSTEM,Interstate,NHS,value_numeric)][,max(V1)]))
+                           var.2[,sum(end_point-begin_point),by=list(F_SYSTEM,Interstate,NHS,value_numeric)][,max(V1)]
+                           ))
             
+            natWeight <- scale/national[,sum(end_point-begin_point),by=list(F_SYSTEM,Interstate,NHS,value_numeric)][,max(V1)]
+            
+            national[,end_point  :=natWeight*end_point]
+            national[,begin_point:=natWeight*begin_point]
             
             p11 <- barPlot(var.1[Interstate==1],labels,title=gF_SYSTEM_levels[1],barcolor="slategray",bottomMargin=-0.5,scale=scale,showLabel=TRUE)
             p12 <- barPlot(var.1[NHS==1]       ,labels,title=gF_SYSTEM_levels[2],barcolor="slategray",bottomMargin=-0.5,scale=scale)
@@ -133,7 +153,7 @@ create_travel_yoy_density <- function(
               p33 <- barPlot(national[F_SYSTEM==1]  ,labels,title="",barcolor="black",topMargin=-0.5,scale=scale,               showAxis=TRUE)
               p34 <- barPlot(national[F_SYSTEM==2]  ,labels,title="",barcolor="black",topMargin=-0.5,scale=scale,               showAxis=TRUE)
             }               
-            obj <- arrangeGrob(p11,p12,p13,p14,p21,p22,p23,p24,p31,p32,p33,p34,ncol=4,nrow=3)
+            obj <- arrangeGrob(p11,p12,p13,p14,p21,p22,p23,p24,p31,p32,p33,p34,ncol=4,nrow=3,widths=unit(rep(3.77776666666667/4,4),units="inches"))
               
             #obj <- textGrob("New chart type",gp=gpar(fontsize=12, col="Red"))  
           }

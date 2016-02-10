@@ -22,7 +22,7 @@ create_page_summary <- function(
      ramps=FALSE)
 {
      
-     width <- unit(c(1.5,0.05,4-(0.5-0.1333)/3,0.05,4-(0.5-0.1333)/3,0.05,4-(0.5-0.1333)/3,0.05),units="inches")
+     width <- unit(c(1.5,0.05,4-(0.5-0.1333+0.3)/3,0.05,4-(0.5-0.1333+0.3)/3,0.05,4-(0.5-0.1333+0.3)/3,0.35),units="inches")
      
      show2 <- show3 <- TRUE
      
@@ -61,7 +61,7 @@ create_page_summary <- function(
                     rectGrob(gp=gpar(fill="white", col = "white"))
                },
                rectGrob(gp = gpar(fill = "white", col = "white")),
-               nrow=1,widths=width
+               nrow=1,ncol=8,widths=width
           ),
           # buffer
           arrangeGrob(
@@ -73,7 +73,7 @@ create_page_summary <- function(
                rectGrob(gp=gpar(fill="white", col = "white")),
                rectGrob(gp=gpar(fill="white", col = "white")),
                rectGrob(gp = gpar(fill = "white", col = "white")),
-               nrow=1,widths=width
+               nrow=1,ncol=8,widths=width
           ), 
           # first row
           arrangeGrob(
@@ -96,7 +96,7 @@ create_page_summary <- function(
                     rectGrob(gp=gpar(fill="white", col = "white"))    
                },
                rectGrob(gp = gpar(fill = "white", col = "white")),
-               nrow=1,widths=width
+               nrow=1,ncol=8,widths=width
           ),
           # second row
           arrangeGrob(
@@ -120,7 +120,7 @@ create_page_summary <- function(
                     rectGrob(gp=gpar(fill="white", col = "white"))
                },
                rectGrob(gp = gpar(fill = "white", col = "white")),
-               nrow=1,widths=width
+               nrow=1,ncol=8,widths=width
           ),
           # third row
           arrangeGrob(
@@ -144,9 +144,9 @@ create_page_summary <- function(
                     rectGrob(gp=gpar(fill="white", col = "white"))
                },
                rectGrob(gp = gpar(fill = "white", col = "white")),
-               nrow=1,widths=width
+               nrow=1,ncol=8,widths=width
           ),
-          nrow=7,heights=unit(c(0.6,0.03,1/3+0.07,0.083333,1.32,2.341667+0.65+0.5,1.571667),units="inches"))
+          nrow=7,ncol=1,heights=unit(c(0.6,0.03,1/3+0.07,0.083333,1.32,2.341667+0.65+0.5,1.571667),units="inches"))
      
      add_header(state,year,title,icontext)
      

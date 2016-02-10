@@ -45,13 +45,13 @@ barPlot <- function(
         
         p <- p[,value_numeric:=factor(value_numeric,levels=rev(levels(value_numeric)))]
         
-        p[,V1:=V1/sum(V1)]
+        #p[,V1:=V1/sum(V1)]
         p[is.na(V1),V1:=0]
         
         p <- ggplot(p,aes(x=value_numeric,y=V1,fill=type))
         p <- p + geom_bar(aes(width=0.8),stat="identity",position=position_dodge(0.0))
         #p <- p + scale_y_continuous("",breaks=break.values,limits=c(0,break.values[2]+100))
-        p <- p + scale_y_continuous(labels=percent,breaks=c(0,0.5,1),limits=c(0,1))
+        p <- p + scale_y_continuous("",limits=c(0,scale))#scale_y_continuous(labels=percent,breaks=c(0,0.5,1),limits=c(0,1))
         p <- p + coord_flip()
         p <- p + ggtitle(title)
         p <- p + scale_fill_manual("",values=c("slategray"="slategray","gray"="gray75","black"="black","white"="white"))
@@ -74,7 +74,7 @@ barPlot <- function(
                       panel.border = element_blank(),
                       panel.background = element_blank(),
                       axis.line = element_line(colour = "white"),
-                      plot.margin = unit(c(topMargin,leftMargin,bottomMargin,rightMargin), "cm")
+                      plot.margin = unit(c(topMargin+0.15,leftMargin+0.15,bottomMargin+0.15,rightMargin+0.15), "cm")
                  )
         
         if(showAxis)

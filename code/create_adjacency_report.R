@@ -139,7 +139,7 @@ create_adjacency_report <- function(
           report <- data.table(melt(report,id.vars="groupCat"))
           report[,highlight:=ifelse(variable=="perc_miles"&as.numeric(value)>highlight_threshold,1,0)]
           report[variable=="perc_miles"&!is.na(value),value:=paste0(value,"%")]
-          report[variable=="Name",value:=gF_SYSTEM_levels[as.numeric(value)],]
+          report[variable=="Name",value:=gF_SYSTEM_levels[as.numeric(groupCat)],]
           report[variable=="Name",variable:="Functional\nSystem",]
           report[variable=="N",variable:="Number of\nSections",]
           report[variable=="miles",variable:="Total Centerline\nMiles",]

@@ -30,11 +30,13 @@ barOCPlot <- function(
       p[,overallscore:=factor(overallscore,levels=c("Insufficient\nInformation","Poor","Fair","Good"))]
         
       p <- ggplot(p[c(4,3,2,1),],aes(x=overallscore,y=milesperc,fill=color))
-      p <- p + geom_bar(aes(width=0.6),stat="identity",position=position_dodge(0.0))
-      p <- p + scale_y_continuous(labels=percent,breaks=c(0,0.5,1),limits=c(0,1))
+      p <- p + geom_bar(aes(width=0.6),stat="identity",position=position_dodge(0.0))+
+               geom_text(aes(label = paste0(round(milesperc*100,1),"%"),y=milesperc+0.075), size = 2)
+      p <- p + scale_y_continuous(labels=percent,breaks=c(0,0.5,1),limits=c(0,1.15))
       p <- p + coord_flip()
       p <- p + ylab(label="")
       p <- p + xlab(label=title)
+      
       #p <- p + ggtitle(title)
       p <- p + scale_fill_manual("",values=c("slategray"="slategray","gray85"="gray85","gray65"="gray65","black"="black"))
 
@@ -57,7 +59,7 @@ barOCPlot <- function(
                       #plot.margin = unit(c(topMargin,leftMargin,bottomMargin,rightMargin), "cm")
                  )
         
-        p <- p + theme(axis.text.x=element_text(size=5, angle=0,hjust = 0.5,colour="slategray"))  
+        p <- p + theme(axis.text.x=element_blank())#element_text(size=5, angle=0,hjust = 0.5,colour="slategray"))  
         p <- p + theme(axis.text.y=element_text(size=5, hjust = 1,colour="slategray"))
 
         return(p)

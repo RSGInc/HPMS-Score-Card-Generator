@@ -112,11 +112,11 @@ densityPlot <- function(
           
           p1 <- p1 +     #geom_density(data = var.national,color="black", linetype="twodash", size=0.25) +
                theme_minimal() + 
-               scale_y_continuous(limits=c(0,ymax))+#,labels=percent,breaks=c(0,ceiling(ymax/25)*25))+ 
+               scale_y_continuous()+#limits=c(0,ymax))+#,labels=percent,breaks=c(0,ceiling(ymax/25)*25))+ 
                scale_x_continuous(labels = comma,limits=c(minvalue,maxvalue)) +
                #xlim(c(minvalue,maxvalue))+
                theme(
-                    axis.text.x=element_blank(),#element_text(size=6, hjust = 0,colour="slategray"),
+                    axis.text.x=element_text(size=4.5, angle=30, hjust = 1,colour="white"),#element_text(size=6, hjust = 0,colour="slategray"),
                     axis.text.y=element_blank(),#element_text(size=4.5, angle = 0, hjust = 0,colour="gray75"), 
                     strip.text.x = element_text(size = 8, angle = 0),
                     strip.text.y = element_text(size = 8, angle = 0),
@@ -129,7 +129,7 @@ densityPlot <- function(
                     panel.border = element_blank(),
                     panel.background = element_blank(),
                     axis.line = element_line(colour = "white"),
-                    plot.margin = unit(c(topMargin=0,leftMargin,bottomMargin,rightMargin), "cm")
+                    plot.margin = unit(c(topMargin=0,leftMargin=0,bottomMargin=0,rightMargin=0), "cm")
                )
           
           mp <- (maxvalue+minvalue)/2
@@ -140,17 +140,17 @@ densityPlot <- function(
             mp <- 0.5
           }
           
-          #p1 <- p1 + ggtitle(title)
-          #p2 <- p2 + ggtitle(title)
-          #p3 <- p3 + ggtitle(title)
-          p1 <- p1 + annotate("text", x=mp, y=yp, label = title,size=2.1, hjust=0.5, face="bold",colour = "slategray")
+          p1 <- p1 + ggtitle(title)
+          p2 <- p2 + ggtitle(title)
+          p3 <- p3 + ggtitle(title)
+          #p1 <- p1 + annotate("text", x=mp, y=yp, label = title,size=2.1, hjust=0.5, face="bold",colour = "slategray")
           
           p2 <- p2 +     #geom_density(data = var.national,color="black", linetype="twodash", size=0.25) +
                theme_minimal() + 
-               scale_y_continuous(limits=c(0,ymax))+#,labels=percent,breaks=c(0,ceiling(ymax/25)*25))+ 
+               scale_y_continuous()+#limits=c(0,ymax))+#,labels=percent,breaks=c(0,ceiling(ymax/25)*25))+ 
                scale_x_continuous(labels = comma,limits=c(minvalue,maxvalue)) +
                theme(
-                    axis.text.x=element_blank(),#element_text(size=6, hjust = 0,colour="slategray"),
+                    axis.text.x=element_text(size=4.5, angle=30, hjust = 1,colour="white"),
                     axis.text.y=element_blank(),#element_text(size=4.5, angle = 0, hjust = 0,colour="gray75"), 
                     strip.text.x = element_text(size = 8, angle = 0),
                     strip.text.y = element_text(size = 8, angle = 0),
@@ -163,15 +163,15 @@ densityPlot <- function(
                     panel.border = element_blank(),
                     panel.background = element_blank(),
                     axis.line = element_line(colour = "white"),
-                    plot.margin = unit(c(topMargin=0,leftMargin,bottomMargin=0,rightMargin), "cm")
+                    plot.margin = unit(c(topMargin=0,leftMargin=0,bottomMargin=0,rightMargin=0), "cm")
                )
           
           p3 <- p3 +     #geom_density(data = var.national,color="black", linetype="twodash", size=0.25) +
                theme_minimal() + 
-               scale_y_continuous(limits=c(0,ymax))+#,labels=percent,breaks=c(0,ceiling(ymax/25)*25))+ 
+               scale_y_continuous()+#limits=c(0,ymax))+#,labels=percent,breaks=c(0,ceiling(ymax/25)*25))+ 
                scale_x_continuous(labels = comma,limits=c(minvalue,maxvalue))  +
                theme(
-                    axis.text.x=element_text(size=4.5, angle=90, hjust = 1,colour="slategray"),
+                    axis.text.x=element_text(size=4.5, angle=30, hjust = 1,colour="slategray"),
                     axis.text.y=element_blank(),#element_text(size=4.5, angle = 0, hjust = 0,colour="black"), 
                     strip.text.x = element_text(size = 8, angle = 0),
                     strip.text.y = element_text(size = 8, angle = 0),
@@ -184,10 +184,10 @@ densityPlot <- function(
                     panel.border = element_blank(),
                     panel.background = element_blank(),
                     axis.line = element_line(colour = "white"),
-                    plot.margin = unit(c(topMargin,leftMargin,bottomMargin=0,rightMargin), "cm")
+                    plot.margin = unit(c(topMargin=0,leftMargin=0,bottomMargin=0,rightMargin=0), "cm")
                )
           
-          p <- arrangeGrob(p1,p2,p3,nrow=3)
+          p <- arrangeGrob(p1,p2,p3,nrow=3,heights=unit(rep(1/3,3),units="npc"))
           
           return(p)
      } else
