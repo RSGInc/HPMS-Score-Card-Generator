@@ -14,8 +14,7 @@
 create_overall_report <- function(
      data,
      state,
-     year,
-     year_compare
+     year
 )
 {
      numberOfRecords.1   <- data[state_code==state&year_record==year,.N,]

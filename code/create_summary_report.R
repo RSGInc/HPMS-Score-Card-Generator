@@ -26,7 +26,7 @@ create_summary_report <- function(
         result1 <- data[state_code==state&year_record==year&data_item==variable&FACILITY_TYPE!=4,,]
      }
      
-     result1[,miles:=sum(end_point-begin_point),by=list(F_SYSTEM)]
+     result1[,miles:=sum(end_point-begin_point,na.rm = TRUE),by=list(F_SYSTEM)]
      result1[,lanemiles:=sum((end_point-begin_point)*THROUGH_LANES,na.rm = TRUE),by=list(F_SYSTEM)]
      if(variable_extent %in% c("SP","FE*"))
      {
@@ -66,11 +66,11 @@ create_summary_report <- function(
         result2 <- data[Interstate==1&state_code==state&year_record==year&data_item==variable&FACILITY_TYPE!=4,,]
      }
      
-     result2[,miles:=sum(end_point-begin_point),]
+     result2[,miles:=sum(end_point-begin_point,na.rm = TRUE),]
      result2[,lanemiles:=sum((end_point-begin_point)*THROUGH_LANES,na.rm = TRUE)]
      if(variable_extent %in% c("SP"))
      {
-          result2[,expandedmiles:=sum((end_point-begin_point)*expansion_factor),]
+          result2[,expandedmiles:=sum((end_point-begin_point)*expansion_factor,na.rm = TRUE),]
           result2[,expandedlanemiles:=sum((end_point-begin_point)*THROUGH_LANES*expansion_factor,na.rm = TRUE)]
      } else
      {
@@ -94,12 +94,12 @@ create_summary_report <- function(
         result3 <- data[NHS==1&state_code==state&year_record==year&data_item==variable&FACILITY_TYPE!=4,,]
      }
      
-     result3[,miles:=sum(end_point-begin_point),]
+     result3[,miles:=sum(end_point-begin_point,na.rm = TRUE),]
      result3[,lanemiles:=sum((end_point-begin_point)*THROUGH_LANES,na.rm = TRUE)]
      if(variable_extent %in% c("SP"))
      {
-          result3[,expandedmiles:=sum((end_point-begin_point)*expansion_factor),]
-          result3[,expandedlanemiles:=sum((end_point-begin_point)*THROUGH_LANES*expansion_factor),]
+          result3[,expandedmiles:=sum((end_point-begin_point)*expansion_factor,na.rm = TRUE),]
+          result3[,expandedlanemiles:=sum((end_point-begin_point)*THROUGH_LANES*expansion_factor,na.rm = TRUE),]
      } else
      {
           result3[,expandedmiles:=NA,]

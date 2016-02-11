@@ -144,7 +144,7 @@ create_travel_data_yoy <- function(
 
           } else
           {
-              p <- ggplot(report[c(2,3,1),], aes(x=1,y=V1,fill=color)) + geom_bar(stat="identity",width=1) 
+              p <- ggplot(report[c(2,3,1),], aes(x=1,y=V1,fill=color)) + geom_bar(stat="identity",width=1.5) 
               #p <- p + scale_x_discrete("", breaks=factor(c(1:2,NA),levels=c(1:2,NA),labels=c("No Change","Changed","NA"),exclude=NULL), drop=FALSE)
               p <- p + coord_flip()   
               colors <- c("slategray","gray50","black")
@@ -154,6 +154,8 @@ create_travel_data_yoy <- function(
               #names(colors)<-levels(report[,color])
               p <- p + scale_fill_manual("",values=colors)
               p <- p + scale_y_continuous(labels=percent)
+              p <- p + scale_x_continuous(labels=percent)
+              p <- p + theme(axis.text.x=element_text(angle = 0, hjust = 1,vjust=-0.5,size=5,color="slategray"))
           }
           
           p <- p + theme(axis.line=element_blank(),
@@ -177,7 +179,7 @@ create_travel_data_yoy <- function(
                           legend.position = "none",
                           axis.text.x = element_text(angle = 90, vjust = 0.5,size=fontsize))
             p <- arrangeGrob(
-                              p,
+                              arrangeGrob(p),
                               arrangeGrob(textGrob(paste0("Total of ",string_format(totalmiles)," centerline miles."),hjust=0.5 ,vjust=0  ,gp=gpar(fontsize=4.5, col="gray50"))),
                               nrow=2,
                               heights=unit(c(0.90,0.1),units="npc"),
@@ -188,13 +190,14 @@ create_travel_data_yoy <- function(
           {
              p <- p + theme(
                           axis.text.y     = element_blank(),
-                          axis.text.x     = element_blank(),
+                          #axis.text.x     = element_blank(),
                           axis.ticks      = element_blank(),
                           legend.position = "none",
                           legend.text     = element_blank(),
-                          plot.margin=unit(c(0.5,0.05,0.5,0.05),"cm"))
+                          plot.margin = unit(c(topMargin=0.1,leftMargin=0.1,bottomMargin=0.1,rightMargin=0.1), "cm"))
+                          #plot.margin=unit(c(0.5,0.05,0.5,0.05),"cm"))
              
-             p <- arrangeGrob(p,
+             p <- arrangeGrob(arrangeGrob(p),
                               arrangeGrob(textGrob(paste0(report[color2=="No",paste0(round(V1,3)*100,"%",ff1)]),hjust=0.5   ,vjust=0  ,gp=gpar(fontsize=17, col="slategray",fontface="bold")),
                                           textGrob(paste0(report[color2=="Yes",paste0(round(V1,3)*100,"%",ff2)]),hjust=0.5,vjust=0  ,gp=gpar(fontsize=17, col="gray50",fontface="bold")),
                                           textGrob(paste0(report[color2=="NA",paste0(round(V1,3)*100,"%")]),hjust=0.5   ,vjust=0  ,gp=gpar(fontsize=17, col="black",fontface="bold")),
@@ -205,7 +208,7 @@ create_travel_data_yoy <- function(
                                        ncol=3,widths=unit(c(0.4,0.2,0.4),units="npc")),
                               arrangeGrob(textGrob(paste0("Total of ",string_format(totalmiles)," centerline miles."),hjust=0.5 ,vjust=0  ,gp=gpar(fontsize=5, col="gray50"))),
                               nrow=4,
-                              heights=unit(c(0.45,0.27,0.20,0.08),units="npc"),
+                              heights=unit(c(0.45,0.27,0.23,0.05),units="npc"),
                               widths=unit(1,units="npc")
                               )
              
