@@ -32,7 +32,15 @@ create_pdf <- function(data, state, year, year_compare, population, national = N
      ts <- Sys.time()
      create_title_page(data,state,year)
      cat(paste0(" completed in: ",round(difftime(Sys.time(),ts,units="secs"),2)," seconds!\n"))
+
+     # subset data
+     data <- data[year_record%in%c(year,year_compare),]
      
+     cat("Information page...")
+     ts <- Sys.time()
+     create_info_page(state,year)
+     cat(paste0(" completed in: ",round(difftime(Sys.time(),ts,units="secs"),2)," seconds!\n"))     
+          
      # Pavement: Detailed Review
 #     cat("Pavement review...")
 #     ts <- Sys.time()
@@ -149,7 +157,7 @@ create_pdf <- function(data, state, year, year_compare, population, national = N
 #     }
 #     create_page_summary(data,state,year,year_compare,x1=todo[i+1,1], title="special network",icontext="sn",page=32)
 #     cat(paste0(" completed in: ",round(difftime(Sys.time(),ts,units="secs"),2)," seconds!\n"))
-     
+   
      #showtext.end()
      dev.off()
      

@@ -12,7 +12,10 @@
 
 create_title_page <- function(data,state,year,year_compare=NULL)
 {
-     grid.arrange(
+     
+    #title_text <- read.table("resources\\dat\\title_text.txt",sep="@",as.is=TRUE,allowEscapes=TRUE,header=FALSE)
+  
+    grid.arrange(
           arrangeGrob( 
                rectGrob(gp = gpar(fill = "slategray2", col="slategray2")),
                rectGrob(gp = gpar(fill = "white", col="white")), 
@@ -59,6 +62,14 @@ create_title_page <- function(data,state,year,year_compare=NULL)
                just = "left", 
                gp = gpar(col = "black", fontface = "italic", fontsize = 7)
      )
+     
+     grid.text(title_text, 
+               x = 0.03, 
+               y = 0.38, 
+               just = "left", 
+               gp = gpar(col = "black", fontsize = 7)
+     )
+     
      
      
      vertical_adj <- 0.05
@@ -134,11 +145,9 @@ create_title_page <- function(data,state,year,year_compare=NULL)
           {
                grid.draw(textGrob(gVariables[i,Name],x=startx+(C-1)*0.15,starty-(R-1)*0.028,hjust=1,gp=gpar(col="slategray",fontsize=7)))
                #grid.ellipse(x=startx+(C-1)*0.15+0.01,y=starty-(R-1)*0.0175,size=2.5,ar=1,angle=0,def="npc",gp=gpar(fill="white",col="slategray"))
-               grid.rect(x=startx+(C-1)*0.15+0.01,
-                         y=starty-(R-1)*0.028,
-                         width=unit(0.007,"npc"),
-                         height=unit(0.0125,"npc"),
-                         gp=gpar(fill="slategray",col="slategray"))
+               
+               plotRect(data,year,gVariables[i,Name],startx,starty,C,R)
+            
                if(R < 4)
                {
                     R <- R + 1
@@ -162,11 +171,7 @@ create_title_page <- function(data,state,year,year_compare=NULL)
           {
                grid.draw(textGrob(gVariables[i,Name],x=startx+(C-1)*0.15,starty-(R-1)*0.028,hjust=1,gp=gpar(col="slategray",fontsize=7)))
                #grid.ellipse(x=startx+(C-1)*0.15+0.01,y=starty-(R-1)*0.0175,size=2.5,ar=1,angle=0,def="npc",gp=gpar(fill="white",col="red"))
-               grid.rect(x=startx+(C-1)*0.15+0.01,
-                         y=starty-(R-1)*0.028,
-                         width=unit(0.007,"npc"),
-                         height=unit(0.0125,"npc"),
-                         gp=gpar(fill="slategray",col="slategray"))
+               plotRect(data,year,gVariables[i,Name],startx,starty,C,R)
                if(R < 3)
                {
                     R <- R + 1
@@ -190,11 +195,7 @@ create_title_page <- function(data,state,year,year_compare=NULL)
           {
                grid.draw(textGrob(gVariables[i,Name],x=startx+(C-1)*0.15,starty-(R-1)*0.028,hjust=1,gp=gpar(col="slategray",fontsize=7)))
                #grid.ellipse(x=startx+(C-1)*0.15+0.01,y=starty-(R-1)*0.0175,size=2.5,ar=1,angle=0,def="npc",gp=gpar(fill="red",col="red"))
-               grid.rect(x=startx+(C-1)*0.15+0.01,
-                         y=starty-(R-1)*0.028,
-                         width=unit(0.007,"npc"),
-                         height=unit(0.0125,"npc"),
-                         gp=gpar(fill="slategray",col="slategray"))
+               plotRect(data,year,gVariables[i,Name],startx,starty,C,R)
                if(R < 4)
                {
                     R <- R + 1
@@ -218,11 +219,7 @@ create_title_page <- function(data,state,year,year_compare=NULL)
           {
                grid.draw(textGrob(gVariables[i,Name],x=startx+(C-1)*0.15,starty-(R-1)*0.028,hjust=1,gp=gpar(col="slategray",fontsize=7)))
                #grid.ellipse(x=startx+(C-1)*0.15+0.01,y=starty-(R-1)*0.0175,size=2.5,ar=1,angle=0,def="npc",gp=gpar(fill="slategray",col="slategray"))
-               grid.rect(x=startx+(C-1)*0.15+0.01,
-                         y=starty-(R-1)*0.028,
-                         width=unit(0.007,"npc"),
-                         height=unit(0.0125,"npc"),
-                         gp=gpar(fill="slategray",col="slategray"))
+               plotRect(data,year,gVariables[i,Name],startx,starty,C,R)
                if(R < 5)
                {
                     R <- R + 1
@@ -246,11 +243,7 @@ create_title_page <- function(data,state,year,year_compare=NULL)
           {
                grid.draw(textGrob(gVariables[i,Name],x=startx+(C-1)*0.15,starty-(R-1)*0.028,hjust=1,gp=gpar(col="slategray",fontsize=7)))
                #grid.ellipse(x=startx+(C-1)*0.15+0.01,y=starty-(R-1)*0.0175,size=2.5,ar=1,angle=0,def="npc",gp=gpar(fill="red",col="red"))
-               grid.rect(x=startx+(C-1)*0.15+0.01,
-                         y=starty-(R-1)*0.028,
-                         width=unit(0.007,"npc"),
-                         height=unit(0.0125,"npc"),
-                         gp=gpar(fill="slategray",col="slategray"))
+               plotRect(data,year,gVariables[i,Name],startx,starty,C,R)
                if(R < 1)
                {
                     R <- R + 1
@@ -274,11 +267,7 @@ create_title_page <- function(data,state,year,year_compare=NULL)
           {
                grid.draw(textGrob(gVariables[i,Name],x=startx+(C-1)*0.15,starty-(R-1)*0.028,hjust=1,gp=gpar(col="slategray",fontsize=7)))
                #grid.ellipse(x=startx+(C-1)*0.15+0.01,y=starty-(R-1)*0.0175,size=2.5,ar=1,angle=0,def="npc",gp=gpar(fill="slategray",col="slategray"))
-               grid.rect(x=startx+(C-1)*0.15+0.01,
-                         y=starty-(R-1)*0.028,
-                         width=unit(0.007,"npc"),
-                         height=unit(0.0125,"npc"),
-                         gp=gpar(fill="slategray",col="slategray"))
+               plotRect(data,year,gVariables[i,Name],startx,starty,C,R)
                if(R < 1)
                {
                     R <- R + 1
@@ -335,9 +324,18 @@ create_title_page <- function(data,state,year,year_compare=NULL)
 
      # summary section of the report
      
-     grid.text("Overall Score",x=0.43,y=0.925,just="centre",gp=gpar(fontsize=12, fontface="bold", col="slategray"))
-     grid.text("85",x=0.43,y=0.865,just="centre",gp=gpar(fontsize=50, fontface="bold", col="black"))
+     #grid.text("Overall Score",x=0.43,y=0.925,just="centre",gp=gpar(fontsize=12, fontface="bold", col="slategray"))
+     #grid.text("85",x=0.43,y=0.865,just="centre",gp=gpar(fontsize=50, fontface="bold", col="black"))
 
+     grid.text("Timeliness",  x=0.41,y=0.915,just="right",gp=gpar(fontsize=12, col="slategray"))
+     grid.text("Completeness",x=0.41,y=0.87 ,just="right",gp=gpar(fontsize=12, col="slategray"))
+     grid.text("Quality",     x=0.41,y=0.825,just="right",gp=gpar(fontsize=12, col="slategray"))
+
+     grid.text("??",x=0.42,y=0.915,just="left",gp=gpar(fontsize=18, fontface="bold", col="steelblue4"))
+     grid.text("??",x=0.42,y=0.87 ,just="left",gp=gpar(fontsize=18, fontface="bold", col="steelblue4"))
+     grid.text("??",x=0.42,y=0.825,just="left",gp=gpar(fontsize=18, fontface="bold", col="steelblue4"))
+
+          
      results <- create_overall_report(data,state,year)
 
      #results <- data.frame(results)
@@ -389,5 +387,5 @@ create_title_page <- function(data,state,year,year_compare=NULL)
                     #padding.h=unit(0.1,units="inches"),padding.v=unit(0.1,units="inches")
      #)
      
-     add_page_number(1)
+     #add_page_number(1)
 }
