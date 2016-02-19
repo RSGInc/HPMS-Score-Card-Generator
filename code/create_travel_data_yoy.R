@@ -144,7 +144,7 @@ create_travel_data_yoy <- function(
 
           } else
           {
-              p <- ggplot(report[c(2,3,1),], aes(x=1,y=V1,fill=color)) + geom_bar(stat="identity",width=1.5) 
+              p <- ggplot(report[c(2,3,1),], aes(x=1,y=V1,fill=color)) + geom_bar(stat="identity",width=0.75) 
               #p <- p + scale_x_discrete("", breaks=factor(c(1:2,NA),levels=c(1:2,NA),labels=c("No Change","Changed","NA"),exclude=NULL), drop=FALSE)
               p <- p + coord_flip()   
               colors <- c("slategray","gray50","black")
@@ -197,7 +197,8 @@ create_travel_data_yoy <- function(
                           plot.margin = unit(c(topMargin=0.1,leftMargin=0.1,bottomMargin=0.1,rightMargin=0.1), "cm"))
                           #plot.margin=unit(c(0.5,0.05,0.5,0.05),"cm"))
              
-             p <- arrangeGrob(arrangeGrob(p),
+             p <- arrangeGrob(textGrob(""),
+                              arrangeGrob(p),
                               arrangeGrob(textGrob(paste0(report[color2=="No",paste0(round(V1,3)*100,"%",ff1)]),hjust=0.5   ,vjust=0  ,gp=gpar(fontsize=17, col="slategray",fontface="bold")),
                                           textGrob(paste0(report[color2=="Yes",paste0(round(V1,3)*100,"%",ff2)]),hjust=0.5,vjust=0  ,gp=gpar(fontsize=17, col="gray50",fontface="bold")),
                                           textGrob(paste0(report[color2=="NA",paste0(round(V1,3)*100,"%")]),hjust=0.5   ,vjust=0  ,gp=gpar(fontsize=17, col="black",fontface="bold")),
@@ -207,8 +208,8 @@ create_travel_data_yoy <- function(
                                           textGrob("of all miles\nwere not matched",hjust=0.5   ,vjust=0  ,gp=gpar(fontsize=5.5, col="black",fontface="bold")),
                                        ncol=3,widths=unit(c(0.4,0.2,0.4),units="npc")),
                               arrangeGrob(textGrob(paste0("Total of ",string_format(totalmiles)," centerline miles."),hjust=0.5 ,vjust=0  ,gp=gpar(fontsize=5, col="gray50"))),
-                              nrow=4,
-                              heights=unit(c(0.45,0.27,0.23,0.05),units="npc"),
+                              nrow=5,
+                              heights=unit(c(0.05,0.35,0.27,0.23,0.1),units="npc"),
                               widths=unit(1,units="npc")
                               )
              
@@ -222,7 +223,7 @@ create_travel_data_yoy <- function(
      } else
      {
           # nothing to report because data are missing
-          return(textGrob(NoDataString,gp=gpar(fontsize=12, col="Red")))
+          return(textGrob(NoDataString,gp=gpar(fontsize=8, col="Red")))
      }
      
 }

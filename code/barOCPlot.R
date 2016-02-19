@@ -55,8 +55,8 @@ barOCPlot <- function(
                       panel.grid.minor = element_blank(),
                       panel.border = element_blank(),
                       panel.background = element_blank(),
-                      axis.line = element_line(colour = "white")#,
-                      #plot.margin = unit(c(topMargin,leftMargin,bottomMargin,rightMargin), "cm")
+                      axis.line = element_line(colour = "white"),
+                      plot.margin = unit(c(0,-3,0,-3), "cm")
                  )
         
         p <- p + theme(axis.text.x=element_blank())#element_text(size=5, angle=0,hjust = 0.5,colour="slategray"))  

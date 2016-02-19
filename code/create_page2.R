@@ -99,7 +99,7 @@ create_page2 <- function(
      grid.text("Sections\nwith outlying values",x=0.12,y=0.63,hjust=1,gp=gpar(fontsize=7, fontface="italic",col="slategray"))
      
      grid.text("Adjacent Sections",x=0.12,y=0.445,hjust=1,gp=gpar(fontsize=10, col="slategray"))
-     grid.text("Adjacent sections\nwith the same value",x=0.12,y=0.405,hjust=1,gp=gpar(fontsize=7, fontface="italic",col="slategray"))
+     grid.text(paste0("Adjacent sections\nwith the same value\nwithin ",year),x=0.12,y=0.405,hjust=1,gp=gpar(fontsize=7, fontface="italic",col="slategray"))
 
      grid.text(paste0(year_compare,"-",year," Sections"),x=0.12,y=0.22,hjust=1,gp=gpar(fontsize=10, col="slategray"))
      grid.text("Sections\nwith the same value\nas previous year",x=0.12,y=0.18,hjust=1,gp=gpar(fontsize=7, fontface="italic",col="slategray"))

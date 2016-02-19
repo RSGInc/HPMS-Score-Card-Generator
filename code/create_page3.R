@@ -109,7 +109,7 @@ create_page3 <- function(
      add_header(state,year,"traffic: detailed review","t")
      
      grid.text("Adjacent Sections",x=0.125,y=0.49,hjust=1,gp=gpar(fontsize=10, col="slategray"))
-     grid.text("Adjacent sections\nwith the same value",x=0.12,y=0.45,hjust=1,gp=gpar(fontsize=7, fontface="italic",col="slategray"))
+     grid.text(paste0("Adjacent sections\nwith the same value\nwithin ",year),x=0.12,y=0.45,hjust=1,gp=gpar(fontsize=7, fontface="italic",col="slategray"))
      
      grid.text(paste0(year_compare,"-",year," Sections"),x=0.12,y=0.260,hjust=1,gp=gpar(fontsize=10, col="slategray"))
      grid.text("Sections\nwith the same value\nas previous year",x=0.12,y=0.22,hjust=1,gp=gpar(fontsize=7, fontface="italic",col="slategray"))

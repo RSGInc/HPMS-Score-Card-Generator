@@ -153,7 +153,7 @@ create_travel_yoy_density <- function(
               p33 <- barPlot(national[F_SYSTEM==1]  ,labels,title="",barcolor="black",topMargin=-0.5,scale=scale,               showAxis=TRUE)
               p34 <- barPlot(national[F_SYSTEM==2]  ,labels,title="",barcolor="black",topMargin=-0.5,scale=scale,               showAxis=TRUE)
             }               
-            obj <- arrangeGrob(p11,p12,p13,p14,p21,p22,p23,p24,p31,p32,p33,p34,ncol=4,nrow=3,widths=unit(rep(3.77776666666667/4,4),units="inches"))
+            obj <- arrangeGrob(p11,p12,p13,p14,textGrob(""),p21,p22,p23,p24,textGrob(""),p31,p32,p33,p34,textGrob(""),ncol=5,nrow=3,widths=unit(c(rep(3.5/4,4),0.2777667),units="inches"))
               
             #obj <- textGrob("New chart type",gp=gpar(fontsize=12, col="Red"))  
           }
@@ -161,7 +161,7 @@ create_travel_yoy_density <- function(
      } else
      {
           # nothing to report because data are missing
-          return(textGrob(NoDataString,gp=gpar(fontsize=12, col="Red")))
+          return(textGrob(NoDataString,gp=gpar(fontsize=8, col="Red")))
      }
      
 }

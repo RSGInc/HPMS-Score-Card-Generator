@@ -16,7 +16,31 @@
 # Load additional fonts
 #font.add.google("EB Garamond", "Garamond")
 
-title_text <- "Lorem ipsum dolor sit amet, consectetur adipiscing\nelit. Donec lobortis massa a eros imperdiet\nvolutpat. Aenean sed ex eu leo accumsan tempus\neu mi. In hac habitasse platea dictumst. Quisque\ninterdum tellus a massa luctus euismod. In\nfringilla tincidunt turpis at egestas. Maecenas\nfaucibus augue eu tellus pulvinar, non maximus\npellentesque. Aliquam eget turpis nisi.\nSuspendisse imperdiet pharetra erat nec ornare.\nNulla lacinia, nisl euismod lacinia ultrices, est\nlorem ultricies felis, quis cursus magna tellus\neget justo."
+title_text <- 
+"The HPMS Scorecard has been developed by
+FHWA's Data Visualization Center.The 
+Scorecard is a descriptive statistical 
+review of the submitted HPMS data for any
+of the 52 reporting geographies (50 states
+plus Washington DC and Puerto Rico) and 
+any reporting year after 2011. The primary
+purpose of this Scorecard is to provide a
+consistent and repeatable view of HPMS 
+submissions. The Scorecard is not intended
+to serve as an exhaustive error finding tool.
+
+The Scorecard user specifies two years on 
+setup: 1) the Analysis Year which would 
+typically be the most recent submitted data
+year and 2) the Comparison Year, which is
+required to accommodate many of the 
+Scorecard's year to year calculations. The 
+Scorecard also evaluates the National 
+patterns for the year prior to the 
+Analysis Year. For example, if the user 
+sets 2014 as the Analysis Year, the 
+Scorecard automatically uses the National 
+data from 2013."
 
 # State Labels & Codes
 gState_Labels <- data.table(

@@ -14,7 +14,7 @@
 create_table <- function(result) {
      
      if(is.null(result)) {
-          return(textGrob(NoDataString, gp = gpar(fontsize = 12, col = "red")))
+          return(textGrob(NoDataString, gp = gpar(fontsize = 8, col = "red")))
      } else {
           # convert result object into tabular format
           tab <- dcast(data = result, formula = groupCat ~ variable)

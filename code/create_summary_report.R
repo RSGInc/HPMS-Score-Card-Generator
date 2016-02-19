@@ -153,6 +153,6 @@ create_summary_report <- function(
           return(ob)
      } else
      {
-          return(textGrob(NoDataString,gp=gpar(fontsize=12, col="Red")))
+          return(textGrob(NoDataString,gp=gpar(fontsize=8, col="Red")))
      }
 }

@@ -193,7 +193,7 @@ densityPlot <- function(
      } else
      {
           return(
-            arrangeGrob(textGrob(paste0(title,"\ndata are not available or appropriate"),just="top",gp=gpar(fontsize=7, fontface="bold",col = "red")),
+            arrangeGrob(textGrob(paste0(title,"\ndata are not available or appropriate"),just="top",gp=gpar(fontsize=5,col = "red")),
                         heights=unit(1,units="npc"))
           )
      }

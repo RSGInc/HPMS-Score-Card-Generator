@@ -15,7 +15,7 @@ add_summary_row_labels <- function(year,yearcompare)
      grid.text(paste0(year," Summary\nStatistics\n"), x = 0.105, y = 0.805, just = "right", gp = gpar(col = "slategray", fontface = "bold", fontsize = 10))
      grid.text("Current year summaries\nby Functional System", x = 0.105, y = 0.77, just = "right", gp = gpar(col = "slategray", fontface = "italic", fontsize = 7))
      grid.text("Distributions", x = 0.105, y = 0.53, just = "right", gp = gpar(col = "slategray", fontface = "bold", fontsize = 10))
-     grid.text("Plotting data distributions for\ncurrent year, previous year,\nand previous nation", x = 0.105, y = 0.49, just = "right", gp = gpar(col = "slategray", fontface = "italic", fontsize = 7))
+     grid.text("Plotting data distributions for\ncurrent year, previous year,\nand national", x = 0.105, y = 0.49, just = "right", gp = gpar(col = "slategray", fontface = "italic", fontsize = 7))
      
      grid.text("Sample panel data are unexpanded.", x = 0.105, y = 0.37, just = "right", gp = gpar(col = "slategray", fontface = "italic", fontsize = 6))
      grid.text("National is scaled to state data.", x = 0.105, y = 0.35, just = "right", gp = gpar(col = "slategray", fontface = "italic", fontsize = 6))
@@ -38,5 +38,5 @@ add_summary_row_labels <- function(year,yearcompare)
      
      grid.text(year,       x=0.065,y=0.43,hjust=1,gp = gpar(col = "slategray", fontsize = 6))
      grid.text(yearcompare,x=0.065,y=0.41,hjust=1,gp = gpar(col = "slategray", fontsize = 6))
-     grid.text("National", x=0.065,y=0.39,hjust=1,gp = gpar(col = "slategray", fontsize = 6))
+     grid.text(paste0("National (",yearcompare,")"), x=0.065,y=0.39,hjust=1,gp = gpar(col = "slategray", fontsize = 6))
 }
