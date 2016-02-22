@@ -11,7 +11,7 @@ create_info_page<-function(state,year,color="white")
           
           nrow=3,heights = unit(c(0.6,0.03,7.5-0.63),units="inches"))
      
-     add_header(state,year,"how to interpret key scorecard charts","i")
+     add_header(state,year,"how to interpret key scorecard charts","?")
 
      grid.raster(image=gLogo3,x = 0, y=0.9,hjust = 0,vjust=1)
      

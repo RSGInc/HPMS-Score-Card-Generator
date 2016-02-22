@@ -23,7 +23,7 @@ Scorecard is a descriptive statistical
 review of the submitted HPMS data for any
 of the 52 reporting geographies (50 states
 plus Washington DC and Puerto Rico) and 
-any reporting year after 2011. The primary
+any reporting year after 2010. The primary
 purpose of this Scorecard is to provide a
 consistent and repeatable view of HPMS 
 submissions. The Scorecard is not intended

@@ -17,9 +17,9 @@ create_title_page <- function(data,state,year,year_compare=NULL)
   
     grid.arrange(
           arrangeGrob( 
-               rectGrob(gp = gpar(fill = "slategray2", col="slategray2")),
+               rectGrob(gp = gpar(fill = "gray90", col="gray90")),
                rectGrob(gp = gpar(fill = "white", col="white")), 
-               rectGrob(gp = gpar(fill = "slategray2", col="slategray2")), 
+               rectGrob(gp = gpar(fill = "gray20", col="gray20")), 
                
                arrangeGrob(
                          rectGrob(gp = gpar(fill = "white", col="white")),rectGrob(gp = gpar(fill = "white", col="white")),rectGrob(gp = gpar(fill = "white", col="white")),
@@ -67,7 +67,7 @@ create_title_page <- function(data,state,year,year_compare=NULL)
                x = 0.03, 
                y = 0.285, 
                just = "left", 
-               gp = gpar(col = "black", fontsize = 6.5)
+               gp = gpar(col = "black", fontsize = 6)
      )
      
      
@@ -324,7 +324,7 @@ create_title_page <- function(data,state,year,year_compare=NULL)
      grid.text("Key to data item status: ",x=0.31+xshift, y=0.015,hjust=1,gp=gpar(col="steelblue4",fontface="bold",fontsize=8))
      
      # logos
-     grid.raster(image=gLogo,x = 0.03, y=0.85,just = "left", width = 0.13)
+     grid.raster(image=gLogo,x = 0.03, y=0.85,just = "left", width = 0.10)
      grid.raster(image=gLogo2,x = 0.02, y=0.04,just = "left", width = 0.10)
 
      # summary section of the report

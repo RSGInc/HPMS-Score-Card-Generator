@@ -161,14 +161,14 @@ getStateDataSets <- function() {
   cat("\n\n")
   
   # Get the user's year selection
-  year_selection <- getUserInput(valid = years, prompt = "For which year of STATE data in the above list would you like to generate a score card for?\nEnter the associated year (e.g., 2014): ")
+  year_selection <- getUserInput(valid = years, prompt = "For which year of STATE data in the above list would you like to generate a score card for?\nEnter the analysis year (e.g., 2014): ")
   
   # Get the user's comparison selection
   cat("\n")
   years_for_comparison <- years[years < year_selection]
   year_compare <- NULL
   if (length(years_for_comparison) > 0) {
-    year_compare <- getUserInput(valid = years_for_comparison, prompt = "What year of STATE data would you like to compare against?\nEnter the associated year (e.g., 2013): ", warning.text = "That is not a valid response. Note that a comparison data set must be older.\n")
+    year_compare <- getUserInput(valid = years_for_comparison, prompt = "What year of STATE data would you like to compare against?\nEnter the comparison year (e.g., 2013): ", warning.text = "That is not a valid response. Note that a comparison data set must be older.\n")
   }
   
   # Load the analysis and comparison year data sets

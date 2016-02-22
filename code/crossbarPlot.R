@@ -15,9 +15,9 @@ crossbarPlot <- function(result)
 
      p <- ggplot(result, aes(groupCat, mq, ymin = lq, ymax=uq))
      p <- p + 
-          geom_point(data=result,aes(y=min,x=groupCat),colour="steelblue4")+
-          geom_point(data=result,aes(y=max,x=groupCat),colour="steelblue4")+
-          geom_crossbar(width = 0.5,fill="steelblue4",col="white",fatten = 1) +
+          geom_point(data=result,aes(y=min,x=groupCat),colour="black")+
+          geom_point(data=result,aes(y=max,x=groupCat),colour="black")+
+          geom_crossbar(width = 0.5,fill="black",col="white",fatten = 1) +
           theme_minimal() + coord_flip() +
           scale_y_continuous(labels = percent)+
           #scale_y_continuous("")+ 
