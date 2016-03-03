@@ -11,66 +11,118 @@
 ###########################################################################
 
 # This function runs the entire data import process
-ImportFiles <- function(files = choose.files()) {
+ImportFiles <- function() {
   
   success <- c()
   
-  for (file in files) {
-    
-    # Read data
-    cat(paste0("\nProcessing ", basename(file), "...\n"))
-    data <- ReadFile(file)
-    
-    setnames(data, 
-             c("Year_Record", "State_Code", "Route_ID","Begin_Point", "End_Point", "Data_Item","Value_Numeric", "Value_Text", "Value_Date"),
-             c("year_record", "state_code", "route_id","begin_point", "end_point", "data_item","value_numeric", "value_text", "value_date")
-            )
-    
-    if (is.null(data)) {
-      success <- c(success, FALSE)
-    } else {
-      
-      # Chop imported data into year-state combinations
-      data <- SegmentDataSet(data)
-      
-      # Check data sets
-      cat("Checking...")
-      passedChecks <- unlist(lapply(X = data, FUN = function(x) CheckData(year = x[["year"]], state = x[["state"]], dat = x[["data"]])))
-      data[!passedChecks] <- NULL
-      cat(" complete!")
-      
-      # Format data sets
-      cat("\nFormatting...")
-      for (i in 1:length(data)) data[[i]][["data"]] <- FormatDataSet(data[[i]][["data"]])
-      cat(" complete!")
-      
-      # Save data sets
-      cat("\nSaving to disk...")
-      for (i in 1:length(data)) SaveDataSet(year = data[[i]][["year"]], state = data[[i]][["state"]], dat = data[[i]][["data"]])
-      cat(" complete!\n")
-      
-      success <- c(success, TRUE)
-      
+  con <- odbcConnect("HPMS")
+  
+  data <- data.table(sqlQuery(con,"select distinct state_code, year_record from HPMSAnalysis order by state_code,year_record"))
+  
+  odbcClose(con)
+  cat("Data available for import include:\n")
+  for(state in unique(data[,state_code]))
+  {
+    cat(paste0(getStateAbbrFromNum(state),": "))
+    for(year in data[state_code==state,unique(year_record)])
+    {
+      cat(paste0(year," "))  
     }
-    
+    cat("\n")
   }
+  cat("\n\n")
+  state <- getUserInput(prompt="What state(s) would you like to import?\nEnter 2 letter abbreviations separated by commas.\nTo import all states, type ALL.")
+  
+  if(state=="ALL")  {
+    codes <- unique(data[,state_code])
+    states <- c()
+    for(code in codes)
+    {
+      states <- c(states,getStateAbbrFromNum(code))
+    }
+  } else {
+    
+     states <- strsplit(state,",")[[1]]
+  }
+    
+  year  <- getUserInput(prompt="\nWhat year(s) would you like to import?\nEnter a single year or a range as in 2012-2014.\nFor all years, type ALL.")
+  
+  if(year=="ALL")  {
+    years <- unique(data[,year_record])
+  } else {
+    years  <- strsplit(year,"-")[[1]]
+  }
+  
+  
+  
+  for (state in states) {
+    
+    for(year in years) {
+      # Read data
+      cat(paste0("\nProcessing ", state," (",year, ")...\n"))
+      data <- ReadFile(state,year)
+      
+      setnames(data, 
+               c("YEAR_RECORD", "STATE_CODE", "ROUTE_ID","BEGIN_POINT", "END_POINT", "DATA_ITEM","VALUE_NUMERIC", "VALUE_TEXT", "VALUE_DATE"),
+               c("year_record", "state_code", "route_id","begin_point", "end_point", "data_item","value_numeric", "value_text", "value_date")
+              )
+      
+      if (is.null(data)) {
+        success <- c(success, FALSE)
+      } else {
+        
+        # Chop imported data into year-state combinations
+        data <- SegmentDataSet(data)
+        
+        # Check data sets
+        cat("Checking...")
+        passedChecks <- unlist(lapply(X = data, FUN = function(x) CheckData(year = x[["year"]], state = x[["state"]], dat = x[["data"]])))
+        data[!passedChecks] <- NULL
+        cat(" complete!")
+        
+        if(length(data)>0)
+        {
+          # Format data sets
+          cat("\nFormatting...")
+          for (i in 1:length(data)) data[[i]][["data"]] <- FormatDataSet(data[[i]][["data"]],state,year)
+          cat(" complete!")
+          
+          # Save data sets
+          cat("\nSaving to disk...")
+          for (i in 1:length(data)) SaveDataSet(year = data[[i]][["year"]], state = data[[i]][["state"]], dat = data[[i]][["data"]])
+          cat(" complete!\n")
+        
+        }
+        success <- c(success, TRUE)
+        
+      }
+    } # year
+  } # state
   return(any(success))
 }
 
 # Attempt to import a data file specified by the user
-ReadFile <- function(file) {
+ReadFile <- function(state,year) {
   
   # These are the expected columns and classes
-  colClasses <- c("Year_Record" = "integer", "State_Code" = "integer", "Route_ID" = "factor",
-                  "Begin_Point" = "numeric", "End_Point" = "numeric", "Data_Item" = "factor",
-                  "Value_Numeric" = "numeric", "Value_Text" = "character", "Value_Date" = "character")
+  #colClasses <- c("Year_Record" = "integer", "State_Code" = "integer", "Route_ID" = "factor",
+  #                "Begin_Point" = "numeric", "End_Point" = "numeric", "Data_Item" = "factor",
+  #                "Value_Numeric" = "numeric", "Value_Text" = "character", "Value_Date" = "character")
   
   # Try to load the data
-  tryCatch(expr = {dat <- fread(file, colClasses = colClasses);
-                   factorCols <- names(colClasses[colClasses == "factor"]);
-                   dat[, (factorCols) := lapply(X = .SD, FUN = factor), .SDcols = factorCols];
-                   return(dat)},
-           error = function(e) {warning(paste(basename(file), "does not appear to be in the proper format. Skipping."), immediate. = TRUE, call. = FALSE); return(NULL)})
+  #tryCatch(expr = {dat <- fread(file, colClasses = colClasses);
+  #                 factorCols <- names(colClasses[colClasses == "factor"]);
+  #                 dat[, (factorCols) := lapply(X = .SD, FUN = factor), .SDcols = factorCols];
+  #                 return(dat)},
+  #         error = function(e) {warning(paste(basename(file), "does not appear to be in the proper format. Skipping."), immediate. = TRUE, call. = FALSE); return(NULL)})
+  
+  con <- odbcConnect("HPMS")
+
+  data <- sqlQuery(con,paste0("select * from hpmsanalysis where state_code = ",getStateNumFromCode(state)," and year_record = ",year))
+  
+  odbcClose(con)
+  
+  return(data.table(data))
   
 }
 
@@ -93,7 +145,7 @@ SegmentDataSet <- function(dat) {
 }
 
 # Format a given data set for use in the score card generation process
-FormatDataSet <- function(dat) {
+FormatDataSet <- function(dat,state,year) {
   
   cat(".")
   
@@ -161,10 +213,20 @@ FormatDataSet <- function(dat) {
   # TODO: merge on sample panel data for expansion factors. Not necessarily here.
   # For now, just include a column of missing expansion factors
 
-  sp <- data.table(read.table(spfile,sep="|",header=TRUE,stringsAsFactors=FALSE))
+  #sp <- data.table(read.table(spfile,sep="|",header=TRUE,stringsAsFactors=FALSE))
 
+  
+  con <- odbcConnect("HPMS")
+
+  sp <- sqlQuery(con,paste0("select * from samples where state_code = ",getStateNumFromCode(state)," and year_record = ",year))
+  
+  odbcClose(con)
+  
+  sp <- data.table(sp)
+  
+  
   setnames(sp,
-          c("Year_Record", "State_Code", "Route_ID","Begin_Point", "End_Point", "Sample_ID","Expansion_Factor"),
+          c("YEAR_RECORD", "STATE_CODE", "ROUTE_ID","BEGIN_POINT", "END_POINT", "SAMPLE_ID","EXPANSION_FACTOR"),
           c("year_record", "state_code", "route_id","begin_point", "end_point", "sample_id","expansion_factor"))
   
   data.formatted <- data.table(

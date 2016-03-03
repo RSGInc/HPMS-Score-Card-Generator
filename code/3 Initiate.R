@@ -29,13 +29,13 @@ Run <- function() {
     if (task == 1) {
       
       whitespace(gSpaces)
-      cat("Please use the windows dialog to select one or more data files to import.\n\n")
-      files <- choose.files(caption = "Select one or more data files to import.")
+      #cat("Please use the windows dialog to select one or more data files to import.\n\n")
+      #files <- choose.files(caption = "Select one or more data files to import.")
       
-      cat("Please use the windows dialog to select one sample panel data file to import.\n\n")
-      spfile <<- choose.files(caption = "Select one sample panel data file to import.",multi=FALSE)
-      
-      ImportOkay <- ImportFiles(files)
+      #cat("Please use the windows dialog to select one sample panel data file to import.\n\n")
+      #spfile <- choose.files(caption = "Select one sample panel data file to import.",multi=FALSE)
+    
+      ImportOkay <- ImportFiles()
       
       # If no imported data sets came in okay, warn the user
       if (!ImportOkay) {
@@ -56,7 +56,9 @@ Run <- function() {
       
       # Score card user task choice
       whitespace(gSpaces)
-      sctask <- getUserInput(valid = 1:2, prompt = "Score card generation options:\n\n(1) One card at a time\n(2) All available states in a given year\n\nPlease enter a 1 or 2: ")
+      #sctask <- getUserInput(valid = 1:2, prompt = "Score card generation options:\n\n(1) One card at a time\n(2) All available states in a given year\n\nPlease enter a 1 or 2: ")
+      sctask<-1
+      
       
       # Sscore card save location
       savepath <- "output/"
@@ -106,15 +108,21 @@ Run <- function() {
       
       whitespace(gSpaces)
       
-      year <- getUserInput("Please enter the year associated with the data: ") 
+      year <- getUserInput("Please enter which year you want to import: ") 
       
       whitespace(gSpaces)
-      cat("Please use the windows dialog to select one or more data files to import.\n\n")
-      file <- choose.files(caption = "Select one file to import.",multi=FALSE)
+      #cat("Please use the windows dialog to select one or more data files to import.\n\n")
+      #file <- choose.files(caption = "Select one file to import.",multi=FALSE)
       
-      population <- read.table(file,sep=",",header=TRUE,colClasses=)
+      con <- odbcConnect("HPMS")
+
+      population <- sqlQuery(con,"select * from codes_urban" )
+  
+      odbcClose(con)
       
-      population <- data.table(urban_code=population[order(population[,"UACE"]),"UACE"],pop=population[order(population[,"UACE"]),"Total.UCAE.Pop"])
+      #population <- read.table(file,sep=",",header=TRUE,colClasses=)
+      
+      population <- data.table(urban_code=population[order(population[,"URBAN_CODE"]),"URBAN_CODE"],pop=population[order(population[,"URBAN_CODE"]),"POPULATION"])
       
       population <- population[,.(pop=unique(pop)),by=urban_code]
       

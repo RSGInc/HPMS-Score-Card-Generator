@@ -19,6 +19,8 @@ CheckData <- function(year, state, dat) {
   # All begin points should be before the end points
   if (!all(dat[, begin_point <= end_point])) passedChecks <- FALSE
   
+  if (nrow(dat)==0) passedChecks <- FALSE
+  
   ### Other data checks go here, for example:
   # make sure state codes are correct
   # make sure there's an F_SYSTEM data_item
