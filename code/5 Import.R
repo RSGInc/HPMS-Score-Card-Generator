@@ -10,6 +10,8 @@
 #
 ###########################################################################
 
+goverwrite <- ""
+
 # This function runs the entire data import process
 ImportFiles <- function() {
   
@@ -31,7 +33,15 @@ ImportFiles <- function() {
     cat("\n")
   }
   cat("\n\n")
-  state <- getUserInput(prompt="What state(s) would you like to import?\nEnter 2 letter abbreviations separated by commas.\nTo import all states, type ALL.")
+  state <- ""
+  while(!(state %in% c("ALL",sapply(unique(data[,state_code]),getStateAbbrFromNum))))
+  {
+    state <- getUserInput(prompt="What state(s) would you like to import?\nEnter 2 letter abbreviations separated by commas.\nTo import all states, type ALL.")
+    if(!(state %in% c("ALL",sapply(unique(data[,state_code]),getStateAbbrFromNum))))
+    {
+      cat("Invalid response:",state)  
+    }
+  }
   
   if(state=="ALL")  {
     codes <- unique(data[,state_code])
@@ -41,19 +51,35 @@ ImportFiles <- function() {
       states <- c(states,getStateAbbrFromNum(code))
     }
   } else {
-    
      states <- strsplit(state,",")[[1]]
   }
-    
-  year  <- getUserInput(prompt="\nWhat year(s) would you like to import?\nEnter a single year or a range as in 2012-2014.\nFor all years, type ALL.")
+  
+  year <- ""
+  
+  ranges <- merge(unique(data[,year_record]),unique(data[,year_record]))
+  ranges <- ranges[ranges[,1]<ranges[,2],]
+  ranges <- paste0(ranges[,1],"-",ranges[,2])
+
+  validyears <- c("ALL",unique(data[,year_record]),ranges)
+  
+  while(!(year %in% validyears))
+  {
+    year  <- getUserInput(prompt="\nWhat year(s) would you like to import?\nEnter a single year or a range as in 2012-2014.\nFor all years, type ALL.")
+    if(!(year %in% validyears))
+    {
+      cat("Invalid response:",year)  
+    }
+  }
   
   if(year=="ALL")  {
     years <- unique(data[,year_record])
   } else {
     years  <- strsplit(year,"-")[[1]]
+    if(length(years)>1)
+    {
+      years <- (years[1]):(years[2])
+    }
   }
-  
-  
   
   for (state in states) {
     
@@ -67,7 +93,7 @@ ImportFiles <- function() {
                c("year_record", "state_code", "route_id","begin_point", "end_point", "data_item","value_numeric", "value_text", "value_date")
               )
       
-      if (is.null(data)) {
+      if (is.null(data)|nrow(data)==0) {
         success <- c(success, FALSE)
       } else {
         
@@ -98,6 +124,8 @@ ImportFiles <- function() {
       }
     } # year
   } # state
+  
+  goverwrite <<- "" # reset
   return(any(success))
 }
 
@@ -210,12 +238,12 @@ FormatDataSet <- function(dat,state,year) {
   data.formatted[, NHS := NHS * (1 - Interstate)]
   data.formatted[, F_SYSTEM := c(NA,1,1,1,2,2,NA)[F_SYSTEM]]
   
-  # TODO: merge on sample panel data for expansion factors. Not necessarily here.
-  # For now, just include a column of missing expansion factors
-
+  # remove non-inventory data
+  data.formatted <- data.formatted[FACILITY_TYPE!=6,]
+  
+  # merge in expansion factors
   #sp <- data.table(read.table(spfile,sep="|",header=TRUE,stringsAsFactors=FALSE))
 
-  
   con <- odbcConnect("HPMS")
 
   sp <- sqlQuery(con,paste0("select * from samples where state_code = ",getStateNumFromCode(state)," and year_record = ",year))
@@ -239,6 +267,8 @@ FormatDataSet <- function(dat,state,year) {
                                            A.begin_point >= B.begin_point and 
                                            A.end_point <= B.end_point and 
                                            A.end_point >= B.begin_point"))
+  
+  data.formatted[,expansion_factor:=as.numeric(expansion_factor)]
   
   #data.formatted[, expansion_factor := NA]
   #data <- data.formatted
@@ -265,7 +295,29 @@ SaveDataSet <- function(year, state, dat) {
   okayToSave <- TRUE
   if (file %in% dir(path)) {
     # File exists, check with user
-    overwrite <- getUserInput(valid = c("Y", "y", "N", "n"), prompt = paste0("Processed file already exists for ", state, " ", year, ". Overwrite it? (Y/N): "))
+    if(!(goverwrite %in% c("ALL Y","ALL N")))
+    {
+      overwrite <- getUserInput(valid = c("Y", "y", "N", "n","ALL Y","ALL N"), prompt = paste0("Processed file already exists for ", state, " ", year, ". Overwrite it? (Y/N/ALL Y/ALL N): "))
+    } 
+    if(goverwrite == "ALL Y")
+    {
+      overwrite <- "Y"
+    }
+    if(goverwrite == "ALL N")
+    {
+      overwrite <- "N"
+    }
+    if(overwrite=="ALL Y")
+    {
+      goverwrite <<- overwrite
+      overwrite <- "Y"
+    } 
+    if(overwrite=="ALL N")
+    {
+      goverwrite <<- overwrite
+      overwrite <- "N"
+    }  
+      
     if (!tolower(overwrite) == "y") okayToSave <- FALSE
   }
   

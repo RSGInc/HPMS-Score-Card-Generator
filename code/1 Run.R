@@ -12,7 +12,7 @@
 #
 # Instructions:
 #
-# 1.... This tool is meant for use with R v3.2.1
+# 1.... This tool is meant for use with R v3.2.3
 #
 ###########################################################################
 

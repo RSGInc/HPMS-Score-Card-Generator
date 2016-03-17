@@ -30,7 +30,7 @@ create_pdf <- function(data, state, year, year_compare, population, national = N
      # Create title page
      cat("Title page...")
      ts <- Sys.time()
-     create_title_page(data,state,year)
+     create_title_page(data,state,year,year_compare)
      cat(paste0("\nTitle page completed in: ",round(difftime(Sys.time(),ts,units="secs"),2)," seconds!\n"))
 
      # subset data

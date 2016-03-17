@@ -143,6 +143,13 @@ create_title_page <- function(data,state,year,year_compare=NULL)
      
      rowWidth <- 0.020
      
+     CompletedScore <- 0
+     TotalCompletedScore <- 0
+     
+     QualityScore <- 0
+     submittedN   <- 0
+     TotalQualityScore <- 0
+     
      for(i in 1:length(gVariables[,Name]))
      {
           
@@ -151,8 +158,20 @@ create_title_page <- function(data,state,year,year_compare=NULL)
                grid.draw(textGrob(gVariables[i,Name],x=startx+(C-1)*0.15,starty-(R-1)*rowWidth,hjust=1,gp=gpar(col="slategray",fontsize=7)))
                #grid.ellipse(x=startx+(C-1)*0.15+0.01,y=starty-(R-1)*0.0175,size=2.5,ar=1,angle=0,def="npc",gp=gpar(fill="white",col="slategray"))
                
-               plotRect(data,year,gVariables[i,Name],startx,starty,C,R)
+               variable <- gVariables[i,Name]
             
+               CompleteType <- plotRect(data,year,variable,startx,starty,C,R)
+               
+               CompletedScore      <- CompletedScore      + (CompleteType-1) * gVariables[Name==variable,Completeness_Weight]
+               TotalCompletedScore <- TotalCompletedScore +                2 * gVariables[Name==variable,Completeness_Weight]
+               
+               submittedN <- submittedN + 1 * ( CompleteType >= 2 )
+               
+               QualityType <- plotCircle(data,year,year_compare,variable,startx,starty,C,R)
+               
+               QualityScore      <- QualityScore      + (QualityType-1) * gVariables[Name==variable,Quality_Weight]
+               TotalQualityScore <- TotalQualityScore +               2 * gVariables[Name==variable,Quality_Weight] * ( CompleteType >= 2 )
+               
                if(R < 4)
                {
                     R <- R + 1
@@ -176,7 +195,19 @@ create_title_page <- function(data,state,year,year_compare=NULL)
           {
                grid.draw(textGrob(gVariables[i,Name],x=startx+(C-1)*0.15,starty-(R-1)*rowWidth,hjust=1,gp=gpar(col="slategray",fontsize=7)))
                #grid.ellipse(x=startx+(C-1)*0.15+0.01,y=starty-(R-1)*0.0175,size=2.5,ar=1,angle=0,def="npc",gp=gpar(fill="white",col="red"))
-               plotRect(data,year,gVariables[i,Name],startx,starty,C,R)
+               variable <- gVariables[i,Name]
+            
+               CompleteType <- plotRect(data,year,variable,startx,starty,C,R)
+               
+               CompletedScore      <- CompletedScore      + (CompleteType-1) * gVariables[Name==variable,Completeness_Weight]
+               TotalCompletedScore <- TotalCompletedScore +                2 * gVariables[Name==variable,Completeness_Weight]
+               
+               submittedN <- submittedN + 1 * ( CompleteType >= 2 )
+               
+               QualityType <- plotCircle(data,year,year_compare,variable,startx,starty,C,R)
+               
+               QualityScore      <- QualityScore      + (QualityType-1) * gVariables[Name==variable,Quality_Weight]
+               TotalQualityScore <- TotalQualityScore +               2 * gVariables[Name==variable,Quality_Weight] * ( CompleteType >= 2 )
                if(R < 3)
                {
                     R <- R + 1
@@ -200,7 +231,19 @@ create_title_page <- function(data,state,year,year_compare=NULL)
           {
                grid.draw(textGrob(gVariables[i,Name],x=startx+(C-1)*0.15,starty-(R-1)*rowWidth,hjust=1,gp=gpar(col="slategray",fontsize=7)))
                #grid.ellipse(x=startx+(C-1)*0.15+0.01,y=starty-(R-1)*0.0175,size=2.5,ar=1,angle=0,def="npc",gp=gpar(fill="red",col="red"))
-               plotRect(data,year,gVariables[i,Name],startx,starty,C,R)
+               variable <- gVariables[i,Name]
+            
+               CompleteType <- plotRect(data,year,variable,startx,starty,C,R)
+               
+               CompletedScore      <- CompletedScore      + (CompleteType-1) * gVariables[Name==variable,Completeness_Weight]
+               TotalCompletedScore <- TotalCompletedScore +                2 * gVariables[Name==variable,Completeness_Weight]
+               
+               submittedN <- submittedN + 1 * ( CompleteType >= 2 )
+               
+               QualityType <- plotCircle(data,year,year_compare,variable,startx,starty,C,R)
+               
+               QualityScore      <- QualityScore      + (QualityType-1) * gVariables[Name==variable,Quality_Weight]
+               TotalQualityScore <- TotalQualityScore +               2 * gVariables[Name==variable,Quality_Weight] * ( CompleteType >= 2 )
                if(R < 4)
                {
                     R <- R + 1
@@ -224,7 +267,19 @@ create_title_page <- function(data,state,year,year_compare=NULL)
           {
                grid.draw(textGrob(gVariables[i,Name],x=startx+(C-1)*0.15,starty-(R-1)*rowWidth,hjust=1,gp=gpar(col="slategray",fontsize=7)))
                #grid.ellipse(x=startx+(C-1)*0.15+0.01,y=starty-(R-1)*0.0175,size=2.5,ar=1,angle=0,def="npc",gp=gpar(fill="slategray",col="slategray"))
-               plotRect(data,year,gVariables[i,Name],startx,starty,C,R)
+               variable <- gVariables[i,Name]
+            
+               CompleteType <- plotRect(data,year,variable,startx,starty,C,R)
+               
+               CompletedScore      <- CompletedScore      + (CompleteType-1) * gVariables[Name==variable,Completeness_Weight]
+               TotalCompletedScore <- TotalCompletedScore +                2 * gVariables[Name==variable,Completeness_Weight]
+               
+               submittedN <- submittedN + 1 * ( CompleteType >= 2 )
+               
+               QualityType <- plotCircle(data,year,year_compare,variable,startx,starty,C,R)
+               
+               QualityScore      <- QualityScore      + (QualityType-1) * gVariables[Name==variable,Quality_Weight]
+               TotalQualityScore <- TotalQualityScore +               2 * gVariables[Name==variable,Quality_Weight] * ( CompleteType >= 2 )
                if(R < 5)
                {
                     R <- R + 1
@@ -248,7 +303,19 @@ create_title_page <- function(data,state,year,year_compare=NULL)
           {
                grid.draw(textGrob(gVariables[i,Name],x=startx+(C-1)*0.15,starty-(R-1)*rowWidth,hjust=1,gp=gpar(col="slategray",fontsize=7)))
                #grid.ellipse(x=startx+(C-1)*0.15+0.01,y=starty-(R-1)*0.0175,size=2.5,ar=1,angle=0,def="npc",gp=gpar(fill="red",col="red"))
-               plotRect(data,year,gVariables[i,Name],startx,starty,C,R)
+               variable <- gVariables[i,Name]
+            
+               CompleteType <- plotRect(data,year,variable,startx,starty,C,R)
+               
+               CompletedScore      <- CompletedScore      + (CompleteType-1) * gVariables[Name==variable,Completeness_Weight]
+               TotalCompletedScore <- TotalCompletedScore +                2 * gVariables[Name==variable,Completeness_Weight]
+               
+               submittedN <- submittedN + 1 * ( CompleteType >= 2 )
+               
+               QualityType <- plotCircle(data,year,year_compare,variable,startx,starty,C,R)
+               
+               QualityScore      <- QualityScore      + (QualityType-1) * gVariables[Name==variable,Quality_Weight]
+               TotalQualityScore <- TotalQualityScore +               2 * gVariables[Name==variable,Quality_Weight] * ( CompleteType >= 2 )
                if(R < 1)
                {
                     R <- R + 1
@@ -272,7 +339,19 @@ create_title_page <- function(data,state,year,year_compare=NULL)
           {
                grid.draw(textGrob(gVariables[i,Name],x=startx+(C-1)*0.15,starty-(R-1)*rowWidth,hjust=1,gp=gpar(col="slategray",fontsize=7)))
                #grid.ellipse(x=startx+(C-1)*0.15+0.01,y=starty-(R-1)*0.0175,size=2.5,ar=1,angle=0,def="npc",gp=gpar(fill="slategray",col="slategray"))
-               plotRect(data,year,gVariables[i,Name],startx,starty,C,R)
+               variable <- gVariables[i,Name]
+            
+               CompleteType <- plotRect(data,year,variable,startx,starty,C,R)
+               
+               CompletedScore      <- CompletedScore      + (CompleteType-1) * gVariables[Name==variable,Completeness_Weight]
+               TotalCompletedScore <- TotalCompletedScore +                2 * gVariables[Name==variable,Completeness_Weight]
+               
+               submittedN <- submittedN + 1 * ( CompleteType >= 2 )
+               
+               QualityType <- plotCircle(data,year,year_compare,variable,startx,starty,C,R)
+               
+               QualityScore      <- QualityScore      + (QualityType-1) * gVariables[Name==variable,Quality_Weight]
+               TotalQualityScore <- TotalQualityScore +               2 * gVariables[Name==variable,Quality_Weight] * ( CompleteType >= 2 )
                if(R < 1)
                {
                     R <- R + 1
@@ -298,30 +377,48 @@ create_title_page <- function(data,state,year,year_compare=NULL)
      #grid.ellipse(x=0.65+xshift,y=0.015,size=2.5,ar=1,angle=0,def="npc",gp=gpar(fill="white",col="slategray"))
      #grid.ellipse(x=0.80+xshift ,y=0.015,size=2.5,ar=1,angle=0,def="npc",gp=gpar(fill="white",col="red"))
      
-     grid.rect(x=0.34+xshift,
+     grid.rect(x=0.28+xshift,
                          y=0.015,
                          width=unit(0.007,"npc"),
                          height=unit(0.0125,"npc"),
                          gp=gpar(fill="slategray",col="slategray"))
      
-     grid.rect(x=0.49+xshift,
+     grid.rect(x=0.37+xshift,
                          y=0.015,
                          width=unit(0.007,"npc"),
                          height=unit(0.0125,"npc"),
                          gp=gpar(fill="gray75",col="slategray"))
      
-     grid.rect(x=0.64+xshift,
+     grid.rect(x=0.46+xshift,
                          y=0.015,
                          width=unit(0.007,"npc"),
                          height=unit(0.0125,"npc"),
                          gp=gpar(fill="white",col="slategray"))
      
-     grid.text("Submitted and Complete",x=0.355+xshift, y=0.015,hjust=0,gp=gpar(col="slategray",fontface="italic",fontsize=6))
-     grid.text("Submitted and Incomplete",x=0.505+xshift, y=0.015,hjust=0,gp=gpar(col="slategray",fontface="italic",fontsize=6))
-     grid.text("Not Submitted",x=0.655+xshift, y=0.015,hjust=0,gp=gpar(col="slategray",fontface="italic",fontsize=6))
+     grid.text("Submitted and Complete",x=0.29+xshift, y=0.015,hjust=0,gp=gpar(col="slategray",fontface="italic",fontsize=6))
+     grid.text("Submitted and Incomplete",x=0.38+xshift, y=0.015,hjust=0,gp=gpar(col="slategray",fontface="italic",fontsize=6))
+     grid.text("Not Submitted",x=0.47+xshift, y=0.015,hjust=0,gp=gpar(col="slategray",fontface="italic",fontsize=6))
+     
+  
+     # high quality   
+     grid.circle(x=0.69+xshift,y=0.015,r=unit(0.007,"npc"),gp=gpar(fill="slategray",col="slategray"))
+
+     # medium quality
+     grid.circle(x=0.74+xshift,y=0.015,r=unit(0.007,"npc"),gp=gpar(fill="gray75",col="slategray"))
+  
+     # lowquality
+     grid.circle(x=0.79+xshift,y=0.015,r=unit(0.007,"npc"),gp=gpar(fill="white",col="slategray"))
+ 
+     grid.text("High",x=0.7+xshift, y=0.015,hjust=0,gp=gpar(col="slategray",fontface="italic",fontsize=6))
+     grid.text("Medium",x=0.75+xshift, y=0.015,hjust=0,gp=gpar(col="slategray",fontface="italic",fontsize=6))
+     grid.text("Low",x=0.8+xshift, y=0.015,hjust=0,gp=gpar(col="slategray",fontface="italic",fontsize=6))
+     
+     
      #grid.text("Not Submitted but Worth Exploring",x=0.805+xshift, y=0.015,hjust=0,gp=gpar(col="slategray",fontface="italic",fontsize=6))
      
-     grid.text("Key to data item status: ",x=0.31+xshift, y=0.015,hjust=1,gp=gpar(col="steelblue4",fontface="bold",fontsize=8))
+     grid.text("Key to data item status: ",x=0.275+xshift, y=0.015,hjust=1,gp=gpar(col="steelblue4",fontface="bold",fontsize=8))
+     
+     grid.text("Key to data item quality: ",x=0.67+xshift, y=0.015,hjust=1,gp=gpar(col="steelblue4",fontface="bold",fontsize=8))
      
      # logos
      grid.raster(image=gLogo,x = 0.03, y=0.85,just = "left", width = 0.10)
@@ -337,8 +434,8 @@ create_title_page <- function(data,state,year,year_compare=NULL)
      grid.text("Quality",     x=0.41,y=0.825,just="right",gp=gpar(fontsize=10, col="slategray"))
 
      grid.text("??",x=0.42,y=0.915,just="left",gp=gpar(fontsize=14, fontface="bold", col="steelblue4"))
-     grid.text("??",x=0.42,y=0.87 ,just="left",gp=gpar(fontsize=14, fontface="bold", col="steelblue4"))
-     grid.text("??",x=0.42,y=0.825,just="left",gp=gpar(fontsize=14, fontface="bold", col="steelblue4"))
+     grid.text(paste0(round(10*CompletedScore/TotalCompletedScore,1),"/10"),x=0.42,y=0.87 ,just="left",gp=gpar(fontsize=14, fontface="bold", col="steelblue4"))
+     grid.text(paste0(round(10*QualityScore/TotalQualityScore,1),"/10"),x=0.42,y=0.825,just="left",gp=gpar(fontsize=14, fontface="bold", col="steelblue4"))
 
           
      results <- create_overall_report(data,state,year)
