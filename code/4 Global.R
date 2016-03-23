@@ -17,30 +17,33 @@
 #font.add.google("EB Garamond", "Garamond")
 
 title_text <- 
-"The HPMS Scorecard has been developed by
-FHWA's Data Visualization Center.The 
-Scorecard is a descriptive statistical 
-review of the submitted HPMS data for any
-of the 52 reporting geographies (50 states
-plus Washington DC and Puerto Rico) and 
-any reporting year after 2010. The primary
-purpose of this Scorecard is to provide a
-consistent and repeatable view of HPMS 
-submissions. The Scorecard is not intended
-to serve as an exhaustive error finding tool.
+"The HPMS Scorecard is a product of the Office 
+of Highway Policy Information and was developed 
+by FHWA's Data Visualization Center. The Scorecard 
+is a visually oriented statistical review of the 
+HPMS data for any one of the 52 reporting 
+geographies (50 states plus Washington DC and Puerto 
+Rico). The primary purpose of this Scorecard is to 
+provide a consistent and thorough tool for review 
+of the HPMS Data Items (also known as 'Section' 
+or attribute data). 
 
-The Scorecard user specifies two years on 
-setup: 1) the Analysis Year which would 
-typically be the most recent submitted data
-year and 2) the Comparison Year, which is
-required to accommodate many of the 
-Scorecard's year to year calculations. The 
-Scorecard also evaluates the National 
-patterns for the year prior to the 
-Analysis Year. For example, if the user 
-sets 2014 as the Analysis Year, the 
-Scorecard automatically uses the National 
-data from 2013."
+The Scorecard is intended to serve as a visual tool 
+to highlight areas of concern or data irregularities, 
+but is not an exhaustive error finding tool. The 
+Scorecard reflects data from  1) the 'Analysis Year'
+which is typically  the most recent data year and 
+2) a previous  'Comparison Year', which is required 
+to accommodate many of the Scorecard's temporal 
+calculations. The Scorecard also evaluates the National 
+patterns for the year prior to the Analysis Year. 
+Elements of the Scorecard are 1) statewide data 
+timeliness, quality and completeness summary, 
+2) information on the interpretation of scorecard 
+elements, 3) pavement and travel items detailed reviews,
+4) ramp data details and 5) HPMS Data Item statistical 
+review."
+
 
 # State Labels & Codes
 gState_Labels <- data.table(

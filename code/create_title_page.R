@@ -429,14 +429,17 @@ create_title_page <- function(data,state,year,year_compare=NULL)
      #grid.text("Overall Score",x=0.43,y=0.925,just="centre",gp=gpar(fontsize=12, fontface="bold", col="slategray"))
      #grid.text("85",x=0.43,y=0.865,just="centre",gp=gpar(fontsize=50, fontface="bold", col="black"))
 
-     grid.text("Timeliness",  x=0.41,y=0.915,just="right",gp=gpar(fontsize=10, col="slategray"))
-     grid.text("Completeness",x=0.41,y=0.87 ,just="right",gp=gpar(fontsize=10, col="slategray"))
-     grid.text("Quality",     x=0.41,y=0.825,just="right",gp=gpar(fontsize=10, col="slategray"))
+     grid.text("Timeliness",  x=0.46,y=0.915,just="right",gp=gpar(fontsize=10, col="slategray"))
+     grid.text("Completeness",x=0.46,y=0.87 ,just="right",gp=gpar(fontsize=10, col="slategray"))
+     grid.text("Quality",     x=0.46,y=0.825,just="right",gp=gpar(fontsize=10, col="slategray"))
 
-     grid.text("??",x=0.42,y=0.915,just="left",gp=gpar(fontsize=14, fontface="bold", col="steelblue4"))
-     grid.text(paste0(round(10*CompletedScore/TotalCompletedScore,1),"/10"),x=0.42,y=0.87 ,just="left",gp=gpar(fontsize=14, fontface="bold", col="steelblue4"))
-     grid.text(paste0(round(10*QualityScore/TotalQualityScore,1),"/10"),x=0.42,y=0.825,just="left",gp=gpar(fontsize=14, fontface="bold", col="steelblue4"))
+     grid.text(paste0(getTimelinessScore(state,year),"/10"),x=0.47,y=0.915,just="left",gp=gpar(fontsize=14, fontface="bold", col="steelblue4"))
+     grid.text(paste0(round(10*CompletedScore/TotalCompletedScore,1),"/10"),x=0.47,y=0.87 ,just="left",gp=gpar(fontsize=14, fontface="bold", col="steelblue4"))
+     grid.text(paste0(round(10*QualityScore/TotalQualityScore,1),"/10"),x=0.47,y=0.825,just="left",gp=gpar(fontsize=14, fontface="bold", col="steelblue4"))
 
+    
+     grid.text("Overall",     x=0.31,y=0.87,just="right",gp=gpar(fontsize=18, col="slategray"))
+     grid.text(paste0(getTimelinessScore(state,year)+round(10*QualityScore/TotalQualityScore,1)+round(10*CompletedScore/TotalCompletedScore,1),"/30"),x=0.32,y=0.87,just="left",gp=gpar(fontsize=21, fontface="bold", col="steelblue4"))
           
      results <- create_overall_report(data,state,year)
 

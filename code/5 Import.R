@@ -273,6 +273,8 @@ FormatDataSet <- function(dat,state,year) {
   #data.formatted[, expansion_factor := NA]
   #data <- data.formatted
   
+  setkeyv(data.formatted,c("year_record","route_id","data_item"))
+  
   gc()
   
   return(data.formatted)
