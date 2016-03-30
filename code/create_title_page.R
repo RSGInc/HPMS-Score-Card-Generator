@@ -42,11 +42,15 @@ create_title_page <- function(data,state,year,year_compare=NULL)
                gp = gpar(col = "slategray",fontface = "bold", fontsize = 10)
      )
      
-     grid.text(gState_Labels[index==state,label], 
+     grid.draw(linesGrob(x = unit(c(0.03, 0.18), "npc"),
+                         y = unit(c(0.66,0.66), "npc"),
+                         gp=gpar(col="black",lty=1)))
+     
+     grid.text(toupper(gState_Labels[index==state,label]), 
                x = 0.03, 
                y = 0.63, 
                just = "left", 
-               gp = gpar(col = "black", fontface = "bold", fontsize = 18)
+               gp = gpar(col = "black", fontface = "bold", fontsize = 20)
      )
      
      grid.text(year, 
@@ -55,6 +59,10 @@ create_title_page <- function(data,state,year,year_compare=NULL)
                just = "left", 
                gp = gpar(col = "black", fontface = "bold", fontsize = 28)
      )
+     
+     grid.draw(linesGrob(x = unit(c(0.03, 0.18), "npc"),
+                         y = unit(c(0.505,0.505), "npc"),
+                         gp=gpar(col="black",lty=1)))
      
      grid.text(paste0("Generated: ",format(Sys.time(), "%B %d, %Y")), 
                x = 0.03, 
@@ -377,48 +385,48 @@ create_title_page <- function(data,state,year,year_compare=NULL)
      #grid.ellipse(x=0.65+xshift,y=0.015,size=2.5,ar=1,angle=0,def="npc",gp=gpar(fill="white",col="slategray"))
      #grid.ellipse(x=0.80+xshift ,y=0.015,size=2.5,ar=1,angle=0,def="npc",gp=gpar(fill="white",col="red"))
      
-     grid.rect(x=0.28+xshift,
+     grid.rect(x=0.37+xshift+0.01,
                          y=0.015,
                          width=unit(0.007,"npc"),
                          height=unit(0.0125,"npc"),
                          gp=gpar(fill="slategray",col="slategray"))
      
-     grid.rect(x=0.37+xshift,
+     grid.rect(x=0.46+xshift+0.01,
                          y=0.015,
                          width=unit(0.007,"npc"),
                          height=unit(0.0125,"npc"),
                          gp=gpar(fill="gray75",col="slategray"))
      
-     grid.rect(x=0.46+xshift,
+     grid.rect(x=0.55+xshift+0.01,
                          y=0.015,
                          width=unit(0.007,"npc"),
                          height=unit(0.0125,"npc"),
                          gp=gpar(fill="white",col="slategray"))
      
-     grid.text("Submitted and Complete",x=0.29+xshift, y=0.015,hjust=0,gp=gpar(col="slategray",fontface="italic",fontsize=6))
-     grid.text("Submitted and Incomplete",x=0.38+xshift, y=0.015,hjust=0,gp=gpar(col="slategray",fontface="italic",fontsize=6))
-     grid.text("Not Submitted",x=0.47+xshift, y=0.015,hjust=0,gp=gpar(col="slategray",fontface="italic",fontsize=6))
+     grid.text("Submitted and Complete",x=0.38+xshift+0.01, y=0.015,hjust=0,gp=gpar(col="slategray",fontface="italic",fontsize=6))
+     grid.text("Submitted and Incomplete",x=0.47+xshift+0.01, y=0.015,hjust=0,gp=gpar(col="slategray",fontface="italic",fontsize=6))
+     grid.text("Not Submitted",x=0.56+xshift+0.01, y=0.015,hjust=0,gp=gpar(col="slategray",fontface="italic",fontsize=6))
      
   
      # high quality   
-     grid.circle(x=0.69+xshift,y=0.015,r=unit(0.007,"npc"),gp=gpar(fill="slategray",col="slategray"))
+     grid.circle(x=0.77+xshift,y=0.015,r=unit(0.007,"npc"),gp=gpar(fill="slategray",col="slategray"))
 
      # medium quality
-     grid.circle(x=0.74+xshift,y=0.015,r=unit(0.007,"npc"),gp=gpar(fill="gray75",col="slategray"))
+     grid.circle(x=0.82+xshift,y=0.015,r=unit(0.007,"npc"),gp=gpar(fill="gray75",col="slategray"))
   
      # lowquality
-     grid.circle(x=0.79+xshift,y=0.015,r=unit(0.007,"npc"),gp=gpar(fill="white",col="slategray"))
+     grid.circle(x=0.87+xshift,y=0.015,r=unit(0.007,"npc"),gp=gpar(fill="white",col="slategray"))
  
-     grid.text("High",x=0.7+xshift, y=0.015,hjust=0,gp=gpar(col="slategray",fontface="italic",fontsize=6))
-     grid.text("Medium",x=0.75+xshift, y=0.015,hjust=0,gp=gpar(col="slategray",fontface="italic",fontsize=6))
-     grid.text("Low",x=0.8+xshift, y=0.015,hjust=0,gp=gpar(col="slategray",fontface="italic",fontsize=6))
+     grid.text("High",x=0.78+xshift, y=0.015,hjust=0,gp=gpar(col="slategray",fontface="italic",fontsize=6))
+     grid.text("Medium",x=0.83+xshift, y=0.015,hjust=0,gp=gpar(col="slategray",fontface="italic",fontsize=6))
+     grid.text("Low",x=0.88+xshift, y=0.015,hjust=0,gp=gpar(col="slategray",fontface="italic",fontsize=6))
      
      
      #grid.text("Not Submitted but Worth Exploring",x=0.805+xshift, y=0.015,hjust=0,gp=gpar(col="slategray",fontface="italic",fontsize=6))
      
-     grid.text("Key to data item status: ",x=0.275+xshift, y=0.015,hjust=1,gp=gpar(col="steelblue4",fontface="bold",fontsize=8))
+     grid.text("Key to data item status and completeness: ",x=0.365+xshift+0.01, y=0.015,hjust=1,gp=gpar(col="steelblue4",fontface="bold",fontsize=8))
      
-     grid.text("Key to data item quality: ",x=0.67+xshift, y=0.015,hjust=1,gp=gpar(col="steelblue4",fontface="bold",fontsize=8))
+     grid.text("Key to data item quality: ",x=0.75+xshift, y=0.015,hjust=1,gp=gpar(col="steelblue4",fontface="bold",fontsize=8))
      
      # logos
      grid.raster(image=gLogo,x = 0.03, y=0.85,just = "left", width = 0.10)
@@ -444,42 +452,49 @@ create_title_page <- function(data,state,year,year_compare=NULL)
      results <- create_overall_report(data,state,year)
 
      #results <- data.frame(results)
-               
-     grid.text(paste0("Year ",year  ),x=0.660,y=0.925,gp=gpar(fontsize=9, fontface="bold", col="slategray"),hjust=1)
-     grid.text(paste0("Year ",year-1),x=0.720,y=0.925,gp=gpar(fontsize=9, fontface="bold", col="slategray"),hjust=1)
-     grid.text(paste0("Year ",year-2),x=0.780,y=0.925,gp=gpar(fontsize=9, fontface="bold", col="slategray"),hjust=1)
-     grid.text(paste0("Year ",year-3),x=0.840,y=0.925,gp=gpar(fontsize=9, fontface="bold", col="slategray"),hjust=1)
-     grid.text(paste0("Year ",year-4),x=0.900,y=0.925,gp=gpar(fontsize=9, fontface="bold", col="slategray"),hjust=1)
+          
+     grid.draw(linesGrob(x = unit(c(0.73, 0.73), "npc"),
+                         y = unit(c(0.95,0.79), "npc"),
+                         gp=gpar(col="white",lty=1,lwd=3)))
+          
+     grid.text(paste0("",year  ),x=0.890,y=0.925,gp=gpar(fontsize=9, fontface="bold", col="slategray"),hjust=1)
+     grid.text(paste0("",year-1),x=0.950,y=0.925,gp=gpar(fontsize=9, fontface="bold", col="slategray"),hjust=1)
+     #grid.text(paste0("Year ",year-2),x=0.780,y=0.925,gp=gpar(fontsize=9, fontface="bold", col="slategray"),hjust=1)
+     #grid.text(paste0("Year ",year-3),x=0.840,y=0.925,gp=gpar(fontsize=9, fontface="bold", col="slategray"),hjust=1)
+     #grid.text(paste0("Year ",year-4),x=0.900,y=0.925,gp=gpar(fontsize=9, fontface="bold", col="slategray"),hjust=1)
      
-     grid.text(results[1,1,with=FALSE],x=0.60,y=0.900,gp=gpar(fontsize=8, fontface="bold", col="slategray"),hjust=1)
-     grid.text(results[2,1,with=FALSE],x=0.60,y=0.875,gp=gpar(fontsize=8, fontface="bold", col="slategray"),hjust=1)
-     grid.text(results[3,1,with=FALSE],x=0.60,y=0.850,gp=gpar(fontsize=8, fontface="bold", col="slategray"),hjust=1)
-     grid.text(results[4,1,with=FALSE],x=0.60,y=0.825,gp=gpar(fontsize=8, fontface="bold", col="slategray"),hjust=1)
+     grid.text(results[2,1,with=FALSE],x=0.835,y=0.900,gp=gpar(fontsize=8, fontface="bold", col="slategray"),hjust=1)
+     grid.text(results[3,1,with=FALSE],x=0.835,y=0.880,gp=gpar(fontsize=8, fontface="bold", col="slategray"),hjust=1)
+     grid.text(results[4,1,with=FALSE],x=0.835,y=0.860,gp=gpar(fontsize=8, fontface="bold", col="slategray"),hjust=1)
+     grid.text(results[5,1,with=FALSE],x=0.835,y=0.840,gp=gpar(fontsize=8, fontface="bold", col="slategray"),hjust=1)
+     grid.text(results[6,1,with=FALSE],x=0.835,y=0.820,gp=gpar(fontsize=8, fontface="bold", col="slategray"),hjust=1)
 
-     grid.text(results[1,2,with=FALSE],x=0.660,y=0.900,gp=gpar(fontsize=8, col="black"),hjust=1)
-     grid.text(results[2,2,with=FALSE],x=0.660,y=0.875,gp=gpar(fontsize=8, col="black"),hjust=1)
-     grid.text(results[3,2,with=FALSE],x=0.660,y=0.850,gp=gpar(fontsize=8, col="black"),hjust=1)
-     grid.text(results[4,2,with=FALSE],x=0.660,y=0.825,gp=gpar(fontsize=8, col="black"),hjust=1)
+     grid.text(results[2,2,with=FALSE],x=0.89,y=0.900,gp=gpar(fontsize=8, col="black"),hjust=1)
+     grid.text(results[3,2,with=FALSE],x=0.89,y=0.880,gp=gpar(fontsize=8, col="black"),hjust=1)
+     grid.text(results[4,2,with=FALSE],x=0.89,y=0.860,gp=gpar(fontsize=8, col="black"),hjust=1)
+     grid.text(results[5,2,with=FALSE],x=0.89,y=0.840,gp=gpar(fontsize=8, col="black"),hjust=1)
+     grid.text(results[6,2,with=FALSE],x=0.89,y=0.820,gp=gpar(fontsize=8, col="black"),hjust=1)
      
-     grid.text(results[1,3,with=FALSE],x=0.720,y=0.900,gp=gpar(fontsize=8, col="black"),hjust=1)
-     grid.text(results[2,3,with=FALSE],x=0.720,y=0.875,gp=gpar(fontsize=8, col="black"),hjust=1)
-     grid.text(results[3,3,with=FALSE],x=0.720,y=0.850,gp=gpar(fontsize=8, col="black"),hjust=1)
-     grid.text(results[4,3,with=FALSE],x=0.720,y=0.825,gp=gpar(fontsize=8, col="black"),hjust=1)
+     grid.text(results[2,3,with=FALSE],x=0.95,y=0.900,gp=gpar(fontsize=8, col="black"),hjust=1)
+     grid.text(results[3,3,with=FALSE],x=0.95,y=0.880,gp=gpar(fontsize=8, col="black"),hjust=1)
+     grid.text(results[4,3,with=FALSE],x=0.95,y=0.860,gp=gpar(fontsize=8, col="black"),hjust=1)
+     grid.text(results[5,3,with=FALSE],x=0.95,y=0.840,gp=gpar(fontsize=8, col="black"),hjust=1)
+     grid.text(results[6,3,with=FALSE],x=0.95,y=0.820,gp=gpar(fontsize=8, col="black"),hjust=1)
      
-     grid.text(results[1,4,with=FALSE],x=0.780,y=0.900,gp=gpar(fontsize=8, col="black"),hjust=1)
-     grid.text(results[2,4,with=FALSE],x=0.780,y=0.875,gp=gpar(fontsize=8, col="black"),hjust=1)
-     grid.text(results[3,4,with=FALSE],x=0.780,y=0.850,gp=gpar(fontsize=8, col="black"),hjust=1)
-     grid.text(results[4,4,with=FALSE],x=0.780,y=0.825,gp=gpar(fontsize=8, col="black"),hjust=1)
+     #grid.text(results[1,4,with=FALSE],x=0.780,y=0.900,gp=gpar(fontsize=8, col="black"),hjust=1)
+     #grid.text(results[2,4,with=FALSE],x=0.780,y=0.875,gp=gpar(fontsize=8, col="black"),hjust=1)
+     #grid.text(results[3,4,with=FALSE],x=0.780,y=0.850,gp=gpar(fontsize=8, col="black"),hjust=1)
+     #grid.text(results[4,4,with=FALSE],x=0.780,y=0.825,gp=gpar(fontsize=8, col="black"),hjust=1)
      
-     grid.text(results[1,5,with=FALSE],x=0.840,y=0.900,gp=gpar(fontsize=8, col="black"),hjust=1)
-     grid.text(results[2,5,with=FALSE],x=0.840,y=0.875,gp=gpar(fontsize=8, col="black"),hjust=1)
-     grid.text(results[3,5,with=FALSE],x=0.840,y=0.850,gp=gpar(fontsize=8, col="black"),hjust=1)
-     grid.text(results[4,5,with=FALSE],x=0.840,y=0.825,gp=gpar(fontsize=8, col="black"),hjust=1)
+     #grid.text(results[1,5,with=FALSE],x=0.840,y=0.900,gp=gpar(fontsize=8, col="black"),hjust=1)
+     #grid.text(results[2,5,with=FALSE],x=0.840,y=0.875,gp=gpar(fontsize=8, col="black"),hjust=1)
+     #grid.text(results[3,5,with=FALSE],x=0.840,y=0.850,gp=gpar(fontsize=8, col="black"),hjust=1)
+     #grid.text(results[4,5,with=FALSE],x=0.840,y=0.825,gp=gpar(fontsize=8, col="black"),hjust=1)
      
-     grid.text(results[1,6,with=FALSE],x=0.900,y=0.900,gp=gpar(fontsize=8, col="black"),hjust=1)
-     grid.text(results[2,6,with=FALSE],x=0.900,y=0.875,gp=gpar(fontsize=8, col="black"),hjust=1)
-     grid.text(results[3,6,with=FALSE],x=0.900,y=0.850,gp=gpar(fontsize=8, col="black"),hjust=1)
-     grid.text(results[4,6,with=FALSE],x=0.900,y=0.825,gp=gpar(fontsize=8, col="black"),hjust=1)
+     #grid.text(results[1,6,with=FALSE],x=0.900,y=0.900,gp=gpar(fontsize=8, col="black"),hjust=1)
+     #grid.text(results[2,6,with=FALSE],x=0.900,y=0.875,gp=gpar(fontsize=8, col="black"),hjust=1)
+     #grid.text(results[3,6,with=FALSE],x=0.900,y=0.850,gp=gpar(fontsize=8, col="black"),hjust=1)
+     #grid.text(results[4,6,with=FALSE],x=0.900,y=0.825,gp=gpar(fontsize=8, col="black"),hjust=1)
      
      #grid.text(
      #               create_overall_report(state,year,year_compare),

@@ -23,6 +23,18 @@ create_overall_report <- function(
      numberOfRecords.4   <- data[state_code==state&year_record==year-3,.N,]
      numberOfRecords.5   <- data[state_code==state&year_record==year-4,.N,]
      
+     numberOfCtrLine.1   <- data[state_code==state&year_record==year  ,sum(end_point-begin_point,na.rm = TRUE),]
+     numberOfCtrLine.2   <- data[state_code==state&year_record==year-1,sum(end_point-begin_point,na.rm = TRUE),]
+     numberOfCtrLine.3   <- data[state_code==state&year_record==year-2,sum(end_point-begin_point,na.rm = TRUE),]
+     numberOfCtrLine.4   <- data[state_code==state&year_record==year-3,sum(end_point-begin_point,na.rm = TRUE),]
+     numberOfCtrLine.5   <- data[state_code==state&year_record==year-4,sum(end_point-begin_point,na.rm = TRUE),]
+     
+     numberOfLaneMiles.1   <- data[state_code==state&year_record==year  ,sum(THROUGH_LANES*(end_point-begin_point),na.rm = TRUE),]
+     numberOfLaneMiles.2   <- data[state_code==state&year_record==year-1,sum(THROUGH_LANES*(end_point-begin_point),na.rm = TRUE),]
+     numberOfLaneMiles.3   <- data[state_code==state&year_record==year-2,sum(THROUGH_LANES*(end_point-begin_point),na.rm = TRUE),]
+     numberOfLaneMiles.4   <- data[state_code==state&year_record==year-3,sum(THROUGH_LANES*(end_point-begin_point),na.rm = TRUE),]
+     numberOfLaneMiles.5   <- data[state_code==state&year_record==year-4,sum(THROUGH_LANES*(end_point-begin_point),na.rm = TRUE),]
+     
      numberOfVariables.1 <- length(data[state_code==state&year_record==year,unique(data_item),])
      numberOfVariables.2 <- length(data[state_code==state&year_record==year-1,unique(data_item),])
      numberOfVariables.3 <- length(data[state_code==state&year_record==year-2,unique(data_item),])
@@ -42,12 +54,12 @@ create_overall_report <- function(
      numberSegments.5    <- nrow(unique(data[state_code==state&year_record==year-4,list(route_id,begin_point,end_point),]))
      
      result <- data.table(
-          Label=c("Number of Records","Number of Variables","Number of Routes","Number of Sections"),
-          Val.1=string_format(c(numberOfRecords.1,numberOfVariables.1,numberRoutes.1,numberSegments.1)),
-          Val.2=string_format(c(numberOfRecords.2,numberOfVariables.2,numberRoutes.2,numberSegments.2)),
-          Val.3=string_format(c(numberOfRecords.3,numberOfVariables.3,numberRoutes.3,numberSegments.3)),
-          Val.4=string_format(c(numberOfRecords.4,numberOfVariables.4,numberRoutes.4,numberSegments.4)),
-          Val.5=string_format(c(numberOfRecords.5,numberOfVariables.5,numberRoutes.5,numberSegments.5))
+          Label=c("Number of Records","Number of Data Items","Number of Routes","Number of Sections","Total Center Line Miles","Total Lane Miles"),
+          Val.1=string_format(c(numberOfRecords.1,numberOfVariables.1,numberRoutes.1,numberSegments.1,numberOfCtrLine.1,numberOfLaneMiles.1)),
+          Val.2=string_format(c(numberOfRecords.2,numberOfVariables.2,numberRoutes.2,numberSegments.2,numberOfCtrLine.2,numberOfLaneMiles.2)),
+          Val.3=string_format(c(numberOfRecords.3,numberOfVariables.3,numberRoutes.3,numberSegments.3,numberOfCtrLine.3,numberOfLaneMiles.3)),
+          Val.4=string_format(c(numberOfRecords.4,numberOfVariables.4,numberRoutes.4,numberSegments.4,numberOfCtrLine.4,numberOfLaneMiles.4)),
+          Val.5=string_format(c(numberOfRecords.5,numberOfVariables.5,numberRoutes.5,numberSegments.5,numberOfCtrLine.5,numberOfLaneMiles.5))
      )
      
      setnames(result,"Val.1",paste0("Year ",year))
