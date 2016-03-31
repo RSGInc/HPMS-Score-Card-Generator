@@ -1079,7 +1079,7 @@ plotRect <- function(data,year,variable,startx,starty,C,R)
       coverage$required <- with(coverage,!is.na(expansion_factor)&SURFACETYPE%in%c(2,6,7,8))
   
       if(sum(is.na(coverage$variable[coverage$required]))==0&nrow(coverage)>0){
-        type <- 1  
+        type <- 3  
       }
     }  
     

@@ -222,7 +222,18 @@ FormatDataSet <- function(dat,state,year) {
                                            A.begin_point >= B.begin_point and 
                                            A.end_point <= B.end_point and 
                                            A.end_point >= B.begin_point and B.data_item = 'THROUGH_LANES'"))
-      
+
+    data.formatted <- data.table(
+    sqldf("select A.*, B.value_numeric as URBAN_CODE 
+           from [data.formatted] A 
+           left join [data.formatted] B on A.route_id = B.route_id and 
+                                           A.year_record = B.year_record and 
+                                           A.state_code = B.state_code and 
+                                           A.begin_point <= B.end_point and 
+                                           A.begin_point >= B.begin_point and 
+                                           A.end_point <= B.end_point and 
+                                           A.end_point >= B.begin_point and B.data_item = 'URBAN_CODE'"))
+        
   #F_SYSTEM Codes
   # 1 Interstate
   # 2 Principal Arterial - Other Freeways and Expressways
@@ -233,6 +244,7 @@ FormatDataSet <- function(dat,state,year) {
   # 7 Local
   
   # Recode Interstate, NHS, and F_SYSTEM variables
+  data.formatted[, F_SYTEMorig := F_SYSTEM]
   data.formatted[, Interstate := c(1,0,0,0,0,0,0)[F_SYSTEM]]
   data.formatted[, NHS := c(1,0,0,0,0,0,0)[NHS]]
   data.formatted[, NHS := NHS * (1 - Interstate)]
