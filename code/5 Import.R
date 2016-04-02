@@ -19,7 +19,7 @@ ImportFiles <- function() {
   
   con <- odbcConnect("HPMS")
   
-  data <- data.table(sqlQuery(con,"select distinct state_code, year_record from HPMSAnalysis order by state_code,year_record"))
+  data <- data.table(sqlQuery(con,paste0("select distinct state_code, year_record from ",datatable," order by state_code,year_record")))
   
   odbcClose(con)
   cat("Data available for import include:\n")
@@ -146,7 +146,7 @@ ReadFile <- function(state,year) {
   
   con <- odbcConnect("HPMS")
 
-  data <- sqlQuery(con,paste0("select * from hpmsanalysis where state_code = ",getStateNumFromCode(state)," and year_record = ",year))
+  data <- sqlQuery(con,paste0("select * from ",datatable," where state_code = ",getStateNumFromCode(state)," and year_record = ",year))
   
   odbcClose(con)
   
@@ -258,7 +258,7 @@ FormatDataSet <- function(dat,state,year) {
 
   con <- odbcConnect("HPMS")
 
-  sp <- sqlQuery(con,paste0("select * from samples where state_code = ",getStateNumFromCode(state)," and year_record = ",year))
+  sp <- sqlQuery(con,paste0("select * from ",sampletable," where state_code = ",getStateNumFromCode(state)," and year_record = ",year))
   
   odbcClose(con)
   

@@ -13,6 +13,13 @@
 #
 ###########################################################################
 
+# SQL table names
+
+poptable         <- "codes_urban"
+datatable        <- "HPMSAnalysis"
+sampletable      <- "samples"
+timelinesstables <- "SubmissionDates" 
+
 # Load additional fonts
 #font.add.google("EB Garamond", "Garamond")
 

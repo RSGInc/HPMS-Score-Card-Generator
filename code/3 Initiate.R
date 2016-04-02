@@ -116,7 +116,7 @@ Run <- function() {
       
       con <- odbcConnect("HPMS")
 
-      population <- sqlQuery(con,"select * from codes_urban" )
+      population <- sqlQuery(con,paste0("select * from ",poptable) )
   
       odbcClose(con)
       

@@ -15,6 +15,12 @@ create_title_page <- function(data,state,year,year_compare=NULL)
      
     #title_text <- read.table("resources\\dat\\title_text.txt",sep="@",as.is=TRUE,allowEscapes=TRUE,header=FALSE)
   
+    scorestotals <- read.table("resources\\dat\\scoringweights.csv",sep=",",header=TRUE)
+  
+    timetotal     <- scorestotals[,"timeliness"]
+    completetotal <- scorestotals[,"completeness"]
+    qualitytotal  <- scorestotals[,"quality"]
+    
     grid.arrange(
           arrangeGrob( 
                rectGrob(gp = gpar(fill = "gray90", col="gray90")),
@@ -445,9 +451,9 @@ create_title_page <- function(data,state,year,year_compare=NULL)
      #grid.text(paste0(round(10*QualityScore/TotalQualityScore,1),"/10"),x=0.47,y=0.825,just="left",gp=gpar(fontsize=14, fontface="bold", col="steelblue4"))
 
     
-     tscore <- getTimelinessScore(state,year)
-     cscore <- round(10*CompletedScore/TotalCompletedScore,1)
-     qscore <- round(10*QualityScore/TotalQualityScore,1)
+     tscore <- timetotal*getTimelinessScore(state,year)
+     cscore <- round(completetotal*CompletedScore/TotalCompletedScore,1)
+     qscore <- round(qualitytotal*QualityScore/TotalQualityScore,1)
      
      scores <- data.table(
                       type=c("Timeliness","Completeness","Quality"),
@@ -458,32 +464,37 @@ create_title_page <- function(data,state,year,year_compare=NULL)
      {
         grid.rect(x=0.41,y=0.85,
                          width=unit(0.025,"npc"),
-                         height=unit(tscore/100,"npc"),vjust =0,
+                         height=unit(0.1*tscore/timetotal,"npc"),vjust =0,
                          gp=gpar(fill="black",col="black"))
      }
      if(cscore>0)
      {
         grid.rect(x=0.475,y=0.85,
                          width=unit(0.025,"npc"),
-                         height=unit(cscore/100,"npc"),vjust =0,
+                         height=unit(0.1*cscore/completetotal,"npc"),vjust =0,
                          gp=gpar(fill="black",col="black"))
      }
      if(qscore>0)
      {
         grid.rect(x=0.54,y=0.85,
                          width=unit(0.025,"npc"),
-                         height=unit(qscore/100,"npc"),vjust =0,
+                         height=unit(0.1*qscore/qualitytotal,"npc"),vjust =0,
                          gp=gpar(fill="black",col="black"))
      }
      
      
      grid.text("Timeliness",  x=0.41, y=0.83,hjust=0.5,gp=gpar(fontsize=7, col="gray50"))
      grid.text("Completeness",x=0.475,y=0.83,hjust=0.5,gp=gpar(fontsize=7, col="gray50"))
-     grid.text("Quality",     x=0.54,  y=0.83,hjust=0.5,gp=gpar(fontsize=7, col="gray50"))
-     
-     grid.text(tscore,x=0.41,  y=0.83+tscore/100+0.03,hjust=0.5,gp=gpar(fontsize=7, col="black"))
-     grid.text(cscore,x=0.475,y=0.83+cscore/100+0.03,hjust=0.5,gp=gpar(fontsize=7, col="black"))
-     grid.text(qscore,x=0.54, y=0.83+qscore/100+0.03,hjust=0.5,gp=gpar(fontsize=7, col="black"))
+     grid.text("Quality",     x=0.54, y=0.83,hjust=0.5,gp=gpar(fontsize=7, col="gray50"))
+
+     grid.text(paste0("out of ",timetotal),  x=0.41, y=0.81,hjust=0.5,gp=gpar(fontsize=7, col="gray50"))
+     grid.text(paste0("out of ",completetotal),x=0.475,y=0.81,hjust=0.5,gp=gpar(fontsize=7, col="gray50"))
+     grid.text(paste0("out of ",qualitytotal),     x=0.54,  y=0.81,hjust=0.5,gp=gpar(fontsize=7, col="gray50"))
+
+          
+     grid.text(tscore,x=0.41, y=0.83+0.1*tscore/timetotal    +0.03,hjust=0.5,gp=gpar(fontsize=7, col="black"))
+     grid.text(cscore,x=0.475,y=0.83+0.1*cscore/completetotal+0.03,hjust=0.5,gp=gpar(fontsize=7, col="black"))
+     grid.text(qscore,x=0.54, y=0.83+0.1*qscore/qualitytotal +0.03,hjust=0.5,gp=gpar(fontsize=7, col="black"))
      
      grid.text("The Score is the sum of
 points receieved from
@@ -492,8 +503,8 @@ and quality.",y=0.90,x=0.71,hjust=1,gp=gpar(fontsize=10, col="gray50"))
      
      grid.circle(x=0.32,y=0.88,r=unit(0.07,"npc"),gp=gpar(fill="gray85",col="gray50"))
      #grid.text("Overall",     x=0.31,y=0.87,just="right",gp=gpar(fontsize=18, col="slategray"))
-     grid.text(paste0(getTimelinessScore(state,year)+round(10*QualityScore/TotalQualityScore,1)+round(10*CompletedScore/TotalCompletedScore,1)),x=0.32,y=0.90,just="left",gp=gpar(fontsize=23, col="black"),hjust=0.5)
-     grid.text("out of 30",x=0.32,y=0.86,just="left",gp=gpar(fontsize=13, col="gray50"),hjust=0.5)
+     grid.text(paste0(tscore+qscore+cscore),x=0.32,y=0.90,just="left",gp=gpar(fontsize=23, col="black"),hjust=0.5)
+     grid.text(paste0("out of ",timetotal+completetotal+qualitytotal),x=0.32,y=0.86,just="left",gp=gpar(fontsize=13, col="gray50"),hjust=0.5)
           
      results <- create_overall_report(data,state,year)
 
