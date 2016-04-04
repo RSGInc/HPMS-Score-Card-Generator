@@ -68,20 +68,16 @@ create_overall_report <- function(
      #numberOfLaneMiles.4   <- data[state_code==state&year_record==year-3,sum(THROUGH_LANES*(end_point-begin_point),na.rm = TRUE),]
      #numberOfLaneMiles.5   <- data[state_code==state&year_record==year-4,sum(THROUGH_LANES*(end_point-begin_point),na.rm = TRUE),]
      
-     numberOfVariables.1 <- length(data[state_code==state&year_record==year&data_item=="F_SYSTEM"&
-                                   (((F_SYTEMorig%in%c(1,2,3,4,5))&(FACILITY_TYPE%in%c(1,2)))|
-                                    ((F_SYTEMorig==6)&(URBAN_CODE<99999)&(FACILITY_TYPE%in%c(1,2)))),unique(data_item),])
-     numberOfVariables.2 <- length(data[state_code==state&year_record==year-1&&data_item=="F_SYSTEM"&
-                                   (((F_SYTEMorig%in%c(1,2,3,4,5))&(FACILITY_TYPE%in%c(1,2)))|
-                                    ((F_SYTEMorig==6)&(URBAN_CODE<99999)&(FACILITY_TYPE%in%c(1,2)))),unique(data_item),])
+     numberOfVariables.1 <- length(data[state_code==state&year_record==year,unique(data_item),])
+     numberOfVariables.2 <- length(data[state_code==state&year_record==year-1,unique(data_item),])
      #numberOfVariables.3 <- length(data[state_code==state&year_record==year-2,unique(data_item),])
      #numberOfVariables.4 <- length(data[state_code==state&year_record==year-3,unique(data_item),])
      #numberOfVariables.5 <- length(data[state_code==state&year_record==year-4,unique(data_item),])
      
-     numberRoutes.1      <- nrow(unique(data[state_code==state&year_record==year&&data_item=="F_SYSTEM"&
+     numberRoutes.1      <- nrow(unique(data[state_code==state&year_record==year&data_item=="F_SYSTEM"&
                                    (((F_SYTEMorig%in%c(1,2,3,4,5))&(FACILITY_TYPE%in%c(1,2)))|
                                     ((F_SYTEMorig==6)&(URBAN_CODE<99999)&(FACILITY_TYPE%in%c(1,2)))),list(route_id),]))
-     numberRoutes.2      <- nrow(unique(data[state_code==state&year_record==year-1&&data_item=="F_SYSTEM"&
+     numberRoutes.2      <- nrow(unique(data[state_code==state&year_record==year-1&data_item=="F_SYSTEM"&
                                    (((F_SYTEMorig%in%c(1,2,3,4,5))&(FACILITY_TYPE%in%c(1,2)))|
                                     ((F_SYTEMorig==6)&(URBAN_CODE<99999)&(FACILITY_TYPE%in%c(1,2)))),list(route_id),]))
      #numberRoutes.3      <- nrow(unique(data[state_code==state&year_record==year-2,list(route_id),]))
