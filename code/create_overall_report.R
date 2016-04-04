@@ -32,11 +32,11 @@ create_overall_report <- function(
      #numberOfRecords.4   <- data[state_code==state&year_record==year-3,.N,]
      #numberOfRecords.5   <- data[state_code==state&year_record==year-4,.N,]
      
-     numberOfCtrLine.1   <- data[state_code==state&year_record==year&
+     numberOfCtrLine.1   <- data[state_code==state&year_record==year&data_item=="F_SYSTEM"&
                                    (((F_SYTEMorig%in%c(1,2,3,4,5))&(FACILITY_TYPE%in%c(1,2)))|
                                     ((F_SYTEMorig==6)&(URBAN_CODE<99999)&(FACILITY_TYPE%in%c(1,2))))
                                       ,sum(end_point-begin_point,na.rm = TRUE),]
-     numberOfCtrLine.2   <- data[state_code==state&year_record==(year-1)&
+     numberOfCtrLine.2   <- data[state_code==state&year_record==(year-1)&data_item=="F_SYSTEM"&
                                    (((F_SYTEMorig%in%c(1,2,3,4,5))&(FACILITY_TYPE%in%c(1,2)))|
                                     ((F_SYTEMorig==6)&(URBAN_CODE<99999)&(FACILITY_TYPE%in%c(1,2))))
                                  ,sum(end_point-begin_point,na.rm = TRUE),]
@@ -44,23 +44,23 @@ create_overall_report <- function(
      #numberOfCtrLine.4   <- data[state_code==state&year_record==year-3,sum(end_point-begin_point,na.rm = TRUE),]
      #numberOfCtrLine.5   <- data[state_code==state&year_record==year-4,sum(end_point-begin_point,na.rm = TRUE),]
      
-     numberOfLaneMiles.1   <- data[state_code==state&year_record==year&
+     numberOfLaneMiles.1   <- data[state_code==state&year_record==year&data_item=="F_SYSTEM"&
                                    (((F_SYTEMorig%in%c(1,2,3,4,5))&(FACILITY_TYPE%in%c(1,2)))|
                                     ((F_SYTEMorig==6)&(URBAN_CODE<99999)&(FACILITY_TYPE%in%c(1,2))))  
                                    ,sum(THROUGH_LANES*(end_point-begin_point),na.rm = TRUE),]
      
      numberOfLaneMiles.1   <- numberOfLaneMiles.1 + 
-                              data[state_code==state&year_record==year&
+                              data[state_code==state&year_record==year&data_item=="F_SYSTEM"&
                                     (F_SYTEMorig==6)&(URBAN_CODE==99999)  
                                    ,sum(2*(end_point-begin_point),na.rm = TRUE),]
      
-     numberOfLaneMiles.2   <- data[state_code==state&year_record==(year-1)&
+     numberOfLaneMiles.2   <- data[state_code==state&year_record==(year-1)&data_item=="F_SYSTEM"&
                                    (((F_SYTEMorig%in%c(1,2,3,4,5))&(FACILITY_TYPE%in%c(1,2)))|
                                     ((F_SYTEMorig==6)&(URBAN_CODE<99999)&(FACILITY_TYPE%in%c(1,2))))
                                    ,sum(THROUGH_LANES*(end_point-begin_point),na.rm = TRUE),]
      
      numberOfLaneMiles.2   <- numberOfLaneMiles.2 + 
-                              data[state_code==state&year_record==(year-1)&
+                              data[state_code==state&year_record==(year-1)&data_item=="F_SYSTEM"&
                                     (F_SYTEMorig==6)&(URBAN_CODE==99999)  
                                    ,sum(2*(end_point-begin_point),na.rm = TRUE),]
      
@@ -68,20 +68,32 @@ create_overall_report <- function(
      #numberOfLaneMiles.4   <- data[state_code==state&year_record==year-3,sum(THROUGH_LANES*(end_point-begin_point),na.rm = TRUE),]
      #numberOfLaneMiles.5   <- data[state_code==state&year_record==year-4,sum(THROUGH_LANES*(end_point-begin_point),na.rm = TRUE),]
      
-     numberOfVariables.1 <- length(data[state_code==state&year_record==year,unique(data_item),])
-     numberOfVariables.2 <- length(data[state_code==state&year_record==year-1,unique(data_item),])
+     numberOfVariables.1 <- length(data[state_code==state&year_record==year&data_item=="F_SYSTEM"&
+                                   (((F_SYTEMorig%in%c(1,2,3,4,5))&(FACILITY_TYPE%in%c(1,2)))|
+                                    ((F_SYTEMorig==6)&(URBAN_CODE<99999)&(FACILITY_TYPE%in%c(1,2)))),unique(data_item),])
+     numberOfVariables.2 <- length(data[state_code==state&year_record==year-1&&data_item=="F_SYSTEM"&
+                                   (((F_SYTEMorig%in%c(1,2,3,4,5))&(FACILITY_TYPE%in%c(1,2)))|
+                                    ((F_SYTEMorig==6)&(URBAN_CODE<99999)&(FACILITY_TYPE%in%c(1,2)))),unique(data_item),])
      #numberOfVariables.3 <- length(data[state_code==state&year_record==year-2,unique(data_item),])
      #numberOfVariables.4 <- length(data[state_code==state&year_record==year-3,unique(data_item),])
      #numberOfVariables.5 <- length(data[state_code==state&year_record==year-4,unique(data_item),])
      
-     numberRoutes.1      <- nrow(unique(data[state_code==state&year_record==year,list(route_id),]))
-     numberRoutes.2      <- nrow(unique(data[state_code==state&year_record==year-1,list(route_id),]))
+     numberRoutes.1      <- nrow(unique(data[state_code==state&year_record==year&&data_item=="F_SYSTEM"&
+                                   (((F_SYTEMorig%in%c(1,2,3,4,5))&(FACILITY_TYPE%in%c(1,2)))|
+                                    ((F_SYTEMorig==6)&(URBAN_CODE<99999)&(FACILITY_TYPE%in%c(1,2)))),list(route_id),]))
+     numberRoutes.2      <- nrow(unique(data[state_code==state&year_record==year-1&&data_item=="F_SYSTEM"&
+                                   (((F_SYTEMorig%in%c(1,2,3,4,5))&(FACILITY_TYPE%in%c(1,2)))|
+                                    ((F_SYTEMorig==6)&(URBAN_CODE<99999)&(FACILITY_TYPE%in%c(1,2)))),list(route_id),]))
      #numberRoutes.3      <- nrow(unique(data[state_code==state&year_record==year-2,list(route_id),]))
      #numberRoutes.4      <- nrow(unique(data[state_code==state&year_record==year-3,list(route_id),]))
      #numberRoutes.5      <- nrow(unique(data[state_code==state&year_record==year-4,list(route_id),]))
      
-     numberSegments.1    <- nrow(unique(data[state_code==state&year_record==year,list(route_id,begin_point,end_point),]))
-     numberSegments.2    <- nrow(unique(data[state_code==state&year_record==year-1,list(route_id,begin_point,end_point),]))
+     numberSegments.1    <- nrow(unique(data[state_code==state&year_record==year&data_item=="F_SYSTEM"&
+                                   (((F_SYTEMorig%in%c(1,2,3,4,5))&(FACILITY_TYPE%in%c(1,2)))|
+                                    ((F_SYTEMorig==6)&(URBAN_CODE<99999)&(FACILITY_TYPE%in%c(1,2)))),list(route_id,begin_point,end_point),]))
+     numberSegments.2    <- nrow(unique(data[state_code==state&year_record==year-1&data_item=="F_SYSTEM"&
+                                   (((F_SYTEMorig%in%c(1,2,3,4,5))&(FACILITY_TYPE%in%c(1,2)))|
+                                    ((F_SYTEMorig==6)&(URBAN_CODE<99999)&(FACILITY_TYPE%in%c(1,2)))),list(route_id,begin_point,end_point),]))
      #numberSegments.3    <- nrow(unique(data[state_code==state&year_record==year-2,list(route_id,begin_point,end_point),]))
      #numberSegments.4    <- nrow(unique(data[state_code==state&year_record==year-3,list(route_id,begin_point,end_point),]))
      #numberSegments.5    <- nrow(unique(data[state_code==state&year_record==year-4,list(route_id,begin_point,end_point),]))

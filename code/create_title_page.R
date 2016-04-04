@@ -497,8 +497,8 @@ create_title_page <- function(data,state,year,year_compare=NULL)
      grid.text(qscore,x=0.54, y=0.83+0.1*qscore/qualitytotal +0.03,hjust=0.5,gp=gpar(fontsize=7, col="black"))
      
      grid.text("The Score is the sum of
-points receieved from
-timeliness, comleteness,
+points received from
+timeliness, completeness,
 and quality.",y=0.90,x=0.71,hjust=1,gp=gpar(fontsize=10, col="gray50"))
      
      grid.circle(x=0.32,y=0.88,r=unit(0.07,"npc"),gp=gpar(fill="gray85",col="gray50"))

@@ -19,7 +19,14 @@ ImportFiles <- function() {
   
   con <- odbcConnect("HPMS")
   
-  data <- data.table(sqlQuery(con,paste0("select distinct state_code, year_record from ",datatable," order by state_code,year_record")))
+  # FHWA
+  data1 <- data.table(sqlQuery(con,paste0("select distinct state_code, year_record from sections2014 order by state_code,year_record")))
+  data2 <- data.table(sqlQuery(con,paste0("select distinct state_code, year_record from sections2013 order by state_code,year_record")))
+  
+  data <- rbind(data1,data2)
+  
+  # RSG
+  #data <- data.table(sqlQuery(con,paste0("select distinct state_code, year_record from HPMSAnalysis order by state_code,year_record")))
   
   odbcClose(con)
   cat("Data available for import include:\n")
@@ -33,13 +40,24 @@ ImportFiles <- function() {
     cat("\n")
   }
   cat("\n\n")
-  state <- ""
-  while(!(state %in% c("ALL",sapply(unique(data[,state_code]),getStateAbbrFromNum))))
+  state = ""
+  invalidresponse = TRUE
+  while(invalidresponse)
   {
     state <- getUserInput(prompt="What state(s) would you like to import?\nEnter 2 letter abbreviations separated by commas.\nTo import all states, type ALL.")
-    if(!(state %in% c("ALL",sapply(unique(data[,state_code]),getStateAbbrFromNum))))
+    
+    invalidresponse = FALSE
+    
+    for(st in strsplit(state,",")[[1]])
     {
-      cat("Invalid response:",state)  
+      if(!(st %in% c("ALL",sapply(unique(data[,state_code]),getStateAbbrFromNum))))
+      {
+        invalidresponse = TRUE
+      }
+    }
+    if(invalidresponse)
+    {
+      cat("Invalid response:",st)
     }
   }
   
@@ -146,7 +164,7 @@ ReadFile <- function(state,year) {
   
   con <- odbcConnect("HPMS")
 
-  data <- sqlQuery(con,paste0("select * from ",datatable," where state_code = ",getStateNumFromCode(state)," and year_record = ",year))
+  data <- sqlQuery(con,paste0("select * from sections",year," where state_code = ",getStateNumFromCode(state)," and year_record = ",year))
   
   odbcClose(con)
   
@@ -258,7 +276,7 @@ FormatDataSet <- function(dat,state,year) {
 
   con <- odbcConnect("HPMS")
 
-  sp <- sqlQuery(con,paste0("select * from ",sampletable," where state_code = ",getStateNumFromCode(state)," and year_record = ",year))
+  sp <- sqlQuery(con,paste0("select * from samples",year," where state_code = ",getStateNumFromCode(state)," and year_record = ",year))
   
   odbcClose(con)
   

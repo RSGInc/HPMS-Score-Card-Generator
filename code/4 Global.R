@@ -15,10 +15,10 @@
 
 # SQL table names
 
-poptable         <- "codes_urban"
-datatable        <- "HPMSAnalysis"
+poptable         <- "codes_Urban_2012"
+datatable        <- "sections"
 sampletable      <- "samples"
-timelinesstables <- "SubmissionDates" 
+timelinesstable  <- "SubmissionDates" 
 
 # Load additional fonts
 #font.add.google("EB Garamond", "Garamond")
