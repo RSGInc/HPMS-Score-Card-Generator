@@ -24,14 +24,20 @@ plotCircle <- function(data,year,year_compare,variable,startx,starty,C,R)
       
       yoy      <- getYOY(data,year,year_compare,variable)
       
+      outliers[is.nan(as.numeric(perc_miles)),perc_miles:=0]
+      adjaceny[is.nan(as.numeric(perc_miles)),perc_miles:=0]
+      yoy[is.nan(as.numeric(perc_miles)),perc_miles:=0]
+      
       tol_High <- gVariables[Name==variable,Quality_Tolerance_High]
       tol_Med  <- gVariables[Name==variable,Quality_Tolerance_Med] 
       
-      outliers[,type:=type + 1 * ( perc_miles < tol_Med ) + 1 * ( perc_miles < tol_High )]
-      adjaceny[,type:=type + 1 * ( perc_miles < tol_Med ) + 1 * ( perc_miles < tol_High )]
-           yoy[,type:=type + 1 * ( perc_miles < tol_Med ) + 1 * ( perc_miles < tol_High )]
+      outliers[,type:=type + 1 * ( as.numeric(perc_miles) < tol_Med ) + 1 * ( as.numeric(perc_miles) < tol_High )]
+      adjaceny[,type:=type + 1 * ( as.numeric(perc_miles) < tol_Med ) + 1 * ( as.numeric(perc_miles) < tol_High )]
+           yoy[,type:=type + 1 * ( as.numeric(perc_miles) < tol_Med ) + 1 * ( as.numeric(perc_miles) < tol_High )]
       
-      weights <- c(1,1,1,1)
+           
+      weights <- c(4,2.5,1,0.25)
+      #weights <- c(1,1,1,1)
            
       type <- (( outliers[groupCat==1,type] +
         adjaceny[groupCat==1,type] +
@@ -44,9 +50,9 @@ plotCircle <- function(data,year,year_compare,variable,startx,starty,C,R)
              yoy[groupCat==3,type] ) * weights[3] +  
       ( outliers[groupCat==4,type] +
         adjaceny[groupCat==4,type] +
-             yoy[groupCat==4,type] ) * weights[4])/16
+             yoy[groupCat==4,type] ) * weights[4])/sum(3*weights)
            
-      type <- floor(type)
+      type <- round(type)
       
     }
     # Recipe 2: if more than ?% of miles change in value when we expect NO CHANGE or more than 

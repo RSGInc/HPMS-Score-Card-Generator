@@ -18,7 +18,7 @@
 poptable         <- "codes_Urban_2012"
 datatable        <- "sections"
 sampletable      <- "samples"
-timelinesstable  <- "SubmissionDates" 
+timelinesstable  <- "Table_mssql_m_HPMSAnalysis_HPMS_Submissions_log" 
 
 # Load additional fonts
 #font.add.google("EB Garamond", "Garamond")

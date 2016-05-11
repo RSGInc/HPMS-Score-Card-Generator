@@ -56,7 +56,7 @@ create_title_page <- function(data,state,year,year_compare=NULL)
                x = 0.03, 
                y = 0.63, 
                just = "left", 
-               gp = gpar(col = "black", fontface = "bold", fontsize = 23)
+               gp = gpar(col = "black", fontface = "bold", fontsize = 13)
      )
      
      grid.text(year, 
@@ -165,6 +165,10 @@ create_title_page <- function(data,state,year,year_compare=NULL)
      submittedN   <- 0
      TotalQualityScore <- 0
      
+     # Scores for getting a medium or high quality value
+     QualityMed  <- CompleteMed  <- 1
+     QualityHigh <- CompleteHigh <- 1.5
+     
      for(i in 1:length(gVariables[,Name]))
      {
           
@@ -177,15 +181,15 @@ create_title_page <- function(data,state,year,year_compare=NULL)
             
                CompleteType <- plotRect(data,year,variable,startx,starty,C,R)
                
-               CompletedScore      <- CompletedScore      + (CompleteType-1) * gVariables[Name==variable,Completeness_Weight]
-               TotalCompletedScore <- TotalCompletedScore +                2 * gVariables[Name==variable,Completeness_Weight]
+               CompletedScore      <- CompletedScore      + c(0,CompleteMed,CompleteHigh)[CompleteType] * gVariables[Name==variable,Completeness_Weight]
+               TotalCompletedScore <- TotalCompletedScore +                 CompleteHigh * gVariables[Name==variable,Completeness_Weight]
                
                submittedN <- submittedN + 1 * ( CompleteType >= 2 )
                
                QualityType <- plotCircle(data,year,year_compare,variable,startx,starty,C,R)
                
-               QualityScore      <- QualityScore      + (QualityType-1) * gVariables[Name==variable,Quality_Weight]
-               TotalQualityScore <- TotalQualityScore +               2 * gVariables[Name==variable,Quality_Weight] * ( CompleteType >= 2 )
+               QualityScore      <- QualityScore      + c(0,QualityMed,QualityHigh)[QualityType] * gVariables[Name==variable,Quality_Weight]
+               TotalQualityScore <- TotalQualityScore +                QualityHigh * gVariables[Name==variable,Quality_Weight] * ( CompleteType >= 2 )
                
                if(R < 4)
                {
@@ -214,15 +218,15 @@ create_title_page <- function(data,state,year,year_compare=NULL)
             
                CompleteType <- plotRect(data,year,variable,startx,starty,C,R)
                
-               CompletedScore      <- CompletedScore      + (CompleteType-1) * gVariables[Name==variable,Completeness_Weight]
-               TotalCompletedScore <- TotalCompletedScore +                2 * gVariables[Name==variable,Completeness_Weight]
+               CompletedScore      <- CompletedScore      + c(0,CompleteMed,CompleteHigh)[CompleteType] * gVariables[Name==variable,Completeness_Weight]
+               TotalCompletedScore <- TotalCompletedScore +                 CompleteHigh * gVariables[Name==variable,Completeness_Weight]
                
                submittedN <- submittedN + 1 * ( CompleteType >= 2 )
                
                QualityType <- plotCircle(data,year,year_compare,variable,startx,starty,C,R)
                
-               QualityScore      <- QualityScore      + (QualityType-1) * gVariables[Name==variable,Quality_Weight]
-               TotalQualityScore <- TotalQualityScore +               2 * gVariables[Name==variable,Quality_Weight] * ( CompleteType >= 2 )
+               QualityScore      <- QualityScore      + c(0,QualityMed,QualityHigh)[QualityType] * gVariables[Name==variable,Quality_Weight]
+               TotalQualityScore <- TotalQualityScore +                QualityHigh * gVariables[Name==variable,Quality_Weight] * ( CompleteType >= 2 )
                if(R < 3)
                {
                     R <- R + 1
@@ -250,15 +254,15 @@ create_title_page <- function(data,state,year,year_compare=NULL)
             
                CompleteType <- plotRect(data,year,variable,startx,starty,C,R)
                
-               CompletedScore      <- CompletedScore      + (CompleteType-1) * gVariables[Name==variable,Completeness_Weight]
-               TotalCompletedScore <- TotalCompletedScore +                2 * gVariables[Name==variable,Completeness_Weight]
+               CompletedScore      <- CompletedScore      + c(0,CompleteMed,CompleteHigh)[CompleteType] * gVariables[Name==variable,Completeness_Weight]
+               TotalCompletedScore <- TotalCompletedScore +                 CompleteHigh * gVariables[Name==variable,Completeness_Weight]
                
                submittedN <- submittedN + 1 * ( CompleteType >= 2 )
                
                QualityType <- plotCircle(data,year,year_compare,variable,startx,starty,C,R)
                
-               QualityScore      <- QualityScore      + (QualityType-1) * gVariables[Name==variable,Quality_Weight]
-               TotalQualityScore <- TotalQualityScore +               2 * gVariables[Name==variable,Quality_Weight] * ( CompleteType >= 2 )
+               QualityScore      <- QualityScore      + c(0,QualityMed,QualityHigh)[QualityType] * gVariables[Name==variable,Quality_Weight]
+               TotalQualityScore <- TotalQualityScore +                QualityHigh * gVariables[Name==variable,Quality_Weight] * ( CompleteType >= 2 )
                if(R < 4)
                {
                     R <- R + 1
@@ -286,15 +290,15 @@ create_title_page <- function(data,state,year,year_compare=NULL)
             
                CompleteType <- plotRect(data,year,variable,startx,starty,C,R)
                
-               CompletedScore      <- CompletedScore      + (CompleteType-1) * gVariables[Name==variable,Completeness_Weight]
-               TotalCompletedScore <- TotalCompletedScore +                2 * gVariables[Name==variable,Completeness_Weight]
+               CompletedScore      <- CompletedScore      + c(0,CompleteMed,CompleteHigh)[CompleteType] * gVariables[Name==variable,Completeness_Weight]
+               TotalCompletedScore <- TotalCompletedScore +                 CompleteHigh * gVariables[Name==variable,Completeness_Weight]
                
                submittedN <- submittedN + 1 * ( CompleteType >= 2 )
                
                QualityType <- plotCircle(data,year,year_compare,variable,startx,starty,C,R)
                
-               QualityScore      <- QualityScore      + (QualityType-1) * gVariables[Name==variable,Quality_Weight]
-               TotalQualityScore <- TotalQualityScore +               2 * gVariables[Name==variable,Quality_Weight] * ( CompleteType >= 2 )
+               QualityScore      <- QualityScore      + c(0,QualityMed,QualityHigh)[QualityType] * gVariables[Name==variable,Quality_Weight]
+               TotalQualityScore <- TotalQualityScore +               QualityHigh * gVariables[Name==variable,Quality_Weight] * ( CompleteType >= 2 )
                if(R < 5)
                {
                     R <- R + 1
@@ -322,15 +326,15 @@ create_title_page <- function(data,state,year,year_compare=NULL)
             
                CompleteType <- plotRect(data,year,variable,startx,starty,C,R)
                
-               CompletedScore      <- CompletedScore      + (CompleteType-1) * gVariables[Name==variable,Completeness_Weight]
-               TotalCompletedScore <- TotalCompletedScore +                2 * gVariables[Name==variable,Completeness_Weight]
+               CompletedScore      <- CompletedScore      + c(0,CompleteMed,CompleteHigh)[CompleteType] * gVariables[Name==variable,Completeness_Weight]
+               TotalCompletedScore <- TotalCompletedScore +                 CompleteHigh * gVariables[Name==variable,Completeness_Weight]
                
                submittedN <- submittedN + 1 * ( CompleteType >= 2 )
                
                QualityType <- plotCircle(data,year,year_compare,variable,startx,starty,C,R)
                
-               QualityScore      <- QualityScore      + (QualityType-1) * gVariables[Name==variable,Quality_Weight]
-               TotalQualityScore <- TotalQualityScore +               2 * gVariables[Name==variable,Quality_Weight] * ( CompleteType >= 2 )
+               QualityScore      <- QualityScore      + c(0,QualityMed,QualityHigh)[QualityType] * gVariables[Name==variable,Quality_Weight]
+               TotalQualityScore <- TotalQualityScore +                QualityHigh * gVariables[Name==variable,Quality_Weight] * ( CompleteType >= 2 )
                if(R < 1)
                {
                     R <- R + 1
@@ -358,15 +362,15 @@ create_title_page <- function(data,state,year,year_compare=NULL)
             
                CompleteType <- plotRect(data,year,variable,startx,starty,C,R)
                
-               CompletedScore      <- CompletedScore      + (CompleteType-1) * gVariables[Name==variable,Completeness_Weight]
-               TotalCompletedScore <- TotalCompletedScore +                2 * gVariables[Name==variable,Completeness_Weight]
+               CompletedScore      <- CompletedScore      + c(0,CompleteMed,CompleteHigh)[CompleteType] * gVariables[Name==variable,Completeness_Weight]
+               TotalCompletedScore <- TotalCompletedScore +                 CompleteHigh * gVariables[Name==variable,Completeness_Weight]
                
                submittedN <- submittedN + 1 * ( CompleteType >= 2 )
                
                QualityType <- plotCircle(data,year,year_compare,variable,startx,starty,C,R)
                
-               QualityScore      <- QualityScore      + (QualityType-1) * gVariables[Name==variable,Quality_Weight]
-               TotalQualityScore <- TotalQualityScore +               2 * gVariables[Name==variable,Quality_Weight] * ( CompleteType >= 2 )
+               QualityScore      <- QualityScore      + c(0,QualityMed,QualityHigh)[QualityType] * gVariables[Name==variable,Quality_Weight]
+               TotalQualityScore <- TotalQualityScore +               QualityHigh * gVariables[Name==variable,Quality_Weight] * ( CompleteType >= 2 )
                if(R < 1)
                {
                     R <- R + 1
@@ -464,21 +468,21 @@ create_title_page <- function(data,state,year,year_compare=NULL)
      {
         grid.rect(x=0.41,y=0.85,
                          width=unit(0.025,"npc"),
-                         height=unit(0.1*tscore/timetotal,"npc"),vjust =0,
+                         height=unit(0.1*tscore/max(timetotal,completetotal,qualitytotal),"npc"),vjust =0,
                          gp=gpar(fill="black",col="black"))
      }
      if(cscore>0)
      {
         grid.rect(x=0.475,y=0.85,
                          width=unit(0.025,"npc"),
-                         height=unit(0.1*cscore/completetotal,"npc"),vjust =0,
+                         height=unit(0.1*cscore/max(timetotal,completetotal,qualitytotal),"npc"),vjust =0,
                          gp=gpar(fill="black",col="black"))
      }
      if(qscore>0)
      {
         grid.rect(x=0.54,y=0.85,
                          width=unit(0.025,"npc"),
-                         height=unit(0.1*qscore/qualitytotal,"npc"),vjust =0,
+                         height=unit(0.1*qscore/max(timetotal,completetotal,qualitytotal),"npc"),vjust =0,
                          gp=gpar(fill="black",col="black"))
      }
      
@@ -492,9 +496,9 @@ create_title_page <- function(data,state,year,year_compare=NULL)
      grid.text(paste0("out of ",qualitytotal),     x=0.54,  y=0.81,hjust=0.5,gp=gpar(fontsize=7, col="gray50"))
 
           
-     grid.text(tscore,x=0.41, y=0.83+0.1*tscore/timetotal    +0.03,hjust=0.5,gp=gpar(fontsize=7, col="black"))
-     grid.text(cscore,x=0.475,y=0.83+0.1*cscore/completetotal+0.03,hjust=0.5,gp=gpar(fontsize=7, col="black"))
-     grid.text(qscore,x=0.54, y=0.83+0.1*qscore/qualitytotal +0.03,hjust=0.5,gp=gpar(fontsize=7, col="black"))
+     grid.text(tscore,x=0.41, y=0.83+0.1*tscore/max(timetotal,completetotal,qualitytotal)+0.03,hjust=0.5,gp=gpar(fontsize=7, col="black"))
+     grid.text(cscore,x=0.475,y=0.83+0.1*cscore/max(timetotal,completetotal,qualitytotal)+0.03,hjust=0.5,gp=gpar(fontsize=7, col="black"))
+     grid.text(qscore,x=0.54, y=0.83+0.1*qscore/max(timetotal,completetotal,qualitytotal)+0.03,hjust=0.5,gp=gpar(fontsize=7, col="black"))
      
      grid.text("The Score is the sum of
 points received from

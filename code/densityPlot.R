@@ -58,18 +58,18 @@ densityPlot <- function(
                p1 <- p1 + geom_density(data = d1, color="slategray", linetype="solid", size=0.25,fill="slategray",adjust=adjustment,aes(weights=(end_point-begin_point)/sum(end_point-begin_point)))
                #p1 <- p1 + stat_density(geom="line",data = d1, color="slategray", linetype="solid", size=0.35,fill="white",adjust=adjustment,aes(weights=(end_point-begin_point)/sum(end_point-begin_point)))
                #p1 <- p1 + geom_freqpoly(color="slategray",aes(weights=(end_point-begin_point)/sum(end_point-begin_point)))
-               if(showLabel)
-               {
-                  p1 <- p1 + ylab(year1)
-               } else
-               {
-                  p1 <- p1 + ylab("") 
-                 
-               }
                  
           } else {
                p1 <- p1 + geom_density(data = d3, color ="white", linetype="solid", size=0.25,fill="white",adjust=adjustment,aes(weights=(end_point-begin_point)/sum(end_point-begin_point)))    
             
+          }
+          
+          if(showLabel)
+          {
+            p1 <- p1 + ylab(year1)
+          } else
+          {
+            p1 <- p1 + ylab("") 
           }
           
           if(nrow(d2)>2)
@@ -78,16 +78,17 @@ densityPlot <- function(
                #p2 <- p2 + geom_histogram(color="gray75",aes(weights=(end_point-begin_point)/sum(end_point-begin_point))) 
                #p2 <- p2 + geom_freqpoly(color="gray75",aes(weights=(end_point-begin_point)/sum(end_point-begin_point))) 
               #p2 <- p2 + stat_density(geom="line",data = d2, color ="gray75", linetype="solid", size=0.35,fill="white",adjust=adjustment,aes(weights=(end_point-begin_point)/sum(end_point-begin_point)))
-               if(showLabel)
-               {
-                  p2 <- p2 + ylab(year2)
-               } else
-               {
-                  p2 <- p2 + ylab("") 
-                 
-               }
+
           } else {
               p2 <- p2 + geom_density(data = d3, color ="white", linetype="solid", size=0.25,fill="white",adjust=adjustment,aes(weights=(end_point-begin_point)/sum(end_point-begin_point)))  
+          }
+          
+          if(showLabel)
+          {
+            p2 <- p2 + ylab(year2)
+          } else
+          {
+            p2 <- p2 + ylab("") 
           }
           
           if(!is.null(d3))
@@ -96,14 +97,14 @@ densityPlot <- function(
                #p3 <- p3 + geom_histogram(color="slategray",aes(weights=(end_point-begin_point)/sum(end_point-begin_point)))
                #p3 <- p3 + geom_freqpoly(color="black",aes(weights=(end_point-begin_point)/sum(end_point-begin_point))) 
                #p3 <- p3 + stat_density(geom="line",data = d3, color ="black", linetype="solid", size=0.35,fill="white",adjust=adjustment,aes(weights=(end_point-begin_point)/sum(end_point-begin_point)))
-               if(showLabel)
-               {
-                  p3 <- p3 + ylab("National")
-               } else
-               {
-                  p3 <- p3 + ylab("") 
-                 
-               }
+          }
+          
+          if(showLabel)
+          {
+            p3 <- p3 + ylab("National")
+          } else
+          {
+            p3 <- p3 + ylab("") 
           }
           
           #p1 <- p1 + ggtitle(title)

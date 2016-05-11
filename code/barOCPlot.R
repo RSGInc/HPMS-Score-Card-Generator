@@ -32,7 +32,7 @@ barOCPlot <- function(
       p <- ggplot(p[c(4,3,2,1),],aes(x=overallscore,y=milesperc,fill=color))
       p <- p + geom_bar(aes(width=0.6),stat="identity",position=position_dodge(0.0))+
                geom_text(aes(label = paste0(round(milesperc*100,1),"%"),y=milesperc+0.075), size = 2)
-      p <- p + scale_y_continuous(labels=percent,breaks=c(0,0.5,1),limits=c(0,1.15))
+      p <- p + scale_y_continuous(labels=percent,breaks=c(0,0.5,1),limits=c(0,2.0))
       p <- p + coord_flip()
       p <- p + ylab(label="")
       p <- p + xlab(label=title)

@@ -30,7 +30,7 @@ create_overall_condition <- function(data,state,year,population)
      urban <- data[state_code==state&year_record==year&data_item=="URBAN_CODE"&FACILITY_TYPE!=4,list(route_id,begin_point,end_point,value_numeric),]
      setnames(urban,"value_numeric","urban_code")
      
-     if(nrow(rutting)==0|nrow(iri)==0|nrow(faulting)==0|nrow(cracking)==0|nrow(surface)==0|nrow(rutting)==0)
+     if(nrow(rutting)==0|nrow(iri)==0|nrow(faulting)==0|nrow(cracking)==0|nrow(surface)==0)
      {
        # exit if not enough data to complete the analysis 
        return(textGrob(NoDataString,gp=gpar(fontsize=8, col="Red")))
@@ -163,8 +163,8 @@ create_overall_condition <- function(data,state,year,population)
        
        obj <- arrangeGrob(textGrob(""),
                 textGrob("The algorithm applies the MAP-21\ncondition rule to classify\nsections as good, fair or poor.",hjust=1,gp=gpar(col="slategray",fontface="bold",fontsize=7)),
-                p1,p2,textGrob(""),
-                ncol=5,nrow=1,widths=unit(c(0.025,0.3,0.65/2,0.65/2,0.025),units="npc"),hjust=0.5)
+                p1,textGrob(""),p2,
+                ncol=5,nrow=1,widths=unit(c(0.025,0.3,0.65/2,0.025,0.65/2),units="npc"),hjust=0.5)
        
        #obj <- arrangeGrob(
       #                     # row 1

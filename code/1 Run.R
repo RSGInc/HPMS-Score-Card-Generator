@@ -22,4 +22,13 @@ invisible(sapply(X = list.files(path = "code", pattern = "*.R", full.names = TRU
 # Run Tool
 Run()
 
+2
+NY
+2014
+2013
 
+Run()
+2
+AZ
+2014
+2013

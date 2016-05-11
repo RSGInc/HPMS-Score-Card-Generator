@@ -17,7 +17,7 @@ ImportFiles <- function() {
   
   success <- c()
   
-  con <- odbcConnect("HPMS")
+  con <- odbcConnect("HPMSAnalysis")
   
   # FHWA
   data1 <- data.table(sqlQuery(con,paste0("select distinct state_code, year_record from sections2014 order by state_code,year_record")))
@@ -164,7 +164,7 @@ ReadFile <- function(state,year) {
   
   con <- odbcConnect("HPMS")
 
-  data <- sqlQuery(con,paste0("select * from sections",year," where state_code = ",getStateNumFromCode(state)," and year_record = ",year))
+  data <- sqlQuery(con,paste0("select YEAR_RECORD as YEAR_RECORD,STATE_CODE as STATE_CODE,ROUTE_ID as ROUTE_ID,BEGIN_POINT as BEGIN_POINT,END_POINT as END_POINT,DATA_ITEM as DATA_ITEM,VALUE_NUMERIC as VALUE_NUMERIC,VALUE_TEXT as VALUE_TEXT,VALUE_DATE as VALUE_DATE from sections",year," where state_code = ",getStateNumFromCode(state)," and year_record = ",year))
   
   odbcClose(con)
   
@@ -276,7 +276,7 @@ FormatDataSet <- function(dat,state,year) {
 
   con <- odbcConnect("HPMS")
 
-  sp <- sqlQuery(con,paste0("select * from samples",year," where state_code = ",getStateNumFromCode(state)," and year_record = ",year))
+  sp <- sqlQuery(con,paste0("select YEAR_RECORD as YEAR_RECORD, STATE_CODE as STATE_CODE, ROUTE_ID as ROUTE_ID, BEGIN_POINT as BEGIN_POINT, END_POINT as END_POINT, SAMPLE_ID as SAMPLE_ID, EXPANSION_FACTOR as EXPANSION_FACTOR from samples",year," where state_code = ",getStateNumFromCode(state)," and year_record = ",year))
   
   odbcClose(con)
   

@@ -36,14 +36,34 @@ create_travel_data_yoy <- function(
 #    data<<-data
   
   
-     if(ramps)
+  
+  type <- gVariables[Name==variable,Type]
+  
+     if(type==1)
      {
+      if(ramps)
+      {
         var.1    <- data[state_code==state&year_record==year          &data_item==variable&FACILITY_TYPE==4,list(route_id,begin_point,end_point,value_numeric,F_SYSTEM)]
         var.2    <- data[state_code==state&year_record==yearcomparison&data_item==variable&FACILITY_TYPE==4,list(route_id,begin_point,end_point,value_numeric,F_SYSTEM)]
-     } else {
+      } else {
         var.1    <- data[state_code==state&year_record==year          &data_item==variable&FACILITY_TYPE!=4,list(route_id,begin_point,end_point,value_numeric,F_SYSTEM)]
         var.2    <- data[state_code==state&year_record==yearcomparison&data_item==variable&FACILITY_TYPE!=4,list(route_id,begin_point,end_point,value_numeric,F_SYSTEM)]       
-     }   
+      }   
+     }
+     
+     if(type==2)
+     {
+      if(ramps)
+      {
+        var.1    <- data[state_code==state&year_record==year          &data_item==variable&FACILITY_TYPE==4,list(route_id,begin_point,end_point,value_numeric=year(value_date),F_SYSTEM)]
+        var.2    <- data[state_code==state&year_record==yearcomparison&data_item==variable&FACILITY_TYPE==4,list(route_id,begin_point,end_point,value_numeric=year(value_date),F_SYSTEM)]
+      } else {
+        var.1    <- data[state_code==state&year_record==year          &data_item==variable&FACILITY_TYPE!=4,list(route_id,begin_point,end_point,value_numeric=year(value_date),F_SYSTEM)]
+        var.2    <- data[state_code==state&year_record==yearcomparison&data_item==variable&FACILITY_TYPE!=4,list(route_id,begin_point,end_point,value_numeric=year(value_date),F_SYSTEM)]       
+      }
+     }
+  
+
      
      expectedChange <- gVariables[Name==variable,YOY_Change]
   
@@ -91,6 +111,8 @@ create_travel_data_yoy <- function(
                       ")
      
      var.yoy <- data.table(var.yoy)
+     
+     var.yoy <- unique(var.yoy)
      
      # removing the NAs
      #var.yoy <- var.yoy[!is.na(value_numeric.x)&!is.na(value_numeric.y),]

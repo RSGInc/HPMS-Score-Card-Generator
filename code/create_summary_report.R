@@ -25,7 +25,7 @@ create_summary_report <- function(
      } else {
         result1 <- data[state_code==state&year_record==year&data_item==variable&FACILITY_TYPE!=4,,]
      }
-     
+
      result1[,miles:=sum(end_point-begin_point,na.rm = TRUE),by=list(F_SYSTEM)]
      result1[,lanemiles:=sum((end_point-begin_point)*THROUGH_LANES,na.rm = TRUE),by=list(F_SYSTEM)]
      if(variable_extent %in% c("SP","FE*"))
