@@ -95,7 +95,7 @@ create_overall_report <- function(
      #numberSegments.5    <- nrow(unique(data[state_code==state&year_record==year-4,list(route_id,begin_point,end_point),]))
      
      result <- data.table(
-          Label=c("Number of Records","Number of Data Items","Number of Routes","Number of Sections","Total Center Line Miles","Total Lane Miles"),
+          Label=c("Number of Records","Number of Data Items","Number of Routes","Number of Sections","Total Center Line Miles*","Total Lane Miles*"),
           Val.1=string_format(c(numberOfRecords.1,numberOfVariables.1,numberRoutes.1,numberSegments.1,numberOfCtrLine.1,numberOfLaneMiles.1)),
           Val.2=string_format(c(numberOfRecords.2,numberOfVariables.2,numberRoutes.2,numberSegments.2,numberOfCtrLine.2,numberOfLaneMiles.2))#,
           #Val.3=string_format(c(numberOfRecords.3,numberOfVariables.3,numberRoutes.3,numberSegments.3,numberOfCtrLine.3,numberOfLaneMiles.3)),

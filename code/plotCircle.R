@@ -36,7 +36,7 @@ plotCircle <- function(data,year,year_compare,variable,startx,starty,C,R)
            yoy[,type:=type + 1 * ( as.numeric(perc_miles) < tol_Med ) + 1 * ( as.numeric(perc_miles) < tol_High )]
       
            
-      weights <- c(4,2.5,1,0.25)
+      weights <- c(1,1,1,1)
       #weights <- c(1,1,1,1)
            
       type <- (( outliers[groupCat==1,type] +

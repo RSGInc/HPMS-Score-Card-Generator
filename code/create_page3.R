@@ -18,7 +18,8 @@ create_page3 <- function(
      color="white"
      )
 {
-     grid.arrange(
+  
+      grid.arrange(
           # header
           rectGrob(gp = gpar(fill = color, col = color)), # saves space for the header
           

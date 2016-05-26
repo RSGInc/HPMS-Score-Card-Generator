@@ -1,6 +1,8 @@
 getAdjaceny <- function(data,year,variable)
 {
 
+     data <- data[!(F_SYTEMorig==7&NHS!=1),]
+  
      d.l <- data[data_item==variable&year_record==year,,]
      
      d.r <- d.l

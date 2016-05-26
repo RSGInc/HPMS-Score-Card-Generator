@@ -3,6 +3,8 @@ plotRect <- function(data,year,variable,startx,starty,C,R)
   
   ts <- Sys.time()
   
+  data <- data[!(F_SYTEMorig==7&NHS!=1),]
+  
   type <- 1
   
   if(nrow(data[data_item==variable&year_record==year,])>0){

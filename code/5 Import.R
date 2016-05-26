@@ -20,10 +20,11 @@ ImportFiles <- function() {
   con <- odbcConnect("HPMSAnalysis")
   
   # FHWA
-  data1 <- data.table(sqlQuery(con,paste0("select distinct state_code, year_record from sections2014 order by state_code,year_record")))
-  data2 <- data.table(sqlQuery(con,paste0("select distinct state_code, year_record from sections2013 order by state_code,year_record")))
+  data1 <- data.table(sqlQuery(con,paste0("select distinct state_code, year_record from sections2015 order by state_code,year_record")))
+  data2 <- data.table(sqlQuery(con,paste0("select distinct state_code, year_record from sections2014 order by state_code,year_record")))
+  data3 <- data.table(sqlQuery(con,paste0("select distinct state_code, year_record from sections2013 order by state_code,year_record")))
   
-  data <- rbind(data1,data2)
+  data <- rbind(data1,data2,data3)
   
   # RSG
   #data <- data.table(sqlQuery(con,paste0("select distinct state_code, year_record from HPMSAnalysis order by state_code,year_record")))
@@ -266,7 +267,7 @@ FormatDataSet <- function(dat,state,year) {
   data.formatted[, Interstate := c(1,0,0,0,0,0,0)[F_SYSTEM]]
   data.formatted[, NHS := c(1,0,0,0,0,0,0)[NHS]]
   data.formatted[, NHS := NHS * (1 - Interstate)]
-  data.formatted[, F_SYSTEM := c(NA,1,1,1,2,2,NA)[F_SYSTEM]]
+  data.formatted[, F_SYSTEM := c(NA,1,1,1,2,2,2)[F_SYSTEM]]
   
   # remove non-inventory data
   data.formatted <- data.formatted[FACILITY_TYPE!=6,]

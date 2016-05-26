@@ -1,6 +1,8 @@
 getYOY <- function(data,year,yearcomparison,variable)
 {
 
+     data <- data[!(F_SYTEMorig==7&NHS!=1),]
+     
      var.1    <- data[year_record==year&data_item==variable,list(route_id,begin_point,end_point,value_numeric,F_SYSTEM,NHS,Interstate)]
      var.2    <- data[year_record==yearcomparison&data_item==variable,list(route_id,begin_point,end_point,value_numeric)]
      

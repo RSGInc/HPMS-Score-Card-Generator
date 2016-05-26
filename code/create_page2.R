@@ -18,7 +18,7 @@ create_page2 <- function(
      color="white",
      population)
 {
-     
+  
       grid.arrange(
           # header
           rectGrob(gp = gpar(fill = color, col = color)), # saves space for the header
