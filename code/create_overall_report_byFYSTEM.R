@@ -1,11 +1,12 @@
 ###########################################################################
 #  Title: FHWA HPMS Score Card Generator
-#   Date: July 2015
+#   Date: July 2016
 # Author: Jeff Dumont
 #
 #
 # Description:
 #
+# Creates overall report by functional system. No longer used.
 # This function produces as graphical object as an overall report for the
 # first page by functional system.
 #

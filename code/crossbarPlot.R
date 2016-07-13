@@ -1,12 +1,12 @@
 ###########################################################################
 #  Title: FHWA HPMS Score Card Generator
-#   Date: July 2015
+#   Date: July 2016
 # Author: Jeff Dumont
 #
 #
 # Description:
 #
-# Author needs to add a description!
+# This generates the cross bar plot on the traffic: detailed review page
 #
 ###########################################################################
 
@@ -20,8 +20,6 @@ crossbarPlot <- function(result)
           geom_crossbar(width = 0.5,fill="black",col="white",fatten = 1) +
           theme_minimal() + coord_flip() +
           scale_y_continuous(labels = percent)+
-          #scale_y_continuous("")+ 
-          #scale_x_continuous(labels = comma) +
           theme(
                axis.text.x=element_text(size = 8, hjust = 0,colour="slategray"),
                axis.text.y=element_text(size = 8, angle = 0, hjust = 1,colour="slategray"), 

@@ -1,3 +1,16 @@
+###########################################################################
+#  Title: FHWA HPMS Score Card Generator
+#   Date: July 2016
+# Author: Jeff Dumont 
+#
+#
+# Description:
+#
+# Function to plot quality circles on title page. It implements the recipes
+# as described by the initial discussions between RSG and FHWA.
+#
+###########################################################################
+
 plotCircle <- function(data,year,year_compare,variable,startx,starty,C,R)
 {
   

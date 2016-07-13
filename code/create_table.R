@@ -1,12 +1,12 @@
 ###########################################################################
 #  Title: FHWA HPMS Score Card Generator
-#   Date: July 2015
+#   Date: July 2016
 # Author: Jeff Keller and Jeff Dumont
 #
 #
 # Description:
 #
-# This function creates table objects for the second page of the score
+# This function creates table objects for the review pages of the score
 # card.
 #
 ###########################################################################

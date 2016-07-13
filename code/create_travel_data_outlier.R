@@ -1,6 +1,6 @@
 ###########################################################################
 #  Title: FHWA HPMS Score Card Generator
-#   Date: July 2015
+#   Date: July 2016
 # Author: Jeff Dumont
 #
 #
@@ -9,13 +9,12 @@
 # Create travel data outlier graphical object. Future AADT values greater
 # than or less than three times current values are considered outliers.
 #
-###########################################################################
-
-#######################################################################
 # Create travel data outlier
 # future aadt values > 3 * current or less than current
 # this provides a single graphical object
-#######################################################################
+#
+###########################################################################
+
 create_travel_data_outlier <- function(
     data,   
     state,

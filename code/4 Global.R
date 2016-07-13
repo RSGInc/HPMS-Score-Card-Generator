@@ -1,6 +1,6 @@
 ###########################################################################
 #  Title: FHWA HPMS Score Card Generator
-#   Date: July 2015
+#   Date: July 2016
 # Author: Jeff Keller & Jeff Dumont
 #
 #
@@ -14,15 +14,14 @@
 ###########################################################################
 
 # SQL table names
-
+# these need to match FHWA's sql database structure
 poptable         <- "codes_Urban_2012"
 datatable        <- "sections"
 sampletable      <- "samples"
 timelinesstable  <- "Table_mssql_m_HPMSAnalysis_HPMS_Submissions_log" 
 
-# Load additional fonts
-#font.add.google("EB Garamond", "Garamond")
-
+# this is the text included in the left side of the first page of the scorecard
+# carriage returns are necessary.
 title_text <- 
 "The HPMS Scorecard is a product of the Office 
 of Highway Policy Information and was developed 
@@ -68,7 +67,7 @@ gState_Labels <- data.table(
             "Guam","Northern Mariana Islands","Puerto Rico","Virgin Islands of the U.S.")
   )
 
-# FHWA Logo
+# FHWA and DVC Logos
 gLogo  <- suppressWarnings(readPNG("resources/img/FHWA_vertical_2013.png"))
 gLogo2 <- suppressWarnings(readPNG("resources/img/DVC-Logo.png"))
 gLogo3 <- suppressWarnings(readPNG("resources/img/info.png"))
@@ -86,9 +85,11 @@ gF_SYSTEM_levels <- c("Interstate",
                       "Collectors + Locals"
 )
 
+# tables of variables (data items) and labels used in the output
 gVariables       <- data.table(read.table("resources\\dat\\data_elements.csv",sep=",",header=TRUE,stringsAsFactors=FALSE))
 gVariablesLabels <- data.table(read.table("resources\\dat\\data_labels.csv",  sep=",",header=TRUE,stringsAsFactors=FALSE))
 
+# reformatting the labels
 gVariablesLabels[Name=="F_SYSTEM",Code2:="Principal Arterial -\nOther Freeways and Expressways"]
 gVariablesLabels[Name=="F_SYSTEM",Code3:="Principal Arterial -\nOther"]
 gVariablesLabels[Name=="F_SYSTEM",Code4:="Minor\nArterial"]
@@ -99,4 +100,5 @@ gVariablesLabels[Name=="ACCESS_CONTROL",Code1:="Full\nAccess\nControl"]
 gVariablesLabels[Name=="ACCESS_CONTROL",Code2:="Partial\nAccess\nControl"]
 gVariablesLabels[Name=="ACCESS_CONTROL",Code3:="No\nAccess\nControl"]
 
+# this is the output if there is a problem with any analysis of a data item
 NoDataString <- "Data item may not be required\nfor this State, follow up with\nState DOT and FHWA to confirm."

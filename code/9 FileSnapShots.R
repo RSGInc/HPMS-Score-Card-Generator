@@ -1,12 +1,12 @@
 ###########################################################################
 #  Title: FHWA HPMS Score Card Generator
-#   Date: July 2015
+#   Date: July 2016
 # Author: Jeff Keller
 #
 #
 # Description:
 #
-# Author needs to add a description!
+# Functions for working with formatted state data
 #
 ###########################################################################
 

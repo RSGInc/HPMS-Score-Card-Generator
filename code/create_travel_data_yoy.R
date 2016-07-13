@@ -1,6 +1,6 @@
 ###########################################################################
 #  Title: FHWA HPMS Score Card Generator
-#   Date: July 2015
+#   Date: July 2016
 # Author: Jeff Dumont
 #
 #
@@ -9,13 +9,12 @@
 # Create travel data year over year change rates. Looking for same change
 # rate. Produces a single histogram.
 #
-###########################################################################
-
-#######################################################################
 # Create travel data year over year change rates
 # looking for the same change rate
 # this produces a single histogram
-#######################################################################
+#
+###########################################################################
+
 create_travel_data_yoy <- function(
     data, 
     state,
@@ -27,16 +26,7 @@ create_travel_data_yoy <- function(
     ramps
 )
 {
-#    To help with the debugging     
-#    year<<-year
-#    yearcomparison<<-yearcomparison
-#    variable<<-variable
-#    state<<-state
-#    histtype<<-histtype
-#    data<<-data
-  
-  
-  
+
   type <- gVariables[Name==variable,Type]
   
      if(type==1)
@@ -76,13 +66,8 @@ create_travel_data_yoy <- function(
        ff1<-""
      }
      
-      #var.yoy <- merge(var.1,var.2,by=c("route_id","begin_point","end_point"),all.x=TRUE, all.y=FALSE)
-     
      # this does the merge at the most disaggregate level
-     #var.yoy <- merge(var.1,var.2,by=c("route_id"),all.x=TRUE, all.y=FALSE,allow.cartesian=T)
-     #var.yoy <- var.yoy[((begin_point.x<=end_point.y)&(end_point.x>=begin_point.y)&(begin_point.x>=begin_point.y)&(end_point.x<=end_point.y))|
-     #                    ((begin_point.y<=end_point.x)&(end_point.y>=begin_point.x)&(begin_point.y>=begin_point.x)&(end_point.y<=end_point.x)),]
-     
+
      var.yoy <- sqldf("
                       select 
                       A.route_id,
@@ -114,9 +99,6 @@ create_travel_data_yoy <- function(
      
      var.yoy <- unique(var.yoy)
      
-     # removing the NAs
-     #var.yoy <- var.yoy[!is.na(value_numeric.x)&!is.na(value_numeric.y),]
-                        
      if(nrow(var.yoy)>0) # we have something to report
      {
           
@@ -128,7 +110,6 @@ create_travel_data_yoy <- function(
                # need to use geom_bar and construct a custom histogram
                report[, bin2 := cut_custom(change)] # using custom function to have more control
                totalmiles<-report[,sum(end_point.x-begin_point.x)]
-               #report <- report[,V1:=sum(end_point.x-begin_point.x)]
                report <- report[,end_point.x:=end_point.x/totalmiles]
                report <- report[,begin_point.x:=begin_point.x/totalmiles]
                report[change< -1e-3 ,color:=factor("Reduction")]
@@ -150,13 +131,11 @@ create_travel_data_yoy <- function(
                
                report[is.na(color),V1:=0]
                report[is.na(color),color:=color2]
-               #report[,color:=factor(color,labels=paste0(round(V1,2)*100,"%"))]
-               
+
                
           }
           
           # custom axis labels
-          
           if(histtype==1)
           {
                p <- ggplot(report, aes(x=bin2,fill=color,weight=end_point.x-begin_point.x)) + geom_bar(width=0.75,stat="bin")
@@ -167,7 +146,6 @@ create_travel_data_yoy <- function(
           } else
           {
               p <- ggplot(report[c(2,3,1),], aes(x=1,y=V1,fill=color)) + geom_bar(stat="identity",width=0.75) 
-              #p <- p + scale_x_discrete("", breaks=factor(c(1:2,NA),levels=c(1:2,NA),labels=c("No Change","Changed","NA"),exclude=NULL), drop=FALSE)
               p <- p + coord_flip()   
               colors <- c("slategray","gray50","black")
               names(colors)[1]<-toString(report[color2=="No",color])
@@ -181,13 +159,8 @@ create_travel_data_yoy <- function(
           }
           
           p <- p + theme(axis.line=element_blank(),
-                         #axis.text.x=element_blank(),
-                         #axis.text.y=element_text(hjust = 1,size=fontsize),
-                         #axis.ticks=element_blank(),
                          axis.title.x=element_blank(),
                          axis.title.y=element_blank(),
-                         #axis.text.x = element_text(angle = 90, hjust = 1,size=fontsize),
-                         #legend.position="none",
                          panel.background=element_blank(),
                          panel.border=element_blank(),
                          panel.grid.major=element_blank(),
@@ -212,13 +185,11 @@ create_travel_data_yoy <- function(
           {
              p <- p + theme(
                           axis.text.y     = element_blank(),
-                          #axis.text.x     = element_blank(),
                           axis.ticks      = element_blank(),
                           legend.position = "none",
                           legend.text     = element_blank(),
                           plot.margin = unit(c(topMargin=0.1,leftMargin=0.1,bottomMargin=0.1,rightMargin=0.1), "cm"))
-                          #plot.margin=unit(c(0.5,0.05,0.5,0.05),"cm"))
-             
+
              p <- arrangeGrob(textGrob(""),
                               arrangeGrob(p),
                               arrangeGrob(textGrob(paste0(report[color2=="No",paste0(round(V1,3)*100,"%",ff1)]),hjust=0.5   ,vjust=0  ,gp=gpar(fontsize=17, col="slategray",fontface="bold")),
@@ -238,8 +209,6 @@ create_travel_data_yoy <- function(
                   
              
             }
-          
-          #p <- vertically_align(p)
           
           return(p)
      } else

@@ -1,3 +1,16 @@
+###########################################################################
+#  Title: FHWA HPMS Score Card Generator
+#   Date: July 2016
+# Author: Jeff Dumont
+#
+#
+# Description:
+#
+# Graphical bar plot for overall condition analysis in the pavement: detailed 
+# review page.
+#
+###########################################################################
+
 barOCPlot <- function(
       d1,
       title=""
@@ -37,20 +50,16 @@ barOCPlot <- function(
       p <- p + ylab(label="")
       p <- p + xlab(label=title)
       
-      #p <- p + ggtitle(title)
       p <- p + scale_fill_manual("",values=c("slategray"="slategray","gray85"="gray85","gray65"="gray65","black"="black"))
 
       p <- p + theme_minimal() + 
                theme(
-                      #axis.text.y=element_text(size = 3.5, angle = 0, hjust = 1,colour="slategray"), 
                       strip.text.x = element_text(size = 8, angle = 0),
                       strip.text.y = element_text(size = 8, angle = 0),
                       axis.ticks=element_blank(),
                       axis.title.x=element_text(size=8,face="bold",colour="slategray",hjust=0.5,angle=90),
                       axis.title.y=element_text(size=8,face="bold",colour="slategray",hjust=0.5),
-                      #plot.title = element_text(size=10,face="bold",colour="slategray",hjust=0.5),
                       legend.position="none",
-                      #plot.title = element_text(size=6, face="bold",colour = "slategray"),
                       panel.grid.major = element_blank(),
                       panel.grid.minor = element_blank(),
                       panel.border = element_blank(),
@@ -59,7 +68,7 @@ barOCPlot <- function(
                       plot.margin = unit(c(0,-3,0,-3), "cm")
                  )
         
-        p <- p + theme(axis.text.x=element_blank())#element_text(size=5, angle=0,hjust = 0.5,colour="slategray"))  
+        p <- p + theme(axis.text.x=element_blank())
         p <- p + theme(axis.text.y=element_text(size=5, hjust = 1,colour="slategray"))
 
         return(p)

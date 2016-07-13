@@ -1,12 +1,13 @@
 ###########################################################################
 #  Title: FHWA HPMS Score Card Generator
-#   Date: July 2015
+#   Date: July 2016
 # Author: Jeff Dumont
 #
 #
 # Description:
 #
-# Author needs to add a description!
+# Creates donut chart for the overall condition report. This plot was deprecated
+# in a later version of the generator. Not currently used.
 #
 ###########################################################################
 

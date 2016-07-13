@@ -1,11 +1,13 @@
 ###########################################################################
 #  Title: FHWA HPMS Score Card Generator
-#   Date: July 2015
+#   Date: July 2016
 # Author: Jeff Dumont
 #
 #
 # Description:
 #
+# This function performs the outlier analysis for a specific variable. Teh
+# outlying thresholds can be set by the user in the resourse folder.
 # This function formats the data into the necessary structure to be
 # processed by the create_table function.
 #
@@ -14,8 +16,8 @@
 create_outlier_report <- function(
     data, 
     state,
-     year,
-     variable
+    year,
+    variable
 )
 {
      

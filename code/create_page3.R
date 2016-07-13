@@ -1,12 +1,13 @@
 ###########################################################################
 #  Title: FHWA HPMS Score Card Generator
-#   Date: July 2015
+#   Date: July 2016
 # Author: Jeff Dumont
 #
 #
 # Description:
 #
-# Author needs to add a description!
+# Creates the third page of the pdf
+# This is the traffic: detailed review page.
 #
 ###########################################################################
 

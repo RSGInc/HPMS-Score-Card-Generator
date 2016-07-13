@@ -1,12 +1,16 @@
 ###########################################################################
 #  Title: FHWA HPMS Score Card Generator
-#   Date: July 2015
-# Author: Jeff Keller
+#   Date: July 2016
+# Author: Jeff Keller & Jeff Dumont
 #
 #
 # Description:
 #
-# Author needs to add a description!
+# This code controls the menu prompts in R Studio's console window. Functions
+# included in this script are:
+# Run()
+# getStateDataSets()
+# getNationalDataSet()
 #
 ###########################################################################
 
@@ -188,7 +192,6 @@ getStateDataSets <- function() {
     dat.compare[, year_record := as.numeric(year_compare)]
     dat <- rbind(dat, dat.compare, fill = TRUE)
   }
-  
   
   dat <<- dat # this is useful for debugging plotting issues
   

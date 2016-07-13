@@ -1,11 +1,14 @@
 ###########################################################################
 #  Title: FHWA HPMS Score Card Generator
-#   Date: July 2015
+#   Date: July 2016
 # Author: Jeff Dumont
 #
 #
 # Description:
 #
+# This compares the analysis year against the comparison year at the section
+# level.
+# 
 # This function formats the data into the necessary structure to be
 # processed by the create_table function.
 #
@@ -62,9 +65,6 @@ create_yearoveryear_report <- function(
      
      result[is.na(miles),miles:=0]
      result[is.na(N),N:=0]
-     
-     #setnames(result,"F_SYSTEM.x","F_SYSTEM")
-     #setnames(result,"V1","miles")
      
      total <- var.1[ ,list(totalmiles=round(sum(end_point-begin_point),2)),by=list(F_SYSTEM)]
      

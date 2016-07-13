@@ -1,6 +1,6 @@
 ###########################################################################
 #  Title: FHWA HPMS Score Card Generator
-#   Date: July 2015
+#   Date: July 2016
 # Author: Jeff Dumont
 #
 #
@@ -28,6 +28,11 @@ create_travel_data_assessment <- function(
      aadt_cu <- data[state_code==state&year_record==year&data_item=="AADT_COMBINATION"&FACILITY_TYPE!=4,list(route_id,begin_point,end_point,value_numeric,F_SYSTEM,NHS,Interstate)]
      aadt_su <- data[state_code==state&year_record==year&data_item=="AADT_SINGLE_UNIT"&FACILITY_TYPE!=4,list(route_id,begin_point,end_point,value_numeric,F_SYSTEM,NHS,Interstate)]
      faadt   <- data[state_code==state&year_record==year&data_item=="FUTURE_AADT"&FACILITY_TYPE!=4,list(route_id,begin_point,end_point,value_numeric,F_SYSTEM,NHS,Interstate)]
+     
+     aadt    <- unique(aadt)
+     aadt_cu <- unique(aadt_cu)
+     aadt_su <- unique(aadt_su)
+     faadt   <- unique(faadt)
      
      comparison <- merge(aadt,aadt_cu,by=c("route_id","begin_point","end_point","F_SYSTEM","Interstate","NHS"),all.y=TRUE,all.x=FALSE)     
      setnames(comparison,"value_numeric.x","AADT")

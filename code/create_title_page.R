@@ -1,20 +1,20 @@
 ###########################################################################
 #  Title: FHWA HPMS Score Card Generator
-#   Date: July 2015
+#   Date: July 2016
 # Author: Jeff Dumont
 #
 #
 # Description:
 #
-# Author needs to add a description!
+# Creates the title/first page of the scorecard. During the generation of this page,
+# there is a fair amount of analysis performed including applicaiton of the 
+# coverage validation and quality recipes.
 #
 ###########################################################################
 
 create_title_page <- function(data,state,year,year_compare=NULL)
 {
      
-    #title_text <- read.table("resources\\dat\\title_text.txt",sep="@",as.is=TRUE,allowEscapes=TRUE,header=FALSE)
-  
     scorestotals <- read.table("resources\\dat\\scoringweights.csv",sep=",",header=TRUE)
   
     timetotal     <- scorestotals[,"timeliness"]
@@ -88,20 +88,6 @@ create_title_page <- function(data,state,year,year_compare=NULL)
      
      vertical_adj <- 0.05
      
-     #grid.draw(ellipseGrob(rep(0.25,6),c(0.14,0.21,0.38,0.53,0.66,0.818)-vertical_adj,size=15,ar=1,angle=0,
-     #                 def="npc", gp=gpar(fill="slategray",col="slategray")))
-     
-     #grid.draw(ellipseGrob(0.25,0.956,size=15,ar=1,angle=0,
-     #                     def="npc", gp=gpar(fill="red",col="red")))
-     
-     #grid.text("s" ,0.25,0.961,gp = gpar(col = "white",fontface = "bold", fontsize = 18))
-     #grid.text("i" ,0.25,0.820-vertical_adj,gp = gpar(col = "white", fontface = "bold", fontsize = 18))
-     #grid.text("p" ,0.25,0.665-vertical_adj,gp = gpar(col = "white", fontface = "bold", fontsize = 18))
-     #grid.text("t" ,0.25,0.530-vertical_adj,gp = gpar(col = "white", fontface = "bold", fontsize = 18))
-     #grid.text("g" ,0.25,0.382-vertical_adj,gp = gpar(col = "white", fontface = "bold", fontsize = 18))
-     #grid.text("r" ,0.25,0.21-vertical_adj,gp = gpar(col = "white", fontface = "bold", fontsize = 18))
-     #grid.text("sn",0.25,0.14-vertical_adj,gp = gpar(col = "white", fontface = "bold", fontsize = 18))
-     
      grid.text("Score"         ,0.25,0.965,hjust=0,gp = gpar(col = "steelblue4", fontface = "bold", fontsize = 13))
      grid.text("Data Summary"  ,0.835,0.965,hjust=1,gp = gpar(col = "steelblue4", fontface = "bold", fontsize = 13))
      grid.text("inventory"       ,0.25,0.823-vertical_adj,hjust=0,gp = gpar(col = "steelblue4", fontface = "bold", fontsize = 13))
@@ -110,13 +96,6 @@ create_title_page <- function(data,state,year,year_compare=NULL)
      grid.text("geometric"       ,0.25,0.387-vertical_adj,hjust=0,gp = gpar(col = "steelblue4", fontface = "bold", fontsize = 13))
      grid.text("route"           ,0.25,0.237-vertical_adj,hjust=0,gp = gpar(col = "steelblue4", fontface = "bold", fontsize = 13))
      grid.text("special networks",0.25,0.14-vertical_adj,hjust=0,gp = gpar(col = "steelblue4", fontface = "bold", fontsize = 13))
-     
-     #grid.draw(rectGrob(x=0.6,y=0.8,width=0.6,heigh=0.3,gp=gpar(fill="gray80",col="gray80")))
-     
-     # summary
-     #grid.draw(linesGrob(x = unit(c(0.25, 0.97), "npc"),
-     #                     y = unit(c(0.9425,0.9425), "npc"),
-     #                     gp=gpar(col="slategray",lty=3)))
      
      # inventory
      grid.draw(linesGrob(x = unit(c(0.25, 0.97), "npc"),
@@ -391,11 +370,6 @@ create_title_page <- function(data,state,year,year_compare=NULL)
      
      xshift <- 0.05
      
-     #grid.ellipse(x=0.35+xshift,y=0.015,size=2.5,ar=1,angle=0,def="npc",gp=gpar(fill="slategray",col="slategray"))
-     #grid.ellipse(x=0.50+xshift ,y=0.015,size=2.5,ar=1,angle=0,def="npc",gp=gpar(fill="red",col="red"))
-     #grid.ellipse(x=0.65+xshift,y=0.015,size=2.5,ar=1,angle=0,def="npc",gp=gpar(fill="white",col="slategray"))
-     #grid.ellipse(x=0.80+xshift ,y=0.015,size=2.5,ar=1,angle=0,def="npc",gp=gpar(fill="white",col="red"))
-     
      grid.rect(x=0.37+xshift+0.01,
                          y=0.015,
                          width=unit(0.007,"npc"),
@@ -445,16 +419,6 @@ create_title_page <- function(data,state,year,year_compare=NULL)
 
      # summary section of the report
      
-     #grid.text("Overall Score",x=0.43,y=0.925,just="centre",gp=gpar(fontsize=12, fontface="bold", col="slategray"))
-     #grid.text("85",x=0.43,y=0.865,just="centre",gp=gpar(fontsize=50, fontface="bold", col="black"))
-
-     
-
-     #grid.text(paste0(getTimelinessScore(state,year),"/10"),x=0.47,y=0.915,just="left",gp=gpar(fontsize=14, fontface="bold", col="steelblue4"))
-     #grid.text(paste0(round(10*CompletedScore/TotalCompletedScore,1),"/10"),x=0.47,y=0.87 ,just="left",gp=gpar(fontsize=14, fontface="bold", col="steelblue4"))
-     #grid.text(paste0(round(10*QualityScore/TotalQualityScore,1),"/10"),x=0.47,y=0.825,just="left",gp=gpar(fontsize=14, fontface="bold", col="steelblue4"))
-
-    
      tscore <- timetotal*getTimelinessScore(state,year)
      cscore <- round(completetotal*CompletedScore/TotalCompletedScore,1)
      qscore <- round(qualitytotal*QualityScore/TotalQualityScore,1)
@@ -520,10 +484,7 @@ and quality.",y=0.90,x=0.71,hjust=1,gp=gpar(fontsize=10, col="gray50"))
           
      grid.text(paste0("",year  ),x=0.890,y=0.93,gp=gpar(fontsize=9, fontface="bold", col="slategray"),hjust=1)
      grid.text(paste0("",year-1),x=0.950,y=0.93,gp=gpar(fontsize=9, fontface="bold", col="slategray"),hjust=1)
-     #grid.text(paste0("Year ",year-2),x=0.780,y=0.925,gp=gpar(fontsize=9, fontface="bold", col="slategray"),hjust=1)
-     #grid.text(paste0("Year ",year-3),x=0.840,y=0.925,gp=gpar(fontsize=9, fontface="bold", col="slategray"),hjust=1)
-     #grid.text(paste0("Year ",year-4),x=0.900,y=0.925,gp=gpar(fontsize=9, fontface="bold", col="slategray"),hjust=1)
-     
+
      grid.text(results[2,1,with=FALSE],x=0.835,y=0.905,gp=gpar(fontsize=8, fontface="bold", col="slategray"),hjust=1)
      grid.text(results[3,1,with=FALSE],x=0.835,y=0.885,gp=gpar(fontsize=8, fontface="bold", col="slategray"),hjust=1)
      grid.text(results[4,1,with=FALSE],x=0.835,y=0.865,gp=gpar(fontsize=8, fontface="bold", col="slategray"),hjust=1)
@@ -544,31 +505,4 @@ and quality.",y=0.90,x=0.71,hjust=1,gp=gpar(fontsize=10, col="gray50"))
      
      grid.text("*Does not include non-NHS locals.",x=0.89,y=0.805,gp=gpar(fontsize=5, fontface="italic", col="slategray"),hjust=0.5)
      
-     #grid.text(results[1,4,with=FALSE],x=0.780,y=0.900,gp=gpar(fontsize=8, col="black"),hjust=1)
-     #grid.text(results[2,4,with=FALSE],x=0.780,y=0.875,gp=gpar(fontsize=8, col="black"),hjust=1)
-     #grid.text(results[3,4,with=FALSE],x=0.780,y=0.850,gp=gpar(fontsize=8, col="black"),hjust=1)
-     #grid.text(results[4,4,with=FALSE],x=0.780,y=0.825,gp=gpar(fontsize=8, col="black"),hjust=1)
-     
-     #grid.text(results[1,5,with=FALSE],x=0.840,y=0.900,gp=gpar(fontsize=8, col="black"),hjust=1)
-     #grid.text(results[2,5,with=FALSE],x=0.840,y=0.875,gp=gpar(fontsize=8, col="black"),hjust=1)
-     #grid.text(results[3,5,with=FALSE],x=0.840,y=0.850,gp=gpar(fontsize=8, col="black"),hjust=1)
-     #grid.text(results[4,5,with=FALSE],x=0.840,y=0.825,gp=gpar(fontsize=8, col="black"),hjust=1)
-     
-     #grid.text(results[1,6,with=FALSE],x=0.900,y=0.900,gp=gpar(fontsize=8, col="black"),hjust=1)
-     #grid.text(results[2,6,with=FALSE],x=0.900,y=0.875,gp=gpar(fontsize=8, col="black"),hjust=1)
-     #grid.text(results[3,6,with=FALSE],x=0.900,y=0.850,gp=gpar(fontsize=8, col="black"),hjust=1)
-     #grid.text(results[4,6,with=FALSE],x=0.900,y=0.825,gp=gpar(fontsize=8, col="black"),hjust=1)
-     
-     #grid.text(
-     #               create_overall_report(state,year,year_compare),
-     #               
-                    #rows=NULL, 
-                    #core.just = "right",
-                    #col.just="right",
-                    #gpar.coretext = gpar(col = "black",fontsize=6.5),
-                    #gpar.coltext = gpar(col = "black",fontsize=7, fontface = "bold"),
-                    #padding.h=unit(0.1,units="inches"),padding.v=unit(0.1,units="inches")
-     #)
-     
-     #add_page_number(1)
 }

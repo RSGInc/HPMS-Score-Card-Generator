@@ -1,11 +1,12 @@
 ###########################################################################
 #  Title: FHWA HPMS Score Card Generator
-#   Date: July 2015
+#   Date: July 2016
 # Author: Jeff Dumont
 #
 #
 # Description:
 #
+# This performs the adjacency analysis (section based).
 # This function formats the data into the necessary structure to be
 # processed by the create_table function
 #
@@ -19,6 +20,12 @@ create_adjacency_report <- function(
 )
 {
      
+     data <- data[,.(year_record,state_code,route_id,begin_point,end_point,
+                  data_item,value_numeric,value_text,value_date,F_SYSTEM,NHS,FACILITY_TYPE,THROUGH_LANES,URBAN_CODE,F_SYTEMorig,
+                  Interstate)]
+  
+     data <- unique(data)
+  
      highlight_threshold    <- gVariables[Name==variable,AH_Thresh]
   
      d.l <- data[data_item==variable&state_code==state&year_record==year&FACILITY_TYPE!=4,,]
@@ -43,7 +50,6 @@ create_adjacency_report <- function(
      result[is.na(N),N:=0]
      
      setnames(result,"F_SYSTEM.x","F_SYSTEM")
-     #setnames(result,"V1","miles")
      
      total <- d.l[ ,list(totalmiles=round(sum(end_point-begin_point),2)),by=list(F_SYSTEM)]
      

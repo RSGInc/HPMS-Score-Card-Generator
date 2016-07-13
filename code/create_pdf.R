@@ -1,6 +1,6 @@
 ###########################################################################
 #  Title: FHWA HPMS Score Card Generator
-#   Date: July 2015
+#   Date: July 2016
 # Author: Jeff Dumont
 #
 #
@@ -10,7 +10,7 @@
 #
 ###########################################################################
 
-# TODO: needs to accept an argument pointing to where the file should be saved.
+
 create_pdf <- function(data, state, year, year_compare, population, national = NULL, path)
 {
      TS <- Sys.time()

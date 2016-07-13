@@ -1,12 +1,12 @@
 ###########################################################################
 #  Title: FHWA HPMS Score Card Generator
-#   Date: July 2015
+#   Date: July 2016
 # Author: Jeff Dumont
 #
 #
 # Description:
 #
-# A custom cut function.
+# A custom cut function. Used in the histograms on the summary pages.
 #
 ###########################################################################
 

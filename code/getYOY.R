@@ -1,3 +1,16 @@
+###########################################################################
+#  Title: FHWA HPMS Score Card Generator
+#   Date: July 2016
+# Author: Jeff Dumont 
+#
+#
+# Description:
+#
+# This function does the year-over-year analysis and returns a table of results for
+# the outlier analysis on the detailed review pages.
+#
+###########################################################################
+
 getYOY <- function(data,year,yearcomparison,variable)
 {
 

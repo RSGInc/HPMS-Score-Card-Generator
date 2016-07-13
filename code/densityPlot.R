@@ -1,12 +1,12 @@
 ###########################################################################
 #  Title: FHWA HPMS Score Card Generator
-#   Date: July 2015
+#   Date: July 2016
 # Author: Jeff Dumont
 #
 #
 # Description:
 #
-# Author needs to add a description!
+# The basic density plot used on the summary pages
 #
 ###########################################################################
 
@@ -31,24 +31,6 @@ densityPlot <- function(
      if((nrow(d1)>2|nrow(d2)>2)&!is.null(minvalue)) # we have something to report (density plots require at least 3 points to draw)
      {
           
-          #p <- ggplot(data = d1, aes(x = value_numeric))
-          
-          #if(nrow(d1)>0)
-          #{
-          #     p <- p + geom_density(data = d1, color="slategray", linetype="solid", size=0.2,fill="white",adjust=adjustment,aes(weights=(end_point-begin_point)/sum(end_point-begin_point)))
-
-          #}
-          
-          #if(nrow(d2)>0)
-          #{
-          #     p <- p + geom_density(data = d2, color ="gray75", linetype="dashed", size=0.2,fill="white",adjust=adjustment,aes(weights=(end_point-begin_point)/sum(end_point-begin_point)))
-          #}
-          
-          #if(!is.null(d3))
-          #{
-          #     p <- p + geom_density(data = d3, color ="black", linetype="dotted", size=0.2,fill="white",adjust=adjustment,aes(weights=(end_point-begin_point)/sum(end_point-begin_point)))
-          #}
-          
           p1 <- ggplot(data = d1, aes(x = value_numeric))
           p2 <- ggplot(data = d1, aes(x = value_numeric))
           p3 <- ggplot(data = d1, aes(x = value_numeric))
@@ -56,9 +38,7 @@ densityPlot <- function(
           if(nrow(d1)>2)
           {
                p1 <- p1 + geom_density(data = d1, color="slategray", linetype="solid", size=0.25,fill="slategray",adjust=adjustment,aes(weights=(end_point-begin_point)/sum(end_point-begin_point)))
-               #p1 <- p1 + stat_density(geom="line",data = d1, color="slategray", linetype="solid", size=0.35,fill="white",adjust=adjustment,aes(weights=(end_point-begin_point)/sum(end_point-begin_point)))
-               #p1 <- p1 + geom_freqpoly(color="slategray",aes(weights=(end_point-begin_point)/sum(end_point-begin_point)))
-                 
+
           } else {
                p1 <- p1 + geom_density(data = d3, color ="white", linetype="solid", size=0.25,fill="white",adjust=adjustment,aes(weights=(end_point-begin_point)/sum(end_point-begin_point)))    
             
@@ -75,9 +55,6 @@ densityPlot <- function(
           if(nrow(d2)>2)
           {
                p2 <- p2 + geom_density(data = d2, color ="gray75", linetype="solid", size=0.25,fill="gray75",adjust=adjustment,aes(weights=(end_point-begin_point)/sum(end_point-begin_point)))
-               #p2 <- p2 + geom_histogram(color="gray75",aes(weights=(end_point-begin_point)/sum(end_point-begin_point))) 
-               #p2 <- p2 + geom_freqpoly(color="gray75",aes(weights=(end_point-begin_point)/sum(end_point-begin_point))) 
-              #p2 <- p2 + stat_density(geom="line",data = d2, color ="gray75", linetype="solid", size=0.35,fill="white",adjust=adjustment,aes(weights=(end_point-begin_point)/sum(end_point-begin_point)))
 
           } else {
               p2 <- p2 + geom_density(data = d3, color ="white", linetype="solid", size=0.25,fill="white",adjust=adjustment,aes(weights=(end_point-begin_point)/sum(end_point-begin_point)))  
@@ -94,9 +71,6 @@ densityPlot <- function(
           if(!is.null(d3))
           {
                p3 <- p3 + geom_density(data = d3, color ="black", linetype="solid", size=0.25,fill="black",adjust=adjustment,aes(weights=(end_point-begin_point)/sum(end_point-begin_point)))
-               #p3 <- p3 + geom_histogram(color="slategray",aes(weights=(end_point-begin_point)/sum(end_point-begin_point)))
-               #p3 <- p3 + geom_freqpoly(color="black",aes(weights=(end_point-begin_point)/sum(end_point-begin_point))) 
-               #p3 <- p3 + stat_density(geom="line",data = d3, color ="black", linetype="solid", size=0.35,fill="white",adjust=adjustment,aes(weights=(end_point-begin_point)/sum(end_point-begin_point)))
           }
           
           if(showLabel)
@@ -107,18 +81,15 @@ densityPlot <- function(
             p3 <- p3 + ylab("") 
           }
           
-          #p1 <- p1 + ggtitle(title)
-          
-          #p <- p + 
-          
-          p1 <- p1 +     #geom_density(data = var.national,color="black", linetype="twodash", size=0.25) +
+
+          p1 <- p1 +     
                theme_minimal() + 
-               scale_y_continuous()+#limits=c(0,ymax))+#,labels=percent,breaks=c(0,ceiling(ymax/25)*25))+ 
+               scale_y_continuous()+
                scale_x_continuous(labels = comma,limits=c(minvalue,maxvalue)) +
-               #xlim(c(minvalue,maxvalue))+
+               
                theme(
-                    axis.text.x=element_text(size=4.5, angle=30, hjust = 1,colour="white"),#element_text(size=6, hjust = 0,colour="slategray"),
-                    axis.text.y=element_blank(),#element_text(size=4.5, angle = 0, hjust = 0,colour="gray75"), 
+                    axis.text.x=element_text(size=4.5, angle=30, hjust = 1,colour="white"),
+                    axis.text.y=element_blank(),
                     strip.text.x = element_text(size = 8, angle = 0),
                     strip.text.y = element_text(size = 8, angle = 0),
                     axis.ticks=element_blank(),
@@ -144,15 +115,14 @@ densityPlot <- function(
           p1 <- p1 + ggtitle(title)
           p2 <- p2 + ggtitle(title)
           p3 <- p3 + ggtitle(title)
-          #p1 <- p1 + annotate("text", x=mp, y=yp, label = title,size=2.1, hjust=0.5, face="bold",colour = "slategray")
-          
-          p2 <- p2 +     #geom_density(data = var.national,color="black", linetype="twodash", size=0.25) +
+
+          p2 <- p2 +     
                theme_minimal() + 
-               scale_y_continuous()+#limits=c(0,ymax))+#,labels=percent,breaks=c(0,ceiling(ymax/25)*25))+ 
+               scale_y_continuous()+
                scale_x_continuous(labels = comma,limits=c(minvalue,maxvalue)) +
                theme(
                     axis.text.x=element_text(size=4.5, angle=30, hjust = 1,colour="white"),
-                    axis.text.y=element_blank(),#element_text(size=4.5, angle = 0, hjust = 0,colour="gray75"), 
+                    axis.text.y=element_blank(),
                     strip.text.x = element_text(size = 8, angle = 0),
                     strip.text.y = element_text(size = 8, angle = 0),
                     axis.ticks=element_blank(),
@@ -167,13 +137,13 @@ densityPlot <- function(
                     plot.margin = unit(c(topMargin=0,leftMargin=0,bottomMargin=0,rightMargin=0), "cm")
                )
           
-          p3 <- p3 +     #geom_density(data = var.national,color="black", linetype="twodash", size=0.25) +
+          p3 <- p3 +     
                theme_minimal() + 
-               scale_y_continuous()+#limits=c(0,ymax))+#,labels=percent,breaks=c(0,ceiling(ymax/25)*25))+ 
+               scale_y_continuous()+
                scale_x_continuous(labels = comma,limits=c(minvalue,maxvalue))  +
                theme(
                     axis.text.x=element_text(size=4.5, angle=30, hjust = 1,colour="slategray"),
-                    axis.text.y=element_blank(),#element_text(size=4.5, angle = 0, hjust = 0,colour="black"), 
+                    axis.text.y=element_blank(),
                     strip.text.x = element_text(size = 8, angle = 0),
                     strip.text.y = element_text(size = 8, angle = 0),
                     axis.ticks=element_blank(),

@@ -1,3 +1,16 @@
+###########################################################################
+#  Title: FHWA HPMS Score Card Generator
+#   Date: July 2016
+# Author: Jeff Dumont 
+#
+#
+# Description:
+#
+# Function to plot availability rectangles on title page. It implements the 
+# coverage validation provided by FHWA.
+#
+###########################################################################
+
 plotRect <- function(data,year,variable,startx,starty,C,R)
 {
   

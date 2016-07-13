@@ -1,18 +1,23 @@
 ###########################################################################
 #  Title: FHWA HPMS Score Card Generator
-#   Date: July 2015
+#   Date: July 2016
 # Author: RSG, Inc.
 #
 #
 # Description:
 #
-# Welcome to the FHWA HPMS Score Card Generator! The purpose of this tool
-# is to ...
-#
+# Welcome to the FHWA HPMS Score Card Generator! The HPMS Scorecard is a 
+# product of the Office of Highway Policy Information and was developed
+# by FHWA's Data Visualization Center. The Scorecard is a visually-oriented 
+# statistical review of the HPMS data for any one of the 52 reporting 
+# geographies (50 states plus Washington DC and Puerto Rico). The primary 
+# purpose of this Scorecard is to provide a consistent and thorough tool 
+# for review of the HPMS Data Items (also known as 'Section' or attribute 
+# data).
 #
 # Instructions:
-#
-# 1.... This tool is meant for use with R v3.2.3
+# Please see the HPMS Scorecard User's Manual for detailed instructions
+# on the use of this code.
 #
 ###########################################################################
 
@@ -22,22 +27,3 @@ invisible(sapply(X = list.files(path = "code", pattern = "*.R", full.names = TRU
 # Run Tool
 Run()
 
-2
-NY
-2014
-2013
-
-2
-ME
-2014
-2013
-
-2
-WY
-2014
-2013
-
-2
-LA
-2014
-2013

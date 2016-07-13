@@ -1,12 +1,15 @@
 ###########################################################################
 #  Title: FHWA HPMS Score Card Generator
-#   Date: July 2015
-# Author: Jeff Keller
+#   Date: July 2016
+# Author: Jeff Keller and Jeff Dumont
 #
 #
 # Description:
 #
-# Author needs to add a description!
+# This set of code controls the import of the data from the SQL database
+# into the scorecard. It is important for the ODBC connection to be set up
+# correctly for this to work. Please see the user manual for more details
+# on how to set up the connection.
 #
 ###########################################################################
 
@@ -17,7 +20,7 @@ ImportFiles <- function() {
   
   success <- c()
   
-  con <- odbcConnect("HPMSAnalysis")
+  con <- odbcConnect("HPMS")
   
   # FHWA
   data1 <- data.table(sqlQuery(con,paste0("select distinct state_code, year_record from sections2015 order by state_code,year_record")))

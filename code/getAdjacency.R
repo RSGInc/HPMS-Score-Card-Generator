@@ -1,10 +1,29 @@
+###########################################################################
+#  Title: FHWA HPMS Score Card Generator
+#   Date: July 2016
+# Author: Jeff Dumont 
+#
+#
+# Description:
+#
+# This function does the adjaceny analysis and returns a table of results for
+# the outlier analysis on the detailed review pages.
+#
+###########################################################################
+
 getAdjaceny <- function(data,year,variable)
 {
 
-     data <- data[!(F_SYTEMorig==7&NHS!=1),]
+     data <- data[!(F_SYTEMorig==7&NHS!=1),
+                  .(year_record,state_code,route_id,begin_point,end_point,
+                  data_item,value_numeric,value_text,value_date,F_SYSTEM,NHS,FACILITY_TYPE,THROUGH_LANES,URBAN_CODE,F_SYTEMorig,
+                  Interstate)]
   
-     d.l <- data[data_item==variable&year_record==year,,]
+     data <- unique(data)
      
+     d.l <- data[data_item==variable&year_record==year,]
+     
+     d.l <- unique(d.l) 
      d.r <- d.l
      
      d.l$match_point <- d.l$end_point

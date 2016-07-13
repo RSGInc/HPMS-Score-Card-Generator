@@ -1,6 +1,6 @@
 ###########################################################################
 #  Title: FHWA HPMS Score Card Generator
-#   Date: July 2015
+#   Date: July 2016
 # Author: Jeff Dumont
 #
 #
@@ -105,18 +105,6 @@ create_travel_yoy_density <- function(
           maxvalue <- max(maxvalue1,maxvalue2)#,maxvalue3)
           ymax     <- max(ymax1,ymax2,ymax3)*1.20
           
-          #ymax <- max(var.1[,V1:=(end_point-begin_point)/sum(end_point-begin_point)][,sum(V1),by=.(value_numeric)][,V1],
-          #    var.2[,V1:=(end_point-begin_point)/sum(end_point-begin_point)][,sum(V1),by=.(value_numeric)][,V1],
-          #    national[,V1:=(end_point-begin_point)/sum(end_point-begin_point)][,sum(V1),by=.(value_numeric)][,V1]
-          #)
-          #if(includeNational=="Y")
-          #{
-               
-          #} else 
-          #{
-          #     national <- NULL
-          #}
-          
           if(gVariablesLabels[Name==variable,NumLevels]==0)
           {
             if(is.null(national))
@@ -172,7 +160,6 @@ create_travel_yoy_density <- function(
             }               
             obj <- arrangeGrob(p11,p12,p13,p14,textGrob(""),p21,p22,p23,p24,textGrob(""),p31,p32,p33,p34,textGrob(""),ncol=5,nrow=3,widths=unit(c(rep(3.5/4,4),0.2777667),units="inches"))
               
-            #obj <- textGrob("New chart type",gp=gpar(fontsize=12, col="Red"))  
           }
           return(obj)
      } else
