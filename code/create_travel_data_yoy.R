@@ -45,11 +45,11 @@ create_travel_data_yoy <- function(
      {
       if(ramps)
       {
-        var.1    <- data[state_code==state&year_record==year          &data_item==variable&FACILITY_TYPE==4,list(route_id,begin_point,end_point,value_numeric=year(value_date),F_SYSTEM)]
-        var.2    <- data[state_code==state&year_record==yearcomparison&data_item==variable&FACILITY_TYPE==4,list(route_id,begin_point,end_point,value_numeric=year(value_date),F_SYSTEM)]
+        var.1    <- data[state_code==state&year_record==year          &data_item==variable&FACILITY_TYPE==4&value_date!="",list(route_id,begin_point,end_point,value_numeric=year(value_date),F_SYSTEM)]
+        var.2    <- data[state_code==state&year_record==yearcomparison&data_item==variable&FACILITY_TYPE==4&value_date!="",list(route_id,begin_point,end_point,value_numeric=year(value_date),F_SYSTEM)]
       } else {
-        var.1    <- data[state_code==state&year_record==year          &data_item==variable&FACILITY_TYPE!=4,list(route_id,begin_point,end_point,value_numeric=year(value_date),F_SYSTEM)]
-        var.2    <- data[state_code==state&year_record==yearcomparison&data_item==variable&FACILITY_TYPE!=4,list(route_id,begin_point,end_point,value_numeric=year(value_date),F_SYSTEM)]       
+        var.1    <- data[state_code==state&year_record==year          &data_item==variable&FACILITY_TYPE!=4&value_date!="",list(route_id,begin_point,end_point,value_numeric=year(value_date),F_SYSTEM)]
+        var.2    <- data[state_code==state&year_record==yearcomparison&data_item==variable&FACILITY_TYPE!=4&value_date!="",list(route_id,begin_point,end_point,value_numeric=year(value_date),F_SYSTEM)]       
       }
      }
   

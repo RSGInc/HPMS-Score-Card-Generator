@@ -193,7 +193,7 @@ getStateDataSets <- function() {
     dat <- rbind(dat, dat.compare, fill = TRUE)
   }
   
-  dat <<- dat # this is useful for debugging plotting issues
+  #dat <<- dat # this is useful for debugging plotting issues
   
   # Attempt to load the data associated with the four previous years
   dat.prev <- list()

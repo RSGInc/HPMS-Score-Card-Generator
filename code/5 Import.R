@@ -25,9 +25,11 @@ ImportFiles <- function() {
   # FHWA
   data1 <- data.table(sqlQuery(con,paste0("select distinct state_code, year_record from sections2015 order by state_code,year_record")))
   data2 <- data.table(sqlQuery(con,paste0("select distinct state_code, year_record from sections2014 order by state_code,year_record")))
-  data3 <- data.table(sqlQuery(con,paste0("select distinct state_code, year_record from sections2013 order by state_code,year_record")))
+  #data3 <- data.table(sqlQuery(con,paste0("select distinct state_code, year_record from sections2013 order by state_code,year_record")))
   
-  data <- rbind(data1,data2,data3)
+  data <- rbind(data1,data2)#,data3)
+  
+  #data <- data2
   
   # RSG
   #data <- data.table(sqlQuery(con,paste0("select distinct state_code, year_record from HPMSAnalysis order by state_code,year_record")))

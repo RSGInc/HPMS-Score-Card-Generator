@@ -103,7 +103,7 @@ create_travel_data_assessment <- function(
      
      aadt_su.compare[,groupCat:=factor(groupCat,levels=4:1,labels=gF_SYSTEM_levels[4:1])]
      
-     if(nrow(faadt.compare)> 0)
+     if(nrow(faadt.compare[!is.na(mq),])> 0)
      {
           p1 <- crossbarPlot(faadt.compare)
      } else
@@ -111,7 +111,7 @@ create_travel_data_assessment <- function(
           p1 <- textGrob(NoDataString, gp = gpar(fontsize = 8, col = "red"))
      }
      
-     if(nrow(aadt_combo.compare)> 0)
+     if(nrow(aadt_combo.compare[!is.na(mq),])> 0)
      {
           p2 <- crossbarPlot(aadt_combo.compare)
      } else

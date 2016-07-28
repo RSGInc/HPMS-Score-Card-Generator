@@ -1405,7 +1405,7 @@ plotRect <- function(data,year,variable,startx,starty,C,R)
       dat.NHS           <- data[data_item=="NHS"          &year_record==year,]
       
       coverage <- sqldf("select 
-                            A.route_id,A.begin_point,A.end_point,A.data_item,A.value_numeric as FACILITYTYPE, 
+                            A.route_id,B.begin_point,B.end_point,A.data_item,A.value_numeric as FACILITYTYPE, 
                             coalesce(B.value_text,B.value_numeric) as variable,B.expansion_factor   
                             from [dat.FACILITY_TYPE] A 
                             left join [dat.variable] B on 
