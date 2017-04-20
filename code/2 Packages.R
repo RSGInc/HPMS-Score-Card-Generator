@@ -22,17 +22,25 @@ cat("Loading tool components")
 # will install to this location, potentially overwriting the tool's libraries.
 # This should be turned on for testing purposes and when the tool is sent to FHWA
 # so they don't need to download anything.
-.libPaths("resources/lib")
+
+#.libPaths("resources/lib")
 
 # Function to auto-load packages (will attempt to download if not found)
 LoadPackages <- function(packages) {
   
   notinstalled <- packages[!packages %in% .packages(all.available = TRUE)]
-  if (length(notinstalled) > 0) install.packages(notinstalled, repos = "http://cran.r-project.org", dependencies = TRUE)
-  for (package in packages) {cat("."); eval(parse(text = paste0("suppressMessages(library(", package, "))")))}
-  
+  if (length(notinstalled) > 0){
+    install.packages(notinstalled,
+                     repos = "http://cran.r-project.org", dependencies = TRUE)
+  }
+  for (package in packages) {
+    cat(".")
+    eval(parse(text = paste0("suppressMessages(library(", package, "))")))
+  }
 }
 
 # Load necessary packages (alphabetically, please)
-packages <- c("data.table", "doBy", "ggplot2", "gmodels", "grid", "gridExtra", "hexbin", "jsonlite", "png", "reshape", "reshape2", "RODBC","scales", "showtext", "sqldf", "tcltk", "tools")
+packages <- c("data.table", "doBy", "ggplot2", "gmodels", "grid", "gridExtra",
+              "hexbin", "jsonlite", "png", "reshape", "reshape2",
+              "RODBC","scales", "showtext", "sqldf", "tcltk", "tools")
 LoadPackages(packages)

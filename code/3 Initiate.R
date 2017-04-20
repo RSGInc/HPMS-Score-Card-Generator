@@ -2,7 +2,7 @@
 #  Title: FHWA HPMS Score Card Generator
 #   Date: July 2016
 # Author: Jeff Keller & Jeff Dumont
-#
+# Modififed: Matt Landis
 #
 # Description:
 #
@@ -39,7 +39,7 @@ Run <- function() {
       #cat("Please use the windows dialog to select one sample panel data file to import.\n\n")
       #spfile <- choose.files(caption = "Select one sample panel data file to import.",multi=FALSE)
     
-      ImportOkay <- ImportFiles()
+      ImportOkay <- ImportData()
       
       # If no imported data sets came in okay, warn the user
       if (!ImportOkay) {

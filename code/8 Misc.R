@@ -125,4 +125,4 @@ deleteAllData <- function() {
 }
 
 ### END OF TOOL LOADING
-cat(" complete!")
+cat(" complete!\n")

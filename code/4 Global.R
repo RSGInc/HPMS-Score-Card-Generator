@@ -2,7 +2,7 @@
 #  Title: FHWA HPMS Score Card Generator
 #   Date: July 2016
 # Author: Jeff Keller & Jeff Dumont
-#
+# Modified: Matt Landis
 #
 # Description:
 #
@@ -70,7 +70,9 @@ gState_Labels <- data.table(
 # FHWA and DVC Logos
 gLogo  <- suppressWarnings(readPNG("resources/img/FHWA_vertical_2013.png"))
 gLogo2 <- suppressWarnings(readPNG("resources/img/DVC-Logo.png"))
-gLogo3 <- suppressWarnings(readPNG("resources/img/info.png"))
+
+# RML: This line doesn't work - can't find file
+#gLogo3 <- suppressWarnings(readPNG("resources/img/info.png"))
 
 # Number of blank lines between menu question text
 gSpaces <- 100

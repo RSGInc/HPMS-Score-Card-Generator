@@ -22,10 +22,17 @@
 ###########################################################################
 
 # Load Code
-invisible(sapply(X = list.files(path = "code", pattern = "*.R", full.names = TRUE)[-1], FUN = source))
+# setwd('C:/Users/matt.landis/Git/HPMS-Score-Card-Generator/')
+invisible(sapply(X = list.files(path = "code", pattern = "*.R$",
+                                full.names = TRUE)[-1], FUN = source))
 
 # Run Tool
 Run()
+
+# Some responses for convenience
+1
+VT
+2015
 
 2
 CA
