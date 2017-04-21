@@ -17,7 +17,7 @@
 # A user-called function to generate a score card either by importing new data or
 # specifying previously imported data sets.
 Run <- function() {
-  
+
   whitespace()
   
   # This while keeps the tool running until the user hits esc
@@ -57,11 +57,11 @@ Run <- function() {
       
     # Generate score card(s)
     } else if (task == 2) {
-      
+
       # Score card user task choice
       whitespace(gSpaces)
       #sctask <- getUserInput(valid = 1:2, prompt = "Score card generation options:\n\n(1) One card at a time\n(2) All available states in a given year\n\nPlease enter a 1 or 2: ")
-      sctask<-1
+      sctask <- 1
       
       
       # Sscore card save location
@@ -69,7 +69,6 @@ Run <- function() {
       
       # Generate a single score card
       if (sctask == 1) {
-        
         # Select data to generate score card
         data.list <- getStateDataSets()
         
@@ -80,10 +79,12 @@ Run <- function() {
         
         # Load the population data
         #population2 <<- readRDS(paste0("resources/dat/population.RDS"))#readRDS(paste0("resources/dat/",data.list[["year_selection"]],"_population.RDS"))
-        population <- readRDS(paste0("resources/dat/",data.list[["year_selection"]],"_population.RDS"))
+        #population <- readRDS(paste0("resources/dat/",data.list[["year_selection"]],"_population.RDS"))
+        population <- readRDS('resources/dat/population.RDS')
         
         # Generate score card
         whitespace(gSpaces)
+
         tryCatch(expr = {suppressWarnings(create_pdf(data = data.list[["dat"]],
                                                      state = data.list[["state_code"]],
                                                      year = data.list[["year_selection"]],
@@ -110,9 +111,9 @@ Run <- function() {
     
     } else if (task == 3) {
       
-      whitespace(gSpaces)
+      #whitespace(gSpaces)
       
-      year <- getUserInput("Please enter which year you want to import: ") 
+      #year <- getUserInput("Please enter which year you want to import: ") 
       
       whitespace(gSpaces)
       #cat("Please use the windows dialog to select one or more data files to import.\n\n")
@@ -120,7 +121,7 @@ Run <- function() {
       
       con <- odbcConnect("HPMS")
 
-      population <- sqlQuery(con,paste0("select * from ",poptable) )
+      population <- sqlQuery(con,paste0("select * from ", poptable) )
   
       odbcClose(con)
       
@@ -130,7 +131,7 @@ Run <- function() {
       
       population <- population[,.(pop=unique(pop)),by=urban_code]
       
-      saveRDS(population,file=paste0("resources/dat/",year,"_population.rds"))
+      saveRDS(population,file=paste0("resources/dat/population.rds"))
       whitespace(4)
       getUserInput("Data import complete! Press 'Enter' to continue. Press 'Esc' to Exit.")
       
@@ -178,9 +179,14 @@ getStateDataSets <- function() {
   # Get the user's comparison selection
   cat("\n")
   years_for_comparison <- years[years < year_selection]
+  
+  
   year_compare <- NULL
   if (length(years_for_comparison) > 0) {
     year_compare <- getUserInput(valid = years_for_comparison, prompt = "What year of STATE data would you like to compare against?\nEnter the comparison year (e.g., 2013): ", warning.text = "That is not a valid response. Note that a comparison data set must be older.\n")
+  } else {
+    # FIXME: What should happen if length(years_for_comparison) == 0 ?
+    stop('No years available for comparison')
   }
   
   # Load the analysis and comparison year data sets

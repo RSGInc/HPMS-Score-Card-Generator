@@ -15,10 +15,12 @@
 
 # SQL table names
 # these need to match FHWA's sql database structure
-poptable         <- "codes_Urban_2012"
-datatable        <- "sections"
-sampletable      <- "samples"
+poptable         <- "codes_urban"
 timelinesstable  <- "Table_mssql_m_HPMSAnalysis_HPMS_Submissions_log" 
+
+# These don't seem to be used anywhere...
+# datatable        <- "sections"
+# sampletable      <- "samples"
 
 # this is the text included in the left side of the first page of the scorecard
 # carriage returns are necessary.
