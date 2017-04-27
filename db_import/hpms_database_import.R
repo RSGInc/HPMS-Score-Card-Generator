@@ -3,20 +3,21 @@
 # 12 Apr 2017
 # Matt Landis
 
-# HPMS data sent to us from justin.clarke@dot.gov as five zipped CSV files.
+# HPMS 2015 data sent to us from justin.clarke@dot.gov as five zipped CSV files.
 # This script combines them into a single file for import into a database.
 
 
 # Initialize ===============================================================
 library('RODBC')
 library('tidyverse')
+library('data.table')
 library('stringr')
 #library('dbplyr') # installed from github
 library('readxl')
 
+#q_drive <- '//i-rsg.com/rsgshares/Projects/_Federal/FHWA/15__ HPMS_DataVisualizationSupport'
 onedrive <- file.path('C:/Users/matt.landis/OneDrive - Resource Systems Group, Inc')
 proj_dir <- file.path(onedrive, 'Projects', 'Fhwa_hpms')
-raw_dir <- file.path(proj_dir, 'raw_data')
 d_dir <- file.path(proj_dir, 'data')
 
 local_con <- 'Driver={SQL Server Native Client 11.0}; server=10548L\\SQLEXPRESS;database=HPMS2016;trusted_connection=yes;'
@@ -33,6 +34,9 @@ choice <- menu(choices = c('Replace it', 'Stop'),
                title='Replacing "Review_Sections" table takes ~ 4 hrs!!')
 
 if ( choice == 1 ){
+
+  raw_dir <- file.path(proj_dir, 'raw_data_2015')
+  
   files <- Sys.glob(file.path(raw_dir, '*/*.csv'))
   
   # Create connection to database
@@ -93,6 +97,110 @@ if ( choice == 1 ){
     
   } 
   
+  close(con)
+}
+
+# Load 2014 Sections data --------------------------------------------------
+
+# Copied from Q:\Projects\_Federal\FHWA\15__ HPMS_DataVisualizationSupport\HPMS Files
+
+choice <- menu(choices = c('Replace it', 'Stop'),
+               title='Replacing "Review_Sections_2014" table takes ~3 hrs!!')
+
+if ( choice == 1 ){
+
+  raw_dir <- file.path(proj_dir, 'raw_data_2014')
+
+  files <- Sys.glob(file.path(raw_dir, '*/*.csv'))
+
+  # files[1:3] are 2015 data!
+  #(lns <- read_lines(files[4]))
+
+  # Note how messed up this file is.  Variable number of fields!
+
+  df <- read.table(files[4], header=TRUE, sep='|', quote='', as.is=TRUE,
+                   colClasses='character', fill=TRUE, skipNul=TRUE)
+
+  #length(lns) - nrow(dt)           
+
+  # Checks
+  sort(unique(df$Data_Item))
+  r <- which(df$Data_Item == '2.670')
+  df[r:(r + 10), ]
+
+  # Replace row 19415493 -- it has an extra column
+  df[r, ] <- c(as.character(df[r,])[-3], NA)
+
+  # Examine values of each column
+  sort(unique(df$Data_Item))
+  (r <- which(df$Data_Item == ''))
+  df[r, ]
+
+  (r <- which(is.na(df$Data_Item)))
+
+  unique(df$Year_Record)
+  unique(df$State_Code)  # Only has 40 states.  
+  range(as.numeric(df$Begin_Point), na.rm=TRUE)
+  range(as.numeric(df$End_Point), na.rm=TRUE)
+  range(as.numeric(df$Value_Numeric), na.rm=TRUE)
+  df$Value_Numeric[is.na(as.numeric(df$Value_Numeric)) & !is.na(df$Value_Numeric) &
+                     df$Value_Numeric != '']
+  range(df$Value_Text, na.rm=TRUE)
+  range(df$Value_Date, na.rm=TRUE)
+
+  # Prepare to write to the database
+
+  dt <- data.table(df); rm(df); gc()
+  dt <- dt[!duplicated(dt)]
+  
+  dt[, Section_Length := as.numeric(End_Point) - as.numeric(Begin_Point)]
+  dt[, StateYearKey := str_c(State_Code, str_sub(Year_Record, start=3, end=4))]
+
+  count(dt, is.na(Route_ID))
+  count(dt, is.na(Begin_Point))
+  count(dt, is.na(End_Point))
+  count(dt, is.na(Data_Item))
+  count(dt, is.na(StateYearKey))
+
+  # Convert empty strings to NA
+  count(dt, Year_Record == '')
+  count(dt, State_Code == '')
+  count(dt, Route_ID == '')
+
+  dt[Route_ID == '']
+  dt <- dt[Route_ID != '']
+
+  count(dt, Begin_Point == '')
+  #dt[Begin_Point == ''] %>% View()
+  dt <- dt[Begin_Point != '']
+
+  count(dt, End_Point == '')
+  count(dt, Data_Item == '')
+
+  dt[Value_Numeric == '', Value_Numeric := NA]
+  dt[Value_Text == '', Value_Text := NA]
+  dt[Value_Date == '', Value_Date := NA]
+
+  tablename <- 'Review_Sections_2014'
+  var_types <- c(Year_Record='smallint',
+                 State_Code='smallint',
+                 Route_ID='varchar(120)',
+                 Begin_Point='decimal(8,3)',
+                 End_Point='decimal(8,3)',
+                 Section_Length='decimal(8,3)',
+                 Data_Item='varchar(25)',
+                 Value_Numeric='decimal(10,3)',
+                 Value_Text='varchar(50)',
+                 Value_Date='datetime',
+                 StateYearKey='integer')
+
+  con <- odbcDriverConnect(connection=local_con)
+
+  # Save to the table
+  sqlDrop(con, sqtable=tablename)
+  sqlSave(con, dt, tablename=tablename, verbose=FALSE, nastring=NULL,
+          varTypes=var_types, fast=TRUE, rownames=FALSE)
+
   close(con)
 }
 
