@@ -23,7 +23,11 @@ create_pdf <- function(data, state, year, year_compare, population, national = N
      pdfname <- gsub(x = pdfname, pattern = "\\s", replace = "_")
      pdfpath <- paste0(path, pdfname)
   
-     pdf(file = pdfpath, width = 13.333, height = 7.5)
+     if ( debugmode ){
+       dev.new(width=13.333, height=7.5)
+     } else {
+       pdf(file = pdfpath, width = 13.333, height = 7.5)
+     }
      
      #showtext.begin() # this controls the issues with the fonts
      

@@ -16,9 +16,9 @@
 
 # A user-called function to generate a score card either by importing new data or
 # specifying previously imported data sets.
-Run <- function() {
+Run <- function(task, ...) {
 
-  whitespace()
+  whitespace(task)
   
   # This while keeps the tool running until the user hits esc
   while (TRUE) {
@@ -26,8 +26,10 @@ Run <- function() {
     success <- FALSE
     
     # Initial user task choice
-    whitespace(gSpaces)
-    task <- getUserInput(valid = 1:3, prompt = "What would you like to do?\n\n(1) Import new state data\n(2) Generate score card from previously imported data\n(3) Import new population data\n\nPlease enter your selection: ")
+    if ( missing(task) ){
+      whitespace(gSpaces)
+      task <- getUserInput(valid = 1:3, prompt = "What would you like to do?\n\n(1) Import new state data\n(2) Generate score card from previously imported data\n(3) Import new population data\n\nPlease enter your selection: ")
+    }
     
     # Import new data
     if (task == 1) {
@@ -70,7 +72,7 @@ Run <- function() {
       # Generate a single score card
       if (sctask == 1) {
         # Select data to generate score card
-        data.list <- getStateDataSets()
+        data.list <- getStateDataSets(...)
         
         # Select a year of national data to compare against and assign to global 'national variable for Jeff D's code to use
         # TODO: Jeff's code needs to actually use this at some point
@@ -79,12 +81,22 @@ Run <- function() {
         
         # Load the population data
         #population2 <<- readRDS(paste0("resources/dat/population.RDS"))#readRDS(paste0("resources/dat/",data.list[["year_selection"]],"_population.RDS"))
-        #population <- readRDS(paste0("resources/dat/",data.list[["year_selection"]],"_population.RDS"))
-        population <- readRDS('resources/dat/population.RDS')
+        population <- readRDS(paste0("resources/dat/",data.list[["year_selection"]],"_population.RDS"))
+        #population <- readRDS('resources/dat/population.RDS')
         
         # Generate score card
         whitespace(gSpaces)
 
+        if ( debugmode ){
+          create_pdf(data = data.list[["dat"]],
+                     state = data.list[["state_code"]],
+                     year = data.list[["year_selection"]],
+                     year_compare = data.list[["year_compare"]],
+                     population = population,
+                     national = national,
+                     path = savepath)
+        } else {
+          
         tryCatch(expr = {suppressWarnings(create_pdf(data = data.list[["dat"]],
                                                      state = data.list[["state_code"]],
                                                      year = data.list[["year_selection"]],
@@ -94,6 +106,7 @@ Run <- function() {
                                                      path = savepath));
                                           success <- TRUE},
                  error = function(e) {e; dev.off(); warning("Unable to create PDF score card.\n\nA common cause of this warning is that the folder the tool is trying to save to already contains a score card PDF for this combination of data selections and is currently in use. Ensure the PDF is not in use and try again.", immediate. = TRUE, call. = FALSE)})
+        }
         
       } else if (sctask == 2) {
         
@@ -145,52 +158,63 @@ Run <- function() {
 
 # Prompt the user for the state and year associated with the primary and comparison data sets and
 # return those data sets for use in the score card generation process.
-getStateDataSets <- function() {
+getStateDataSets <- function(state_selection, year_selection, year_compare) {
+
+  if ( missing(state_selection) ){
+    
+    # Get states for which there is data available
+    states <- getSavedStates()
+    state_codes <- getStateCode(states)
+    
+    whitespace(gSpaces)
+    
+    # If no data are available, exit
+    if (!length(states) > 0) stop("No data found. Please import data before attempting to generate score cards.", call. = FALSE)
+    
+    # Print the options to the user
+    cat("State Data Sets Available:\n\n")
+    cat(paste0("(", state_codes, ") ", states, collapse = "\n"))
+    cat("\n\n")
+    
+    # Get the user's state selection
+    state_selection <- getUserInput(valid = c(state_codes, tolower(state_codes)), prompt = "For which state in the above list would you like to generate a score card?\nEnter the associated state code (e.g., NY for New York): ")
+    state_selection <- toupper(state_selection)
+  }
+
+  if ( missing(year_selection) ){  
+    # Get the years for which there is state data available
+    years <- getSavedStateYears(getStateLabel(state_selection))
+    
+    # Print the options to the user
+    cat(paste0("\nData Sets Available for ", getStateLabel(state_selection), ":\n\n"))
+    cat(paste0(years, collapse = "\n"))
+    cat("\n\n")
+    
+    # Get the user's year selection
+    year_selection <- getUserInput(valid = years, prompt = "For which year of STATE data in the above list would you like to generate a score card for?\nEnter the analysis year (e.g., 2014): ")
+  }
   
-  # Get states for which there is data available
-  states <- getSavedStates()
-  state_codes <- getStateCode(states)
-  
-  whitespace(gSpaces)
-  
-  # If no data are available, exit
-  if (!length(states) > 0) stop("No data found. Please import data before attempting to generate score cards.", call. = FALSE)
-  
-  # Print the options to the user
-  cat("State Data Sets Available:\n\n")
-  cat(paste0("(", state_codes, ") ", states, collapse = "\n"))
-  cat("\n\n")
-  
-  # Get the user's state selection
-  state_selection <- getUserInput(valid = c(state_codes, tolower(state_codes)), prompt = "For which state in the above list would you like to generate a score card?\nEnter the associated state code (e.g., NY for New York): ")
-  state_selection <- toupper(state_selection)
-  
-  # Get the years for which there is state data available
-  years <- getSavedStateYears(getStateLabel(state_selection))
-  
-  # Print the options to the user
-  cat(paste0("\nData Sets Available for ", getStateLabel(state_selection), ":\n\n"))
-  cat(paste0(years, collapse = "\n"))
-  cat("\n\n")
-  
-  # Get the user's year selection
-  year_selection <- getUserInput(valid = years, prompt = "For which year of STATE data in the above list would you like to generate a score card for?\nEnter the analysis year (e.g., 2014): ")
-  
-  # Get the user's comparison selection
-  cat("\n")
-  years_for_comparison <- years[years < year_selection]
-  
-  
-  year_compare <- NULL
-  if (length(years_for_comparison) > 0) {
-    year_compare <- getUserInput(valid = years_for_comparison, prompt = "What year of STATE data would you like to compare against?\nEnter the comparison year (e.g., 2013): ", warning.text = "That is not a valid response. Note that a comparison data set must be older.\n")
-  } else {
-    # FIXME: What should happen if length(years_for_comparison) == 0 ?
-    stop('No years available for comparison')
+  if ( missing(year_compare) ){
+    # Get the user's comparison selection
+    cat("\n")
+    years_for_comparison <- years[years < year_selection]
+    
+    
+    year_compare <- NULL
+    if (length(years_for_comparison) > 0) {
+      year_compare <- getUserInput(valid = years_for_comparison, prompt = "What year of STATE data would you like to compare against?\nEnter the comparison year (e.g., 2013): ", warning.text = "That is not a valid response. Note that a comparison data set must be older.\n")
+    } else {
+      # FIXME: What should happen if length(years_for_comparison) == 0 ?
+      stop('No years available for comparison')
+    }
   }
   
   # Load the analysis and comparison year data sets
-  cat("\nPreparing state selections...\n\n")
+
+  #summary_str <- str_interp('\nLoading data for ${state_selection}, ${year_selection}, comparing to ${year_compare}')
+  summary_str <- '\nLoading state selections\n\n'
+  cat(summary_str)
+  
   dat <- readRDS(paste0("data/", getStateLabel(state_selection), "/", year_selection, ".RDS"))
   dat[, year_record := as.numeric(year_selection)]
   if (!is.null(year_compare)) {

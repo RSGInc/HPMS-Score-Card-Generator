@@ -52,6 +52,9 @@ elements, 3) pavement and travel items detailed reviews,
 4) ramp data details and 5) HPMS Data Item statistical 
 review."
 
+# Should we run in debugmode?
+debugmode <- FALSE
+
 
 # State Labels & Codes
 gState_Labels <- data.table(
@@ -72,9 +75,7 @@ gState_Labels <- data.table(
 # FHWA and DVC Logos
 gLogo  <- suppressWarnings(readPNG("resources/img/FHWA_vertical_2013.png"))
 gLogo2 <- suppressWarnings(readPNG("resources/img/DVC-Logo.png"))
-
-# RML: This line doesn't work - can't find file
-#gLogo3 <- suppressWarnings(readPNG("resources/img/info.png"))
+gLogo3 <- suppressWarnings(readPNG("resources/img/info.png"))
 
 # Number of blank lines between menu question text
 gSpaces <- 100
@@ -90,8 +91,9 @@ gF_SYSTEM_levels <- c("Interstate",
 )
 
 # tables of variables (data items) and labels used in the output
-gVariables       <- data.table(read.table("resources\\dat\\data_elements.csv",sep=",",header=TRUE,stringsAsFactors=FALSE))
-gVariablesLabels <- data.table(read.table("resources\\dat\\data_labels.csv",  sep=",",header=TRUE,stringsAsFactors=FALSE))
+gVariables       <- data.table(read.table("resources/dat/data_elements.csv",sep=",",header=TRUE,stringsAsFactors=FALSE))
+gVariablesLabels <- data.table(read.table("resources/dat/data_labels.csv",  sep=",",header=TRUE,stringsAsFactors=FALSE))
+
 
 # reformatting the labels
 gVariablesLabels[Name=="F_SYSTEM",Code2:="Principal Arterial -\nOther Freeways and Expressways"]
