@@ -16,7 +16,8 @@
 # SQL table names
 # these need to match FHWA's sql database structure
 poptable         <- "codes_urban"
-timelinesstable  <- "Table_mssql_m_HPMSAnalysis_HPMS_Submissions_log" 
+#timelinesstable  <- "Table_mssql_m_HPMSAnalysis_HPMS_Submissions_log" 
+timelinesstable <- "2015SubmissionDates"
 
 # These don't seem to be used anywhere...
 # datatable        <- "sections"
