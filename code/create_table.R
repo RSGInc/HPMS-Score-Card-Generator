@@ -12,39 +12,52 @@
 ###########################################################################
 
 create_table <- function(result) {
-     
-     if(is.null(result)) {
-          return(textGrob(NoDataString, gp = gpar(fontsize = 8, col = "red")))
-     } else {
-          # convert result object into tabular format
-          tab <- dcast(data = result, formula = groupCat ~ variable)
-          mat <- as.matrix(tab[, -c(1)])
-          
-          # pad highlight vector to skip the column headers
-          highlight <- result[, highlight][match(mat, result[, value])]
-          highlight <- vecInsert(x = highlight, y = rep(0, ncol(mat)), idx = 1 + 0: (ncol(mat) - 1) * nrow(mat))
-          
-          # convert to tableGrob
-          myTable <- tableGrob(mat, 
-                               core.just = "right",
-                               col.just="right",
-                               rows=NULL, 
-                               gpar.coretext = gpar(col = "black",fontsize=5.15),
-                               gpar.coltext = gpar(col = "black",fontsize=4.8, fontface = "bold"),
-                               padding.h=unit(0.1,units="inches"),padding.v=unit(0.1,units="inches")
-          )
-          
-          # Style the highlighted cells
-          for (i in 1:length(highlight)) {
-               if (highlight[i] == 1) {
-                    myTable$lg$lgt[[i + nrow(mat) + 1]]$gp$col <- "red"
-                    myTable$lg$lgt[[i + nrow(mat) + 1]]$gp$cex <- 1
-               }
-          }
-          
-          myTable <- vertically_align(myTable)
-          
-          return(myTable)
-     }
-     
+  
+  core_fontsize <- 5.15
+  col_fontsize <- 4.8
+  
+  find_cell <- function(table, row, col, name="core-fg"){
+    l <- table$layout
+    which(l$t==row & l$l==col & l$name==name)
+  }
+  
+  thm <- ttheme_default(
+    core    = list(fg_params=list(col='black', fontsize=core_fontsize, hjust=1, x=0.95),
+                   bg_params=list(fill='grey95'),
+                   padding=unit(c(0.1, 0.1), 'inches')),
+    colhead = list(fg_params=list(col='black', fontsize=col_fontsize,
+                                  fontface='bold', hjust=1, x=0.95),
+                   bg_params=list(fill='grey90'),
+                   padding=unit(c(0.1, 0.1), 'inches'))
+  )
+  
+  if(is.null(result)) {
+    return(textGrob(NoDataString, gp = gpar(fontsize = 8, col = "red")))
+  } else {
+    # convert result object into tabular format
+    tab <- dcast(data = result, formula = groupCat ~ variable)
+    mat <- as.matrix(tab[, -c(1)])
+    
+    # convert to tableGrob
+    myTable <- tableGrob(mat, theme=thm) 
+    
+    # Highlight cells with red text
+    highlight <- matrix(result[, highlight], nrow=nrow(mat), ncol=ncol(mat))
+    rc <- which(highlight == 1, arr.ind=TRUE)    
+    
+    for ( i in seq_len(dim(rc)[1] ) ){
+      
+      # find index of layout
+      idx <- find_cell(myTable, row=rc[i, 'row'] + 1, col=rc[i, 'col'])
+      
+      pars <- myTable$grobs[idx][[1]][['gp']]
+      pars$col <- 'red'
+      myTable$grobs[idx][[1]][['gp']] <- pars
+      
+    }
+    
+    # Adjust vertical alignment
+    myTable <- vertically_align(myTable)
+    return(myTable)
+  }
 }
