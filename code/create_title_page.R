@@ -12,10 +12,11 @@
 #
 ###########################################################################
 
-create_title_page <- function(data,state,year,year_compare=NULL)
+create_title_page <- function(data, state, year, year_compare=NULL)
 {
-     
-    scorestotals <- read.table("resources\\dat\\scoringweights.csv",sep=",",header=TRUE)
+    #browser()
+  
+    scorestotals <- read.table("resources/dat/scoringweights.csv",sep=",",header=TRUE)
   
     timetotal     <- scorestotals[,"timeliness"]
     completetotal <- scorestotals[,"completeness"]
@@ -129,7 +130,9 @@ create_title_page <- function(data,state,year,year_compare=NULL)
      
      cat("\nCalculating coverage validation results. This may take some time to complete.")
      
-     # Inventory
+     
+     # Inventory --------------------------------------------------------------
+     
      R <- 1
      C <- 1
      startx <- 0.35
@@ -181,7 +184,9 @@ create_title_page <- function(data,state,year,year_compare=NULL)
           }
      }
      
-     # Pavement
+     
+     # Pavement ---------------------------------------------------------------
+     
      R <- 1
      C <- 1
      startx <- 0.35
@@ -217,7 +222,8 @@ create_title_page <- function(data,state,year,year_compare=NULL)
           }
      }
      
-     # Traffic
+     # Traffic ----------------------------------------------------------------
+     
      R <- 1
      C <- 1
      startx <- 0.35
@@ -253,7 +259,9 @@ create_title_page <- function(data,state,year,year_compare=NULL)
           }
      }
      
-     # Geometric
+     
+     # Geometric -------------------------------------------------------------
+     
      R <- 1
      C <- 1
      startx <- 0.35
@@ -289,7 +297,9 @@ create_title_page <- function(data,state,year,year_compare=NULL)
           }
      }
      
-     # ROute
+     
+     # ROute -----------------------------------------------------------------
+     
      R <- 1
      C <- 1
      startx <- 0.35
@@ -325,7 +335,9 @@ create_title_page <- function(data,state,year,year_compare=NULL)
           }
      }
      
-     # speical networks
+     
+     # special networks -------------------------------------------------------
+     
      R <- 1
      C <- 1
      startx <- 0.35
@@ -362,7 +374,7 @@ create_title_page <- function(data,state,year,year_compare=NULL)
      }
      
      
-     # legend
+     # legend ----------------------------------------------------------------
      
      grid.draw(linesGrob(x = unit(c(0.25, 0.97), "npc"),
                          y = unit(c(0.03,0.03), "npc"),

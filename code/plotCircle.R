@@ -18,7 +18,7 @@ plotCircle <- function(data,year,year_compare,variable,startx,starty,C,R)
   type <- 1
   
   #get recipe
-  recipe <- gVariables[Name==variable,Quality_Recipe]
+  recipe <- gVariables[Name==variable, Quality_Recipe]
   
   if(nrow(data[year_record==year&data_item==variable,list(route_id,begin_point,end_point,value_numeric,F_SYSTEM)])==0)
   {

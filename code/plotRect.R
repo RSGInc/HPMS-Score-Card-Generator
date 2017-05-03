@@ -11,12 +11,12 @@
 #
 ###########################################################################
 
-plotRect <- function(data,year,variable,startx,starty,C,R)
+plotRect <- function(data, year, variable, startx, starty, C, R)
 {
   
   ts <- Sys.time()
   
-  data <- data[!(F_SYTEMorig==7&NHS!=1),]
+  data <- data[!(F_SYTEMorig==7 & NHS!=1),]
   
   type <- 1
   
