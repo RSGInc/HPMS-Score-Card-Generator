@@ -41,14 +41,16 @@ create_overall_report_byFSYSTEM <- function(
      
      setnames(result,"F_SYSTEM","Functional\nSystem")
      
-     ob <- tableGrob(result,
-                     rows=NULL, 
-                     core.just = "right",
-                     col.just="right",
-                     gpar.coretext = gpar(col = "black",fontsize=6.5),
-                     gpar.coltext = gpar(col = "black",fontsize=7, fontface = "bold"),
-                     padding.h=unit(0.1,units="inches"),padding.v=unit(0.1,units="inches")
-     )
+     thm <- ttheme_default(
+       core    = list(fg_params=list(col='black', fontsize=6.5, hjust=1, x=0.95),
+                      bg_params=list(fill='grey95'),
+                      padding=unit(c(0.1, 0.1), 'inches')),
+       colhead = list(fg_params=list(col='black', fontsize=7.0,
+                                     fontface='bold', hjust=1, x=0.95),
+                      bg_params=list(fill='grey90'),
+                      padding=unit(c(0.1, 0.1), 'inches')))
+     
+     ob <- tableGrob(result, rows=NULL, theme=thm)
      
      ob <- vertically_align(ob)
      
