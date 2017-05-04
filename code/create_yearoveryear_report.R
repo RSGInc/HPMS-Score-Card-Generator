@@ -14,6 +14,9 @@
 #
 ###########################################################################
 
+# TODO:  This code uses virtually the same code as getYOY().  Modify to use
+# it instead of repeating
+
 create_yearoveryear_report <- function(
      data,
      state,
@@ -22,7 +25,7 @@ create_yearoveryear_report <- function(
      yearcomparison
 )
 {
-     
+
      highlight_threshold    <- gVariables[Name==variable,YOYH_Thresh]
   
      var.1    <- data[state_code==state&year_record==year&data_item==variable&FACILITY_TYPE!=4,list(route_id,begin_point,end_point,value_numeric,F_SYSTEM,NHS,Interstate)]
@@ -80,11 +83,20 @@ create_yearoveryear_report <- function(
      report.1[,groupCat:=F_SYSTEM+2]
      report.1[,F_SYSTEM:=NULL]
      
-     
+     # Calculate report.2, with % miles where Interstate == 1
      result <- var.yoy[value_numeric.x==value_numeric.y&Interstate==1,list(miles=round(sum(end_point.x-begin_point.x),2),.N),]
      
      total <- var.1[Interstate==1,list(totalmiles=round(sum(end_point-begin_point),2)),]
-     
+
+       # Combine (cbind?) result and total
+     if ( nrow(result) == 0 ){
+       result <- data.table(miles=NA, N=0)
+     }
+  
+     if (nrow(total) == 0 ){
+       total <- data.table(totalmiles = NA)
+     }
+  
      report.2 <- data.table(result,total)
      report.2[is.na(miles),miles:=0] # setting values to 0 where there are no merges. this mean that the state had no lane miles outside the thresholds set
      
@@ -94,11 +106,20 @@ create_yearoveryear_report <- function(
      
      report.2[,groupCat:=1]
      
-     
+     # Calculate report.3 with % miles where NHS == 1
      result <- var.yoy[value_numeric.x==value_numeric.y&NHS==1,list(miles=round(sum(end_point.x-begin_point.x),2),.N),]
      
      total <- var.1[NHS==1,list(totalmiles=round(sum(end_point-begin_point),2)),]
-     
+
+       # Combine (cbind?) result and total
+     if ( nrow(result) == 0 ){
+       result <- data.table(miles=NA, N=0)
+     }
+  
+     if (nrow(total) == 0 ){
+       total <- data.table(totalmiles = NA)
+     }
+  
      report.3 <- data.table(result,total)
      report.3[is.na(miles),miles:=0] # setting values to 0 where there are no merges. this mean that the state had no lane miles outside the thresholds set
      
