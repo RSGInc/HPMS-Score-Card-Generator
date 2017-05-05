@@ -24,7 +24,7 @@ create_pdf <- function(data, state, year, year_compare, population, national = N
      pdfpath <- paste0(path, pdfname)
   
      if ( debugmode ){
-       dev.new(width=13.333, height=7.5)
+       windows(width=13.333, height=7.5)
      } else {
        pdf(file = pdfpath, width = 13.333, height = 7.5)
      }
@@ -43,20 +43,20 @@ create_pdf <- function(data, state, year, year_compare, population, national = N
      cat("Information page...")
      ts <- Sys.time()
      create_info_page(state,year)
-     cat(paste0(" completed in: ",round(difftime(Sys.time(),ts,units="secs"),2)," seconds!\n"))     
-          
+     cat(paste0(" completed in: ",round(difftime(Sys.time(),ts,units="secs"),2)," seconds!\n"))
+
      # Pavement: Detailed Review
      cat("Pavement review...")
      ts <- Sys.time()
      create_page2(data,state,year,year_compare,population=population)
      cat(paste0(" completed in: ",round(difftime(Sys.time(),ts,units="secs"),2)," seconds!\n"))
-     
+
      # Traffic: Detailed Review
      cat("Traffic review...")
      ts <- Sys.time()
      create_page3(data,state,year,year_compare)
      cat(paste0(" completed in: ",round(difftime(Sys.time(),ts,units="secs"),2)," seconds!\n"))
-     
+
      # Ramps: Detailed Review
      cat("Ramps review...")
      ts <- Sys.time()
@@ -71,8 +71,8 @@ create_pdf <- function(data, state, year, year_compare, population, national = N
      }
      create_page_summary(data,state,year,year_compare,x1=todo[i+1,1],x2=todo[i+1,2], title="ramps: detailed review",icontext="r",page=5,ramps=TRUE)
      cat(paste0(" completed in: ",round(difftime(Sys.time(),ts,units="secs"),2)," seconds!\n"))
-    
-     
+
+
      # data summary pages
      # inventory
      cat("Inventory data items...")
