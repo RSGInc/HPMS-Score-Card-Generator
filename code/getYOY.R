@@ -21,14 +21,7 @@ getYOY <- function(data, year, yearcomparison, variable)
   
   var.2    <- data[year_record == yearcomparison & data_item==variable,
                    list(route_id, begin_point, end_point, value_numeric)]
-  
-  # Test if there are no matches between route_id in var.1 and var.2
-  # if ( sum(var.1$route_id %in% var.2$route_id) == 0 ) browser()
-
-  
-  # The following SQL join could also be done via a "rolling join" in data.table.
-  # See https://r-norberg.blogspot.com/2016/06/understanding-datatable-rolling-joins.html
-  
+    
   var.yoy <- sqldf("
                       select 
                       A.route_id,

@@ -48,7 +48,7 @@ barPlot <- function(
       p[is.na(V1),V1:=0]
         
       p <- ggplot(p,aes(x=value_numeric,y=V1,fill=type))
-      p <- p + geom_bar(aes(width=0.8),stat="identity",position=position_dodge(0.0))
+      p <- p + geom_bar(width=0.8, stat="identity",position=position_dodge(0.0))
       p <- p + scale_y_continuous("",limits=c(0,scale))
       p <- p + coord_flip()
       p <- p + ggtitle(title)

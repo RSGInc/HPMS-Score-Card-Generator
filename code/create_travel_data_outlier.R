@@ -62,7 +62,7 @@ create_travel_data_outlier <- function(
   report[, perc_miles:=ifelse(is.na(miles), 0, as.character(round(miles/totalmiles, 2)*100))]
   
   report <- report[, totalmiles:=NULL]
-  browser()
+
   if(nrow(report) > 0)
   {
     #report <- merge(data.table(groupCat=1:4), report, by="_SYSTEM", all.x=T)

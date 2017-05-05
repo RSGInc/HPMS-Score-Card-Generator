@@ -26,7 +26,6 @@ create_travel_data_yoy <- function(
     ramps
 )
 {
-
   type <- gVariables[Name==variable,Type]
   
      if(type==1)
@@ -138,7 +137,7 @@ create_travel_data_yoy <- function(
           # custom axis labels
           if(histtype==1)
           {
-               p <- ggplot(report, aes(x=bin2,fill=color,weight=end_point.x-begin_point.x)) + geom_bar(width=0.75,stat="bin")
+               p <- ggplot(report, aes(x=bin2,fill=color,weight=end_point.x-begin_point.x)) + geom_bar(width=0.75)
                p <- p + scale_x_discrete("", breaks=factor(c(1:17,18),levels=c(1:17,18),labels=c("< -100%","-100%","-75%","-50%","-25%","-15%","-5%","-1%","0%","1%","5%","15%","25%","50%","75%","100%","> 100%","No Match"),exclude=NULL), drop=FALSE)
                p <- p + scale_fill_manual("",values=c("Same"="slategray","Reduction"="gray50","Increase"="gray50","No Match"="black"))
                p <- p + scale_y_continuous(labels=percent,limits=c(0,1)) 

@@ -37,10 +37,17 @@ densityPlot <- function(
           
           if(nrow(d1)>2)
           {
-               p1 <- p1 + geom_density(data = d1, color="slategray", linetype="solid", size=0.25,fill="slategray",adjust=adjustment,aes(weights=(end_point-begin_point)/sum(end_point-begin_point)))
+               p1 <- p1 +
+                 geom_density(data = d1, color="slategray", linetype="solid",
+                              size=0.25,fill="slategray",
+                              adjust=adjustment,
+                              aes(weight=(end_point-begin_point)/sum(end_point-begin_point)))
 
           } else {
-               p1 <- p1 + geom_density(data = d3, color ="white", linetype="solid", size=0.25,fill="white",adjust=adjustment,aes(weights=(end_point-begin_point)/sum(end_point-begin_point)))    
+               p1 <- p1 +
+                 geom_density(data = d3, color ="white", linetype="solid",
+                              size=0.25,fill="white",adjust=adjustment,
+                              aes(weight=(end_point-begin_point)/sum(end_point-begin_point)))    
             
           }
           
@@ -54,10 +61,10 @@ densityPlot <- function(
           
           if(nrow(d2)>2)
           {
-               p2 <- p2 + geom_density(data = d2, color ="gray75", linetype="solid", size=0.25,fill="gray75",adjust=adjustment,aes(weights=(end_point-begin_point)/sum(end_point-begin_point)))
+               p2 <- p2 + geom_density(data = d2, color ="gray75", linetype="solid", size=0.25,fill="gray75",adjust=adjustment,aes(weight=(end_point-begin_point)/sum(end_point-begin_point)))
 
           } else {
-              p2 <- p2 + geom_density(data = d3, color ="white", linetype="solid", size=0.25,fill="white",adjust=adjustment,aes(weights=(end_point-begin_point)/sum(end_point-begin_point)))  
+              p2 <- p2 + geom_density(data = d3, color ="white", linetype="solid", size=0.25,fill="white",adjust=adjustment,aes(weight=(end_point-begin_point)/sum(end_point-begin_point)))  
           }
           
           if(showLabel)
@@ -70,7 +77,7 @@ densityPlot <- function(
           
           if(!is.null(d3))
           {
-               p3 <- p3 + geom_density(data = d3, color ="black", linetype="solid", size=0.25,fill="black",adjust=adjustment,aes(weights=(end_point-begin_point)/sum(end_point-begin_point)))
+               p3 <- p3 + geom_density(data = d3, color ="black", linetype="solid", size=0.25,fill="black",adjust=adjustment,aes(weight=(end_point-begin_point)/sum(end_point-begin_point)))
           }
           
           if(showLabel)
