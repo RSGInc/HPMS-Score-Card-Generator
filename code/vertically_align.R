@@ -15,7 +15,8 @@ vertically_align <- function(ob)
      w  <- grobWidth(ob)
      h  <- grobHeight(ob)
      
-     ob$vp <- viewport(x=0.5,y=unit(1,"npc") - 0.5*h)
+     ob$vp <- viewport(x=0.5, y=unit(1,"npc") - h)
+     #ob$vp <- viewport(x=0.5, y=0.5)
      
      return(ob)
 }
