@@ -162,10 +162,14 @@ densityPlot <- function(
                     panel.border = element_blank(),
                     panel.background = element_blank(),
                     axis.line = element_line(colour = "white"),
-                    plot.margin = unit(c(topMargin=0,leftMargin=0,bottomMargin=0,rightMargin=0), "cm")
+                    plot.margin = unit(
+                      c(topMargin + 0, rightMargin + 0, bottomMargin + 0, leftMargin + 0), "cm")
                )
           
-          p <- arrangeGrob(p1,p2,p3,nrow=3,heights=unit(rep(1/3,3),units="npc"))
+          p <- arrangeGrob(
+            p1, p2, p3, 
+            nrow=3, heights=unit(rep(1/3,3), units="npc")
+            )
           
           return(p)
      } else

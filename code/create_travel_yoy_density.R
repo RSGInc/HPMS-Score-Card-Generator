@@ -108,6 +108,7 @@ create_travel_yoy_density <- function(
     
     if(gVariablesLabels[Name==variable,NumLevels]==0)
     {
+      
       if(is.null(national))
       {
         p1 <- densityPlot(var.1[Interstate==1],var.2[Interstate==1],d3=national[Interstate==1],title=gF_SYSTEM_levels[1],minvalue,maxvalue,year,yearcomparison,ymax=ymax)
@@ -121,7 +122,16 @@ create_travel_yoy_density <- function(
         p3 <- densityPlot(var.1[F_SYSTEM==1]     ,var.2[F_SYSTEM==1]      ,d3=national[F_SYSTEM==1]   ,title=gF_SYSTEM_levels[3],minvalue=minvalue,maxvalue=maxvalue,year1=year,year2=yearcomparison,showLabel=TRUE,ymax=ymax)
         p4 <- densityPlot(d1=var.1[F_SYSTEM==2,] ,d2=var.2[F_SYSTEM==2,]  ,d3=national[F_SYSTEM==2,]  ,title=gF_SYSTEM_levels[4],minvalue=minvalue,maxvalue=maxvalue,year1=year,year2=yearcomparison,ymax=ymax)
       }
-      obj <- arrangeGrob(p1,p2,p3,p4,ncol=2,nrow=2,widths=unit(rep(3.77776666666667/2,2),units="inches"))
+      
+      spacer_height <- 0.07
+      fill_rect <- rectGrob(gp = gpar(fill='white', col='white'))
+      obj <- arrangeGrob(
+        p1, p2, 
+        fill_rect, fill_rect,
+        p3, p4,
+        ncol=2, nrow=3, 
+        widths=unit(rep(3.77776666666667/2,2), units="inches"),
+        heights=unit(c((1 - spacer_height)/2, spacer_height, (1-spacer_height)/2), units='npc'))
     }
     else {
       
@@ -159,7 +169,11 @@ create_travel_yoy_density <- function(
         p33 <- barPlot(national[F_SYSTEM==1]  ,labels,title="",barcolor="black",topMargin=-0.5,scale=scale,               showAxis=TRUE)
         p34 <- barPlot(national[F_SYSTEM==2]  ,labels,title="",barcolor="black",topMargin=-0.5,scale=scale,               showAxis=TRUE)
       }               
-      obj <- arrangeGrob(p11,p12,p13,p14,textGrob(""),p21,p22,p23,p24,textGrob(""),p31,p32,p33,p34,textGrob(""),ncol=5,nrow=3,widths=unit(c(rep(3.5/4,4),0.2777667),units="inches"))
+      obj <- arrangeGrob(p11, p12, p13, p14, textGrob(""),
+                         p21, p22, p23, p24, textGrob(""),
+                         p31, p32, p33, p34, textGrob(""),
+                         ncol=5, nrow=3, 
+                         widths=unit(c(rep(3.5/4,4),0.2777667), units="inches") )
       
     }
     return(obj)

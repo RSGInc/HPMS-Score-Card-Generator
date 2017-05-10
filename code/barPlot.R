@@ -67,7 +67,8 @@ barPlot <- function(
                       panel.border = element_blank(),
                       panel.background = element_blank(),
                       axis.line = element_line(colour = "white"),
-                      plot.margin = unit(c(topMargin+0.15,leftMargin+0.15,bottomMargin+0.15,rightMargin+0.15), "cm")
+                      plot.margin = unit(
+                        c(topMargin + 0.15, rightMargin + 0.15, bottomMargin + 0.15, leftMargin+0.15), "cm")
                  )
         
       if(showAxis)

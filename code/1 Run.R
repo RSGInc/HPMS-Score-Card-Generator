@@ -29,8 +29,8 @@ invisible(sapply(X = list.files(path = "code", pattern = "*.R$",
 
 # For debugging
 # debugmode <- TRUE
-#Run(task=2, state_selection='NY', year_selection='2015', year_compare='2014')
-#Run(task=2, state_selection='RI', year_selection='2015', year_compare='2014')
+# Run(task=2, state_selection='NY', year_selection='2015', year_compare='2014')
+# Run(task=2, state_selection='RI', year_selection='2015', year_compare='2014')
 
 # Run Tool
 Run()
@@ -38,16 +38,14 @@ Run()
 # Some responses for convenience
 
 2
-NY
-2015
-2014
-
-2
 RI
 2015
 2014
 
-# ------------------------
+2
+NY
+2015
+2014
 
 2
 CA
