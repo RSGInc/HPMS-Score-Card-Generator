@@ -13,6 +13,9 @@
 #
 ###########################################################################
 
+# Change the ggplot theme
+theme_update(plot.title=element_text(hjust=0.5))
+
 # SQL table names
 # these need to match FHWA's sql database structure
 poptable         <- "codes_urban"

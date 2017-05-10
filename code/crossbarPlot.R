@@ -28,7 +28,7 @@ crossbarPlot <- function(result)
                axis.ticks=element_blank(),
                axis.title.x=element_blank(),
                axis.title.y=element_blank(),
-               plot.title = element_text(size=15, face="bold",colour = "slategray"),
+               plot.title = element_text(size=15, face="bold",colour = "slategray", hjust=0.5),
                panel.grid.major = element_blank(),
                panel.grid.minor = element_blank(),
                panel.border = element_blank(),
