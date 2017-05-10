@@ -369,7 +369,7 @@ SaveDataSet <- function(year, state, dat) {
     # File exists, check with user
     if(!(goverwrite %in% c("ALL Y","ALL N"))){
       
-      overwrite <- getUserInput(valid = c("Y", "y", "N", "n","ALL Y","ALL N"), prompt = paste0("Processed file already exists for ", state, " ", year, ". Overwrite it? (Y/N/ALL Y/ALL N): "))
+      overwrite <- getUserInput(valid = c("Y", "y", "N", "n","ALL Y","ALL N"), prompt = paste0("Processed file already exists for ", state, " ", year, ". Overwrite it? (Y, N, ALL Y, ALL N): "))
     } 
     
     if(goverwrite == "ALL Y"){
