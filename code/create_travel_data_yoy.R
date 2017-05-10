@@ -100,7 +100,6 @@ create_travel_data_yoy <- function(
   
   if(nrow(var.yoy)>0) # we have something to report
   {
-    browser()
     
     if(histtype==1)
     {
@@ -120,17 +119,19 @@ create_travel_data_yoy <- function(
     } else
     {
       report <- var.yoy[,bin2:=factor(1+1*(value_numeric.x!=value_numeric.y),levels=c(1,2),labels=c("No Change","Changed"))]
-      report[as.numeric(bin2)==1,color:=factor("No")]
-      report[as.numeric(bin2)==2,color:=factor("Yes")]
-      report[is.na(bin2)        ,color:=factor("NA")]
+      report[as.numeric(bin2)==1,color:="No"]
+      report[as.numeric(bin2)==2,color:="Yes"]
+      report[is.na(bin2)        ,color:="NA"]
+      report$color <- factor(report$color, levels=c('NA', 'Yes', 'No'))
       report <- report[,sum(end_point.x-begin_point.x),by=.(color)]
       totalmiles <- report[,sum(V1)]
       report <- report[,V1:=V1/totalmiles]
       report[,color2:=color]
-      report <- merge(data.table(color2=factor(c("No","Yes","NA"))),report,by="color2",all.x=TRUE)
+      report <- merge(data.table(color2=factor(c("No","Yes","NA"))), report,
+                      by="color2",all.x=TRUE)
       
-      report[is.na(color),V1:=0]
-      report[is.na(color),color:=color2]
+      report[is.na(color), V1:=0]
+      report[is.na(color), color:=color2]
       
       
     }
@@ -145,7 +146,7 @@ create_travel_data_yoy <- function(
       
     } else
     {
-      p <- ggplot(report[c(2,3,1),], aes(x=1,y=V1,fill=color)) + geom_bar(stat="identity",width=0.75) 
+      p <- ggplot(report, aes(x=1,y=V1,fill=color)) + geom_bar(stat="identity",width=0.75) 
       p <- p + coord_flip()   
       colors <- c("slategray","gray50","black")
       names(colors)[1]<-toString(report[color2=="No",color])
@@ -205,7 +206,7 @@ create_travel_data_yoy <- function(
                                    ncol=3,widths=unit(c(0.4,0.2,0.4),units="npc")),
                        arrangeGrob(textGrob(paste0("Total of ",string_format(totalmiles)," centerline miles."),hjust=0.5 ,vjust=0  ,gp=gpar(fontsize=5, col="gray50"))),
                        nrow=5,
-                       heights=unit(c(0.05,0.35,0.27,0.23,0.1),units="npc"),
+                       heights=unit(c(0.05, 0.4, 0.22, 0.23, 0.1),units="npc"),
                        widths=unit(1,units="npc")
       )
       
