@@ -15,13 +15,12 @@
 
 goverwrite <- ""
 
-# This function runs the entire data import process
-ImportData <- function() {
-  success <- c()
+# List available states and years
+showAvailableStatesYears <- function(){
   
   # Get states and years available for import -----------------------------
   con <- odbcConnect("HPMS")
-
+  
   cat('Determining available states and years...\n')
   
   # FHWA
@@ -32,7 +31,8 @@ ImportData <- function() {
   #data <- rbind(data1,data2)#,data3)
   
   # RSG
-  query <- "select distinct state_code, year_record from Review_Sections order by state_code, year_record"
+  query <- paste("select distinct state_code, year_record from", sections_table,
+                 "order by state_code, year_record")
   
   data <- data.table(sqlQuery(con, query))
   
@@ -47,16 +47,18 @@ ImportData <- function() {
     cat(paste0(getStateAbbrFromNum(state),": "))
     
     for(year in data[state_code==state,unique(year_record)]){
-    
-        cat(paste0(year," "))  
-    
-      }
+      
+      cat(paste0(year," "))  
+      
+    }
     cat("\n")
   }
   
   cat("\n\n")
+  return(data)
+}
 
-  
+askStates <- function(data){
   # Ask which state -----------------------------------------------------
   
   state = ""
@@ -83,17 +85,20 @@ ImportData <- function() {
   if(state=="ALL")  {
     codes <- unique(data[,state_code])
     states <- c()
-
+    
     for(code in codes){
       
       states <- c(states, getStateAbbrFromNum(code))
-    
+      
     }
     
   } else {
-     states <- strsplit(state,",")[[1]]
+    states <- strsplit(state,",")[[1]]
   }
-  
+  return(states)  
+}
+
+askYears <- function(data){
   
   # Ask which year -----------------------------------------------------------
   
@@ -102,13 +107,13 @@ ImportData <- function() {
   ranges <- merge(unique(data[,year_record]),unique(data[,year_record]))
   ranges <- ranges[ranges[,1]<ranges[,2],]
   ranges <- paste0(ranges[,1],"-",ranges[,2])
-
+  
   validyears <- c("ALL",unique(data[,year_record]),ranges)
   
   while(!(year %in% validyears)){
     
     year  <- getUserInput(prompt="\nWhat year(s) would you like to import?\nEnter a single year or a range as in 2012-2014.\nFor all years, type ALL.")
-
+    
     if(!(year %in% validyears))
     {
       cat("Invalid response:",year)  
@@ -126,19 +131,34 @@ ImportData <- function() {
     if(length(years)>1){
       
       years <- (years[1]):(years[2])
-
+      
     }
   }
-  
-  
+  return(years)  
+}
+
+# This function runs the entire data import process
+ImportData <- function(state_selection, year_selection) {
+  success <- c()
+
+  if ( missing(state_selection) | missing(year_selection) ){
+    st_yr <- showAvailableStatesYears()
+    
+    states <- askStates(st_yr)
+    years <- askYears(st_yr)
+    
+  } else {
+    states <- state_selection
+    years <- year_selection
+  }
   # Load the data -----------------------------------------------------------
- 
+  
   for (state in states) {
     
     for(year in years) {
       # Read data
       cat(paste0("\nProcessing ", state," (",year, ")...\n"))
-
+      
       data <- ReadData(state,year)
       names(data) <- tolower(names(data))
       # 
@@ -150,15 +170,15 @@ ImportData <- function() {
       if (is.null(data)|nrow(data)==0) {
         success <- c(success, FALSE)
       } else {
-        
+          
         # Chop imported data into year-state combinations
         data <- SegmentDataSet(data)
         
         # Check data sets
         
-        cat("Checking...")
+        cat("Checking imported data ...")
         
-        passedChecks <- unlist(lapply(X = data, FUN = function(x) CheckData(year = x[["year"]], state = x[["state"]], dat = x[["data"]])))
+        passedChecks <- unlist(lapply(X = data, FUN = function(x) CheckImport(year = x[["year"]], state = x[["state"]], dat = x[["data"]])))
         
         data[!passedChecks] <- NULL
         cat(" complete!")
@@ -170,8 +190,8 @@ ImportData <- function() {
           
           for (i in 1:length(data)){
             
-          data[[i]][["data"]] <- FormatDataSet(data[[i]][["data"]],state,year)
-          
+            data[[i]][["data"]] <- FormatDataSet(data[[i]][["data"]],state,year)
+            
           }
           
           cat(" complete!\n")
@@ -186,10 +206,10 @@ ImportData <- function() {
             SaveDataSet(year = data[[i]][["year"]],
                         state = data[[i]][["state"]],
                         dat = data[[i]][["data"]])
-          }
+          }   
           
           cat(" complete!\n")
-        
+          
         } # if (length(data) > 0)
         
         success <- c(success, TRUE)
@@ -200,7 +220,7 @@ ImportData <- function() {
   
   goverwrite <<- "" # reset
   return(any(success))
-}
+} 
 
 # Attempt to import a data file specified by the user
 ReadData <- function(state, year) {
@@ -208,7 +228,7 @@ ReadData <- function(state, year) {
   cat('Fetching the data from the database...')
   con <- odbcConnect("HPMS")
 
-  query <- paste0('select * from Review_Sections where StateYearKey = ',
+  query <- paste0('select * from ', sections_table, ' where StateYearKey = ',
                   getStateNumFromCode(state), as.numeric(year) %% 100)
   
   # query <- paste0('select Year_Record as Year_Record, State_Code as State_Code, ',
@@ -252,10 +272,6 @@ SegmentDataSet <- function(dat) {
   
 }
 
-# A function to create the SQL code to create a column out of a particular 
-# row of data_item. 
-# Seems to be doing basically a reshape2::melt and dcast
-# But what is going on in the join syntax?
 createSQL <- function(dfname, colname){
 
     sql <- paste0('select A.*, B.value_numeric as ', colname, ' ',
@@ -313,7 +329,7 @@ FormatDataSet <- function(dat, state,year) {
 
   # query <- paste0("select YEAR_RECORD as YEAR_RECORD, STATE_CODE as STATE_CODE, ROUTE_ID as ROUTE_ID, BEGIN_POINT as BEGIN_POINT, END_POINT as END_POINT, SAMPLE_ID as SAMPLE_ID, EXPANSION_FACTOR as EXPANSION_FACTOR from samples",year," where state_code = ",getStateNumFromCode(state)," and year_record = ",year)
   
-  query <- paste0('select * from Review_Sample_Sections where StateYearKey = ',
+  query <- paste0('select * from ', samples_table, ' where StateYearKey = ',
                   getStateNumFromCode(state), as.numeric(year) %% 100)
   sp <- sqlQuery(con, query)
   

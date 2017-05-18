@@ -41,7 +41,7 @@ Run <- function(task, ...) {
       #cat("Please use the windows dialog to select one sample panel data file to import.\n\n")
       #spfile <- choose.files(caption = "Select one sample panel data file to import.",multi=FALSE)
     
-      ImportOkay <- ImportData()
+      ImportOkay <- ImportData(...)
       
       # If no imported data sets came in okay, warn the user
       if (!ImportOkay) {
