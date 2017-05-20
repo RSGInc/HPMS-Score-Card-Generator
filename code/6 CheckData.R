@@ -14,7 +14,7 @@
 ###########################################################################     
 
 # Load summary data for state and year
-loadSummaryData <- function(state, year){
+loadSummaryData <- function(state_code, year){
 
   con <- odbcConnect("HPMS")
   
@@ -25,11 +25,11 @@ loadSummaryData <- function(state, year){
   states_years <- data.table(sqlQuery(con, query))
   
   if ( year %in% states_years$Year_Record &
-       state %in% states_years$State_Code ){
+       state_code %in% states_years$State_Code ){
     
     # Get the summary data
     query <- paste0('select * from ', summary_table, ' where StateYearKey = ',
-                    state, as.numeric(year) %% 100)
+                    state_code, as.numeric(year) %% 100)
   
     data <- data.table(sqlQuery(con, query))
   
@@ -45,49 +45,66 @@ loadSummaryData <- function(state, year){
       warntext <- paste(warntext, 'Year', year, 'is not in', summary_table, '\n')
     } 
     
-    if ( !state %in% states_years$State_Code){
-      warntext <- paste(warntext, 'State', state, 'is not in', summary_table, '\n')
+    if ( !state_code %in% states_years$State_Code){
+      warntext <- paste(warntext, 'State', getStateAbbrFromNum(state_code), 'is not in', summary_table, '\n')
     }
 
     warntext <- paste(warntext, 'returning NULL')
-    warning(warntext, immediate.=TRUE)
+    warning(warntext, immediate.=FALSE)
     return(NULL)
   }
 }
 
-compareToSummary <- function(fhwa_sum, data){
-  names(fhwa_sum) <- tolower(names(fhwa_sum))
-  fhwa_sum[, stateyearkey := NULL]
 
-  keys <- c('year_record', 'state_code', 'data_item')
-
-  fhwa_sum[, record_count := as.numeric(record_count)]
-  fhwa_sum[, route_id_count := as.numeric(route_id_count)]
-  fhwa_sum1 <- melt(fhwa_sum, id.vars=keys, variable.name = 'measure',
-                     value.name = 'fhwa')
+checkSummary <- function(year, state_code, data){
+  # Load FHWA summary
+  fhwa_sum <- loadSummaryData(state_code, year)
   
-  # Summarize the imported data
-  from_db <- data[, .(record_count = as.numeric(.N),
-                    miles = sum(section_length),
-                    route_id_count = as.numeric(length(unique(route_id)))),
-                by=list(year_record, state_code, data_item)]
-
-  from_db1 <- melt(from_db, id.vars=keys, variable.name='measure',
-                   value.name='db')
-
-  keys <- c(keys, 'measure')
-  setkeyv(fhwa_sum1, cols=keys)
-  setkeyv(from_db1, cols=keys)
-
-  # Join original to new
-  comp <- from_db1[fhwa_sum1]
-
-  return(comp)
+  if (is.null(fhwa_sum)){
+    return(TRUE)
+  } else {
+    names(fhwa_sum) <- tolower(names(fhwa_sum))
+    if ('stateyearkey' %in% names(fhwa_sum)) fhwa_sum[, stateyearkey := NULL]
+    
+    keys <- c('year_record', 'state_code', 'data_item')
+    
+    fhwa_sum[, record_count := as.numeric(record_count)]
+    fhwa_sum[, route_id_count := as.numeric(route_id_count)]
+    fhwa_sum1 <- melt(fhwa_sum, id.vars=keys, variable.name = 'measure',
+                      value.name = 'fhwa')
+    
+    # Summarize the imported data
+    from_db <- data[, .(record_count = as.numeric(.N),
+                        miles = sum(section_length),
+                        route_id_count = as.numeric(length(unique(route_id)))),
+                    by=list(year_record, state_code, data_item)]
+    
+    from_db1 <- melt(from_db, id.vars=keys, variable.name='measure',
+                     value.name='db')
+    
+    keys <- c(keys, 'measure')
+    setkeyv(fhwa_sum1, cols=keys)
+    setkeyv(from_db1, cols=keys)
+    
+    # Join original to new
+    comp <- from_db1[fhwa_sum1]
+    
+    check <- all.equal(comp$db, comp$fhwa)
+  }
+ 
+  if(!isTRUE(check)){
+    
+    # Save a dataset
+    diffs <- comp[db != fhwa, ]
+    return(diffs)
+    
+  } else {
+    return(TRUE)
+  }
 }
 
-
 # Check imported data for consistency and errors
-CheckImport <- function(year, state, dat) {
+CheckImport <- function(year, state_code, dat) {
   
   cat(".")
   passedChecks <- TRUE
@@ -98,22 +115,35 @@ CheckImport <- function(year, state, dat) {
   if (!all(dat[, begin_point <= end_point])) passedChecks <- FALSE
   
   # Check imported data against summary table -------------------------------
+  check <- checkSummary(year, state_code, dat)
   
-  # Load FHWA summary
-  fhwa_sum <- loadSummaryData(state, year)
-
-  if (!is.null(fhwa_sum)){
-    comp <- compareToSummary(fhwa_sum, dat)
-    check <- all.equal(comp$db, comp$fhwa)
-    if (!check ) stop('Imported data are not identical to summary')
-    #if (!check) passedChecks <- FALSE
+  if ( !isTRUE(check) ){
+    
+    # Save the mismatches
+    path <- file.path('data', getStateLabelFromNum(state_code))
+    file <- paste0(year, '_summary_fail_on_import.csv')
+    fullpath <- file.path(path, file)
+    
+    # Create new directory if needed
+    if (!dir.exists(path)) dir.create(path)
+    
+    # Write the file
+    write.csv(x=check, file=fullpath, na='', row.names=FALSE)
+    
+    warntext <- paste(year, getStateAbbrFromNum(state_code),
+                      'failed summary check.  Saving diffs to',
+                      fullpath, '\n')
+    warning(warntext)
+    
+    # Allow the data to proceed, for now...
+    # passedChecks <- FALSE
   }
   
   ### Other data checks go here, for example:
   # make sure state codes are correct
   # make sure there's an F_SYSTEM data_item
   
-  if (!passedChecks) warning(paste("The", year, getStateLabelFromNum(state), "data set has failed a data check. Skipping."), immediate. = TRUE, call. = FALSE)
+  if (!passedChecks) warning(paste("The", year, getStateLabelFromNum(state_code), "data set has failed a data check. Skipping."), immediate. = TRUE, call. = FALSE)
   
   return(passedChecks)
   

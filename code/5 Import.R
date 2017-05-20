@@ -137,10 +137,12 @@ askYears <- function(data){
   return(years)  
 }
 
+
 # This function runs the entire data import process
+
 ImportData <- function(state_selection, year_selection) {
   success <- c()
-
+  
   if ( missing(state_selection) | missing(year_selection) ){
     st_yr <- showAvailableStatesYears()
     
@@ -151,70 +153,128 @@ ImportData <- function(state_selection, year_selection) {
     states <- state_selection
     years <- year_selection
   }
+  
   # Load the data -----------------------------------------------------------
   
   for (state in states) {
     
     for(year in years) {
+      
+      # Create filename to save to
+      
+      state_name <- getStateLabel(state)
+      state_code <- getStateNumFromCode(state)
+      
+      path <- file.path("data", state_name)
+      file <- paste0(year, ".rds")
+      fullpath <- file.path(path, file)
+      
+      # See if a data set for this year and state already exists
+      okayToSave <- TRUE
+      
+      if ( file.exists(fullpath) ) {
+        # File exists, check with user
+        if(!(goverwrite %in% c("ALL Y","ALL N"))){
+          
+          overwrite <- getUserInput(valid = c("Y", "y", "N", "n","ALL Y","ALL N"), prompt = paste0("Processed file already exists for ", state, " ", year, ". Overwrite it? (Y, N, ALL Y, ALL N): "))
+        } 
+        
+        if(goverwrite == "ALL Y"){
+          overwrite <- "Y"
+        }
+        
+        if(goverwrite == "ALL N"){
+          overwrite <- "N"
+        }
+        
+        if(overwrite=="ALL Y"){
+          goverwrite <<- overwrite
+          overwrite <- "Y"
+        } 
+        
+        if(overwrite=="ALL N"){
+          goverwrite <<- overwrite
+          overwrite <- "N"
+        }  
+        
+        if (!tolower(overwrite) == "y"){
+          okayToSave <- FALSE
+        }
+      }
+      
+      if ( !okayToSave ) next()
+      
       # Read data
       cat(paste0("\nProcessing ", state," (",year, ")...\n"))
       
-      data <- ReadData(state,year)
+      data <- ReadData(state, year)
       names(data) <- tolower(names(data))
-      # 
-      # setnames(data, 
-      #          c("YEAR_RECORD", "STATE_CODE", "ROUTE_ID","BEGIN_POINT", "END_POINT", "DATA_ITEM","VALUE_NUMERIC", "VALUE_TEXT", "VALUE_DATE"),
-      #          c("year_record", "state_code", "route_id","begin_point", "end_point", "data_item","value_numeric", "value_text", "value_date")
-      #         )
       
       if (is.null(data)|nrow(data)==0) {
         success <- c(success, FALSE)
       } else {
-          
-        # Chop imported data into year-state combinations
-        data <- SegmentDataSet(data)
         
         # Check data sets
         
         cat("Checking imported data ...")
         
-        passedChecks <- unlist(lapply(X = data, FUN = function(x) CheckImport(year = x[["year"]], state = x[["state"]], dat = x[["data"]])))
+        passedChecks <- CheckImport(year=year, state_code=state_code, dat=data)
         
-        data[!passedChecks] <- NULL
+        if ( !passedChecks ){
+          warning(state, '(', year, ') failed check.  Not imported.\n')
+          next()
+        }
+        
         cat(" complete!")
         
-        if(length(data)>0){
-          
-          # Format data sets
-          cat("\nFormatting...")
-          
-          for (i in 1:length(data)){
-            
-            data[[i]][["data"]] <- FormatDataSet(data[[i]][["data"]],state,year)
-            
-          }
-          
-          cat(" complete!\n")
-          
-          
-          # Save data sets ------------------
-          
-          cat("Saving to disk...")
-          
-          for (i in 1:length(data)){
-            
-            SaveDataSet(year = data[[i]][["year"]],
-                        state = data[[i]][["state"]],
-                        dat = data[[i]][["data"]])
-          }   
-          
-          cat(" complete!\n")
-          
-        } # if (length(data) > 0)
+        # # Chop imported data into year-state combinations
+        # data <- SegmentDataSet(data)
+
+        # # Check data sets
+        # cat("Checking imported data ...")
+        
+        # passedChecks <- unlist(lapply(X = data, FUN = function(x) CheckImport(year = x[["year"]], state = x[["state"]], dat = x[["data"]])))
+        # data[!passedChecks] <- NULL
+        
+        # if(length(data)>0){
+        
+        # Format data sets
+        cat("\nFormatting...")
+        
+        data <- FormatDataSet(dat=data, state_abbr=state, year=year)
+        cat(" complete!\n")
+        
+        #for (i in 1:length(data)){
+        
+        #data[[i]][["data"]] <- FormatDataSet(data[[i]][["data"]],state,year)
+        
+        #}
+        
+        
+        # Save data sets ------------------
+        
+        cat("Saving to disk...")
+        
+        # Create new directory if needed
+        if (!dir.exists(path)) dir.create(path)
+        
+        saveRDS(data, file = fullpath)
+        
+        # for (i in 1:length(data)){
+        #   
+        #   SaveDataSet(year = data[[i]][["year"]],
+        #               state = data[[i]][["state"]],
+        #               dat = data[[i]][["data"]])
+        # }   
+        
+        cat(" complete!\n")
+        
+        #} # if (length(data) > 0)
         
         success <- c(success, TRUE)
         
       }
+      
     } # year
   } # state
   
@@ -224,19 +284,12 @@ ImportData <- function(state_selection, year_selection) {
 
 # Attempt to import a data file specified by the user
 ReadData <- function(state, year) {
-  #browser()
+
   cat('Fetching the data from the database...')
   con <- odbcConnect("HPMS")
 
   query <- paste0('select * from ', sections_table, ' where StateYearKey = ',
                   getStateNumFromCode(state), as.numeric(year) %% 100)
-  
-  # query <- paste0('select Year_Record as Year_Record, State_Code as State_Code, ',
-  #                 'Route_ID as Route_ID, Begin_Point as Begin_Point, ',
-  #                 'End_Point as End_Point, Data_Item as Data_Item, ',
-  #                 'Value_Numeric as Value_Numeric, Value_Text as Value_Text, ',
-  #                 'Value_Date as Value_Date from Review_Sections ',
-  #                 'where StateYearKey = ', getStateNumFromCode(state), year %% 100)
   
   data <- sqlQuery(con, query, stringsAsFactors=FALSE)
   
@@ -272,9 +325,10 @@ SegmentDataSet <- function(dat) {
   
 }
 
-createSQL <- function(dfname, colname){
+# Create a column for a particular data_item from value_numeric
+transposeItem <- function(dfname, data_item){
 
-    sql <- paste0('select A.*, B.value_numeric as ', colname, ' ',
+    sql <- paste0('select A.*, B.value_numeric as ', data_item, ' ',
                'from [', dfname, '] A ',
                'left join [', dfname, '] B on A.route_id = B.route_id and ',
                'A.year_record = B.year_record and ',
@@ -283,23 +337,23 @@ createSQL <- function(dfname, colname){
                'A.begin_point >= B.begin_point and ',
                'A.end_point <= B.end_point and ',
                'A.end_point >= B.begin_point and ',
-               "B.data_item = '", colname, "'")
+               "B.data_item = '", data_item, "'")
   
   return(sql)  
 }
 
 # Format a given data set for use in the score card generation process
-FormatDataSet <- function(dat, state,year) {
+FormatDataSet <- function(dat, state_abbr, year) {
 
   cat(".")
   
   # Merge data on itself to convert rows to columns
   
-  data.formatted <- data.table( sqldf(createSQL('dat', 'F_SYSTEM') ))
-  data.formatted <- data.table( sqldf(createSQL('data.formatted', 'NHS')) )
-  data.formatted <- data.table( sqldf(createSQL('data.formatted', 'FACILITY_TYPE')))
-  data.formatted <- data.table( sqldf(createSQL('data.formatted', 'THROUGH_LANES')))
-  data.formatted <- data.table( sqldf(createSQL('data.formatted', 'URBAN_CODE')))
+  data.formatted <- data.table( sqldf(transposeItem('dat', 'F_SYSTEM') ))
+  data.formatted <- data.table( sqldf(transposeItem('data.formatted', 'NHS')) )
+  data.formatted <- data.table( sqldf(transposeItem('data.formatted', 'FACILITY_TYPE')))
+  data.formatted <- data.table( sqldf(transposeItem('data.formatted', 'THROUGH_LANES')))
+  data.formatted <- data.table( sqldf(transposeItem('data.formatted', 'URBAN_CODE')))
 
   #F_SYSTEM Codes
   # 1 Interstate
@@ -317,9 +371,9 @@ FormatDataSet <- function(dat, state,year) {
   data.formatted[, NHS := NHS * (1 - Interstate)]
   data.formatted[, F_SYSTEM := c(NA,1,1,1,2,2,2)[F_SYSTEM]]
   
-  # remove non-inventory data
-  data.formatted <- data.formatted[FACILITY_TYPE!=6,]
-  
+  # remove non-inventory data but keep for summary
+  data_noFT6 <- data.formatted[FACILITY_TYPE != 6, ]
+  data_FT6 <- data.formatted[FACILITY_TYPE == 6 | is.na(FACILITY_TYPE), ]
   
   # merge in expansion factors ---------------------------------------------
 
@@ -330,7 +384,7 @@ FormatDataSet <- function(dat, state,year) {
   # query <- paste0("select YEAR_RECORD as YEAR_RECORD, STATE_CODE as STATE_CODE, ROUTE_ID as ROUTE_ID, BEGIN_POINT as BEGIN_POINT, END_POINT as END_POINT, SAMPLE_ID as SAMPLE_ID, EXPANSION_FACTOR as EXPANSION_FACTOR from samples",year," where state_code = ",getStateNumFromCode(state)," and year_record = ",year)
   
   query <- paste0('select * from ', samples_table, ' where StateYearKey = ',
-                  getStateNumFromCode(state), as.numeric(year) %% 100)
+                  getStateNumFromCode(state_abbr), as.numeric(year) %% 100)
   sp <- sqlQuery(con, query)
   
   odbcClose(con)
@@ -342,9 +396,9 @@ FormatDataSet <- function(dat, state,year) {
   #         c("YEAR_RECORD", "STATE_CODE", "ROUTE_ID","BEGIN_POINT", "END_POINT", "SAMPLE_ID","EXPANSION_FACTOR"),
   #         c("year_record", "state_code", "route_id","begin_point", "end_point", "sample_id","expansion_factor"))
   
-  data.formatted <- data.table(
+  data_exp <- data.table(
     sqldf("select A.*, B.expansion_factor as expansion_factor
-           from [data.formatted] A 
+           from [data_noFT6] A 
            left join [sp] B on A.route_id = B.route_id and 
                                            A.year_record = B.year_record and 
                                            A.state_code = B.state_code and 
@@ -353,65 +407,50 @@ FormatDataSet <- function(dat, state,year) {
                                            A.end_point <= B.end_point and 
                                            A.end_point >= B.begin_point"))
   
-  data.formatted[, expansion_factor:=as.numeric(expansion_factor)]
+  data_exp[, expansion_factor:=as.numeric(expansion_factor)]
+  rm(data.formatted)
   
-  #data.formatted[, expansion_factor := NA]
-  #data <- data.formatted
+
   
-  setkeyv(data.formatted, c("year_record", "route_id", "data_item"))
+  # Check formatted data against the FHWA summary
+  # Create a dataset to compare (need to bindrows the FT6 data)
+  keep_cols <- c('year_record', 'state_code', 'data_item', 'route_id', 'section_length')
+  for_comp <- rbindlist(
+    list(data_exp[, keep_cols, with=FALSE], data_FT6[, keep_cols, with=FALSE]),
+    use.names=TRUE)
   
+  # Check imported data against summary table -------------------------------
+
+  state_code <- getStateNumFromCode(state_abbr)
+  check <- checkSummary(year, state_code, dat)
+  
+  if ( !isTRUE(check) ){
+   
+    # Save the mismatches
+    path <- file.path('data', getStateLabelFromNum(state_code))
+    file <- paste0(year, '_summary_fail_on_formatting.csv')
+    fullpath <- file.path(path, file)
+    
+    # Create new directory if needed
+    if (!dir.exists(path)) dir.create(path)
+    
+    # Write the file
+    write.csv(x=check, file=fullpath, na='', row.names=FALSE)
+   
+    warntext <- paste(year, getStateAbbrFromNum(state_code),
+                      'failed summary check.  Saving diffs to',
+                      fullpath, '\n')
+    warning(warntext)
+  }
+  
+
+  # Prepare to write out the data
+  setkeyv(data_exp, c("year_record", "route_id", "data_item"))
+
+  rm(data_noFT6)  
   gc()
   
-  return(data.formatted)
+  return(data_exp)
   
 }
 
-
-# Save a data set in the appropriate location for a given state and year
-SaveDataSet <- function(year, state, dat) {
-  
-  state <- getStateLabelFromNum(state)
-  
-  path <- paste0("data/", state)
-  file <- paste0(year, ".RDS")
-  fullpath <- paste0(path, "/", file)
-  
-  # Create new directory if needed
-  if (!dir.exists(path)) dir.create(path)
-  
-  # See if a data set for this year and state already exists
-  okayToSave <- TRUE
-  if (file %in% dir(path)) {
-    # File exists, check with user
-    if(!(goverwrite %in% c("ALL Y","ALL N"))){
-      
-      overwrite <- getUserInput(valid = c("Y", "y", "N", "n","ALL Y","ALL N"), prompt = paste0("Processed file already exists for ", state, " ", year, ". Overwrite it? (Y, N, ALL Y, ALL N): "))
-    } 
-    
-    if(goverwrite == "ALL Y"){
-      overwrite <- "Y"
-    }
-    
-    if(goverwrite == "ALL N"){
-      overwrite <- "N"
-    }
-    
-    if(overwrite=="ALL Y"){
-      goverwrite <<- overwrite
-      overwrite <- "Y"
-    } 
-    
-    if(overwrite=="ALL N"){
-      goverwrite <<- overwrite
-      overwrite <- "N"
-    }  
-      
-    if (!tolower(overwrite) == "y"){
-      okayToSave <- FALSE
-    }
-  }
-  
-  if (okayToSave){
-     saveRDS(dat, file = fullpath)
-  }
-}
