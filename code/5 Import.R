@@ -208,14 +208,13 @@ ImportData <- function(state_selection, year_selection) {
       cat(paste0("\nProcessing ", state," (",year, ")...\n"))
       
       data <- ReadData(state, year)
-      names(data) <- tolower(names(data))
       
       if (is.null(data)|nrow(data)==0) {
         success <- c(success, FALSE)
       } else {
         
         # Check data sets
-        
+ 
         cat("Checking imported data ...")
         
         passedChecks <- CheckImport(year=year, state_code=state_code, dat=data)
@@ -282,6 +281,32 @@ ImportData <- function(state_selection, year_selection) {
   return(any(success))
 } 
 
+cleanUpQuery <- function(data){
+  # Converts data table from sqlQuery for use in R
+
+  # make names lower case
+  names(data) <- tolower(names(data))
+
+  # if data_item is present, make upper case
+  if('data_item' %in% names(data)){
+    data$data_item <- toupper(data$data_item)
+  }
+
+  # Strip white space from text columns so things join properly
+  # Also make upper case
+  chr_idx <- which(sapply(data, is.character))
+  for(j in chr_idx){
+    data[, j] <- str_trim(data[, j], side='both')
+    data[, j] <- toupper(data[, j])
+  }
+ 
+  # Convert to a data.table
+  data <- data.table(data)
+
+  return(data)
+}
+
+  
 # Attempt to import a data file specified by the user
 ReadData <- function(state, year) {
 
@@ -294,10 +319,12 @@ ReadData <- function(state, year) {
   data <- sqlQuery(con, query, stringsAsFactors=FALSE)
   
   odbcClose(con)
+
+  data <- cleanUpQuery(data)
   
   cat('complete!\n')
   
-  return(data.table(data))
+  return(data)
   
 }
 
@@ -345,7 +372,7 @@ transposeItem <- function(dfname, data_item){
 # Format a given data set for use in the score card generation process
 FormatDataSet <- function(dat, state_abbr, year) {
 
-  cat(".")
+  
   
   # Merge data on itself to convert rows to columns
   
@@ -388,10 +415,9 @@ FormatDataSet <- function(dat, state_abbr, year) {
   sp <- sqlQuery(con, query)
   
   odbcClose(con)
-  
-  sp <- data.table(sp)
-  names(sp) <- tolower(names(sp))
-  
+
+  sp <- cleanUpQuery(sp)
+    
   # setnames(sp,
   #         c("YEAR_RECORD", "STATE_CODE", "ROUTE_ID","BEGIN_POINT", "END_POINT", "SAMPLE_ID","EXPANSION_FACTOR"),
   #         c("year_record", "state_code", "route_id","begin_point", "end_point", "sample_id","expansion_factor"))
@@ -420,8 +446,8 @@ FormatDataSet <- function(dat, state_abbr, year) {
     use.names=TRUE)
   
   # Check imported data against summary table -------------------------------
-
   state_code <- getStateNumFromCode(state_abbr)
+  
   check <- checkSummary(year, state_code, dat)
   
   if ( !isTRUE(check) ){
