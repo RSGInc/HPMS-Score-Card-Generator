@@ -18,45 +18,22 @@ loadSummaryData <- function(state_code, year){
 
   con <- odbcConnect("HPMS")
   
-  # Check that state and year are available
-  query <- paste('select distinct Year_Record, State_Code from', summary_table,
-                  'order by State_Code, Year_Record')
+  st_yr_key = paste0(state_code, str_sub(year, start=3, end=4)) 
   
-  states_years <- sqlQuery(con, query)
-  states_years <- cleanUpQuery(states_years)
+  query <- paste('SELECT Year_Record, State_Code, Data_Item,
+  Count(*) AS Record_Count,
+  Sum(End_Point - Begin_Point) AS Miles,
+  Count(Distinct Route_ID) AS Route_ID_Count
+  FROM Review_Sections WHERE StateYearKey=', st_yr_key,
+  'GROUP BY Year_Record, State_Code, Data_Item;')
   
-  if ( year %in% states_years$year_record &
-       state_code %in% states_years$state_code ){
-    
-    # Get the summary data
-    query <- paste0('select * from ', summary_table, ' where StateYearKey = ',
-                    state_code, as.numeric(year) %% 100)
   
-    data <- sqlQuery(con, query)
-    data <- cleanUpQuery(data)
+  data <- sqlQuery(con, query)
+  data <- cleanUpQuery(data)
     
-    odbcClose(con)
+  odbcClose(con)
   
-    return(data)
-
-  } else {
-
-    warntext <- ''
-    
-    if ( !year %in% states_years$year_record ){
-      warntext <- paste(warntext, 'Year', year, 'is not in', summary_table, '\n')
-    } 
-    
-    if ( !state_code %in% states_years$state_code){
-      warntext <- paste(warntext, 'State', getStateAbbrFromNum(state_code), 'is not in', summary_table, '\n')
-    }
-
-    warntext <- paste(warntext, 'returning NULL')
-    warning(warntext, immediate.=FALSE)
-
-    odbcClose(con)
-    return(NULL)
-  }
+  return(data)
 }
 
 
@@ -64,27 +41,25 @@ checkSummary <- function(year, state_code, data){
   # Load FHWA summary
 
   cat('Checking data summary against FHWA...')
-  
+
   fhwa_sum <- loadSummaryData(state_code, year)
   
   if (is.null(fhwa_sum)){
     return(TRUE)
   } else {
-    names(fhwa_sum) <- tolower(names(fhwa_sum))
+    # names(fhwa_sum) <- tolower(names(fhwa_sum))
     if ('stateyearkey' %in% names(fhwa_sum)) fhwa_sum[, stateyearkey := NULL]
     
     keys <- c('year_record', 'state_code', 'data_item')
     
     fhwa_sum[, record_count := as.numeric(record_count)]
     fhwa_sum[, route_id_count := as.numeric(route_id_count)]
-    fhwa_sum[, data_item := toupper(data_item)]
     fhwa_sum1 <- melt(fhwa_sum, id.vars=keys, variable.name = 'measure',
                       value.name = 'fhwa')
     
     # Summarize the imported data
     # Copy the data first to avoid changing by reference!
     from_db <- copy(data)
-    from_db <- from_db[, data_item := toupper(data_item)]
     from_db <- from_db[, .(record_count = as.numeric(.N),
                            miles = sum(section_length),
                            route_id_count = as.numeric(length(unique(route_id)))),
