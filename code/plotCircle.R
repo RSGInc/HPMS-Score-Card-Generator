@@ -55,12 +55,15 @@ plotCircle <- function(data,year,year_compare,variable,startx,starty,C,R)
       type <- (( outliers[groupCat==1,type] +
         adjaceny[groupCat==1,type] +
              yoy[groupCat==1,type] ) * weights[1] +
+          
       ( outliers[groupCat==2,type] +
         adjaceny[groupCat==2,type] +
              yoy[groupCat==2,type] ) * weights[2] +
+        
       ( outliers[groupCat==3,type] +
         adjaceny[groupCat==3,type] +
              yoy[groupCat==3,type] ) * weights[3] +  
+        
       ( outliers[groupCat==4,type] +
         adjaceny[groupCat==4,type] +
              yoy[groupCat==4,type] ) * weights[4])/sum(3*weights)

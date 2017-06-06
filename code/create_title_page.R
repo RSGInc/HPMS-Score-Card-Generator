@@ -13,14 +13,15 @@
 ###########################################################################
 
 create_title_page <- function(data, state, year, year_compare=NULL){
-
-  #browser()
   
   scorestotals <- read.table("resources/dat/scoringweights.csv", sep=",", header=TRUE)
   
   timetotal     <- scorestotals[, "timeliness"]
   completetotal <- scorestotals[, "completeness"]
   qualitytotal  <- scorestotals[, "quality"]
+
+  
+  # Page setup ==========================================================================
   
   grid.arrange(
     arrangeGrob( 
@@ -88,45 +89,107 @@ create_title_page <- function(data, state, year, year_compare=NULL){
   
   
   vertical_adj <- 0.05
+
   
-  grid.text("Score"         , 0.25, 0.965, hjust=0, gp = gpar(col = "steelblue4", fontface = "bold", fontsize = 13))
-  grid.text("Data Summary"  , 0.835, 0.965, hjust=1, gp = gpar(col = "steelblue4", fontface = "bold", fontsize = 13))
-  grid.text("inventory"       , 0.25, 0.823-vertical_adj, hjust=0, gp = gpar(col = "steelblue4", fontface = "bold", fontsize = 13))
-  grid.text("pavement"        , 0.25, 0.665-vertical_adj, hjust=0, gp = gpar(col = "steelblue4", fontface = "bold", fontsize = 13))
-  grid.text("traffic"         , 0.25, 0.535-vertical_adj, hjust=0, gp = gpar(col = "steelblue4", fontface = "bold", fontsize = 13))
-  grid.text("geometric"       , 0.25, 0.387-vertical_adj, hjust=0, gp = gpar(col = "steelblue4", fontface = "bold", fontsize = 13))
-  grid.text("route"           , 0.25, 0.237-vertical_adj, hjust=0, gp = gpar(col = "steelblue4", fontface = "bold", fontsize = 13))
-  grid.text("special networks", 0.25, 0.14-vertical_adj, hjust=0, gp = gpar(col = "steelblue4", fontface = "bold", fontsize = 13))
+  # Add section headers
+
+  sec_header_gp <- gpar(col = "steelblue4", fontface = "bold", fontsize = 13)
+  line_gp <- gpar(col='slategray', lty=3)
+  
+  hdr_left <- 0.25
+  y_top_hdr <- 0.98
+  
+  grid.text("Score"           , hdr_left, y_top_hdr, hjust=0, gp=sec_header_gp)
+  grid.text("inventory"       , hdr_left, 0.823-vertical_adj, hjust=0, gp=sec_header_gp)
+  grid.text("pavement"        , hdr_left, 0.665-vertical_adj, hjust=0, gp=sec_header_gp)
+  grid.text("traffic"         , hdr_left, 0.535-vertical_adj, hjust=0, gp=sec_header_gp)
+  grid.text("geometric"       , hdr_left, 0.387-vertical_adj, hjust=0, gp=sec_header_gp)
+  grid.text("route"           , hdr_left, 0.237-vertical_adj, hjust=0, gp=sec_header_gp)
+  grid.text("special networks", hdr_left, 0.14-vertical_adj, hjust=0, gp=sec_header_gp)
   
   # inventory
-  grid.draw(linesGrob(x = unit(c(0.25, 0.97), "npc"),
+  grid.draw(linesGrob(x = unit(c(hdr_left, 0.97), "npc"),
                       y = unit(c(0.8045, 0.8045)-vertical_adj, "npc"),
-                      gp=gpar(col="slategray", lty=3)))
+                      gp=line_gp))
   
   # pavement
-  grid.draw(linesGrob(x = unit(c(0.25, 0.97), "npc"),
+  grid.draw(linesGrob(x = unit(c(hdr_left, 0.97), "npc"),
                       y = unit(c(0.6465, 0.6465)-vertical_adj, "npc"),
-                      gp=gpar(col="slategray", lty=3)))
+                      gp=line_gp))
   
   # traffic
-  grid.draw(linesGrob(x = unit(c(0.25, 0.97), "npc"),
+  grid.draw(linesGrob(x = unit(c(hdr_left, 0.97), "npc"),
                       y = unit(c(0.5165, 0.5165)-vertical_adj, "npc"),
-                      gp=gpar(col="slategray", lty=3)))
+                      gp=line_gp))
   
   # geometric
-  grid.draw(linesGrob(x = unit(c(0.25, 0.97), "npc"),
+  grid.draw(linesGrob(x = unit(c(hdr_left, 0.97), "npc"),
                       y = unit(c(0.3685, 0.3685)-vertical_adj, "npc"),
-                      gp=gpar(col="slategray", lty=3)))
+                      gp=line_gp))
   
   # route
-  grid.draw(linesGrob(x = unit(c(0.25, 0.97), "npc"),
+  grid.draw(linesGrob(x = unit(c(hdr_left, 0.97), "npc"),
                       y = unit(c(0.2185, 0.2185)-vertical_adj, "npc"),
-                      gp=gpar(col="slategray", lty=3)))
+                      gp=line_gp))
   
   # special network
-  grid.draw(linesGrob(x = unit(c(0.25, 0.97), "npc"),
+  grid.draw(linesGrob(x = unit(c(hdr_left, 0.97), "npc"),
                       y = unit(c(0.12, 0.12)-vertical_adj, "npc"),
-                      gp=gpar(col="slategray", lty=3)))
+                      gp=line_gp))
+
+
+  
+  # Data summary -------------------------------------------------------------------------
+  # Add the data summary table
+  
+  results <- create_data_summary(data, state, year, year_compare)
+  results <- results[nrow(results):1,]
+  #results <- data.frame(results)
+  
+  grid.draw(linesGrob(x = unit(c(0.73, 0.73), "npc"), 
+                      y = unit(c(1, 0.79), "npc"), 
+                      gp=gpar(col="white", lty=1, lwd=3)))
+
+  label_gp <- gpar(fontsize=8, fontface="bold", col="slategray")
+  item_gp <- gpar(fontsize=8, col="black")
+
+  y_bot <- 0.825
+
+  x_label <- 0.85
+  x_col1 <- x_label + 0.055
+  x_col2 <- x_col1 + 0.055
+  y_row_spc <- 0.02
+  
+  grid.text("Data Summary"    , x_label, y_top_hdr, hjust=1, gp=sec_header_gp)
+
+  grid.text(paste0("", year  ),
+            x=x_col1,
+            y=y_bot + y_row_spc * (nrow(results) - 1) + 0.005,
+            gp=gpar(fontsize=9, fontface="bold", col="slategray"),
+            hjust=1)
+  
+  grid.text(paste0("", year_compare),
+            x=x_col2,
+            y=y_bot + y_row_spc * (nrow(results) - 1) + 0.005,
+            gp=gpar(fontsize=9, fontface="bold", col="slategray"),
+            hjust=1)
+
+  # Draw labels
+  for ( i in 1:(nrow(results) - 1) ){
+    grid.text(results[i, 1, with=FALSE], x=x_label, y=y_bot + y_row_spc*(i-1), gp=label_gp, hjust=1)
+    grid.text(results[i, 2, with=FALSE], x=x_col1, y=y_bot + y_row_spc*(i-1), gp=item_gp, hjust=1)
+    grid.text(results[i, 3, with=FALSE], x=x_col2, y=y_bot + y_row_spc*(i-1), gp=item_gp, hjust=1)
+
+  }    
+
+  grid.text("*Does not include non-NHS locals.", x=x_col1, y=y_bot - y_row_spc,
+            gp=gpar(fontsize=5, fontface="italic", col="slategray"), hjust=0.5)
+
+
+  
+  # Completeness and quality ==========================================================
+  # The following section calculates completeness and quality for each data item
+  # Then plots it.
   
   cat("\nCalculating coverage validation results. This may take some time to complete.")
   
@@ -429,7 +492,12 @@ create_title_page <- function(data, state, year, year_compare=NULL){
   grid.raster(image=gLogo, x = 0.03, y=0.85, just = "left", width = 0.10)
   grid.raster(image=gLogo2, x = 0.02, y=0.04, just = "left", width = 0.10)
 
-  # summary section of the report
+  
+  # Summary ============================================================================
+
+  # summary section of the report 
+
+  # Completeness, quality, and timeliness scores --------------------------------------
   
   tscore <- timetotal*getTimelinessScore(state, year)
   cscore <- round(completetotal*CompletedScore/TotalCompletedScore, 1)
@@ -483,36 +551,5 @@ create_title_page <- function(data, state, year, year_compare=NULL){
   #grid.text("Overall",     x=0.31, y=0.87, just="right", gp=gpar(fontsize=18, col="slategray"))
   grid.text(paste0(tscore+qscore+cscore), x=0.32, y=0.90, just="left", gp=gpar(fontsize=23, col="black"), hjust=0.5)
   grid.text(paste0("out of ", timetotal+completetotal+qualitytotal), x=0.32, y=0.86, just="left", gp=gpar(fontsize=13, col="gray50"), hjust=0.5)
-  
-  results <- create_overall_report(data, state, year)
-
-  #results <- data.frame(results)
-  
-  grid.draw(linesGrob(x = unit(c(0.73, 0.73), "npc"), 
-                      y = unit(c(1, 0.79), "npc"), 
-                      gp=gpar(col="white", lty=1, lwd=3)))
-  
-  grid.text(paste0("", year  ), x=0.890, y=0.93, gp=gpar(fontsize=9, fontface="bold", col="slategray"), hjust=1)
-  grid.text(paste0("", year-1), x=0.950, y=0.93, gp=gpar(fontsize=9, fontface="bold", col="slategray"), hjust=1)
-
-  grid.text(results[2, 1, with=FALSE], x=0.835, y=0.905, gp=gpar(fontsize=8, fontface="bold", col="slategray"), hjust=1)
-  grid.text(results[3, 1, with=FALSE], x=0.835, y=0.885, gp=gpar(fontsize=8, fontface="bold", col="slategray"), hjust=1)
-  grid.text(results[4, 1, with=FALSE], x=0.835, y=0.865, gp=gpar(fontsize=8, fontface="bold", col="slategray"), hjust=1)
-  grid.text(results[5, 1, with=FALSE], x=0.835, y=0.845, gp=gpar(fontsize=8, fontface="bold", col="slategray"), hjust=1)
-  grid.text(results[6, 1, with=FALSE], x=0.835, y=0.825, gp=gpar(fontsize=8, fontface="bold", col="slategray"), hjust=1)
-
-  grid.text(results[2, 2, with=FALSE], x=0.89, y=0.905, gp=gpar(fontsize=8, col="black"), hjust=1)
-  grid.text(results[3, 2, with=FALSE], x=0.89, y=0.885, gp=gpar(fontsize=8, col="black"), hjust=1)
-  grid.text(results[4, 2, with=FALSE], x=0.89, y=0.865, gp=gpar(fontsize=8, col="black"), hjust=1)
-  grid.text(results[5, 2, with=FALSE], x=0.89, y=0.845, gp=gpar(fontsize=8, col="black"), hjust=1)
-  grid.text(results[6, 2, with=FALSE], x=0.89, y=0.825, gp=gpar(fontsize=8, col="black"), hjust=1)
-  
-  grid.text(results[2, 3, with=FALSE], x=0.95, y=0.905, gp=gpar(fontsize=8, col="black"), hjust=1)
-  grid.text(results[3, 3, with=FALSE], x=0.95, y=0.885, gp=gpar(fontsize=8, col="black"), hjust=1)
-  grid.text(results[4, 3, with=FALSE], x=0.95, y=0.865, gp=gpar(fontsize=8, col="black"), hjust=1)
-  grid.text(results[5, 3, with=FALSE], x=0.95, y=0.845, gp=gpar(fontsize=8, col="black"), hjust=1)
-  grid.text(results[6, 3, with=FALSE], x=0.95, y=0.825, gp=gpar(fontsize=8, col="black"), hjust=1)
-  
-  grid.text("*Does not include non-NHS locals.", x=0.89, y=0.805, gp=gpar(fontsize=5, fontface="italic", col="slategray"), hjust=0.5)
   
 }
