@@ -26,9 +26,12 @@ Run <- function(task, ...) {
     success <- FALSE
     
     # Initial user task choice
+    # p_text <- "What would you like to do?\n\n(1) Import new state data\n(2) Generate score card from previously imported data\n(3) Import new population data\n\nPlease enter your selection: "
+    p_text <- 'What would you like to do?\n\n(1) Import new state data\n(2) Generate score card from previously imported data\n\nPlease enter your selection: '                           
+
     if ( missing(task) ){
       whitespace(gSpaces)
-      task <- getUserInput(valid = 1:3, prompt = "What would you like to do?\n\n(1) Import new state data\n(2) Generate score card from previously imported data\n(3) Import new population data\n\nPlease enter your selection: ")
+      task <- getUserInput(valid = 1:2, prompt = p_text)
     }
     
     # Import new data
@@ -80,10 +83,8 @@ Run <- function(task, ...) {
         national<-NULL
         
         # Load the population data
-        #population2 <<- readRDS(paste0("resources/dat/population.RDS"))#readRDS(paste0("resources/dat/",data.list[["year_selection"]],"_population.RDS"))
-        population <- readRDS(paste0("resources/dat/",data.list[["year_selection"]],"_population.RDS"))
-        #population <- readRDS('resources/dat/population.RDS')
-        
+        #population <- readRDS(paste0("resources/dat/",data.list[["year_selection"]],"_population.RDS"))
+
         # Generate score card
         whitespace(gSpaces)
 
@@ -92,7 +93,7 @@ Run <- function(task, ...) {
                      state = data.list[["state_code"]],
                      year = data.list[["year_selection"]],
                      year_compare = data.list[["year_compare"]],
-                     population = population,
+                     # population = population,
                      national = national,
                      path = savepath)
         } else {
@@ -101,7 +102,7 @@ Run <- function(task, ...) {
                                                      state = data.list[["state_code"]],
                                                      year = data.list[["year_selection"]],
                                                      year_compare = data.list[["year_compare"]],
-                                                     population = population,
+                                                     #population = population,
                                                      national = national,
                                                      path = savepath));
                                           success <- TRUE},
@@ -131,7 +132,7 @@ Run <- function(task, ...) {
       whitespace(gSpaces)
       #cat("Please use the windows dialog to select one or more data files to import.\n\n")
       #file <- choose.files(caption = "Select one file to import.",multi=FALSE)
-      
+      stop('population is no longer needed for the pavement summary')
       con <- odbcConnect("HPMS")
 
       population <- sqlQuery(con,paste0("select * from ", poptable) )

@@ -11,32 +11,36 @@
 #
 ###########################################################################
 
-create_page2 <- function(
+create_pavement_detailed_review <- function(
   data,
   state,
   year,
   year_compare=NULL,
-  color="white",
-  population)
-{
+  color="white"){
 
-    grid.arrange(
+  grid.arrange(
+    
     # header
     rectGrob(gp = gpar(fill = color, col = color)), # saves space for the header
-    
     rectGrob(gp = gpar(fill = "slategray", col = "white")), 
+    
     # first row of results   
     arrangeGrob(
       rectGrob(gp = gpar(fill = "white", col="white")),
       rectGrob(gp = gpar(fill = "white", col="white")),
-      create_overall_condition(data,state,year,population),
+      
+      #create_overall_condition(data,state,year,population),
+      create_pavement_summary(data, state, year),
+      
       rectGrob(gp = gpar(fill = "white", col = "white")),
       nrow = 1,widths=unit(c(0.167,2,10.833,0.33),units="inches")
     ),
     rectGrob(gp = gpar(fill = "gray70", col = "white")), 
     rectGrob(gp = gpar(fill = "white", col = "white")), 
     
+    
     # titles for the next set of results
+    
     arrangeGrob(
       rectGrob(gp = gpar(fill = "white", col = "white")),
       textGrob("",just="right",gp=gpar(fontsize=12, col="Black")),
@@ -47,6 +51,7 @@ create_page2 <- function(
       rectGrob(gp = gpar(fill = "white", col = "white")),
       nrow=1,widths=unit(c(0.167,1.5,rep(11.336/4,4),0.33),units="inches")
     ),
+    
     # first row of tables
     arrangeGrob(
       rectGrob(gp = gpar(fill = "white", col = "white")),
@@ -61,6 +66,7 @@ create_page2 <- function(
         create_outlier_report(data,state,year,"IRI")),
       rectGrob(gp = gpar(fill = "white", col = "white")),
       nrow = 1,widths=unit(c(0.167,1.5,rep(11.336/4,4),0.33),units="inches")),
+    
     # second row of tables
     arrangeGrob(
       rectGrob(gp = gpar(fill = "white", col = "white")),
@@ -75,6 +81,7 @@ create_page2 <- function(
         create_adjacency_report(data,state,year,"IRI")),
       rectGrob(gp = gpar(fill = "white", col = "white")),
       nrow = 1,widths=unit(c(0.167,1.5,rep(11.336/4,4),0.33),units="inches")),
+    
     # third row of results   
     arrangeGrob(
       rectGrob(gp = gpar(fill = "white", col = "white")),
@@ -105,20 +112,20 @@ create_page2 <- function(
   grid.text(paste0(year_compare,"-",year," Sections"),x=0.12,y=0.22,hjust=1,gp=gpar(fontsize=10, col="slategray"))
   grid.text("Sections\nwith the same value\nas previous year",x=0.12,y=0.18,hjust=1,gp=gpar(fontsize=7, fontface="italic",col="slategray"))
   
-  grid.text(paste0("Outliers: <",gVariables[Name=="FAULTING",Outlier_Min],        " | >",gVariables[Name=="FAULTING",Outlier_Max],"\"",        " (% > ",gVariables[Name=="FAULTING",OH_Thresh]," are highlighted)"),        x=0.16,y=0.56,hjust=0,gp=gpar(fontsize=5.75, fontface="italic",col="slategray"))
-  grid.text(paste0("Outliers: <",gVariables[Name=="CRACKING_PERCENT",Outlier_Min]," | >",gVariables[Name=="CRACKING_PERCENT",Outlier_Max],"%", " (% > ",gVariables[Name=="CRACKING_PERCENT",OH_Thresh]," are highlighted)"),x=0.37,y=0.56,hjust=0,gp=gpar(fontsize=5.75, fontface="italic",col="slategray"))
-  grid.text(paste0("Outliers: <",gVariables[Name=="RUTTING",Outlier_Min],         " | >",gVariables[Name=="RUTTING",Outlier_Max],"\"",         " (% > ",gVariables[Name=="RUTTING",OH_Thresh]," are highlighted)"),         x=0.585,y=0.56,hjust=0,gp=gpar(fontsize=5.75, fontface="italic",col="slategray"))
-  grid.text(paste0("Outliers: <",gVariables[Name=="IRI",Outlier_Min],             " | >",gVariables[Name=="IRI",Outlier_Max],"",               " (% > ",gVariables[Name=="IRI",OH_Thresh]," are highlighted)"),             x=0.7975,y=0.56,hjust=0,gp=gpar(fontsize=5.75, fontface="italic",col="slategray"))
+  grid.text(paste0("Outliers: <", gVariables[Name=="FAULTING",Outlier_Min],        " | >",gVariables[Name=="FAULTING",Outlier_Max],"\"",        " (% > ",gVariables[Name=="FAULTING",OH_Thresh]," are highlighted)"),        x=0.16,y=0.56,hjust=0,gp=gpar(fontsize=5.75, fontface="italic",col="slategray"))
+  grid.text(paste0("Outliers: <", gVariables[Name=="CRACKING_PERCENT",Outlier_Min]," | >",gVariables[Name=="CRACKING_PERCENT",Outlier_Max],"%", " (% > ",gVariables[Name=="CRACKING_PERCENT",OH_Thresh]," are highlighted)"),x=0.37,y=0.56,hjust=0,gp=gpar(fontsize=5.75, fontface="italic",col="slategray"))
+  grid.text(paste0("Outliers: <", gVariables[Name=="RUTTING",Outlier_Min],         " | >",gVariables[Name=="RUTTING",Outlier_Max],"\"",         " (% > ",gVariables[Name=="RUTTING",OH_Thresh]," are highlighted)"),         x=0.585,y=0.56,hjust=0,gp=gpar(fontsize=5.75, fontface="italic",col="slategray"))
+  grid.text(paste0("Outliers: <", gVariables[Name=="IRI",Outlier_Min],             " | >",gVariables[Name=="IRI",Outlier_Max],"",               " (% > ",gVariables[Name=="IRI",OH_Thresh]," are highlighted)"),             x=0.7975,y=0.56,hjust=0,gp=gpar(fontsize=5.75, fontface="italic",col="slategray"))
   
-  grid.text(paste0("% > ",gVariables[Name=="FAULTING",AH_Thresh]," are highlighted"),        x=0.16,y=0.33,hjust=0,gp=gpar(fontsize=5.75, fontface="italic",col="slategray"))
-  grid.text(paste0("% > ",gVariables[Name=="CRACKING_PERCENT",AH_Thresh]," are highlighted"),x=0.37,y=0.33,hjust=0,gp=gpar(fontsize=5.75, fontface="italic",col="slategray"))
-  grid.text(paste0("% > ",gVariables[Name=="RUTTING",AH_Thresh]," are highlighted"),         x=0.585,y=0.33,hjust=0,gp=gpar(fontsize=5.75, fontface="italic",col="slategray"))
-  grid.text(paste0("% > ",gVariables[Name=="IRI",AH_Thresh]," are highlighted"),             x=0.7975,y=0.33,hjust=0,gp=gpar(fontsize=5.75, fontface="italic",col="slategray"))
+  grid.text(paste0("% > ", gVariables[Name=="FAULTING",AH_Thresh]," are highlighted"),        x=0.16,y=0.33,hjust=0,gp=gpar(fontsize=5.75, fontface="italic",col="slategray"))
+  grid.text(paste0("% > ", gVariables[Name=="CRACKING_PERCENT",AH_Thresh]," are highlighted"),x=0.37,y=0.33,hjust=0,gp=gpar(fontsize=5.75, fontface="italic",col="slategray"))
+  grid.text(paste0("% > ", gVariables[Name=="RUTTING",AH_Thresh]," are highlighted"),         x=0.585,y=0.33,hjust=0,gp=gpar(fontsize=5.75, fontface="italic",col="slategray"))
+  grid.text(paste0("% > ", gVariables[Name=="IRI",AH_Thresh]," are highlighted"),             x=0.7975,y=0.33,hjust=0,gp=gpar(fontsize=5.75, fontface="italic",col="slategray"))
   
-  grid.text(paste0("% > ",gVariables[Name=="FAULTING",YOYH_Thresh]," are highlighted"),        x=0.16,y=0.1,hjust=0,gp=gpar(fontsize=5.75, fontface="italic",col="slategray"))
-  grid.text(paste0("% > ",gVariables[Name=="CRACKING_PERCENT",YOYH_Thresh]," are highlighted"),x=0.37,y=0.1,hjust=0,gp=gpar(fontsize=5.75, fontface="italic",col="slategray"))
-  grid.text(paste0("% > ",gVariables[Name=="RUTTING",YOYH_Thresh]," are highlighted"),         x=0.585,y=0.1,hjust=0,gp=gpar(fontsize=5.75, fontface="italic",col="slategray"))
-  grid.text(paste0("% > ",gVariables[Name=="IRI",YOYH_Thresh]," are highlighted"),             x=0.7975,y=0.1,hjust=0,gp=gpar(fontsize=5.75, fontface="italic",col="slategray"))
+  grid.text(paste0("% > ", gVariables[Name=="FAULTING",YOYH_Thresh]," are highlighted"),        x=0.16,y=0.1,hjust=0,gp=gpar(fontsize=5.75, fontface="italic",col="slategray"))
+  grid.text(paste0("% > ", gVariables[Name=="CRACKING_PERCENT",YOYH_Thresh]," are highlighted"),x=0.37,y=0.1,hjust=0,gp=gpar(fontsize=5.75, fontface="italic",col="slategray"))
+  grid.text(paste0("% > ", gVariables[Name=="RUTTING",YOYH_Thresh]," are highlighted"),         x=0.585,y=0.1,hjust=0,gp=gpar(fontsize=5.75, fontface="italic",col="slategray"))
+  grid.text(paste0("% > ", gVariables[Name=="IRI",YOYH_Thresh]," are highlighted"),             x=0.7975,y=0.1,hjust=0,gp=gpar(fontsize=5.75, fontface="italic",col="slategray"))
   
   add_page_number(2)
   
