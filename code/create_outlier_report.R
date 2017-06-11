@@ -6,7 +6,7 @@
 #
 # Description:
 #
-# This function performs the outlier analysis for a specific variable. Teh
+# This function performs the outlier analysis for a specific variable. The
 # outlying thresholds can be set by the user in the resourse folder.
 # This function formats the data into the necessary structure to be
 # processed by the create_table function.
@@ -71,9 +71,9 @@ create_outlier_report <- function(
      
      report.2[,groupCat:=1]
      
-     d.l <- data[ data_item==variable&
-                      state_code==state&
-                      year_record==year&NHS==1&FACILITY_TYPE!=4,,]    
+     d.l <- data[ data_item == variable &
+                      state_code == state &
+                      year_record == year & NHS==1 & FACILITY_TYPE != 4,,]    
      
      result.3 <- d.l[(value_numeric>outlier_threshold_high|value_numeric<outlier_threshold_low),
                      list(miles=round(sum(end_point-begin_point,na.rm=TRUE),2),.N),

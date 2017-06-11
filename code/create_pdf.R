@@ -10,8 +10,7 @@
 #
 ###########################################################################
 
-create_pdf <- function(data, state, year, year_compare, population,
-                       national = NULL, path) {
+create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
   TS <- Sys.time()
   
   cat("Creating score card...\n\n")

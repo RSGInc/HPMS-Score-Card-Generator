@@ -21,16 +21,17 @@
 #
 ###########################################################################
 
+
 # Load Code
 # setwd (needed when not using RStudio project)
 # setwd('C:/Users/matt.landis/Git/HPMS-Score-Card-Generator')
 invisible(sapply(X = list.files(path = "code", pattern = "*.R$",
                                 full.names = TRUE)[-1], FUN = source))
 # For debugging
-# debugmode <- TRUE
-Run(task=1, state_selection='RI', year_selection='2015')
-# Run(task=2, state_selection='RI', year_selection='2015', year_compare='2014')
-
+# options(warn=2)
+debugmode <- TRUE
+# Run(task=1, state_selection='NJ', year_selection='2015')
+Run(task=2, state_selection='RI', year_selection='2015', year_compare='2014')
 # Run Tool
 Run()
 
