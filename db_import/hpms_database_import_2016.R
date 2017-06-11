@@ -78,8 +78,8 @@ odbcClose(con)
 wrj_con <- 'Driver={SQL Server Native Client 11.0}; server=wrjsqlvdw02;database=HPMS;trusted_connection=yes;'
 
 con <- odbcDriverConnect(connection=wrj_con)
-sm_tbl_name <- 'Review_Sample_Sections'
-sqlSave(con, dat=tbl, tablename=sm_tbl_name, nastring=NULL, append=TRUE,
+tbl_name <- 'Review_Sections'
+sqlSave(con, dat=tbl, tablename=tbl_name, nastring=NULL, append=TRUE,
         rownames=FALSE) 
 
 odbcClose(con)
