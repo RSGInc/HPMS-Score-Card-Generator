@@ -10,6 +10,7 @@
 library('RODBC')
 library('tidyverse')
 library('stringr')
+library('lubridate')
 
 #q_drive <- '//i-rsg.com/rsgshares/Projects/_Federal/FHWA/15__ HPMS_DataVisualizationSupport'
 onedrive <- file.path('C:/Users/matt.landis/OneDrive - Resource Systems Group, Inc')
@@ -22,17 +23,68 @@ local_con <- 'Driver={SQL Server Native Client 11.0}; server=10548L\\SQLEXPRESS;
 # Work ======================================================================
 
 # Load 2016 Sections data
-raw_dir <- file.path(proj_dir, '2016 Sections Data')
-infile <- file.path(raw_dir, 'HPMSSections2016.txt')
+raw_dir <- file.path(d_dir, 'raw_data_2016')
+infile <- file.path(raw_dir, 'HPMSSections2016_IL.txt')
 lns <- read_lines(infile, n_max = 100)
 
-# File is comma delimited
+# File is pipe delimited
 header <- read_lines(infile, n_max=1)
 
-tbl <- read.table(infile, header=TRUE, sep=',', quote='', as.is=TRUE,
-                 colClasses='character', fill=FALSE, skipNul=FALSE, nrows=1000) %>%
-as_tibble()
-View(tbl)
+## tbl <- read.table(infile, header=TRUE, sep='|', quote='', as.is=TRUE,
+##                  colClasses='character', fill=FALSE, skipNul=FALSE, nrows=Inf) %>%
+## as_tibble()
+## tbl <- tbl %>%
+##   mutate(Begin_Point = as.numeric(Begin_Point),
+##          End_Point = as.numeric(End_Point),
+##          Value_Numeric = as.numeric(Value_Numeric),
+##          Value_Date = parse_date_time(Value_Date, orders='ymdHMS'))
+
+tbl <- read_delim(infile, delim='|')
+# View(tbl)
+tail(tbl)
+
+
+# List and range checks
+with(tbl, table(Year_Record, useNA='always'))
+with(tbl, table(State_Code, useNA='always'))
+sort(unique(tbl$Route_ID))
+
+with(tbl, summary(Begin_Point))
+with(tbl, summary(End_Point))
+with(tbl, summary(as.numeric(Section_Length)))
+tbl2 <- mutate(tbl, section_length_o = as.numeric(Section_Length),
+               Section_Length = End_Point - Begin_Point)
+
+#qplot(x=section_length_o, y=Section_Length, data=tbl2)
+
+filter(tbl2, is.na(section_length_o)) %>%
+  select(section_length_o, Section_Length, Begin_Point, End_Point)
+
+with(tbl, summary(Value_Numeric))
+with(tbl, summary(Value_Date))
+
+tbl <- tbl %>%
+  select(Year_Record, State_Code, Route_ID, Begin_Point, End_Point, Section_Length,
+         Data_Item, Value_Numeric, Value_Text, Value_Date, StateYearKey)
+
+con <- odbcDriverConnect(connection=local_con)
+tbl_name <- 'Review_Sections'
+sqlSave(con, dat=tbl, tablename=tbl_name, nastring=NULL, append=TRUE,
+        rownames=FALSE) 
+
+odbcClose(con)
+
+# Write the data to the WRJ server as well.
+wrj_con <- 'Driver={SQL Server Native Client 11.0}; server=wrjsqlvdw02;database=HPMS;trusted_connection=yes;'
+
+con <- odbcDriverConnect(connection=wrj_con)
+sm_tbl_name <- 'Review_Sample_Sections'
+sqlSave(con, dat=tbl, tablename=sm_tbl_name, nastring=NULL, append=TRUE,
+        rownames=FALSE) 
+
+odbcClose(con)
+
+
 
 # Load the 2016 sample data -------------------------------------------------
 raw_dir <- file.path(d_dir, 'Samples 2016')
