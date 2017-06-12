@@ -166,7 +166,7 @@ ImportData <- function(state_selection, year_selection) {
       state_code <- getStateNumFromCode(state)
       
       path <- file.path("data", state_name)
-      file <- paste0(year, ".rds")
+      file <- paste0(year, ".RDS")
       fullpath <- file.path(path, file)
       
       # See if a data set for this year and state already exists

@@ -61,7 +61,7 @@ checkSummary <- function(year, state_code, data){
     # Copy the data first to avoid changing by reference!
     from_db <- copy(data)
     from_db <- from_db[, .(record_count = as.numeric(.N),
-                           miles = sum(section_length),
+                           miles = sum(end_point-begin_point),
                            route_id_count = as.numeric(length(unique(route_id)))),
                        by=list(year_record, state_code, data_item)]
     

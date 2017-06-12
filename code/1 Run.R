@@ -31,7 +31,7 @@ invisible(sapply(X = list.files(path = "code", pattern = "*.R$",
 # options(warn=2)
 debugmode <- TRUE
 # Run(task=1, state_selection='NJ', year_selection='2015')
-Run(task=2, state_selection='RI', year_selection='2015', year_compare='2014')
+Run(task=2, state_selection='IL', year_selection='2016', year_compare='2015')
 # Run Tool
 Run()
 

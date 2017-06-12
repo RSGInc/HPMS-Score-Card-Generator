@@ -33,7 +33,7 @@ create_pavement_detailed_review <- function(
       create_pavement_summary(data, state, year),
       
       rectGrob(gp = gpar(fill = "white", col = "white")),
-      nrow = 1,widths=unit(c(0.167,2,10.833,0.33),units="inches")
+      nrow = 1,widths=unit(c(0.167,2,4.5,0.33+5.836+0.5),units="inches")
     ),
     rectGrob(gp = gpar(fill = "gray70", col = "white")), 
     rectGrob(gp = gpar(fill = "white", col = "white")), 
@@ -100,8 +100,9 @@ create_pavement_detailed_review <- function(
   
   add_header(state,year,"pavement: detailed review","p")
   
-  grid.text("Overall Condition",x=0.12,y=0.87,hjust=1,gp=gpar(fontsize=10, col="slategray"))
-  grid.text("Represented as percent\nof total centerline miles",x=0.12,y=0.83,hjust=1,gp=gpar(fontsize=8, col="slategray"))
+  #grid.text("Pavement Summary",x=0.12,y=0.87,hjust=1,gp=gpar(fontsize=10, col="slategray"))
+  grid.text("Analysis of Through Lanes\nand Surface Type",x=0.16,y=0.84,hjust=1,gp=gpar(fontsize=10, col="slategray"))
+  grid.text("(Counts of sections)",x=0.16,y=0.8,hjust=1,gp=gpar(fontsize=7, col="slategray"))
   
   grid.text("Outliers",hjust=1,x=0.12,y=0.67,gp=gpar(fontsize=10, col="slategray"))
   grid.text("Sections\nwith outlying values",x=0.12,y=0.63,hjust=1,gp=gpar(fontsize=7, fontface="italic",col="slategray"))

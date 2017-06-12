@@ -50,7 +50,7 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
   # Pavement: Detailed Review
   cat("Pavement review...")
   ts <- Sys.time()
-  create_page2(data, state, year, year_compare, population = population)
+  create_pavement_detailed_review(data, state, year, year_compare)#, population = population)
   cat(paste0(" completed in: ",
              round(difftime(Sys.time(), ts, units = "secs"), 2), " seconds!\n"))
 
