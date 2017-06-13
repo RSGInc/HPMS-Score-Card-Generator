@@ -124,5 +124,21 @@ deleteAllData <- function() {
   
 }
 
+
+getStatesForYear = function(year) {
+  
+  statesForYear = c()
+  states <- getSavedStates()
+  for (state in states) 
+  {
+    if(year%in%as.numeric(file_path_sans_ext(dir(paste0("data/", state), pattern = "*.RDS"))))
+    {
+      statesForYear = c(statesForYear,state)    
+    }  
+  }
+  return(statesForYear)
+}
+
+
 ### END OF TOOL LOADING
 cat(" complete!\n")

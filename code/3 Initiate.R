@@ -27,11 +27,11 @@ Run <- function(task, ...) {
     
     # Initial user task choice
     # p_text <- "What would you like to do?\n\n(1) Import new state data\n(2) Generate score card from previously imported data\n(3) Import new population data\n\nPlease enter your selection: "
-    p_text <- 'What would you like to do?\n\n(1) Import new state data\n(2) Generate score card from previously imported data\n\nPlease enter your selection: '                           
+    p_text <- 'What would you like to do?\n\n(1) Import new state data\n(2) Generate score card from previously imported data\n(3) Run Batch Process\n\nPlease enter your selection: '                           
 
     if ( missing(task) ){
       whitespace(gSpaces)
-      task <- getUserInput(valid = 1:2, prompt = p_text)
+      task <- getUserInput(valid = 1:3, prompt = p_text)
     }
     
     # Import new data
@@ -125,29 +125,55 @@ Run <- function(task, ...) {
     
     } else if (task == 3) {
       
-      #whitespace(gSpaces)
+      whitespace(gSpaces)
       
-      #year <- getUserInput("Please enter which year you want to import: ") 
+      year <- getUserInput("Please enter which year you want to run: ") 
+      #browser()
+      states <- getStatesForYear(year)
+      
+      national<-NULL
+      
+      savepath <- "output/"
+      
+      for(state in states)
+      {
+        data.list = getStateDataSets(getStateCode(state),year,as.character(as.numeric(year)-1))
+        
+        tryCatch(expr = {suppressWarnings(create_pdf(data = data.list[["dat"]],
+                                                     state = data.list[["state_code"]],
+                                                     year = data.list[["year_selection"]],
+                                                     year_compare = data.list[["year_compare"]],
+                                                     #population = population,
+                                                     national = national,
+                                                     path = savepath));
+          success <- TRUE},
+          error = function(e) {e; dev.off(); warning("Unable to create PDF score card.\n\nA common cause of this warning is that the folder the tool is trying to save to already contains a score card PDF for this combination of data selections and is currently in use. Ensure the PDF is not in use and try again.", immediate. = TRUE, call. = FALSE)})
+        
+      }
+      
+      cat(state," scorecard is complete.")
       
       whitespace(gSpaces)
       #cat("Please use the windows dialog to select one or more data files to import.\n\n")
       #file <- choose.files(caption = "Select one file to import.",multi=FALSE)
-      stop('population is no longer needed for the pavement summary')
-      con <- odbcConnect("HPMS")
+      #stop('population is no longer needed for the pavement summary')
+      #con <- odbcConnect("HPMS")
 
-      population <- sqlQuery(con,paste0("select * from ", poptable) )
+      #population <- sqlQuery(con,paste0("select * from ", poptable) )
   
-      odbcClose(con)
+      #odbcClose(con)
       
       #population <- read.table(file,sep=",",header=TRUE,colClasses=)
       
-      population <- data.table(urban_code=population[order(population[,"URBAN_CODE"]),"URBAN_CODE"],pop=population[order(population[,"URBAN_CODE"]),"POPULATION"])
+      #population <- data.table(urban_code=population[order(population[,"URBAN_CODE"]),"URBAN_CODE"],pop=population[order(population[,"URBAN_CODE"]),"POPULATION"])
       
-      population <- population[,.(pop=unique(pop)),by=urban_code]
+      #population <- population[,.(pop=unique(pop)),by=urban_code]
       
-      saveRDS(population,file=paste0("resources/dat/population.rds"))
+      #saveRDS(population,file=paste0("resources/dat/population.rds"))
+      
       whitespace(4)
-      getUserInput("Data import complete! Press 'Enter' to continue. Press 'Esc' to Exit.")
+      
+      getUserInput("Batch complete! Press 'Enter' to continue. Press 'Esc' to Exit.")
       
     }
       
