@@ -130,7 +130,7 @@ Run <- function(task, ...) {
       year <- getUserInput("Please enter which year you want to run: ") 
       #browser()
       states <- getStatesForYear(year)
-      
+
       national<-NULL
       
       savepath <- "output/"
