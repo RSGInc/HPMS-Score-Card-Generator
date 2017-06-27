@@ -16,9 +16,9 @@
 
 # A user-called function to generate a score card either by importing new data or
 # specifying previously imported data sets.
-Run <- function(task, ...) {
+Run <- function(task=NA, ...) {
 
-  whitespace(task)
+  whitespace()
   
   # This while keeps the tool running until the user hits esc
   while (TRUE) {
@@ -29,7 +29,7 @@ Run <- function(task, ...) {
     # p_text <- "What would you like to do?\n\n(1) Import new state data\n(2) Generate score card from previously imported data\n(3) Import new population data\n\nPlease enter your selection: "
     p_text <- 'What would you like to do?\n\n(1) Import new state data\n(2) Generate score card from previously imported data\n(3) Run Batch Process\n\nPlease enter your selection: '                           
 
-    if ( missing(task) ){
+    if ( is.na(task) ){
       whitespace(gSpaces)
       task <- getUserInput(valid = 1:3, prompt = p_text)
     }
@@ -58,6 +58,7 @@ Run <- function(task, ...) {
       }
       
       whitespace(4)
+      task = NA
       getUserInput("Data import complete! Press 'Enter' to continue. Press 'Esc' to Exit.")
       
     # Generate score card(s)
@@ -115,6 +116,9 @@ Run <- function(task, ...) {
         
       }
       
+      
+      task = NA
+      
       # Detect whether score card generation was successful and return to main menu
       whitespace(4)
       if (success) {
@@ -122,6 +126,7 @@ Run <- function(task, ...) {
       } else {
         getUserInput("No score cards generated. Press 'Enter' to continue. Press 'Esc' to Exit.")
       }
+      
     
     } else if (task == 3) {
       
@@ -172,7 +177,7 @@ Run <- function(task, ...) {
       #saveRDS(population,file=paste0("resources/dat/population.rds"))
       
       whitespace(4)
-      
+      task = NA
       getUserInput("Batch complete! Press 'Enter' to continue. Press 'Esc' to Exit.")
       
     }
@@ -265,10 +270,12 @@ getStateDataSets <- function(state_selection, year_selection, year_compare) {
     }
     
   }
-  
+  #browser()
   # Append to analysis and comparison years
   dat.prev <- do.call(rbind, dat.prev)
   dat <- rbind(dat, dat.prev, fill = TRUE)
+  
+  
   
   return(list(dat = dat,
               year_selection = as.numeric(year_selection),

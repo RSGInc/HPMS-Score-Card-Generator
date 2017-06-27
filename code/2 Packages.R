@@ -23,7 +23,7 @@ cat("Loading tool components")
 # This should be turned on for testing purposes and when the tool is sent to FHWA
 # so they don't need to download anything.
 
-#.libPaths("resources/lib")
+.libPaths("resources/lib")
 
 # Function to auto-load packages (will attempt to download if not found)
 LoadPackages <- function(packages) {
@@ -31,7 +31,7 @@ LoadPackages <- function(packages) {
   notinstalled <- packages[!packages %in% .packages(all.available = TRUE)]
   if (length(notinstalled) > 0){
     install.packages(notinstalled,
-                     repos = "http://cran.r-project.org", dependencies = TRUE)
+                     repos = "http://cloud.r-project.org/", dependencies = TRUE)
   }
   for (package in packages) {
     cat(".")
@@ -40,7 +40,11 @@ LoadPackages <- function(packages) {
 }
 
 # Load necessary packages (alphabetically, please)
-packages <- c("data.table", "doBy", "ggplot2", "gmodels", "grid", "gridExtra",
+packages <- c("data.table", "doBy", "ggplot2", "gmodels",  "gridExtra",
               "hexbin", "jsonlite", "png", "reshape", "reshape2",
-              "RODBC","scales", "showtext", "sqldf", 'stringr', "tcltk", "tools")
+              "RODBC","scales", "showtext", "sqldf", 'stringr') #"grid","tcltk", "tools"
 LoadPackages(packages)
+library(tools)
+library(grid)
+library(tcltk)
+#options(sqldf.driver = "SQLite")

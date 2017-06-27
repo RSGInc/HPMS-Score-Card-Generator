@@ -66,7 +66,7 @@ create_data_summary <- function(data, state, year, year_compare){
 
   pct_route_nomatch.1 <- n_route_nomatch.1 / n_routes.1 * 100
   pct_route_nomatch.2 <- n_route_nomatch.2 / n_routes.2 * 100
-
+#browser()
   # Get n_sections  
   dt_sections.1 <- data[IDX & year_record == year,
                        list(route_id, begin_point, end_point)]
