@@ -105,7 +105,7 @@ for(state in state_abbrev){
       success <- ImportData(state_selection=state,
                             year_selection=year_compare)
       cat('complete!\n')
-      message('Finished importing at ', format(Sys.time(), '%H:%M:%S'))
+      message('Finished importing ', state, ' at ', format(Sys.time(), '%H:%M:%S\n'))
       
       data.list <- getStateDataSets(state, year_selection, year_compare)
 
@@ -123,8 +123,9 @@ for(state in state_abbrev){
     } # end error
     
   )  # end tryCatch
-  msg <- paste('Finished at', format(Sys.time(), '%H:%M:%S'))
-  
+  msg <- paste('Finished', state, 'at',  format(Sys.time(), '%H:%M:%S\n'))
+  cat(msg)    
+  message(msg)
 }
 
 #warnings()
