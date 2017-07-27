@@ -38,51 +38,51 @@ loadSummaryData <- function(state_code, year){
 
 
 checkSummary <- function(year, state_code, data){
-  # Load FHWA summary
+  # Load SQL summary
 
-  cat('Checking data summary against FHWA...')
+  cat('Checking R data summary against SQL summary')
 
-  fhwa_sum <- loadSummaryData(state_code, year)
+  sql_sum <- loadSummaryData(state_code, year)
   
-  if (is.null(fhwa_sum)){
+  if (is.null(sql_sum)){
     return(TRUE)
   } else {
-    # names(fhwa_sum) <- tolower(names(fhwa_sum))
-    if ('stateyearkey' %in% names(fhwa_sum)) fhwa_sum[, stateyearkey := NULL]
+    # names(sql_sum) <- tolower(names(sql_sum))
+    if ('stateyearkey' %in% names(sql_sum)) sql_sum[, stateyearkey := NULL]
     
     keys <- c('year_record', 'state_code', 'data_item')
     
-    fhwa_sum[, record_count := as.numeric(record_count)]
-    fhwa_sum[, route_id_count := as.numeric(route_id_count)]
-    fhwa_sum1 <- melt(fhwa_sum, id.vars=keys, variable.name = 'measure',
-                      value.name = 'fhwa')
+    sql_sum[, record_count := as.numeric(record_count)]
+    sql_sum[, route_id_count := as.numeric(route_id_count)]
+    sql_sum1 <- melt(sql_sum, id.vars=keys, variable.name = 'measure',
+                      value.name = 'from_sql')
     
     # Summarize the imported data
     # Copy the data first to avoid changing by reference!
-    from_db <- copy(data)
-    from_db <- from_db[, .(record_count = as.numeric(.N),
+    r_sum <- copy(data)
+    r_sum <- r_sum[, .(record_count = as.numeric(.N),
                            miles = sum(end_point-begin_point),
                            route_id_count = as.numeric(length(unique(route_id)))),
                        by=list(year_record, state_code, data_item)]
     
-    from_db1 <- melt(from_db, id.vars=keys, variable.name='measure',
-                     value.name='db')
+    r_sum1 <- melt(r_sum, id.vars=keys, variable.name='measure',
+                     value.name='from_r')
 
     
     keys <- c(keys, 'measure')
-    setkeyv(fhwa_sum1, cols=keys)
-    setkeyv(from_db1, cols=keys)
+    setkeyv(sql_sum1, cols=keys)
+    setkeyv(r_sum1, cols=keys)
     
     # Join original to new
-    comp <- from_db1[fhwa_sum1]
+    comp <- r_sum1[sql_sum1]
     
-    check <- all.equal(comp$db, comp$fhwa)
+    check <- all.equal(comp$from_r, comp$from_sql)
   }
  
   if(!isTRUE(check)){
     cat('...FAILED!\n')
     # Save a dataset
-    comp[, diff := fhwa - db]
+    comp[, diff := from_sql - from_r]
     diffs <- comp[abs(diff) >= 1e-3, ]
     return(diffs)
     
