@@ -36,7 +36,6 @@ create_page_summary <- function(
   if(is.null(x3)){
     show3 <- FALSE
   }
-  
   grid.arrange(
     
     # header (1, 2)
@@ -114,16 +113,16 @@ create_page_summary <- function(
     arrangeGrob(
       rectGrob(gp=gpar(fill=color, col = "white")),
       rectGrob(gp=gpar(fill="white", col = "white")),
-      create_travel_yoy_density(data, state, year, year_compare,
+      suppressWarnings(create_travel_yoy_density(data, state, year, year_compare,
                                 gVariables[x1,Name],
-                                gVariables[x1,National_Data_Comparison], ramps=ramps),
+                                gVariables[x1,National_Data_Comparison], ramps=ramps)),
       rectGrob(gp=gpar(fill="white", col = "white")),
       
       if(show2){
-        create_travel_yoy_density(data, state, year, year_compare,
+        suppressWarnings(create_travel_yoy_density(data, state, year, year_compare,
                                   gVariables[x2,Name],
                                   gVariables[x2,National_Data_Comparison],
-                                  ramps=ramps)
+                                  ramps=ramps))
       } else {
         rectGrob(gp=gpar(fill="white", col = "white"))
       },
@@ -131,10 +130,10 @@ create_page_summary <- function(
       rectGrob(gp=gpar(fill="white", col = "white")),
       
       if(show3){
-        create_travel_yoy_density(data, state, year, year_compare,
+        suppressWarnings(create_travel_yoy_density(data, state, year, year_compare,
                                   gVariables[x3,Name], 
                                   gVariables[x3,National_Data_Comparison],
-                                  ramps=ramps)
+                                  ramps=ramps))
       } else {
         rectGrob(gp=gpar(fill="white", col = "white"))
       },
