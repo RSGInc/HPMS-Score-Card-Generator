@@ -64,8 +64,10 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
   # Ramps: Detailed Review
   cat("Ramps review...")
   ts <- Sys.time()
-  todo <- matrix((1:nrow(gVariables))[gVariables[, RampAnalysis] == "Y"], 
-                 ncol = 3, byrow = TRUE)
+  
+  todo_vec <- (1:nrow(gVariables))[gVariables[, RampAnalysis] == "Y"]
+  todo_vec <- c(todo_vec, rep(NA, 3 - (length(todo_vec) %% 3))) 
+  todo <- matrix(todo_vec, ncol = 3, byrow = TRUE)
   for (i in 1:1) {
     x1 <- todo[i, 1]
     x2 <- todo[i, 2]
@@ -88,8 +90,10 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
   # data summary pages inventory
   cat("Inventory data items...")
   ts <- Sys.time()
-  todo <- matrix((1:nrow(gVariables))[gVariables[, Grouping] == "I"], 
-                 ncol = 3, byrow = TRUE)
+  
+  todo_vec <- (1:nrow(gVariables))[gVariables[, Grouping] == "I"]
+  todo_vec <- c(todo_vec, rep(NA, 3 - (length(todo_vec) %% 3))) 
+  todo <- matrix(todo_vec, ncol = 3, byrow = TRUE)
   for (i in 1:6) {
     x1 <- todo[i, 1]
     x2 <- todo[i, 2]
@@ -105,8 +109,10 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
   # Pavement
   cat("Pavement data items...")
   ts <- Sys.time()
-  todo <- matrix((1:nrow(gVariables))[gVariables[, Grouping] == "P"], 
-                 ncol = 3, byrow = TRUE)
+  
+  todo_vec <- (1:nrow(gVariables))[gVariables[, Grouping] == "P"]
+  todo_vec <- c(todo_vec, rep(NA, 3 - (length(todo_vec) %% 3))) 
+  todo <- matrix(todo_vec, ncol = 3, byrow = TRUE)
   for (i in 1:4) {
     x1 <- todo[i, 1]
     x2 <- todo[i, 2]
@@ -125,8 +131,10 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
   # Traffic
   cat("Traffic data items...")
   ts <- Sys.time()
-  todo <- matrix((1:nrow(gVariables))[gVariables[, Grouping] == "T"], 
-                 ncol = 3, byrow = TRUE)
+  todo_vec <- (1:nrow(gVariables))[gVariables[, Grouping] == "T"]
+  todo_vec <- c(todo_vec, rep(NA, 3 - (length(todo_vec) %% 3))) 
+  todo <- matrix(todo_vec, ncol = 3, byrow = TRUE)
+  
   for (i in 1:4) {
     x1 <- todo[i, 1]
     x2 <- todo[i, 2]
@@ -146,8 +154,9 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
   # Geometric
   cat("Geometric data items...")
   ts <- Sys.time()
-  todo <- matrix((1:nrow(gVariables))[gVariables[, Grouping] == "G"], 
-                 ncol = 3, byrow = TRUE)
+  todo_vec <- (1:nrow(gVariables))[gVariables[, Grouping] == "G"]
+  todo_vec <- c(todo_vec, rep(NA, 3 - (length(todo_vec) %% 3))) 
+  todo <- matrix(todo_vec, ncol = 3, byrow = TRUE)
   for (i in 1:7) {
     x1 <- todo[i, 1]
     x2 <- todo[i, 2]
@@ -165,8 +174,9 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
   # Route
   cat("Route data items...")
   ts <- Sys.time()
-  todo <- matrix((1:nrow(gVariables))[gVariables[, Grouping] == "R"], 
-                 ncol = 3, byrow = TRUE)
+  todo_vec <- (1:nrow(gVariables))[gVariables[, Grouping] == "R"]
+  todo_vec <- c(todo_vec, rep(NA, 3 - (length(todo_vec) %% 3))) 
+  todo <- matrix(todo_vec, ncol = 3, byrow = TRUE)
   for (i in 1:1) {
     x1 <- todo[i, 1]
     x2 <- todo[i, 2]
@@ -182,8 +192,9 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
   # Special network
   cat("Special network data items...")
   ts <- Sys.time()
-  todo <- matrix((1:nrow(gVariables))[gVariables[, Grouping] == "SN"], 
-                 ncol = 3, byrow = TRUE)
+  todo_vec <- (1:nrow(gVariables))[gVariables[, Grouping] == "SN"]
+  todo_vec <- c(todo_vec, rep(NA, 3 - (length(todo_vec) %% 3))) 
+  todo <- matrix(todo_vec, ncol = 3, byrow = TRUE)
   for (i in 1:1) {
     x1 <- todo[i, 1]
     x2 <- todo[i, 2]
