@@ -13,12 +13,25 @@
 ###########################################################################
 
 summaryFunc <- function(x){
-     list(
-          count=length(x),
-          count.na=sum(is.na(x)),
-          min=round(min(x,na.rm=T),2),
-          mean=round(mean(x,na.rm=T),2),
-          median=round(median(x,na.rm=T),2),
-          max=round(max(x,na.rm=T),2)
-     )
+  # This clause prevents warnings if all(is.na(x))
+  if ( all(is.na(x)) ){
+    L <- list(
+      count = length(x),
+      count.na = sum(is.na(x)),
+      min = NA,
+      mean = NA,
+      median = NA,
+      max = NA
+    )
+  } else {
+    L <-  list(
+      count=length(x),
+      count.na=sum(is.na(x)),
+      min=round(min(x,na.rm=T),2),
+      mean=round(mean(x,na.rm=T),2),
+      median=round(median(x,na.rm=T),2),
+      max=round(max(x,na.rm=T),2)
+    )
+  }
+  return(L)
 }
