@@ -80,7 +80,7 @@ state_abbrev <- getStateAbbrFromNum(state_codes)
 # Overwrite 2016 data every time, but not 2015 data.
 # goverwrite <- 'ALL Y'
 cat('Importing data from the database...')
-goverwrite <- 'ALL N'
+goverwrite <- 'ALL Y'
 success <- ImportData(state_selection=getStateAbbrFromNum(state_codes),
            year_selection=year_selection)
 
