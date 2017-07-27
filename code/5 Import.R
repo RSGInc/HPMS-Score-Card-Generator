@@ -252,7 +252,7 @@ ImportData <- function(state_selection, year_selection) {
         
         # Save data sets ------------------
         
-        cat("Saving to disk...")
+        cat("Saving to", fullpath, '...')
         
         # Create new directory if needed
         if (!dir.exists(path)) dir.create(path)

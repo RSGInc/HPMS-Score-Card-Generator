@@ -37,9 +37,9 @@ plotCircle <- function(data,year,year_compare,variable,startx,starty,C,R)
       
       yoy      <- getYOY(data,year,year_compare,variable)
       
-      outliers[is.nan(as.numeric(perc_miles)),perc_miles:=0]
-      adjaceny[is.nan(as.numeric(perc_miles)),perc_miles:=0]
-      yoy[is.nan(as.numeric(perc_miles)),perc_miles:=0]
+      outliers[is.nan(as.numeric(perc_miles)),perc_miles:=as.character(0)]
+      adjaceny[is.nan(as.numeric(perc_miles)),perc_miles:=as.character(0)]
+      yoy[is.nan(as.numeric(perc_miles)),perc_miles:=as.character(0)]
       
       tol_High <- gVariables[Name==variable,Quality_Tolerance_High]
       tol_Med  <- gVariables[Name==variable,Quality_Tolerance_Med] 

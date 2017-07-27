@@ -77,7 +77,7 @@ create_summary_report <- function(
     result2[,expandedmiles:=NA,]
     result2[,expandedlanemiles:=NA,]
   }
-  
+
   result2 <- switch(variable_type,
                     result2[,summaryFunc(value_numeric),by=list(miles,expandedmiles,lanemiles,expandedlanemiles)],
                     result2[,summaryFunc(as.Date(as.character(value_date))),by=list(miles,expandedmiles,lanemiles,expandedlanemiles)],
