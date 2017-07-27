@@ -45,7 +45,6 @@ if ( length(args) > 1){
 
 cat('Running states:', state_abbrev, '\n\n')
 
-
 # Load Code -------------------------------------------------------------------
 invisible(sapply(X = list.files(path = "code", pattern = "*.R$",
                                 full.names = TRUE)[-1], FUN = source))
@@ -53,6 +52,8 @@ invisible(sapply(X = list.files(path = "code", pattern = "*.R$",
 # Check to make sure all states are available
 
 state_codes <- getStateNumFromCode(state_abbrev)
+
+cat('Checking availability of states\n')
 
 con <- odbcConnect("HPMS")
 
@@ -75,19 +76,7 @@ if ( length(which_na) > 0 ){
 state_codes <- state_codes[state_codes %in% avail_states]
 state_abbrev <- getStateAbbrFromNum(state_codes)
 
-# Import data ---------------------------------------------------------------
 
-# Overwrite 2016 data every time, but not 2015 data.
-# goverwrite <- 'ALL Y'
-cat('Importing data from the database...')
-goverwrite <- 'ALL Y'
-success <- ImportData(state_selection=getStateAbbrFromNum(state_codes),
-           year_selection=year_selection)
-
-goverwrite <- 'ALL N'
-success <- ImportData(state_selection=getStateAbbrFromNum(state_codes),
-           year_selection=year_compare)
-cat('complete!\n')
 
 # Create PDF ----------------------------------------------------------------
 savepath <- "output/"
@@ -95,12 +84,29 @@ national <- NULL
 
 for(state in state_abbrev){
   
-  cat('Printing scorecard for', state, '\n')
+  msg <- paste('Started scorecard for', state, 'at', format(Sys.time(), '%H:%M:%S'))
+  cat(msg, '\n')
+  message(msg)
   
   gc()
   tryCatch(
     expr = {
 
+      # Import data ---------------------------------------------------------------
+      
+      # Overwrite 2016 data every time, but not 2015 data.
+      # goverwrite <- 'ALL N'  # For testing - makes it go quicker.
+      goverwrite <- 'ALL Y'
+      
+      success <- ImportData(state_selection=state,
+                            year_selection=year_selection)
+      
+      goverwrite <- 'ALL N'
+      success <- ImportData(state_selection=state,
+                            year_selection=year_compare)
+      cat('complete!\n')
+      message('Finished importing at ', format(Sys.time(), '%H:%M:%S'))
+      
       data.list <- getStateDataSets(state, year_selection, year_compare)
 
       create_pdf(data = data.list[["dat"]],
@@ -115,7 +121,9 @@ for(state in state_abbrev){
       message('Error! ', conditionMessage(cond), '\n\nScorecard for ', state, ' not made\n')
       if ( !is.null(dev.list()) ) dev.off()
     } # end error
+    
   )  # end tryCatch
+  msg <- paste('Finished at', format(Sys.time(), '%H:%M:%S'))
   
 }
 
