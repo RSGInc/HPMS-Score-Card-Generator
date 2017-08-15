@@ -6,12 +6,12 @@
 #
 # Description:
 #
-# This function does the adjaceny analysis and returns a table of results for
+# This function does the adjacency analysis and returns a table of results for
 # the outlier analysis on the detailed review pages.
 #
 ###########################################################################
 
-getAdjaceny <- function(data,year,variable)
+getAdjacency <- function(data,year,variable)
 {
 
      data <- data[!(F_SYTEMorig==7&NHS!=1),
@@ -21,7 +21,7 @@ getAdjaceny <- function(data,year,variable)
   
      data <- unique(data)
      
-     d.l <- data[data_item==variable&year_record==year,]
+     d.l <- data[data_item == variable & year_record == year,]
      
      d.l <- unique(d.l) 
      d.r <- d.l
@@ -36,9 +36,13 @@ getAdjaceny <- function(data,year,variable)
           all.x=TRUE, all.y=FALSE
      )
      
-     result <- d.adj[value_numeric.x==value_numeric.y,list(miles=round(sum(end_point.x-begin_point.x),2),.N),by=list(F_SYSTEM.x)]
+     result <- d.adj[value_numeric.x == value_numeric.y,
+                     list(miles=round(sum(end_point.x-begin_point.x),2),.N),
+                     by=list(F_SYSTEM.x)]
      
-     result <- merge(data.table(F_SYSTEM.x=c(1,2)),result,by="F_SYSTEM.x",all.x=TRUE)
+     result <- merge(data.table(F_SYSTEM.x=c(1,2)),
+                     result,
+                     by="F_SYSTEM.x",all.x=TRUE)
      
      result[is.na(miles),miles:=0]
      result[is.na(N),N:=0]
@@ -46,9 +50,12 @@ getAdjaceny <- function(data,year,variable)
      setnames(result,"F_SYSTEM.x","F_SYSTEM")
      #setnames(result,"V1","miles")
      
-     total <- d.l[ ,list(totalmiles=round(sum(end_point-begin_point),2)),by=list(F_SYSTEM)]
+     total <- d.l[ ,list(totalmiles=round(sum(end_point-begin_point),2)),
+                   by=list(F_SYSTEM)]
      
-     report.1 <- merge(total,result,by="F_SYSTEM",all.x=TRUE,all.y=FALSE)
+     report.1 <- merge(total,
+                       result,
+                       by="F_SYSTEM",all.x=TRUE,all.y=FALSE)
      report.1[is.na(miles),miles:=0] # setting values to 0 where there are no merges. this mean that the state had no lane miles outside the thresholds set
      
      report.1[,perc_miles:=ifelse(is.na(miles),0,as.character(round(miles/totalmiles,2)*100))]

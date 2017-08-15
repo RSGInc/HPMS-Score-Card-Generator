@@ -92,7 +92,7 @@ densityPlot <- function(
           p1 <- p1 +     
                theme_minimal() + 
                scale_y_continuous()+
-               scale_x_continuous(labels = comma,limits=c(minvalue,maxvalue)) +
+               scale_x_continuous(labels = comma, limits=c(minvalue, maxvalue)) +
                
                theme(
                     axis.text.x=element_text(size=4.5, angle=30, hjust = 1,colour="white"),

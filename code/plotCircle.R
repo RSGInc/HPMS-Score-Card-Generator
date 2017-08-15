@@ -14,13 +14,14 @@
 plotCircle <- function(data,year,year_compare,variable,startx,starty,C,R)
 {
   
+  # "type" is the quality rank (1, 2, or 3)
   # defaults to low quality
   type <- 1
   
   #get recipe
   recipe <- gVariables[Name==variable, Quality_Recipe]
   
-  if(nrow(data[year_record==year&data_item==variable,list(route_id,begin_point,end_point,value_numeric,F_SYSTEM)])==0)
+  if(nrow(data[year_record == year & data_item == variable]) == 0)
   {
     type <- 0  
   } else {
@@ -33,19 +34,19 @@ plotCircle <- function(data,year,year_compare,variable,startx,starty,C,R)
     {
       outliers <- getOutliers(data,year,variable)
 
-      adjaceny <- getAdjaceny(data,year,variable)
+      adjacency <- getAdjacency(data,year,variable)
       
       yoy      <- getYOY(data,year,year_compare,variable)
       
       outliers[is.nan(as.numeric(perc_miles)),perc_miles:=as.character(0)]
-      adjaceny[is.nan(as.numeric(perc_miles)),perc_miles:=as.character(0)]
+      adjacency[is.nan(as.numeric(perc_miles)),perc_miles:=as.character(0)]
       yoy[is.nan(as.numeric(perc_miles)),perc_miles:=as.character(0)]
       
       tol_High <- gVariables[Name==variable,Quality_Tolerance_High]
       tol_Med  <- gVariables[Name==variable,Quality_Tolerance_Med] 
       
       outliers[,type:=type + 1 * ( as.numeric(perc_miles) < tol_Med ) + 1 * ( as.numeric(perc_miles) < tol_High )]
-      adjaceny[,type:=type + 1 * ( as.numeric(perc_miles) < tol_Med ) + 1 * ( as.numeric(perc_miles) < tol_High )]
+      adjacency[,type:=type + 1 * ( as.numeric(perc_miles) < tol_Med ) + 1 * ( as.numeric(perc_miles) < tol_High )]
            yoy[,type:=type + 1 * ( as.numeric(perc_miles) < tol_Med ) + 1 * ( as.numeric(perc_miles) < tol_High )]
       
            
@@ -53,19 +54,19 @@ plotCircle <- function(data,year,year_compare,variable,startx,starty,C,R)
       #weights <- c(1,1,1,1)
            
       type <- (( outliers[groupCat==1,type] +
-        adjaceny[groupCat==1,type] +
+        adjacency[groupCat==1,type] +
              yoy[groupCat==1,type] ) * weights[1] +
           
       ( outliers[groupCat==2,type] +
-        adjaceny[groupCat==2,type] +
+        adjacency[groupCat==2,type] +
              yoy[groupCat==2,type] ) * weights[2] +
         
       ( outliers[groupCat==3,type] +
-        adjaceny[groupCat==3,type] +
+        adjacency[groupCat==3,type] +
              yoy[groupCat==3,type] ) * weights[3] +  
         
       ( outliers[groupCat==4,type] +
-        adjaceny[groupCat==4,type] +
+        adjacency[groupCat==4,type] +
              yoy[groupCat==4,type] ) * weights[4])/sum(3*weights)
            
       type <- round(type)
@@ -75,8 +76,10 @@ plotCircle <- function(data,year,year_compare,variable,startx,starty,C,R)
     # ?% of sections are 'unmatched', data item gets 0 points. Else, it gets 1 point.  
     if( recipe == 2 )
     {
-      var.1    <- data[year_record==year          &data_item==variable,list(route_id,begin_point,end_point,value_numeric,F_SYSTEM)]
-      var.2    <- data[year_record==year_compare&data_item==variable,list(route_id,begin_point,end_point,value_numeric,F_SYSTEM)]       
+      var.1    <- data[year_record==year & data_item==variable, 
+                       list(route_id,begin_point,end_point,value_numeric,F_SYSTEM)]
+      var.2    <- data[year_record==year_compare & data_item==variable,
+                       list(route_id,begin_point,end_point,value_numeric,F_SYSTEM)]       
       
       expectedChange <- gVariables[Name==variable,YOY_Change]
       tol_Med  <- gVariables[Name==variable,Quality_Tolerance_Med]

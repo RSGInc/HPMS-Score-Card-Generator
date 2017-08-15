@@ -21,6 +21,7 @@ create_travel_yoy_density <- function(
   ramps
 )
 {
+  #if ( variable == 'AADT_COMBINATION' ) browser()
   
   type <- gVariables[Name==variable,Type]
   
@@ -41,11 +42,11 @@ create_travel_yoy_density <- function(
     
     if(ramps)
     {   
-      var.1    <- data[state_code==state&year_record==year          &data_item==variable&FACILITY_TYPE==4&!is.na(value_date),list(route_id,begin_point,end_point,value_numeric=year(value_date),F_SYSTEM,Interstate,NHS)]
-      var.2    <- data[state_code==state&year_record==yearcomparison&data_item==variable&FACILITY_TYPE==4&!is.na(value_date),list(route_id,begin_point,end_point,value_numeric=year(value_date),F_SYSTEM,Interstate,NHS)]
+      var.1    <- data[state_code==state & year_record==year           & data_item==variable & FACILITY_TYPE==4 & !is.na(value_date), list(route_id, begin_point, end_point, value_numeric=year(value_date), F_SYSTEM, Interstate, NHS)]
+      var.2    <- data[state_code==state & year_record==yearcomparison & data_item==variable & FACILITY_TYPE==4 & !is.na(value_date), list(route_id, begin_point, end_point, value_numeric=year(value_date), F_SYSTEM, Interstate, NHS)]
     } else {   
-      var.1    <- data[state_code==state&year_record==year          &data_item==variable&FACILITY_TYPE!=4&!is.na(value_date),list(route_id,begin_point,end_point,value_numeric=year(value_date),F_SYSTEM,Interstate,NHS)]
-      var.2    <- data[state_code==state&year_record==yearcomparison&data_item==variable&FACILITY_TYPE!=4&!is.na(value_date),list(route_id,begin_point,end_point,value_numeric=year(value_date),F_SYSTEM,Interstate,NHS)]
+      var.1    <- data[state_code==state & year_record==year           & data_item==variable & FACILITY_TYPE !=4 & !is.na(value_date), list(route_id, begin_point, end_point, value_numeric=year(value_date), F_SYSTEM, Interstate, NHS)]
+      var.2    <- data[state_code==state & year_record==yearcomparison & data_item==variable & FACILITY_TYPE !=4 & !is.na(value_date), list(route_id, begin_point, end_point, value_numeric=year(value_date), F_SYSTEM, Interstate, NHS)]
     }
   }
   
@@ -62,13 +63,13 @@ create_travel_yoy_density <- function(
     
     if(nrow(var.1[!is.na(value_numeric),])>2)
     {
-      d1 <- density(var.1[,value_numeric],weights=var.1[,(end_point-begin_point)/sum(end_point-begin_point)],na.rm = TRUE)
       minvalue1 <- quantile(var.1[,value_numeric],0.05)#min(d1$x)
       maxvalue1 <- quantile(var.1[,value_numeric],0.95)#max(d1$x)
       if(minvalue1==maxvalue1)
       {
         maxvalue1<-1 + minvalue1
       }
+      d1 <- density(var.1[,value_numeric],weights=var.1[,(end_point-begin_point)/sum(end_point-begin_point)],na.rm = TRUE)
       ymax1     <- max(d1$y)
     } else {
       minvalue1 <- NULL
@@ -77,13 +78,13 @@ create_travel_yoy_density <- function(
     }
     if(nrow(var.2[!is.na(value_numeric),])>2)
     {
-      d2 <- density(var.2[,value_numeric],weights=var.2[,(end_point-begin_point)/sum(end_point-begin_point)],na.rm = TRUE)
       minvalue2 <- quantile(var.2[,value_numeric],0.05)#min(d2$x)
       maxvalue2 <- quantile(var.2[,value_numeric],0.95)#
       if(minvalue2==maxvalue2)
       {
         maxvalue2<-1 + minvalue2
       }
+      d2 <- density(var.2[,value_numeric],weights=var.2[,(end_point-begin_point)/sum(end_point-begin_point)],na.rm = TRUE)
       ymax2     <- max(d2$y)
     } else {
       minvalue2 <- NULL
@@ -93,12 +94,12 @@ create_travel_yoy_density <- function(
     if(nrow(national[!is.na(value_numeric),])>2)
     {
       d3 <- density(national[,value_numeric],weights=national[!is.na(value_numeric),(end_point-begin_point)/sum(end_point-begin_point)],na.rm = TRUE)
-      minvalue3 <- 1.05*min(d3$x)
-      maxvalue3 <- 0.95*max(d3$x)
+      #minvalue3 <- 1.05*min(d3$x)
+      #maxvalue3 <- 0.95*max(d3$x)
       ymax3     <- max(d3$y)
     } else {
-      minvalue3 <- NULL
-      maxvalue3 <- NULL
+      #minvalue3 <- NULL
+      #maxvalue3 <- NULL
       ymax3     <- NULL
     }          
     

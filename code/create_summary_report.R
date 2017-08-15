@@ -128,7 +128,8 @@ create_summary_report <- function(
   # merges in the empty f_systems so full tables are displayed
   if(nrow(result)> 0)
   {
-    result <- merge(data.table(groupCat=1:length(gF_SYSTEM_levels)),result,by="groupCat",all.x=T)
+    result <- merge(data.table(groupCat=1:length(gF_SYSTEM_levels)),
+                    result, by="groupCat", all.x=T)
   }
   
   if(variable_type==1)
