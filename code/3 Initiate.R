@@ -17,7 +17,7 @@
 # A user-called function to generate a score card either by importing new data or
 # specifying previously imported data sets.
 Run <- function(task=NA, ...) {
-
+  
   whitespace()
   
   # This while keeps the tool running until the user hits esc
@@ -28,7 +28,7 @@ Run <- function(task=NA, ...) {
     # Initial user task choice
     # p_text <- "What would you like to do?\n\n(1) Import new state data\n(2) Generate score card from previously imported data\n(3) Import new population data\n\nPlease enter your selection: "
     p_text <- 'What would you like to do?\n\n(1) Import new state data\n(2) Generate score card from previously imported data\n(3) Run Batch Process\n\nPlease enter your selection: '                           
-
+    
     if ( is.na(task) ){
       whitespace(gSpaces)
       task <- getUserInput(valid = 1:3, prompt = p_text)
@@ -43,7 +43,7 @@ Run <- function(task=NA, ...) {
       
       #cat("Please use the windows dialog to select one sample panel data file to import.\n\n")
       #spfile <- choose.files(caption = "Select one sample panel data file to import.",multi=FALSE)
-    
+      
       ImportOkay <- ImportData(...)
       
       # If no imported data sets came in okay, warn the user
@@ -61,9 +61,9 @@ Run <- function(task=NA, ...) {
       task = NA
       getUserInput("Data import complete! Press 'Enter' to continue. Press 'Esc' to Exit.")
       
-    # Generate score card(s)
+      # Generate score card(s)
     } else if (task == 2) {
-
+      
       # Score card user task choice
       whitespace(gSpaces)
       #sctask <- getUserInput(valid = 1:2, prompt = "Score card generation options:\n\n(1) One card at a time\n(2) All available states in a given year\n\nPlease enter a 1 or 2: ")
@@ -85,33 +85,20 @@ Run <- function(task=NA, ...) {
         
         # Load the population data
         #population <- readRDS(paste0("resources/dat/",data.list[["year_selection"]],"_population.RDS"))
-
+        
         # Generate score card
         whitespace(gSpaces)
-
-        if ( debugmode ){
-          create_pdf(data = data.list[["dat"]],
-                     state = data.list[["state_code"]],
-                     year = data.list[["year_selection"]],
-                     year_compare = data.list[["year_compare"]],
-                     # population = population,
-                     national = national,
-                     path = savepath)
-        } else {
-          
-        tryCatch(expr = {suppressWarnings(create_pdf(data = data.list[["dat"]],
-                                                     state = data.list[["state_code"]],
-                                                     year = data.list[["year_selection"]],
-                                                     year_compare = data.list[["year_compare"]],
-                                                     #population = population,
-                                                     national = national,
-                                                     path = savepath));
-                                          success <- TRUE},
-                 error = function(e) {e; dev.off(); warning("Unable to create PDF score card.\n\nA common cause of this warning is that the folder the tool is trying to save to already contains a score card PDF for this combination of data selections and is currently in use. Ensure the PDF is not in use and try again.", immediate. = TRUE, call. = FALSE)})
-        }
         
+        create_pdf(data = data.list[["dat"]],
+                   state = data.list[["state_code"]],
+                   year = data.list[["year_selection"]],
+                   year_compare = data.list[["year_compare"]],
+                   # population = population,
+                   national = national,
+                   path = savepath)
+  
       } else if (sctask == 2) {
-        
+      
         cat("\n\nBatch score card generation has not yet been implemented.\n\n")
         
       }

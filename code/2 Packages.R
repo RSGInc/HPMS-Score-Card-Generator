@@ -35,7 +35,8 @@ LoadPackages <- function(packages) {
   }
   for (package in packages) {
     cat(".")
-    eval(parse(text = paste0("suppressMessages(library(", package, "))")))
+    eval(parse(text = paste0("suppressMessages(library(", package, "))")),
+         envir=.GlobalEnv)
   }
 }
 

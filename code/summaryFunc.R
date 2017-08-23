@@ -18,10 +18,10 @@ summaryFunc <- function(x){
     L <- list(
       count = length(x),
       count.na = sum(is.na(x)),
-      min = NA,
-      mean = NA,
-      median = NA,
-      max = NA
+      min = as.numeric(NA),
+      mean = as.numeric(NA),
+      median = as.numeric(NA),
+      max = as.numeric(NA)
     )
   } else {
     L <-  list(
