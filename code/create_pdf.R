@@ -23,6 +23,10 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
   pdfname <- gsub(x = pdfname, pattern = "\\s", replace = "_")
   pdfpath <- paste0(path, pdfname)
   
+  if (! dir.exists(path) ){
+    dir.create(path) 
+  }
+  
   if (debugmode) {
     windows(width = 13.333, height = 7.5)
   } else {
@@ -105,13 +109,13 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
   }
   cat(paste0(" completed in: ", round(difftime(Sys.time(), ts, units = "secs"),
                                       2), " seconds!\n"))
-  
+
   # Pavement
   cat("Pavement data items...")
   ts <- Sys.time()
-  
+
   todo_vec <- (1:nrow(gVariables))[gVariables[, Grouping] == "P"]
-  todo_vec <- c(todo_vec, rep(NA, 3 - (length(todo_vec) %% 3))) 
+  todo_vec <- c(todo_vec, rep(NA, 3 - (length(todo_vec) %% 3)))
   todo <- matrix(todo_vec, ncol = 3, byrow = TRUE)
   for (i in 1:4) {
     x1 <- todo[i, 1]
@@ -127,7 +131,7 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
                       page = 12 + i)
   cat(paste0(" completed in: ",
              round(difftime(Sys.time(), ts, units = "secs"), 2), " seconds!\n"))
-  
+
   # Traffic
   cat("Traffic data items...")
   ts <- Sys.time()

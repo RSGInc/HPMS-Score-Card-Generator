@@ -23,7 +23,7 @@ cat("Loading tool components")
 # This should be turned on for testing purposes and when the tool is sent to FHWA
 # so they don't need to download anything.
 
-.libPaths("resources/lib")
+#.libPaths("resources/lib")
 
 # Function to auto-load packages (will attempt to download if not found)
 LoadPackages <- function(packages) {
