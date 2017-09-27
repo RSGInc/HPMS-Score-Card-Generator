@@ -1,9 +1,0 @@
-H2                      H2 engine
-H2Connection-class      Class "H2Connection"
-H2Connection-methods    Methods for the class 'H2Connect' in Package
-                        'H2'
-H2Driver-class          Class "H2Driver"
-H2Driver-methods        Methods for the class JDBCDriver in Package
-                        'RJDBC'
-H2Result-class          Class "H2Result"
-H2Result-methods        Methods for the class H2Result in Package 'H2'

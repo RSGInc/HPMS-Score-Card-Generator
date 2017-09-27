@@ -1,6 +1,0 @@
-font.add                Add new font families
-font.add.google         Download and add Google Fonts
-font.families           List available font families loaded by sysfonts
-font.families.google    List available fonts in Google Fonts
-font.files              List available font files in the search path
-font.paths              Get/Set font search paths

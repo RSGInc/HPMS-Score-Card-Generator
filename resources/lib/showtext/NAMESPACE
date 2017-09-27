@@ -1,4 +1,0 @@
-import(sysfonts)
-import(showtextdb)
-export(showtext.opts, showtext.begin, showtext.end, showtext.auto)
-
