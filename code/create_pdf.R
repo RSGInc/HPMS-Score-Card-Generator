@@ -60,39 +60,39 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
   create_page3(data, state, year, year_compare)
   cat(paste0(" completed in: ",
              round(difftime(Sys.time(), ts, units = "secs"), 2), " seconds!\n"))
-  
+
   # Ramps: Detailed Review
   cat("Ramps review...")
   ts <- Sys.time()
-  
+
   todo_vec <- (1:nrow(gVariables))[gVariables[, RampAnalysis] == "Y"]
-  todo_vec <- c(todo_vec, rep(NA, 3 - (length(todo_vec) %% 3))) 
+  todo_vec <- c(todo_vec, rep(NA, 3 - (length(todo_vec) %% 3)))
   todo <- matrix(todo_vec, ncol = 3, byrow = TRUE)
   for (i in 1:1) {
     x1 <- todo[i, 1]
     x2 <- todo[i, 2]
     x3 <- todo[i, 3]
-    
+
     create_page_summary(data, state, year, year_compare,
-                        x1 = x1, x2 = x2, x3 = x3, 
-                        title = "ramps: detailed review", icontext = "r", 
+                        x1 = x1, x2 = x2, x3 = x3,
+                        title = "ramps: detailed review", icontext = "r",
                         page = 3 + i, ramps = TRUE)
     cat(".")
   }
   create_page_summary(data, state, year, year_compare,
                       x1 = todo[i + 1, 1], x2 = todo[i + 1, 2],
-                      title = "ramps: detailed review", icontext = "r", 
+                      title = "ramps: detailed review", icontext = "r",
                       page = 5, ramps = TRUE)
   cat(paste0(" completed in: ",
              round(difftime(Sys.time(), ts, units = "secs"), 2), " seconds!\n"))
-  
-  
+
+
   # data summary pages inventory
   cat("Inventory data items...")
   ts <- Sys.time()
-  
+
   todo_vec <- (1:nrow(gVariables))[gVariables[, Grouping] == "I"]
-  todo_vec <- c(todo_vec, rep(NA, 3 - (length(todo_vec) %% 3))) 
+  todo_vec <- c(todo_vec, rep(NA, 3 - (length(todo_vec) %% 3)))
   todo <- matrix(todo_vec, ncol = 3, byrow = TRUE)
   for (i in 1:6) {
     x1 <- todo[i, 1]
@@ -103,7 +103,7 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
                         title = "inventory", icontext = "i", page = 5 + i)
     cat(".")
   }
-  cat(paste0(" completed in: ", round(difftime(Sys.time(), ts, units = "secs"), 
+  cat(paste0(" completed in: ", round(difftime(Sys.time(), ts, units = "secs"),
                                       2), " seconds!\n"))
   
   # Pavement

@@ -26,6 +26,8 @@
 invisible(sapply(X = list.files(path = "code", pattern = "*.R$",
                                 full.names = TRUE)[-1], FUN = source))
 
+invisible(memory.limit(32768))  # Set memory limit to 32 Gb
+
 # Run Tool
 Run()
 

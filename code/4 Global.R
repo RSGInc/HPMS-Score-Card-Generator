@@ -20,7 +20,7 @@ theme_update(plot.title=element_text(hjust=0.5))
 # these need to match FHWA's sql database structure
 poptable          <- "codes_urban"
 #timelinesstable  <- "Table_mssql_m_HPMSAnalysis_HPMS_Submissions_log" 
-timelinesstable   <- "2015SubmissionDates"
+timelinesstable   <- "timelinesstable"   # "2015SubmissionDates"
 summary_table     <- 'Section_Summaries'
 sections_table    <- 'Review_Sections'
 samples_table     <- 'Review_Sample_Sections'

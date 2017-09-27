@@ -14,16 +14,24 @@
 
 summaryFunc <- function(x){
   # This clause prevents warnings if all(is.na(x))
+  # Also need to assign the class of the NA's correctly
+  
   if ( all(is.na(x)) ){
     L <- list(
       count = length(x),
       count.na = sum(is.na(x)),
-      min = as.numeric(NA),
-      mean = as.numeric(NA),
-      median = as.numeric(NA),
-      max = as.numeric(NA)
+      min = NA,
+      mean = NA,
+      median = NA,
+      max = NA
     )
+    
+    for ( i in 3:6 ){
+      class(L[[i]]) <- class(x)
+    }
+    
   } else {
+    
     L <-  list(
       count=length(x),
       count.na=sum(is.na(x)),
@@ -32,6 +40,7 @@ summaryFunc <- function(x){
       median=round(median(x,na.rm=T),2),
       max=round(max(x,na.rm=T),2)
     )
+    
   }
   return(L)
 }

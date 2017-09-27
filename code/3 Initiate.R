@@ -108,12 +108,9 @@ Run <- function(task=NA, ...) {
       
       # Detect whether score card generation was successful and return to main menu
       whitespace(4)
-      if (success) {
-        getUserInput("Score card generation complete! Press 'Enter' to continue. Press 'Esc' to Exit.")
-      } else {
-        getUserInput("No score cards generated. Press 'Enter' to continue. Press 'Esc' to Exit.")
-      }
-      
+
+      getUserInput("Score card generation complete! Press 'Enter' to continue. Press 'Esc' to Exit.")
+
     
     } else if (task == 3) {
       
