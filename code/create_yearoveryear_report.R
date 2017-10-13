@@ -26,6 +26,7 @@ create_yearoveryear_report <- function(
 )
 {
   
+  
   highlight_threshold    <- gVariables[Name==variable,YOYH_Thresh]
   
   var.1    <- data[state_code==state&year_record==year&data_item==variable&FACILITY_TYPE!=4,list(route_id,begin_point,end_point,value_numeric,F_SYSTEM,NHS,Interstate)]
@@ -143,8 +144,9 @@ create_yearoveryear_report <- function(
     report[, groupCat := as.character(groupCat)]
     report[, Name := as.character(Name)]
     report <- data.table(melt(report,id.vars="groupCat"))
+    
     report[,highlight:=ifelse(
-      variable=="perc_miles" & as.numeric(str_replace(value, ',', '')) > highlight_threshold,
+      variable=="perc_miles" & as.numeric(str_replace_all(value, ',', '')) > highlight_threshold,
       1, 0)]
     
     report[variable=="perc_miles"&!is.na(value),value:=paste0(value,"%")]

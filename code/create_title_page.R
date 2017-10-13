@@ -262,7 +262,7 @@ create_title_page <- function(data, state, year, year_compare=NULL){
       grid.draw(textGrob(gVariables[i, Name], x=startx+(C-1)*0.15, starty-(R-1)*rowWidth, hjust=1, gp=gpar(col="slategray", fontsize=7)))
       #grid.ellipse(x=startx+(C-1)*0.15+0.01, y=starty-(R-1)*0.0175, size=2.5, ar=1, angle=0, def="npc", gp=gpar(fill="white", col="red"))
       variable <- gVariables[i, Name]
-      
+    
       CompleteType <- plotRect(data, year, variable, startx, starty, C, R)
       
       CompletedScore      <- CompletedScore      + c(0, CompleteMed, CompleteHigh)[CompleteType] * gVariables[Name==variable, Completeness_Weight]

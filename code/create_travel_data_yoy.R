@@ -177,7 +177,7 @@ create_travel_data_yoy <- function(
         plot.margin = unit(c(top=1, right=0.5, bottom=0.5, left=0.5), units='lines'))
       
       p <- arrangeGrob(
-        arrangeGrob(p),
+        suppressWarnings(arrangeGrob(p)),
         arrangeGrob(textGrob(paste0("Total of ",string_format(totalmiles)," centerline miles."),hjust=0.5 ,vjust=0  ,gp=gpar(fontsize=4.5, col="gray50"))),
         nrow=2,
         heights=unit(c(0.90, 0.1),units="npc"),
@@ -195,7 +195,7 @@ create_travel_data_yoy <- function(
         plot.margin = unit(c(top=1, right=0.5, bottom=0.5, left=0.5), units='lines'))
       
       p <- arrangeGrob(textGrob(""),
-                       arrangeGrob(p),
+                       suppressWarnings(arrangeGrob(p)),
                        arrangeGrob(textGrob(paste0(report[color2=="No",paste0(round(V1,3)*100,"%",ff1)]),hjust=0.5   ,vjust=0  ,gp=gpar(fontsize=17, col="slategray",fontface="bold")),
                                    textGrob(paste0(report[color2=="Yes",paste0(round(V1,3)*100,"%",ff2)]),hjust=0.5,vjust=0  ,gp=gpar(fontsize=17, col="gray50",fontface="bold")),
                                    textGrob(paste0(report[color2=="NA",paste0(round(V1,3)*100,"%")]),hjust=0.5   ,vjust=0  ,gp=gpar(fontsize=17, col="black",fontface="bold")),
