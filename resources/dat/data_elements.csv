@@ -3,9 +3,9 @@ AADT,21,Annual Average Daily Traffic,T,Y,Y,Y,1,1,FE + R,0,,,,5,5,Y,1,1,10,20,1
 AADT_COMBINATION,24,Combination Truck AADT,T,Y,Y,Y,1,1,FE*,2,,,,5,5,N,1,1,10,20,1
 AADT_SINGLE_UNIT,22,Single Unit Truck and Bus AADT,T,Y,Y,Y,1,1,FE*,2,,,,5,5,N,1,1,10,20,1
 ACCESS_CONTROL,5,Access Control,I,Y,Y,N,1,2,FE*,4,,,,,,N,2,1,10,20,1
-AT_GRADE_OTHER,33,"Number of Intersections, Type - Other",T,Y,Y,Y,1,1,SP,0,,,,,,N,1,1,10,20,1
-BASE_THICKNESS,60,Base Thickness,P,Y,Y,Y,1,1,SP,0,,,,,,N,1,1,10,20,1
-BASE_TYPE,59,Base Type,P,Y,Y,Y,1,2,SP,0,,,,,,N,2,1,10,20,1
+AT_GRADE_OTHER,33,"Number of Intersections, Type - Other",T,Y,Y,N,1,1,SP,0,,,,,,N,1,1,10,20,1
+BASE_THICKNESS,60,Base Thickness,P,Y,Y,N,1,1,SP,0,,,,,,N,1,1,10,20,1
+BASE_TYPE,59,Base Type,P,Y,Y,N,1,2,SP,0,,,,,,N,2,1,10,20,1
 CAPACITY,69,Capacity,T,Y,Y,Y,1,1,SP,0,,,,,,N,1,1,10,20,1
 COUNTER_PEAK_LANES,11,Counter Peak Lanes,I,Y,Y,N,1,1,SP,0,,,,,,N,1,1,10,20,1
 COUNTY_CODE,63,County Code,I,Y,N,N,1,2,FE,0,,,,,,N,2,1,10,20,1
@@ -17,8 +17,8 @@ CURVES_D,43,Curve Classification D,G,Y,Y,N,1,1,SP*,0,,,,,,N,1,1,10,20,1
 CURVES_E,43,Curve Classification E,G,Y,Y,N,1,1,SP*,0,,,,,,N,1,1,10,20,1
 CURVES_F,43,Curve Classification F,G,Y,Y,N,1,1,SP*,0,,,,,,N,1,1,10,20,1
 DIR_FACTOR,27,Directional Factor,T,Y,Y,Y,1,1,SP,0,,,,,,N,1,1,10,20,1
-F_SYSTEM,1,Functional System,I,Y,Y,Y,1,2,FE + R,0,,,,,,Y,2,1,10,20,1
-FACILITY_TYPE,3,Facility Type,I,Y,Y,Y,1,2,FE + R,0,,,,,,Y,2,1,10,20,1
+F_SYSTEM,1,Functional System,I,Y,Y,N,1,2,FE + R,0,,,,,,Y,2,1,10,20,1
+FACILITY_TYPE,3,Facility Type,I,Y,Y,N,1,2,FE + R,0,,,,,,Y,2,1,10,20,1
 FAULTING,51,Faulting,P,Y,Y,Y,1,1,SP,0,0,1,1,5,5,N,1,1,10,20,1
 FUTURE_AADT,28,Future AADT,T,Y,Y,Y,1,1,SP,0,,,,5,5,N,1,1,10,20,1
 FUTURE_FACILITY,67,Future National Highway System,SN,Y,Y,Y,1,2,FE**,0,,,,,,N,2,1,10,20,1
@@ -33,8 +33,8 @@ HOV_TYPE,8,Managed Lane Operations Type,I,Y,Y,N,1,2,FE**,0,,,,,,N,2,1,10,20,1
 IRI,47,International Roughness Index,P,Y,Y,Y,1,1,FE*,4,30,400,1,5,5,N,1,1,10,20,1
 K_FACTOR,26,K-factor,T,Y,Y,Y,1,1,SP,0,,,,,,N,1,1,10,20,1
 LANE_WIDTH,34,Lane Width,G,Y,Y,N,1,1,SP,0,,,,,,N,1,1,10,20,1
-LAST_OVERLAY_THICKNESS,56,Last Overlay Thickness,P,Y,Y,Y,1,1,SP,0,,,,,,N,1,1,10,20,1
-MAINTENANCE_OPERATIONS,68,Maintenance & Operations,I,Y,Y,Y,1,2,FE,0,,,,,,N,2,1,10,20,1
+LAST_OVERLAY_THICKNESS,56,Last Overlay Thickness,P,Y,Y,N,1,1,SP,0,,,,,,N,1,1,10,20,1
+MAINTENANCE_OPERATIONS,68,Maintenance & Operations,I,Y,Y,N,1,2,FE,0,,,,,,N,2,1,10,20,1
 MEDIAN_TYPE,35,Median Type,G,Y,Y,N,1,2,SP,0,,,,,,N,2,1,10,20,1
 MEDIAN_WIDTH,36,Median Width,G,Y,Y,N,1,1,SP,0,,,,,,N,1,1,10,20,1
 NHS,64,National Highway System,SN,Y,Y,N,1,2,FE**,0,,,,,,N,2,1,10,20,1
@@ -62,8 +62,8 @@ STRAHNET_TYPE,65,Strategic Highway Network,SN,Y,Y,N,1,2,FE**,0,,,,,,N,2,1,10,20,
 STRUCTURE_TYPE,4,Structure Type,I,Y,Y,N,1,2,FE**,0,,,,,,N,2,1,10,20,1
 SURFACE_TYPE,49,Surface Type,P,Y,Y,N,1,2,SP,0,,,,,,N,2,1,10,20,1
 TERRAIN_TYPE,44,Terrain Type,G,Y,Y,N,1,2,SP,0,,,,,,N,2,1,10,20,1
-THICKNESS_FLEXIBLE,58,Thickness Flexible,P,Y,Y,Y,1,2,SP,0,,,,,,N,2,1,10,20,1
-THICKNESS_RIGID,57,Thickness Rigid,P,Y,Y,Y,1,1,SP,0,,,,,,N,1,1,10,20,1
+THICKNESS_FLEXIBLE,58,Thickness Flexible,P,Y,Y,N,1,2,SP,0,,,,,,N,2,1,10,20,1
+THICKNESS_RIGID,57,Thickness Rigid,P,Y,Y,N,1,1,SP,0,,,,,,N,1,1,10,20,1
 THROUGH_LANES,7,Through Lanes,I,Y,Y,N,1,1,FE + R,0,,,,,,Y,1,1,10,20,1
 TOLL_CHARGED,15,Toll Charged,I,Y,N,N,1,2,FE**,0,,,,,,N,2,1,10,20,1
 TOLL_TYPE,16,Toll Type,I,Y,N,N,1,2,FE**,0,,,,,,N,2,1,10,20,1
