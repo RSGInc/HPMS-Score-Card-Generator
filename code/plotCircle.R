@@ -103,20 +103,22 @@ plotCircle <- function(data,year,year_compare,variable,startx,starty,C,R)
        
        var.yoy <- data.table(var.yoy)
        
-       report <- var.yoy[,bin2:=factor(1+1*(value_numeric.x!=value_numeric.y),levels=c(1,2),labels=c("No Change","Changed"))]
-       report <- report[,sum(end_point.x-begin_point.x),by=.(bin2)]
+       report <- var.yoy[, bin2 := factor(1 + as.numeric(value_numeric.x != value_numeric.y),
+                                          levels=c(1,2),
+                                          labels=c("No Change","Changed"))]
+       report <- report[, sum(end_point.x - begin_point.x), by = .(bin2)]
        totalmiles <- report[,sum(V1)]
-       report <- report[,V1:=V1/totalmiles]
+       report <- report[, V1 := V1 / totalmiles]
        
        if(expectedChange=="Y")
        {
-         quality.value <- report[as.numeric(bin2)==1|is.na(bin2),sum(V1)]*100
+         quality.value <- report[as.numeric(bin2) == 1 | is.na(bin2), sum(V1)] * 100
        }
        if(expectedChange=="N")
        {
-         quality.value <- report[as.numeric(bin2)==2|is.na(bin2),sum(V1)]*100
+         quality.value <- report[as.numeric(bin2) == 2 | is.na(bin2), sum(V1)] * 100
        }
-       type <- type + 1 * ( quality.value < tol_Med ) + 1 * ( quality.value < tol_High )
+       type <- type + as.numeric( quality.value < tol_Med ) + as.numeric( quality.value < tol_High )
     }
   }
   

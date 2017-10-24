@@ -31,7 +31,9 @@ getYOY <- function(data, year, yearcomparison, variable)
                       A.begin_point as [begin_point.x],
                       A.end_point   as [end_point.x],
                       A.value_numeric as [value_numeric.x],
-                      B.value_numeric as [value_numeric.y]
+                      B.value_numeric as [value_numeric.y],
+                      B.begin_point as [begin_point.y],
+                      B.end_point as [end_point.y]
                       from [var.1] A 
                       left join [var.2] B on 
                       A.route_id = B.route_id and 

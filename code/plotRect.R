@@ -1008,25 +1008,46 @@ plotRect <- function(data, year, variable, startx, starty, C, R)
    }   
   
     #####################################
-    if(variable%in%c("PSR")){
+    if(variable %in% c("PSR")){
       
-      dat.variable      <- data[data_item==variable       &year_record==year,]
-      dat.FACILITY_TYPE <- data[data_item=="FACILITY_TYPE"&year_record==year,]
-      dat.F_SYSTEM      <- data[data_item=="F_SYSTEM"     &year_record==year,]
-      dat.URBAN_CODE    <- data[data_item=="URBAN_CODE"   &year_record==year,]
-      dat.IRI           <- data[data_item=="IRI"          &year_record==year & is.na(value_numeric),]
-      dat.SURFACE_TYPE  <- data[data_item=="SURFACE_TYPE" &year_record==year & value_numeric>1,]    
-    
-      coverage <- sqldf("select 
-                            A.route_id,A.begin_point,A.end_point,A.data_item,A.value_numeric as FACILITYTYPE, 
-                            B.value_numeric as variable,B.expansion_factor   
-                            from [dat.FACILITY_TYPE] A 
-                            left join [dat.variable] B on 
-                              A.route_id = B.route_id and (
+      keep_cols <- c('route_id', 'begin_point', 'end_point', 'section_length', 'expansion_factor', 'data_item', 'value_numeric')
+      dat.variable  <- data[data_item == variable & year_record == year, ..keep_cols]
+      dat.FACILITY_TYPE <- data[data_item == "FACILITY_TYPE" & year_record == year, ..keep_cols]
+      dat.F_SYSTEM      <- data[data_item == "F_SYSTEM"     & year_record == year, ..keep_cols]
+      dat.URBAN_CODE    <- data[data_item == "URBAN_CODE"   & year_record == year, ..keep_cols]
+      dat.IRI           <- data[data_item == "IRI"          & year_record == year & is.na(value_numeric), ..keep_cols]
+      dat.SURFACE_TYPE  <- data[data_item == "SURFACE_TYPE" & year_record == year & value_numeric > 1, ..keep_cols]    
+
+      coverage <- sqldf('select
+                          A.route_id, A.begin_point, A.end_point, A.expansion_factor, A.value_numeric as variable,
+                          B.value_numeric as FACILITY_TYPE
+                          from [dat.variable] A
+                          left join [dat.FACILITY_TYPE] B on
+                            A.route_id = B.route_id and (
                               ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
                               ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
-                            ) where B.expansion_factor is not NULL")
+                            ) where A.expansion_factor is not NULL and B.value_numeric is not NULL')
       
+      coverage <- sqldf("select 
+                        A.*, 
+                        B.value_numeric as IRI   
+                        from [coverage] A 
+                        left join [dat.IRI] B on 
+                        A.route_id = B.route_id and (
+                        ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
+                        ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
+                        ) where B.value_numeric is NULL")
+
+      coverage <- sqldf("select 
+                        A.*, 
+                        B.value_numeric as SURFACE_TYPE   
+                        from [coverage] A 
+                        left join [dat.SURFACE_TYPE] B on 
+                        A.route_id = B.route_id and (
+                        ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
+                        ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
+                        ) ")    
+ 
       coverage <- sqldf("select 
                             A.*, 
                             B.value_numeric as FSYSTEM    
@@ -1048,36 +1069,13 @@ plotRect <- function(data, year, variable, startx, starty, C, R)
                               ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
                             ) ")
     
-      coverage <- sqldf("select 
-                            A.*, 
-                            B.value_numeric as IRI   
-                            from [coverage] A 
-                            left join [dat.IRI] B on 
-                              A.route_id = B.route_id and (
-                              ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
-                              ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
-                            )")
 
-      # The result of the next join is REALLY big
-      coverage <- sqldf("select 
-                            A.*, 
-                            B.value_numeric as SURFACETYPE   
-                            from [coverage] A 
-                            left join [dat.SURFACE_TYPE] B on 
-                              A.route_id = B.route_id and (
-                              ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
-                              ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
-                            ) ")    
-  
-      coverage$required <- 
-        with(coverage,
-             is.na(IRI) &
-               !is.na(expansion_factor) &
-               ((FSYSTEM %in% c(4,5,6) & URBANCODE < 99999 & FACILITYTYPE %in% c(1,2)) |
-                  (FSYSTEM == 5 & FACILITYTYPE %in% c(1,2) & URBANCODE == 99999)) &
-               SURFACETYPE > 1)
-  
-      if(sum(is.na(coverage$variable[coverage$required])) == 0 & nrow(coverage) > 0){
+      coverage <- data.table(coverage)
+      coverage[, required := is.na(IRI) & !is.na(expansion_factor) & SURFACE_TYPE > 1 &
+                 ((FSYSTEM %in% c(4, 5, 6) & URBANCODE < 99999 & FACILITY_TYPE %in% c(1, 2)) |
+                    (FSYSTEM == 5 & FACILITY_TYPE %in% c(1, 2) & URBANCODE == 99999))]
+      
+      if( !any(is.na(coverage$variable[coverage$required])) & nrow(coverage) > 0 ){
         type <- 3  
       }
     }  
