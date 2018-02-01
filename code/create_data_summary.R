@@ -27,7 +27,7 @@ create_data_summary <- function(data, state, year, year_compare){
   n_Records.1   <- data[state_code == state & year_record == year, .N, ]        
   n_Records.2   <- data[state_code == state & year_record == year_compare, .N, ]
 
-  # Generate an index to keep only certain rows that mean certain criteria
+  # Generate an index to keep only certain rows that meet certain criteria
   idx_st_fsystem <- with(data, (state_code == state & data_item == 'F_SYSTEM'))
   idx_fs15 <- with(data, ((F_SYTEMorig %in% 1:5) & (FACILITY_TYPE %in% 1:2)) )
   idx_fs6 <- with(data, ((F_SYTEMorig == 6) & (URBAN_CODE < 99999) & (FACILITY_TYPE %in% c(1, 2))) )
