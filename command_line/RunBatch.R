@@ -18,7 +18,9 @@ year_selection <- 2016
 year_compare <- 2015
 
 setwd('..')
-msg_file <- file.path('output', '_RunBatch_messages.txt')
+msg_file <- file.path('output', paste0('_RunBatch_messages_',
+format(Sys.time(), '%Y%m%d_%H%M%S.txt')))
+
 cat('Saving messages to', msg_file, '\n')
 
 file_con <- file(msg_file, open='wt')
