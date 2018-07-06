@@ -1,14 +1,14 @@
 ###########################################################################
 #  Title: FHWA HPMS Score Card Generator
 #   Date: July 2016
-# Author: Jeff Dumont
+# Author: Jeff Dumont and Matt Landis
 #
 #
 # Description:
 #
 # Creates the title/first page of the scorecard. During the generation of this page,
-# there is a fair amount of analysis performed including applicaiton of the
-# coverage validation and quality recipes.
+# there is a fair amount of analysis performed including calculation of the 
+# completeness and quality scores.
 #
 ###########################################################################
 
@@ -318,333 +318,85 @@ create_title_page <-
     )
     
     
-    
     # Completeness and quality ================================================
     # The following section calculates completeness and quality for each data item
     # Then plots it.
     
     cat("\nCalculating coverage validation results. This may take some time to complete.")
-    
-    
-    # Inventory --------------------------------------------------------------
-    
-    R <- 1
-    C <- 1
-    startx <- 0.35
-    starty <- 0.79 - vertical_adj
-    
+
     rowWidth <- 0.020
-    
+
     CompletedScore <- 0
     CompletedScoreMax <- 0
-    
+
     QualityScore <- 0
     submittedN   <- 0
     QualityScoreMax <- 0
-    
+
     # Scores for getting a medium or high quality value
     QualityMed  <- CompleteMed  <- 1
     QualityHigh <- CompleteHigh <- 1.5
+
+    # Set parameters for each section
+
+    group_params <- data.frame(
+      Grouping = c('Inventory', 'Pavement', 'Traffic', 'Geometric', 'Route', 'Special Networks'),
+      abbrev   = c( 'I',  'P', 'T',  'G', 'R', 'SN'),
+      starty   = c(0.79, 0.63, 0.5, 0.35, 0.2, 0.15),
+      nRow     = c(   4,    3,   4,    5,   1,    1))
     
-    for (i in 1:length(gVariables[, Name]))
-    {
-      if (gVariables[i, Grouping] == "I")
-      {
+
+    # Print completeness and quality for each data item
+    for ( g in 1:nrow(group_params)){
+
+      R <- 1
+      C <- 1
+      startx <- 0.35
+      starty <- group_params$starty[g] - vertical_adj
+
+      group_vars <- gVariables[Grouping == group_params$abbrev[g]]
+      
+      for (i in 1:nrow(group_vars)){
+        
+        variable <- group_vars[i, Name]
+
         grid.draw(textGrob(
-          gVariables[i, Name],
+          variable,
           x = startx + (C - 1) * 0.15,
           starty - (R - 1) * rowWidth,
           hjust = 1,
           gp = gpar(col = "slategray", fontsize = 7)
         ))
-        #grid.ellipse(x=startx+(C-1)*0.15+0.01, y=starty-(R-1)*0.0175, size=2.5, ar=1, angle=0, def="npc", gp=gpar(fill="white", col="slategray"))
-        
-        variable <- gVariables[i, Name]
-        
+
         CompleteType <-
           plotRect(data, year, variable, startx, starty, C, R)
         
         CompletedScore <-
-          CompletedScore + c(0, CompleteMed, CompleteHigh)[CompleteType] *
-          gVariables[Name == variable, Completeness_Weight]
+          CompletedScore + c(0, CompleteMed, CompleteHigh)[CompleteType] * group_vars$Completeness_Weight[i]
         
         CompletedScoreMax <-
-          CompletedScoreMax + CompleteHigh * gVariables[Name == variable, Completeness_Weight]
+          CompletedScoreMax + CompleteHigh * group_vars$Completeness_Weight[i]
         
         submittedN <- submittedN + 1 * (CompleteType >= 2)
         
         QualityType <-
           plotCircle(data, year, year_compare, variable, startx, starty, C, R)
         
-        QualityScore <-
-          QualityScore + c(0, QualityMed, QualityHigh)[QualityType] * gVariables[Name ==
-                                                                                   variable, Quality_Weight]
-        QualityScoreMax <-
-          QualityScoreMax + QualityHigh * gVariables[Name == variable, Quality_Weight] * (CompleteType >= 2)
+        QualityScore <
+          QualityScore + c(0, QualityMed, QualityHigh)[QualityType] * group_vars$Quality_Weight[i]
         
-        if (R < 4)
-        {
+        QualityScoreMax <-
+          QualityScoreMax + QualityHigh * group_vars$Quality_Weight[i] * (CompleteType >= 2)
+        
+        if (R < group_params$nRow[g]){
           R <- R + 1
-        } else
-        {
+        } else {
           R <- 1
           C <- 1 + C
         }
       }
     }
     
-    
-    # Pavement ---------------------------------------------------------------
-    
-    R <- 1
-    C <- 1
-    startx <- 0.35
-    starty <- 0.63 - vertical_adj
-    for (i in 1:length(gVariables[, Name]))
-    {
-      if (gVariables[i, Grouping] == "P")
-      {
-        grid.draw(textGrob(
-          gVariables[i, Name],
-          x = startx + (C - 1) * 0.15,
-          starty - (R - 1) * rowWidth,
-          hjust = 1,
-          gp = gpar(col = "slategray", fontsize = 7)
-        ))
-        #grid.ellipse(x=startx+(C-1)*0.15+0.01, y=starty-(R-1)*0.0175, size=2.5, ar=1, angle=0, def="npc", gp=gpar(fill="white", col="red"))
-        variable <- gVariables[i, Name]
-        
-        CompleteType <-
-          plotRect(data, year, variable, startx, starty, C, R)
-        
-        CompletedScore  <-
-          CompletedScore + c(0, CompleteMed, CompleteHigh)[CompleteType] * gVariables[Name == variable, Completeness_Weight]
-        CompletedScoreMax <-
-          CompletedScoreMax + CompleteHigh * gVariables[Name == variable, Completeness_Weight]
-        
-        submittedN <- submittedN + 1 * (CompleteType >= 2)
-        
-        QualityType <-
-          plotCircle(data, year, year_compare, variable, startx, starty, C, R)
-        
-        QualityScore <-
-          QualityScore + c(0, QualityMed, QualityHigh)[QualityType] * gVariables[Name ==
-                                                                                   variable, Quality_Weight]
-        QualityScoreMax <-
-          QualityScoreMax + QualityHigh * gVariables[Name == variable, Quality_Weight] * (CompleteType >= 2)
-        if (R < 3)
-        {
-          R <- R + 1
-        } else
-        {
-          R <- 1
-          C <- 1 + C
-        }
-      }
-    }
-    
-    # Traffic ----------------------------------------------------------------
-    
-    R <- 1
-    C <- 1
-    startx <- 0.35
-    starty <- 0.5 - vertical_adj
-    for (i in 1:length(gVariables[, Name]))
-    {
-      if (gVariables[i, Grouping] == "T")
-      {
-        grid.draw(textGrob(
-          gVariables[i, Name],
-          x = startx + (C - 1) * 0.15,
-          starty - (R - 1) * rowWidth,
-          hjust = 1,
-          gp = gpar(col = "slategray", fontsize = 7)
-        ))
-        #grid.ellipse(x=startx+(C-1)*0.15+0.01, y=starty-(R-1)*0.0175, size=2.5, ar=1, angle=0, def="npc", gp=gpar(fill="red", col="red"))
-        variable <- gVariables[i, Name]
-        
-        CompleteType <-
-          plotRect(data, year, variable, startx, starty, C, R)
-        
-        CompletedScore <-
-          CompletedScore + c(0, CompleteMed, CompleteHigh)[CompleteType] * gVariables[Name ==
-                                                                                        variable, Completeness_Weight]
-        CompletedScoreMax <-
-          CompletedScoreMax + CompleteHigh * gVariables[Name == variable, Completeness_Weight]
-        
-        submittedN <- submittedN + 1 * (CompleteType >= 2)
-        
-        QualityType <-
-          plotCircle(data, year, year_compare, variable, startx, starty, C, R)
-        
-        QualityScore <-
-          QualityScore + c(0, QualityMed, QualityHigh)[QualityType] * gVariables[Name ==
-                                                                                   variable, Quality_Weight]
-        QualityScoreMax <-
-          QualityScoreMax +  QualityHigh * gVariables[Name == variable, Quality_Weight] * (CompleteType >= 2)
-        if (R < 4)
-        {
-          R <- R + 1
-        } else
-        {
-          R <- 1
-          C <- 1 + C
-        }
-      }
-    }
-    
-    
-    # Geometric -------------------------------------------------------------
-    
-    R <- 1
-    C <- 1
-    startx <- 0.35
-    starty <- 0.35 - vertical_adj
-    for (i in 1:length(gVariables[, Name]))
-    {
-      if (gVariables[i, Grouping] == "G")
-      {
-        grid.draw(textGrob(
-          gVariables[i, Name],
-          x = startx + (C - 1) * 0.15,
-          starty - (R - 1) * rowWidth,
-          hjust = 1,
-          gp = gpar(col = "slategray", fontsize = 7)
-        ))
-        #grid.ellipse(x=startx+(C-1)*0.15+0.01, y=starty-(R-1)*0.0175, size=2.5, ar=1, angle=0, def="npc", gp=gpar(fill="slategray", col="slategray"))
-        variable <- gVariables[i, Name]
-        
-        CompleteType <-
-          plotRect(data, year, variable, startx, starty, C, R)
-        
-        CompletedScore <-
-          CompletedScore + c(0, CompleteMed, CompleteHigh)[CompleteType] * gVariables[Name ==
-                                                                                        variable, Completeness_Weight]
-        CompletedScoreMax <-
-          CompletedScoreMax + CompleteHigh * gVariables[Name == variable, Completeness_Weight]
-        
-        submittedN <- submittedN + 1 * (CompleteType >= 2)
-        
-        QualityType <-
-          plotCircle(data, year, year_compare, variable, startx, starty, C, R)
-        
-        QualityScore <-
-          QualityScore + c(0, QualityMed, QualityHigh)[QualityType] * gVariables[Name ==
-                                                                                   variable, Quality_Weight]
-        QualityScoreMax <-
-          QualityScoreMax +  QualityHigh * gVariables[Name == variable, Quality_Weight] * (CompleteType >= 2)
-        if (R < 5)
-        {
-          R <- R + 1
-        } else
-        {
-          R <- 1
-          C <- 1 + C
-        }
-      }
-    }
-    
-    
-    # ROute -----------------------------------------------------------------
-    
-    R <- 1
-    C <- 1
-    startx <- 0.35
-    starty <- 0.2 - vertical_adj
-    for (i in 1:length(gVariables[, Name]))
-    {
-      if (gVariables[i, Grouping] == "R")
-      {
-        grid.draw(textGrob(
-          gVariables[i, Name],
-          x = startx + (C - 1) * 0.15,
-          starty - (R - 1) * rowWidth,
-          hjust = 1,
-          gp = gpar(col = "slategray", fontsize = 7)
-        ))
-        #grid.ellipse(x=startx+(C-1)*0.15+0.01, y=starty-(R-1)*0.0175, size=2.5, ar=1, angle=0, def="npc", gp=gpar(fill="red", col="red"))
-        variable <- gVariables[i, Name]
-        
-        CompleteType <-
-          plotRect(data, year, variable, startx, starty, C, R)
-        
-        CompletedScore <-
-          CompletedScore + c(0, CompleteMed, CompleteHigh)[CompleteType] * gVariables[Name ==
-                                                                                        variable, Completeness_Weight]
-        CompletedScoreMax <-
-          CompletedScoreMax + CompleteHigh * gVariables[Name == variable, Completeness_Weight]
-        
-        submittedN <- submittedN + 1 * (CompleteType >= 2)
-        
-        QualityType <-
-          plotCircle(data, year, year_compare, variable, startx, starty, C, R)
-        
-        QualityScore <-
-          QualityScore + c(0, QualityMed, QualityHigh)[QualityType] * gVariables[Name ==
-                                                                                   variable, Quality_Weight]
-        QualityScoreMax <-
-          QualityScoreMax + QualityHigh * gVariables[Name == variable, Quality_Weight] * (CompleteType >= 2)
-        if (R < 1)
-        {
-          R <- R + 1
-        } else
-        {
-          R <- 1
-          C <- 1 + C
-        }
-      }
-    }
-    
-    
-    # special networks -------------------------------------------------------
-    
-    R <- 1
-    C <- 1
-    startx <- 0.35
-    starty <- 0.105 - vertical_adj
-    for (i in 1:length(gVariables[, Name]))
-    {
-      if (gVariables[i, Grouping] == "SN")
-      {
-        grid.draw(textGrob(
-          gVariables[i, Name],
-          x = startx + (C - 1) * 0.15,
-          starty - (R - 1) * rowWidth,
-          hjust = 1,
-          gp = gpar(col = "slategray", fontsize = 7)
-        ))
-        #grid.ellipse(x=startx+(C-1)*0.15+0.01, y=starty-(R-1)*0.0175, size=2.5, ar=1, angle=0, def="npc", gp=gpar(fill="slategray", col="slategray"))
-        variable <- gVariables[i, Name]
-        
-        CompleteType <-
-          plotRect(data, year, variable, startx, starty, C, R)
-        
-        CompletedScore <-
-          CompletedScore + c(0, CompleteMed, CompleteHigh)[CompleteType] * gVariables[Name ==
-                                                                                        variable, Completeness_Weight]
-        CompletedScoreMax <-
-          CompletedScoreMax + CompleteHigh * gVariables[Name == variable, Completeness_Weight]
-        
-        submittedN <- submittedN + 1 * (CompleteType >= 2)
-        
-        QualityType <-
-          plotCircle(data, year, year_compare, variable, startx, starty, C, R)
-        
-        QualityScore <-
-          QualityScore + c(0, QualityMed, QualityHigh)[QualityType] * gVariables[Name ==
-                                                                                   variable, Quality_Weight]
-        QualityScoreMax <-
-          QualityScoreMax +  QualityHigh * gVariables[Name == variable, Quality_Weight] * (CompleteType >= 2)
-        if (R < 1)
-        {
-          R <- R + 1
-        } else
-        {
-          R <- 1
-          C <- 1 + C
-        }
-      }
-    }
     
     
     # legend ----------------------------------------------------------------
