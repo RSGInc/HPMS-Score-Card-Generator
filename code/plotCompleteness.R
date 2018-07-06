@@ -6,12 +6,12 @@
 #
 # Description:
 #
-# Function to plot availability rectangles on title page. It implements the 
+# Function to plot availability scores on title page. It implements the 
 # coverage validation provided by FHWA.
 #
 ###########################################################################
 
-plotRect <- function(data, year, variable, startx, starty, C, R)
+plotCompleteness <- function(data, year, variable, startx, starty, C, R)
 {
   
   ts <- Sys.time()
@@ -1461,15 +1461,28 @@ plotRect <- function(data, year, variable, startx, starty, C, R)
   
   # submitted and complete
   if(type==3){
-    grid.rect(x=startx+(C-1)*0.15+0.01,y=starty-(R-1)*0.020,width=unit(0.007,"npc"),height=unit(0.0125,"npc"),gp=gpar(fill="slategray",col="slategray"))
+    grid.circle(
+      x=startx+(C-1)*0.15+0.01,
+      y=starty-(R-1)*0.020,
+      r=unit(0.007,"npc"),
+      gp=gpar(fill="slategray",col="slategray")
+      )
   }
   # submitted and incomplete
   if(type==2){
-    grid.rect(x=startx+(C-1)*0.15+0.01,y=starty-(R-1)*0.020,width=unit(0.007,"npc"),height=unit(0.0125,"npc"),gp=gpar(fill="gray75",col="slategray"))
+    grid.circle(
+      x=startx+(C-1)*0.15+0.01,
+      y=starty-(R-1)*0.020,
+      r=unit(0.007,"npc"),
+      gp=gpar(fill="gray75",col="slategray"))
   }
   # not submitted
   if(type==1){
-    grid.rect(x=startx+(C-1)*0.15+0.01,y=starty-(R-1)*0.020,width=unit(0.007,"npc"),height=unit(0.0125,"npc"),gp=gpar(fill="white",col="slategray"))
+    grid.circle(
+      x=startx+(C-1)*0.15+0.01,
+      y=starty-(R-1)*0.020,
+      r=unit(0.007,"npc"),
+      gp=gpar(fill="white",col="slategray"))
   }
   cat(paste0("\n\t",variable,": ",round(difftime(Sys.time(),ts,units="secs"),2)," secs"))
   
