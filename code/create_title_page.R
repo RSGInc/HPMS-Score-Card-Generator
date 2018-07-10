@@ -323,7 +323,10 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
   
   cat("\nCalculating coverage validation results. This may take some time to complete.")
   
-  rowWidth <- 0.020
+  colWidth <- 0.149
+  rowWidth <- 0.020 
+  space1 <- 0.008    # Space between start of text and completeness symbol
+  space2 <- 0.008   # Space between completeness symbol and quality symbol
   
   CompletedScore <- 0
   CompletedScoreMax <- 0
@@ -333,15 +336,15 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
   QualityScoreMax <- 0
   
   # Scores for getting a medium or high quality value
-  QualityMed  <- CompleteMed  <- 1
-  QualityHigh <- CompleteHigh <- 1.5
+  CompleteMed  <- 1
+  CompleteHigh <- 1.5
   
   # Set parameters for each section
   
   group_params <- data.frame(
     Grouping = c('Inventory', 'Pavement', 'Traffic', 'Geometric', 'Route', 'Special Networks'),
     abbrev   = c( 'I',  'P', 'T',  'G', 'R', 'SN'),
-    starty   = c(0.79, 0.63, 0.5, 0.35, 0.2, 0.15),
+    starty   = c(0.79, 0.63, 0.5, 0.35, 0.2, 0.105),
     nRow     = c(   4,    3,   4,    5,   1,    1))
   
   
@@ -350,7 +353,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
     
     R <- 1
     C <- 1
-    startx <- 0.35
+    startx <- 0.33
     starty <- group_params$starty[g] - vertical_adj
     
     group_vars <- gVariables[Grouping == group_params$abbrev[g]]
@@ -360,15 +363,17 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
       variable <- group_vars[i, Name]
       
       grid.draw(textGrob(
-        variable,
-        x = startx + (C - 1) * 0.15,
-        starty - (R - 1) * rowWidth,
+        label=variable,
+        x=startx + (C - 1) * colWidth,
+        y=starty - (R - 1) * rowWidth,
         hjust = 1,
         gp = gpar(col = "slategray", fontsize = 7)
       ))
       
       CompleteType <-
-        plotCompleteness(data, year, variable, startx, starty, C, R)
+        plotCompleteness(data, year, variable,
+                        x = startx + (C - 1) * colWidth + space1,
+                        y = starty - (R - 1) * rowWidth)
       
       CompletedScore <-
         CompletedScore + c(0, CompleteMed, CompleteHigh)[CompleteType] * group_vars$Completeness_Weight[i]
@@ -378,11 +383,13 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
       
       submittedN <- submittedN + 1 * (CompleteType >= 2)
       
-      browser()
+      #browser()
       
       thisQuality <- calcQuality(data, year, year_compare, variable)
       
-      plotQuality(thisQuality, startx, starty, C, R)
+      plotQuality(thisQuality,
+                  x = startx + (C - 1) * colWidth + space1 + space2,
+                  y = starty - (R - 1) * rowWidth)
       
       QualityScore <- QualityScore + thisQuality * group_vars$Quality_Weight[i]
       
@@ -398,8 +405,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
     }
   }
   
-  
-  
+
   # legend ----------------------------------------------------------------
   
   grid.draw(linesGrob(
@@ -410,27 +416,24 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
   
   xshift <- 0.05
   
-  grid.rect(
+  grid.circle(
     x = 0.37 + xshift + 0.01,
     y = 0.015,
-    width = unit(0.007, "npc"),
-    height = unit(0.0125, "npc"),
+    r = unit(0.007, "npc"),
     gp = gpar(fill = "slategray", col = "slategray")
   )
   
-  grid.rect(
+  grid.circle(
     x = 0.46 + xshift + 0.01,
     y = 0.015,
-    width = unit(0.007, "npc"),
-    height = unit(0.0125, "npc"),
+    r = unit(0.007, "npc"),
     gp = gpar(fill = "gray75", col = "slategray")
   )
   
-  grid.rect(
+  grid.circle(
     x = 0.55 + xshift + 0.01,
     y = 0.015,
-    width = unit(0.007, "npc"),
-    height = unit(0.0125, "npc"),
+    r = unit(0.007, "npc"),
     gp = gpar(fill = "white", col = "slategray")
   )
   
@@ -445,6 +448,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
       fontsize = 6
     )
   )
+  
   grid.text(
     "Submitted and Incomplete",
     x = 0.47 + xshift + 0.01,
@@ -456,6 +460,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
       fontsize = 6
     )
   )
+  
   grid.text(
     "Not Submitted",
     x = 0.56 + xshift + 0.01,
@@ -470,29 +475,10 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
   
   
   # high quality
-  grid.circle(
-    x = 0.77 + xshift,
-    y = 0.015,
-    r = unit(0.007, "npc"),
-    gp = gpar(fill = "slategray", col = "slategray")
-  )
-  
-  # medium quality
-  grid.circle(
-    x = 0.82 + xshift,
-    y = 0.015,
-    r = unit(0.007, "npc"),
-    gp = gpar(fill = "gray75", col = "slategray")
-  )
-  
-  # lowquality
-  grid.circle(
-    x = 0.87 + xshift,
-    y = 0.015,
-    r = unit(0.007, "npc"),
-    gp = gpar(fill = "white", col = "slategray")
-  )
-  
+  plotQuality(score=100,
+              x = 0.76 + xshift,
+              y = 0.015, text=FALSE)
+
   grid.text(
     "High",
     x = 0.78 + xshift,
@@ -504,6 +490,13 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
       fontsize = 6
     )
   )
+  
+
+  # medium quality
+  plotQuality(score=50,
+              x = 0.81 + xshift,
+              y = 0.015, text=FALSE)
+  
   grid.text(
     "Medium",
     x = 0.83 + xshift,
@@ -515,6 +508,12 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
       fontsize = 6
     )
   )
+  
+  # lowquality
+  plotQuality(score=25,
+              x = 0.86 + xshift,
+              y = 0.015, text=FALSE)
+  
   grid.text(
     "Low",
     x = 0.88 + xshift,
@@ -733,5 +732,5 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
     gp = gpar(fontsize = 13, col = "gray50"),
     hjust = 0.5
   )
-  
+  browser()
 }

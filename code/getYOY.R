@@ -11,8 +11,7 @@
 #
 ###########################################################################
 
-getYOY <- function(data, year, yearcomparison, variable)
-{
+getYOY <- function(data, year, yearcomparison, variable, yoy_change){
  
   data <- data[!(F_SYTEMorig == 7 & NHS != 1), ]
   
@@ -59,9 +58,17 @@ getYOY <- function(data, year, yearcomparison, variable)
   # Calculate report.1, with percent miles where values matched across years
   # by F_SYSTEM
 
-  result <- var.yoy[value_numeric.x == value_numeric.y,
-                    list(miles=round(sum(end_point.x-begin_point.x), 2), .N),
-                    by=list(F_SYSTEM)]
+  if ( yoy_change == 'N' ){
+    result <- var.yoy[value_numeric.x == value_numeric.y,
+                      list(miles=round(sum(end_point.x-begin_point.x), 2), .N),
+                      by=list(F_SYSTEM)]
+  }
+  
+  if ( yoy_change == 'Y' ){
+    result <- var.yoy[value_numeric.x != value_numeric.y,
+                      list(miles=round(sum(end_point.x-begin_point.x), 2), .N),
+                      by=list(F_SYSTEM)]
+  }
   
   result <- merge(data.table(F_SYSTEM=c(1,2)), result, by="F_SYSTEM", all.x=TRUE)
   

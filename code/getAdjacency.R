@@ -11,7 +11,7 @@
 #
 ###########################################################################
 
-getAdjacency <- function(data,year,variable)
+getAdjacency <- function(data, year, variable, adjacency_change)
 {
 
      data <- data[!(F_SYTEMorig==7&NHS!=1),
@@ -36,9 +36,17 @@ getAdjacency <- function(data,year,variable)
           all.x=TRUE, all.y=FALSE
      )
      
-     result <- d.adj[value_numeric.x == value_numeric.y,
-                     list(miles=round(sum(end_point.x-begin_point.x),2),.N),
-                     by=list(F_SYSTEM.x)]
+     if ( adjacency_change == 'N' ){
+       result <- d.adj[value_numeric.x == value_numeric.y,
+                       list(miles=round(sum(end_point.x - begin_point.x), 2), .N),
+                       by = list(F_SYSTEM.x)]
+     }
+     
+     if (adjacency_change == 'Y' ){
+       result <- d.adj[value_numeric.x != value_numeric.y,
+                       list(miles = round(sum(end_point.x - begin_point.x), 2), .N),
+                       by = list(F_SYSTEM.x)]
+     }  
      
      result <- merge(data.table(F_SYSTEM.x=c(1,2)),
                      result,
@@ -69,7 +77,7 @@ getAdjacency <- function(data,year,variable)
      
      
      
-     d.l <- data[data_item==variable&year_record==year&Interstate==1,,]
+     d.l <- data[data_item == variable & year_record == year & Interstate == 1, , ]
      
      d.r <- d.l
      

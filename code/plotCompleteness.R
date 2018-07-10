@@ -11,7 +11,7 @@
 #
 ###########################################################################
 
-plotCompleteness <- function(data, year, variable, startx, starty, C, R)
+plotCompleteness <- function(data, year, variable, x, y)
 {
   
   ts <- Sys.time()
@@ -1462,8 +1462,8 @@ plotCompleteness <- function(data, year, variable, startx, starty, C, R)
   # submitted and complete
   if(type==3){
     grid.circle(
-      x=startx+(C-1)*0.15+0.01,
-      y=starty-(R-1)*0.020,
+      x=x,
+      y=y,
       r=unit(0.007,"npc"),
       gp=gpar(fill="slategray",col="slategray")
       )
@@ -1471,16 +1471,16 @@ plotCompleteness <- function(data, year, variable, startx, starty, C, R)
   # submitted and incomplete
   if(type==2){
     grid.circle(
-      x=startx+(C-1)*0.15+0.01,
-      y=starty-(R-1)*0.020,
+      x=x,
+      y=y,
       r=unit(0.007,"npc"),
       gp=gpar(fill="gray75",col="slategray"))
   }
   # not submitted
   if(type==1){
     grid.circle(
-      x=startx+(C-1)*0.15+0.01,
-      y=starty-(R-1)*0.020,
+      x=x,
+      y=y,
       r=unit(0.007,"npc"),
       gp=gpar(fill="white",col="slategray"))
   }
