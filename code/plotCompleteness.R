@@ -11,8 +11,7 @@
 #
 ###########################################################################
 
-plotCompleteness <- function(data, year, variable, x, y)
-{
+plotCompleteness <- function(data, year, variable, x, y){
   
   ts <- Sys.time()
   

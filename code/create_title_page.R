@@ -321,9 +321,12 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
   # The following section calculates completeness and quality for each data item
   # Then plots it.
   
-  cat("\nCalculating coverage validation results. This may take some time to complete.")
+  cat("\nCalculating quality score for each item. This may take some time to complete.\n")
   
-  colWidth <- 0.149
+  dt_quality <- calcQualityAll(data, year, year_compare)
+  
+  
+  colWidth <- 0.152
   rowWidth <- 0.020 
   space1 <- 0.008    # Space between start of text and completeness symbol
   space2 <- 0.008   # Space between completeness symbol and quality symbol
@@ -331,9 +334,9 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
   CompletedScore <- 0
   CompletedScoreMax <- 0
   
-  QualityScore <- 0
+  #QualityScore <- 0
   submittedN   <- 0
-  QualityScoreMax <- 0
+  #QualityScoreMax <- 0
   
   # Scores for getting a medium or high quality value
   CompleteMed  <- 1
@@ -343,20 +346,21 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
   
   group_params <- data.frame(
     Grouping = c('Inventory', 'Pavement', 'Traffic', 'Geometric', 'Route', 'Special Networks'),
-    abbrev   = c( 'I',  'P', 'T',  'G', 'R', 'SN'),
+    abbrev   = c( 'I', 'P', 'T', 'G', 'R', 'SN'),
     starty   = c(0.79, 0.63, 0.5, 0.35, 0.2, 0.105),
-    nRow     = c(   4,    3,   4,    5,   1,    1))
+    nRow     = c(   4,    3,   4,    5,   1,     1))
   
+  cat("\nCalculating coverage validation results. This may take some time to complete.")
   
   # Print completeness and quality for each data item
   for ( g in 1:nrow(group_params)){
     
     R <- 1
     C <- 1
-    startx <- 0.33
+    startx <- 0.32
     starty <- group_params$starty[g] - vertical_adj
     
-    group_vars <- gVariables[Grouping == group_params$abbrev[g]]
+    group_vars <- dt_quality[Grouping == group_params$abbrev[g]]
     
     for (i in 1:nrow(group_vars)){
       
@@ -383,18 +387,11 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
       
       submittedN <- submittedN + 1 * (CompleteType >= 2)
       
-      #browser()
-      
-      thisQuality <- calcQuality(data, year, year_compare, variable)
+      thisQuality <- group_vars$Quality_Score[i] 
       
       plotQuality(thisQuality,
                   x = startx + (C - 1) * colWidth + space1 + space2,
                   y = starty - (R - 1) * rowWidth)
-      
-      QualityScore <- QualityScore + thisQuality * group_vars$Quality_Weight[i]
-      
-      QualityScoreMax <-
-        QualityScoreMax + 100 * group_vars$Quality_Weight[i]
       
       if (R < group_params$nRow[g]){
         R <- R + 1
@@ -405,7 +402,26 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
     }
   }
   
+  #QualityScore <- QualityScore + thisQuality * group_vars$Quality_Weight[i]
+  
+  #QualityScoreMax <-
+  #  QualityScoreMax + 100 * group_vars$Quality_Weight[i]
+  
+  QualityScore <- sum(dt_quality$Quality_Score * dt_quality$Quality_Weight, na.rm=TRUE)
+  QualityScoreMax <- sum(!is.na(dt_quality$Quality_Score) * dt_quality$Quality_Weight) * 100
+  
+  path <- file.path('data', getStateLabelFromNum(data$state_code[1]))
+  file <- paste0(getStateLabelFromNum(data$state_code[1]), '_', year, '_', year_compare,
+                 '_quality_summary.csv')
+  fullpath <- file.path(path, file)
+  
+  # Create new directory if needed
+  if (!dir.exists(path)) dir.create(path)
+  
+  # Write the file
+  write.csv(x=dt_quality, file=fullpath, na='', row.names=FALSE)
 
+  
   # legend ----------------------------------------------------------------
   
   grid.draw(linesGrob(
@@ -575,7 +591,6 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
   # summary section of the report
   
   # Completeness, quality, and timeliness scores --------------------------------------
-  
   tscore <- time_weight * getTimelinessScore(state, year)
   cscore <-
     round(complete_weight * CompletedScore / CompletedScoreMax, 1)
@@ -732,5 +747,4 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
     gp = gpar(fontsize = 13, col = "gray50"),
     hjust = 0.5
   )
-  browser()
 }

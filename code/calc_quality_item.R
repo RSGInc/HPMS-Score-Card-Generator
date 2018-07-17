@@ -10,7 +10,7 @@
 # It is based on percent miles meeting criteria
 ###########################################################################
 
-calcQuality <- function(data,
+calcQualityItem <- function(data,
                         year,
                         year_compare,
                         variable){
