@@ -15,7 +15,7 @@ getYOY <- function(data, year, yearcomparison, variable, yoy_change){
  
   #if ( variable == 'IRI' ) browser()
   
-  data <- data[!(F_SYTEMorig == 7 & NHS != 1), ]
+  #data <- data[!(F_SYTEMorig == 7 & NHS != 1), ]
   
   var.1    <- data[year_record == year & data_item==variable,
                    list(route_id, begin_point, end_point, value_numeric,

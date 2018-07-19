@@ -13,7 +13,7 @@
 
 getOutliers <- function(data, year, variable){
   
-  data <- data[!(F_SYTEMorig == 7 & NHS != 1),]
+  #data <- data[!(F_SYTEMorig == 7 & NHS != 1),]
   
   outlier_threshold_high <- gVariables[Name == variable, Outlier_Max]
   outlier_threshold_low  <- gVariables[Name == variable, Outlier_Min]

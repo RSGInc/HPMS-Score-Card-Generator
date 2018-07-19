@@ -13,8 +13,7 @@
 
 getAdjacency <- function(data, year, variable, adjacency_change){
     
-  data <- data[!(F_SYTEMorig == 7 & NHS != 1),
-               .(year_record, state_code, route_id ,begin_point, end_point,
+  data <- data[, .(year_record, state_code, route_id ,begin_point, end_point,
                  data_item, value_numeric, value_text, value_date, F_SYSTEM,
                  NHS, FACILITY_TYPE, THROUGH_LANES, URBAN_CODE, F_SYTEMorig,
                  Interstate)]
