@@ -1,15 +1,15 @@
 Name,Item_Number,Label,Grouping,Two_Year_Comparison,National_Data_Comparison,Type,HistType,Extent,Extent_FS,Outlier_Min,Outlier_Max,Adjacency_Change,YOY_Change,OH_Thresh,AH_Thresh,YOYH_Thresh,RampAnalysis,Quality_Weight,Completeness_Weight
-AADT,21,Annual Average Daily Traffic,T,Y,Y,1,1,FE + R,0,,,,Y,,5,5,Y,1,1
-AADT_COMBINATION,24,Combination Truck AADT,T,Y,Y,1,1,FE*,2,,,,Y,,5,5,N,1,1
-AADT_SINGLE_UNIT,22,Single Unit Truck and Bus AADT,T,Y,Y,1,1,FE*,2,,,,Y,,5,5,N,1,1
+AADT,21,Annual Average Daily Traffic,T,Y,Y,1,1,FE + R,0,,,Y,Y,,5,5,Y,1,1
+AADT_COMBINATION,24,Combination Truck AADT,T,Y,Y,1,1,FE*,2,,,Y,Y,,5,5,N,1,1
+AADT_SINGLE_UNIT,22,Single Unit Truck and Bus AADT,T,Y,Y,1,1,FE*,2,,,Y,Y,,5,5,N,1,1
 ACCESS_CONTROL,5,Access Control,I,Y,Y,1,2,FE*,4,,,,N,,,,N,1,1
 AT_GRADE_OTHER,33,"Number of Intersections, Type - Other",T,Y,Y,1,1,SP,0,,,,N,,,,N,1,1
-BASE_THICKNESS,60,Base Thickness,P,Y,Y,1,1,SP,0,,,N,N,,,,N,1,1
-BASE_TYPE,59,Base Type,P,Y,Y,1,2,SP,0,,,N,N,,,,N,1,1
-CAPACITY,69,Capacity,T,Y,Y,1,1,SP,0,,,Y,Y,,,,N,1,1
+BASE_THICKNESS,60,Base Thickness,P,Y,Y,1,1,SP,0,,,,N,,,,N,1,1
+BASE_TYPE,59,Base Type,P,Y,Y,1,2,SP,0,,,,N,,,,N,1,1
+CAPACITY,69,Capacity,T,Y,Y,1,1,SP,0,,,,Y,,,,N,1,1
 COUNTER_PEAK_LANES,11,Counter Peak Lanes,I,Y,Y,1,1,SP,0,,,,N,,,,N,1,1
 COUNTY_CODE,63,County Code,I,Y,N,1,2,FE,0,,,,N,,,,N,1,1
-CRACKING_PERCENT,52,Cracking Percent,P,Y,Y,1,1,SP,0,0,100,,Y,1,5,5,N,1,1
+CRACKING_PERCENT,52,Cracking Percent,P,Y,Y,1,1,SP,0,0,100,Y,Y,1,5,5,N,1,1
 CURVES_A,43,Curve Classification A,G,Y,Y,1,1,SP*,0,,,,N,,,,N,1,1
 CURVES_B,43,Curve Classification B,G,Y,Y,1,1,SP*,0,,,,N,,,,N,1,1
 CURVES_C,43,Curve Classification C,G,Y,Y,1,1,SP*,0,,,,N,,,,N,1,1
@@ -19,8 +19,8 @@ CURVES_F,43,Curve Classification F,G,Y,Y,1,1,SP*,0,,,,N,,,,N,1,1
 DIR_FACTOR,27,Directional Factor,T,Y,Y,1,1,SP,0,,,,Y,,,,N,1,1
 F_SYSTEM,1,Functional System,I,Y,Y,1,2,FE + R,0,,,,N,,,,Y,1,1
 FACILITY_TYPE,3,Facility Type,I,Y,Y,1,2,FE + R,0,,,,N,,,,Y,1,1
-FAULTING,51,Faulting,P,Y,Y,1,1,SP,0,0,1.01,,Y,1,5,5,N,1,1
-FUTURE_AADT,28,Future AADT,T,Y,Y,1,1,SP,0,,,,Y,,5,5,N,1,1
+FAULTING,51,Faulting,P,Y,Y,1,1,SP,0,0,1.01,Y,Y,1,5,5,N,1,1
+FUTURE_AADT,28,Future AADT,T,Y,Y,1,1,SP,0,,,Y,Y,,5,5,N,1,1
 FUTURE_FACILITY,67,Future National Highway System,SN,Y,Y,1,2,FE**,0,,,,Y,,,,N,1,1
 GRADES_A,45,Grade Classification A,G,Y,Y,1,1,SP*,0,,,,N,,,,N,1,1
 GRADES_B,45,Grade Classification B,G,Y,Y,1,1,SP*,0,,,,N,,,,N,1,1
@@ -30,16 +30,16 @@ GRADES_E,45,Grade Classification E,G,Y,Y,1,1,SP*,0,,,,N,,,,N,1,1
 GRADES_F,45,Grade Classification F,G,Y,Y,1,1,SP*,0,,,,N,,,,N,1,1
 HOV_LANES,9,Managed Lanes ,I,Y,Y,1,1,FE**,0,,,,N,,,,N,1,1
 HOV_TYPE,8,Managed Lane Operations Type,I,Y,Y,1,2,FE**,0,,,,N,,,,N,1,1
-IRI,47,International Roughness Index,P,Y,Y,1,1,FE*,4,30,400,,Y,1,5,5,N,1,1
+IRI,47,International Roughness Index,P,Y,Y,1,1,FE*,4,30,400,Y,Y,1,5,5,N,1,1
 K_FACTOR,26,K-factor,T,Y,Y,1,1,SP,0,4,20,,Y,,,,N,1,1
-LANE_WIDTH,34,Lane Width,G,Y,Y,1,1,SP,0,5,19,N,N,,,,N,1,1
-LAST_OVERLAY_THICKNESS,56,Last Overlay Thickness,P,Y,Y,1,1,SP,0,,,N,N,,,,N,1,1
+LANE_WIDTH,34,Lane Width,G,Y,Y,1,1,SP,0,5,19,,N,,,,N,1,1
+LAST_OVERLAY_THICKNESS,56,Last Overlay Thickness,P,Y,Y,1,1,SP,0,,,,N,,,,N,1,1
 MAINTENANCE_OPERATIONS,68,Maintenance & Operations,I,Y,Y,1,2,FE,0,,,,N,,,,N,1,1
 MEDIAN_TYPE,35,Median Type,G,Y,Y,1,2,SP,0,,,,N,,,,N,1,1
-MEDIAN_WIDTH,36,Median Width,G,Y,Y,1,1,SP,0,0,Inf,N,N,,,,N,1,1
-NHS,64,National Highway System,SN,Y,Y,1,2,FE**,0,,,N,N,,,,N,1,1
-NUMBER_SIGNALS,31,Number of Signalized Intersections,T,Y,Y,1,1,SP,0,,,Y,N,,,,N,1,1
-OWNERSHIP,6,Ownership,I,Y,Y,1,2,FE,0,,,Y,N,,,,N,1,1
+MEDIAN_WIDTH,36,Median Width,G,Y,Y,1,1,SP,0,0,Inf,,N,,,,N,1,1
+NHS,64,National Highway System,SN,Y,Y,1,2,FE**,0,,,,N,,,,N,1,1
+NUMBER_SIGNALS,31,Number of Signalized Intersections,T,Y,Y,1,1,SP,0,,,,N,,,,N,1,1
+OWNERSHIP,6,Ownership,I,Y,Y,1,2,FE,0,,,,N,,,,N,1,1
 PCT_GREEN_TIME,30,Percent Green Time,T,Y,Y,1,1,SP,0,,,,N,,,,N,1,1
 PCT_PASS_SIGHT,46,Percent Passing Sight Distance,G,Y,Y,1,1,SP,0,,,,N,,,,N,1,1
 PCT_PEAK_COMBINATION,25,Percent Peak Combination Trucks,T,Y,Y,1,1,SP,0,0,20,,Y,,,,N,1,1
@@ -47,31 +47,31 @@ PCT_PEAK_SINGLE,23,Percent Peak Single-Unit Trucks and Buses,T,Y,Y,1,1,SP,0,0,20
 PEAK_CAPACITY,NA,Peak Capacity,T,N,NA,1,1,SP,0,,,,N,,,,N,1,1
 PEAK_LANES,10,Peak Lanes,I,Y,Y,1,1,SP,0,,,,N,,,,N,1,1
 PEAK_PARKING,40,Peak Parking,G,Y,Y,1,2,SP,0,,,,N,,,,N,1,1
-PSR,48,Present Serviceability Rating,P,Y,Y,1,1,SP*,0,,,N,Y,,,,N,1,1
-ROUTE_NUMBER,17,Route Number,R,Y,N,1,2,FE*,0,,,N,N,,,,N,1,1
-ROUTE_QUALIFIER,19,Route Qualifier,R,Y,N,1,2,FE*,0,,,Y,N,,,,N,1,1
-ROUTE_SIGNING,18,Route Signing,R,Y,N,1,2,FE*,0,,,Y,N,,,,N,1,1
+PSR,48,Present Serviceability Rating,P,Y,Y,1,1,SP*,0,,,,Y,,,,N,1,1
+ROUTE_NUMBER,17,Route Number,R,Y,N,1,2,FE*,0,,,,N,,,,N,1,1
+ROUTE_QUALIFIER,19,Route Qualifier,R,Y,N,1,2,FE*,0,,,,N,,,,N,1,1
+ROUTE_SIGNING,18,Route Signing,R,Y,N,1,2,FE*,0,,,,N,,,,N,1,1
 RUTTING,50,Rutting,P,Y,Y,1,1,SP,0,0,1,Y,Y,1,5,5,N,1,1
-SHOULDER_TYPE,37,Shoulder Type,G,Y,Y,1,2,SP,0,,,Y,N,,,,N,1,1
-SHOULDER_WIDTH_L,39,Left Shoulder Width,G,Y,Y,1,1,SP,0,,,N,N,,,,N,1,1
-SHOULDER_WIDTH_R,38,Right Shoulder Width,G,Y,Y,1,1,SP,0,,,Y,N,,,,N,1,1
+SHOULDER_TYPE,37,Shoulder Type,G,Y,Y,1,2,SP,0,,,,N,,,,N,1,1
+SHOULDER_WIDTH_L,39,Left Shoulder Width,G,Y,Y,1,1,SP,0,,,,N,,,,N,1,1
+SHOULDER_WIDTH_R,38,Right Shoulder Width,G,Y,Y,1,1,SP,0,,,,N,,,,N,1,1
 SIGNAL_TYPE,29,Signal Type,T,Y,Y,1,2,SP,0,,,,N,,,,N,1,1
-SPEED_LIMIT,14,Speed Limit,I,Y,Y,1,1,SP,0,-Inf,90,N,N,,,,N,1,1
+SPEED_LIMIT,14,Speed Limit,I,Y,Y,1,1,SP,0,#NAME?,90,,N,,,,N,1,1
 STOP_SIGNS,32,Number of Stop-Sign Controlled Intersections,T,Y,Y,1,1,SP,0,,,,N,,,,N,1,1
 STRAHNET_TYPE,65,Strategic Highway Network,SN,Y,Y,1,2,FE**,0,,,,N,,,,N,1,1
 STRUCTURE_TYPE,4,Structure Type,I,Y,Y,1,2,FE**,0,,,,N,,,,N,1,1
-SURFACE_TYPE,49,Surface Type,P,Y,Y,1,2,SP,0,,,N,N,,,,N,1,1
+SURFACE_TYPE,49,Surface Type,P,Y,Y,1,2,SP,0,,,,N,,,,N,1,1
 TERRAIN_TYPE,44,Terrain Type,G,Y,Y,1,2,SP,0,,,,N,,,,N,1,1
-THICKNESS_FLEXIBLE,58,Thickness Flexible,P,Y,Y,1,2,SP,0,,,N,N,,,,N,1,1
-THICKNESS_RIGID,57,Thickness Rigid,P,Y,Y,1,1,SP,0,,,N,N,,,,N,1,1
+THICKNESS_FLEXIBLE,58,Thickness Flexible,P,Y,Y,1,2,SP,0,,,,N,,,,N,1,1
+THICKNESS_RIGID,57,Thickness Rigid,P,Y,Y,1,1,SP,0,,,,N,,,,N,1,1
 THROUGH_LANES,7,Through Lanes,I,Y,Y,1,1,FE + R,0,,,,N,,,,Y,1,1
 TOLL_CHARGED,15,Toll Charged,I,Y,N,1,2,FE**,0,,,,N,,,,N,1,1
 TOLL_TYPE,16,Toll Type,I,Y,N,1,2,FE**,0,,,,N,,,,N,1,1
 TRUCK,66,National Truck Network,SN,Y,Y,1,2,FE**,0,,,,N,,,,N,1,1
 TURN_LANES_L,13,Left Turn Lanes,I,Y,Y,1,1,SP,0,,,,N,,,,N,1,1
 TURN_LANES_R,12,Right Turn Lanes,I,Y,Y,1,1,SP,0,,,,N,,,,N,1,1
-URBAN_CODE,2,Urban Code,I,Y,N,1,2,FE + R,0,,,N,N,,,,Y,1,1
+URBAN_CODE,2,Urban Code,I,Y,N,1,2,FE + R,0,,,,N,,,,Y,1,1
 WIDENING_OBSTACLE,41,Widening Obstacle,G,Y,Y,1,2,SP,0,,,,N,,,,N,1,1
 WIDENING_POTENTIAL,42,Widening Potential,G,Y,Y,1,2,SP,0,,,,N,,,,N,1,1
-YEAR_LAST_CONSTRUCTION,55,Year of Last Construction,P,Y,Y,2,2,SP,0,,,N,N,,,,N,1,1
-YEAR_LAST_IMPROV,54,Year of Last Improvement,P,Y,Y,2,2,SP,0,,,N,Y,,,,N,1,1
+YEAR_LAST_CONSTRUCTION,55,Year of Last Construction,P,Y,Y,2,2,SP,0,,,,N,,,,N,1,1
+YEAR_LAST_IMPROV,54,Year of Last Improvement,P,Y,Y,2,2,SP,0,,,,Y,,,,N,1,1
