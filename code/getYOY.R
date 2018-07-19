@@ -18,7 +18,8 @@ getYOY <- function(data, year, yearcomparison, variable, yoy_change){
   data <- data[!(F_SYTEMorig == 7 & NHS != 1), ]
   
   var.1    <- data[year_record == year & data_item==variable,
-                   list(route_id, begin_point, end_point, value_numeric, F_SYSTEM, NHS, Interstate)]
+                   list(route_id, begin_point, end_point, value_numeric,
+                        F_SYSTEM, NHS, Interstate)]
   
   var.2    <- data[year_record == yearcomparison & data_item==variable,
                    list(route_id, begin_point, end_point, value_numeric)]
@@ -99,7 +100,8 @@ getYOY <- function(data, year, yearcomparison, variable, yoy_change){
                       by=list(F_SYSTEM)]
   }
   
-  result <- merge(data.table(F_SYSTEM=c(1,2)), result, by="F_SYSTEM", all.x=TRUE)
+  result <- merge(data.table(F_SYSTEM=c(1,2)), result,
+                  by="F_SYSTEM", all.x=TRUE)
   
   result[is.na(miles), miles := 0]
   result[is.na(N), N := 0]
@@ -128,7 +130,8 @@ getYOY <- function(data, year, yearcomparison, variable, yoy_change){
   result <- var.yoy[value_numeric.x == value_numeric.y & Interstate==1,
                     list(miles = round(sum(end_point.x - begin_point.x), 2), .N),]
   
-  total <- var.1[Interstate == 1, list(totalmiles = round(sum(end_point - begin_point), 2)),]
+  total <- var.1[Interstate == 1,
+                 list(totalmiles = round(sum(end_point - begin_point), 2)),]
 
   # Combine (cbind?) result and total
   if ( nrow(result) == 0 ){
@@ -189,7 +192,7 @@ getYOY <- function(data, year, yearcomparison, variable, yoy_change){
   
   report <- merge(data.table(groupCat=1:4), report, by="groupCat", all.x=T)
   
-  report[is.na(perc_miles), perc_miles:=as.character(0)]
+  report[is.na(perc_miles), perc_miles := as.character(0)]
   
   return(report)
   

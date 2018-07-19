@@ -91,7 +91,7 @@ getOutliers <- function(data, year, variable){
   
   report <- data.table(Name=report$groupCat,report)
   
-  report <- merge(data.table(groupCat=1:4),report,by="groupCat",all.x=T)
+  report <- merge(data.table(groupCat=1:4),report,by="groupCat", all.x=T)
   
   report[is.na(perc_miles), perc_miles:=NA]
   

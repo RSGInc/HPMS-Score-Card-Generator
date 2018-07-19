@@ -17,20 +17,20 @@
 # TODO:  This code uses virtually the same code as getYOY().  Modify to use
 # it instead of repeating
 
-create_yearoveryear_report <- function(
-  data,
-  state,
-  year,
-  variable,
-  yearcomparison
-)
-{
+create_yearoveryear_report <- function(data, state, year, variable, yearcomparison){
   
   
   highlight_threshold    <- gVariables[Name==variable,YOYH_Thresh]
   
-  var.1    <- data[state_code==state&year_record==year&data_item==variable&FACILITY_TYPE!=4,list(route_id,begin_point,end_point,value_numeric,F_SYSTEM,NHS,Interstate)]
-  var.2    <- data[state_code==state&year_record==yearcomparison&data_item==variable&FACILITY_TYPE!=4,list(route_id,begin_point,end_point,value_numeric)]
+  var.1    <- data[state_code == state &
+                     year_record == year &
+                     data_item == variable & FACILITY_TYPE != 4,
+                   list(route_id, begin_point, end_point, value_numeric,
+                        F_SYSTEM, NHS, Interstate)]
+  
+  var.2    <- data[state_code == state & year_record == yearcomparison &
+                     data_item == variable & FACILITY_TYPE != 4,
+                   list(route_id, begin_point, end_point, value_numeric)]
   
   var.yoy <- sqldf("
                       select 
@@ -41,7 +41,9 @@ create_yearoveryear_report <- function(
                       A.begin_point as [begin_point.x],
                       A.end_point   as [end_point.x],
                       A.value_numeric as [value_numeric.x],
-                      B.value_numeric as [value_numeric.y]
+                      B.value_numeric as [value_numeric.y],
+                      B.begin_point as [begin_point.y],
+                      B.end_point as [end_point.y]
                       from [var.1] A 
                       left join [var.2] B on 
                       A.route_id = B.route_id and 
@@ -63,19 +65,25 @@ create_yearoveryear_report <- function(
   
   var.yoy <- data.table(var.yoy)
   
-  result <- var.yoy[value_numeric.x==value_numeric.y,list(miles=round(sum(end_point.x-begin_point.x),2),.N),by=list(F_SYSTEM)]
+  result <- var.yoy[value_numeric.x == value_numeric.y,
+                    list(miles=round(sum(end_point.x-begin_point.x),2),.N),
+                    by=list(F_SYSTEM)]
   
-  result <- merge(data.table(F_SYSTEM=c(1,2)),result,by="F_SYSTEM",all.x=TRUE)
+  result <- merge(data.table(F_SYSTEM=c(1,2)), result,
+                  by="F_SYSTEM", all.x=TRUE)
   
   result[is.na(miles),miles:=0]
   result[is.na(N),N:=0]
   
-  total <- var.1[ ,list(totalmiles=round(sum(end_point-begin_point),2)),by=list(F_SYSTEM)]
+  total <- var.1[, list(totalmiles=round(sum(end_point-begin_point),2)),
+                 by=list(F_SYSTEM)]
   
-  report.1 <- merge(total,result,by="F_SYSTEM",all.x=TRUE,all.y=FALSE)
-  report.1[is.na(miles),miles:=0] # setting values to 0 where there are no merges. this mean that the state had no lane miles outside the thresholds set
+  report.1 <- merge(total, result, by="F_SYSTEM", all.x=TRUE, all.y=FALSE)
+  report.1[is.na(miles), miles := 0] # setting values to 0 where there are no merges. this mean that the state had no lane miles outside the thresholds set
   
-  report.1[,perc_miles:=ifelse(is.na(miles),0,as.character(round(miles/totalmiles,2)*100))]
+  report.1[, perc_miles := ifelse(is.na(miles),
+                                  0,
+                                  as.character(round(miles/totalmiles,2)*100))]
   
   report.1[,totalmiles:=NULL]
   
@@ -85,9 +93,11 @@ create_yearoveryear_report <- function(
   report.1[,F_SYSTEM:=NULL]
   
   # Calculate report.2, with % miles where Interstate == 1
-  result <- var.yoy[value_numeric.x==value_numeric.y&Interstate==1,list(miles=round(sum(end_point.x-begin_point.x),2),.N),]
+  result <- var.yoy[value_numeric.x == value_numeric.y & Interstate==1,
+                    list(miles=round(sum(end_point.x-begin_point.x),2),.N),]
   
-  total <- var.1[Interstate==1,list(totalmiles=round(sum(end_point-begin_point),2)),]
+  total <- var.1[Interstate==1,
+                 list(totalmiles=round(sum(end_point - begin_point), 2)),]
   
   # Combine (cbind?) result and total
   if ( nrow(result) == 0 ){
@@ -98,19 +108,23 @@ create_yearoveryear_report <- function(
     total <- data.table(totalmiles = NA)
   }
   
-  report.2 <- data.table(result,total)
-  report.2[is.na(miles),miles:=0] # setting values to 0 where there are no merges. this mean that the state had no lane miles outside the thresholds set
+  report.2 <- data.table(result, total)
+  report.2[is.na(miles), miles := 0] # setting values to 0 where there are no merges. this mean that the state had no lane miles outside the thresholds set
   
-  report.2[,perc_miles:=ifelse(is.na(miles),0,as.character(round(miles/totalmiles,2)*100))]
+  report.2[, perc_miles := ifelse(is.na(miles),
+                                  0,
+                                  as.character(round(miles/totalmiles,2)*100))]
   
-  report.2[,totalmiles:=NULL]
+  report.2[,totalmiles := NULL]
   
-  report.2[,groupCat:=1]
+  report.2[,groupCat := 1]
   
   # Calculate report.3 with % miles where NHS == 1
-  result <- var.yoy[value_numeric.x==value_numeric.y&NHS==1,list(miles=round(sum(end_point.x-begin_point.x),2),.N),]
+  result <- var.yoy[value_numeric.x == value_numeric.y & NHS == 1,
+                    list(miles=round(sum(end_point.x-begin_point.x),2),.N),]
   
-  total <- var.1[NHS==1,list(totalmiles=round(sum(end_point-begin_point),2)),]
+  total <- var.1[NHS == 1,
+                 list(totalmiles=round(sum(end_point-begin_point),2)),]
   
   # Combine (cbind?) result and total
   if ( nrow(result) == 0 ){
@@ -122,16 +136,18 @@ create_yearoveryear_report <- function(
   }
   
   report.3 <- data.table(result,total)
-  report.3[is.na(miles),miles:=0] # setting values to 0 where there are no merges. this mean that the state had no lane miles outside the thresholds set
+  report.3[is.na(miles), miles := 0] # setting values to 0 where there are no merges. this mean that the state had no lane miles outside the thresholds set
   
-  report.3[,perc_miles:=ifelse(is.na(miles),0,as.character(round(miles/totalmiles,2)*100))]
+  report.3[, perc_miles := ifelse(is.na(miles),
+                                  0,
+                                  as.character(round(miles/totalmiles,2)*100))]
   
-  report.3[,totalmiles:=NULL]
+  report.3[,totalmiles := NULL]
   
-  report.3[,groupCat:=2]
+  report.3[,groupCat := 2]
   
   
-  report <- rbind(report.2,report.3, report.1)
+  report <- rbind(report.2, report.3, report.1)
   
   report <- data.table(Name=report$groupCat,report)
   
