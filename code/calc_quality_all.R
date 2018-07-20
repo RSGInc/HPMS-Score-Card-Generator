@@ -40,7 +40,8 @@ calcQualityAll <- function(data, year, year_compare){
         
       outliers <- getOutliers(data, year, variable)
       
-      outlier_mean <- sum(as.numeric(outliers$perc_miles) * weights, na.rm=TRUE) /
+      # Note that getOutliers returns perc_miles that exceed outliers
+      outlier_mean <- sum(100 - as.numeric(outliers$perc_miles) * weights, na.rm=TRUE) /
         sum(weights[!is.na(outliers$perc_miles)])
       
       dt_output$Outlier_Score[i] <- outlier_mean

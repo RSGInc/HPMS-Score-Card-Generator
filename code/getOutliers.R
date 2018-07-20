@@ -20,12 +20,11 @@ getOutliers <- function(data, year, variable){
   
   d.l <- data[ data_item==variable & year_record==year, , ]    
   
-  result.1 <- d.l[
-    (value_numeric < outlier_threshold_high | 
-       value_numeric > outlier_threshold_low),
-    list(miles = round(sum(end_point - begin_point, na.rm=TRUE), 2), .N),
-    by=list(F_SYSTEM)
-    ]
+  result.1 <- d.l[(value_numeric > outlier_threshold_high | 
+                     value_numeric < outlier_threshold_low),
+                  list(miles = round(sum(end_point - begin_point, na.rm=TRUE), 2), .N),
+                  by=list(F_SYSTEM)
+                  ]
   
   total.1 <- d.l[ ,
                   list(totalmiles = round(sum(end_point-begin_point), 2)),
@@ -46,7 +45,8 @@ getOutliers <- function(data, year, variable){
   
   d.l <- data[data_item == variable & year_record == year & Interstate == 1,,]    
   
-  result.2 <- d.l[(value_numeric < outlier_threshold_high | value_numeric > outlier_threshold_low),
+  result.2 <- d.l[(value_numeric > outlier_threshold_high |
+                     value_numeric < outlier_threshold_low),
                   list(miles=round(sum(end_point-begin_point,na.rm=TRUE),2),.N),
                   ]
   
@@ -67,7 +67,8 @@ getOutliers <- function(data, year, variable){
   
   d.l <- data[data_item==variable & year_record==year & NHS == 1,,]    
   
-  result.3 <- d.l[(value_numeric < outlier_threshold_high | value_numeric > outlier_threshold_low),
+  result.3 <- d.l[(value_numeric > outlier_threshold_high |
+                     value_numeric < outlier_threshold_low),
                   list(miles=round(sum(end_point-begin_point,na.rm=TRUE),2),.N),
                   ]
   
@@ -93,7 +94,7 @@ getOutliers <- function(data, year, variable){
   
   report <- merge(data.table(groupCat=1:4),report,by="groupCat", all.x=T)
   
-  report[is.na(perc_miles), perc_miles:=NA]
+  report[is.na(perc_miles), perc_miles := NA]
   
   return(report)
 }

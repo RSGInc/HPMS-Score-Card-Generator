@@ -19,7 +19,7 @@ create_yearoveryear_report <- function(data, year, variable, yearcomparison){
   highlight_threshold <- gVariables[Name==variable,YOYH_Thresh]
 
   report <- getYOY(data[FACILITY_TYPE != 4],
-                   state, year, yearcomparison, variable, yoy_change='N')
+                   year, yearcomparison, variable, yoy_change='N')
   
   return(format_report(report, highlight_threshold))
   
