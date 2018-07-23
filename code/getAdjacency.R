@@ -35,6 +35,8 @@ getAdjacency <- function(data, year, variable, adjacency_change){
     all.x=TRUE, all.y=FALSE
   )
   
+  d.adj <- d.adj[!is.na(value_numeric.y)]
+  
   # # Instead of this join, use a lagged value_numeric
   # # https://stackoverflow.com/questions/26291988/how-to-create-a-lag-variable-within-each-group
   # d.adj2 <- d.l[order(route_id, begin_point), value_numeric_lag := shift(value_numeric), by = route_id]
@@ -60,15 +62,17 @@ getAdjacency <- function(data, year, variable, adjacency_change){
   result[is.na(miles),miles:=0]
   result[is.na(N),N:=0]
   
-  setnames(result,"F_SYSTEM.x","F_SYSTEM")
   #setnames(result,"V1","miles")
   
-  total <- d.l[ ,list(totalmiles=round(sum(end_point-begin_point),2)),
-                by=list(F_SYSTEM)]
+  total <- d.adj[ ,list(totalmiles=round(sum(end_point.x-begin_point.x),2)),
+                by=list(F_SYSTEM.x)]
   
   report.1 <- merge(total,
                     result,
-                    by="F_SYSTEM",all.x=TRUE,all.y=FALSE)
+                    by="F_SYSTEM.x", all.x=TRUE, all.y=FALSE)
+  
+  setnames(report.1, "F_SYSTEM.x", "F_SYSTEM")
+  
   report.1[is.na(miles),miles:=0] # setting values to 0 where there are no merges. this mean that the state had no lane miles outside the thresholds set
   
   report.1[,perc_miles:=ifelse(is.na(miles),0,as.character(round(miles/totalmiles,2)*100))]
@@ -95,11 +99,13 @@ getAdjacency <- function(data, year, variable, adjacency_change){
     by=c("route_id","match_point"),
     all.x=TRUE, all.y=FALSE
   )
+  d.adj <- d.adj[!is.na(value_numeric.y)]
+  
   
   result <- d.adj[value_numeric.x == value_numeric.y,
                   list(miles=round(sum(end_point.x - begin_point.x), 2),.N),]
   
-  total <- d.l[ , list(totalmiles=round(sum(end_point - begin_point),2)),]
+  total <- d.adj[, list(totalmiles=round(sum(end_point.x - begin_point.x),2)),]
   
   if(nrow(result)==0){
     result <- data.table(miles=0,N=0)
@@ -128,14 +134,14 @@ getAdjacency <- function(data, year, variable, adjacency_change){
     by=c("route_id", "match_point"),
     all.x=TRUE, all.y=FALSE
   )
+  d.adj <- d.adj[!is.na(value_numeric.y)]
   
   result <- d.adj[value_numeric.x == value_numeric.y,
                   list(miles=round(sum(end_point.x-begin_point.x),2),.N),]
   
-  total <- d.l[ , list(totalmiles = round(sum(end_point - begin_point), 2)),]
+  total <- d.adj[ , list(totalmiles = round(sum(end_point.x - begin_point.x), 2)),]
   
-  if(nrow(result) == 0)
-  {
+  if(nrow(result) == 0){
     result <- data.table(miles=0, N=0)
   }
   
