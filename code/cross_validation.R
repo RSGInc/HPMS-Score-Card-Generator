@@ -4,27 +4,31 @@
 # exapnds data set to 0.01 mile increments for easier joining
 expand = function(data){
   
-  data[,Begin_Point:=round(Begin_Point+ 0.00001,2)] # forcing rounding to next highest integer
-  data[,  End_Point:=round(End_Point  + 0.00001,2)]
+  if (nrow(data) == 0) return(data[, num_sections := vector(mode = 'numeric', length = 0)])
+  
+  data[,begin_point:=round(begin_point+ 0.00001,2)] # forcing rounding to next highest integer
+  data[,  end_point:=round(end_point  + 0.00001,2)]
   
   # dividing up the num sections so we can recover the 
   # num sections later
-  data[,num_sections:=1/((End_Point-Begin_Point)/0.01)]
+  data[, num_sections := 1/((end_point - begin_point)/0.01)]
   
   # how long do we have to make the faux road network
-  range = data[,.(start=min(Begin_Point),end=max(End_Point))]
+  range = data[, .(start=min(begin_point), end=max(end_point))]
   
   route_network = data.table(end = range[,start]:(range[,end]*100)/100)
-  route_network[,start:=end-0.01]
+  route_network[,start := end-0.01]
   
-  route_network[,start:=round(start + 0.00001,2)] # rounding here is necessary to guarantee correct results when looking at inequalities
-  route_network[,  end:=round(end   + 0.00001,2)]
+  route_network[,start := round(start + 0.00001,2)] # rounding here is necessary to guarantee correct results when looking at inequalities
+  route_network[,  end := round(end   + 0.00001,2)]
   
-  route_network = route_network[start>=0]
+  route_network = route_network[start >= 0]
   
-  data.expanded = data[route_network,on=.(Begin_Point<=start,End_Point>=end),allow.cartesian=TRUE]
+  data.expanded = data[route_network,
+                       on=.(begin_point <= start, end_point >= end),
+                       allow.cartesian=TRUE]
   
-  data.expanded = data.expanded[!is.na(Route_ID),]
+  data.expanded = data.expanded[!is.na(route_id),]
   
   return(data.expanded)
 }
