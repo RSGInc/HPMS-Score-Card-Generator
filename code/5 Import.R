@@ -420,7 +420,8 @@ FormatDataSet <- function(dat, state_abbr, year) {
   
   query <- paste0('select * from ', samples_table, ' where StateYearKey = ',
                   getStateNumFromCode(state_abbr), as.numeric(year) %% 100)
-  sp <- sqlQuery(con, query)
+  
+  sp <- sqlQuery(con, query,stringsAsFactors=FALSE)
   
   odbcClose(con)
 
@@ -448,14 +449,35 @@ FormatDataSet <- function(dat, state_abbr, year) {
   sp[,section_length:=NULL]
   sp[,stateyearkey:=NULL]
   sp[,state_code:=NULL]
-  
+  #browser()
   data_exp = sp[data_noFT6,on=.(year_record,route_id,begin_point,end_point)]
   
   data_exp[, expansion_factor:=as.numeric(expansion_factor)]
   
   rm(data.formatted)
   
+  #browser()
+  extent_detail = fread("resources/dat/extent_detail.csv")
+  
+  data_exp[,rural_urban:=c("Urban","Rural")[1+1*(URBAN_CODE==99999)]]
+  
+  data_exp = extent_detail[data_exp,on=.(data_item,rural_urban)]
 
+  data_exp[,section_extent:=""]
+  
+  data_exp[NHS==1,section_extent:=nhs]
+  data_exp[section_extent==""&F_SYTEMorig==1,section_extent:=fs1]
+  data_exp[section_extent==""&F_SYTEMorig==2,section_extent:=fs2]
+  data_exp[section_extent==""&F_SYTEMorig==3,section_extent:=fs3]
+  data_exp[section_extent==""&F_SYTEMorig==4,section_extent:=fs4]
+  data_exp[section_extent==""&F_SYTEMorig==5,section_extent:=fs5]
+  data_exp[section_extent==""&F_SYTEMorig==6,section_extent:=fs6]
+  data_exp[section_extent==""&F_SYTEMorig==7,section_extent:=fs7]
+  
+  for(name in c("extent","rural_urban","nhs","fs1","fs2","fs3","fs4","fs5","fs6","fs7")){
+    data_exp[,(name):=NULL]
+  }
+    
   
   # Check formatted data against the FHWA summary
   # Create a dataset to compare (need to bindrows the FT6 data)
@@ -488,7 +510,6 @@ FormatDataSet <- function(dat, state_abbr, year) {
     warning(warntext)
   }
   
-
   # Prepare to write out the data
   setkeyv(data_exp, c("state_code","year_record","route_id","data_item","begin_point","end_point"))
 
