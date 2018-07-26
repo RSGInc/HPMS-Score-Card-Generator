@@ -34,10 +34,14 @@ calcQualityAll <- function(data, year, year_compare){
     } else {
       
       weights <- c(1, 1, 1, 1)
-      
+
+      # Filter out non-NHS local roads
+      data <- data[!(F_SYTEMorig == 7 & NHS != 1), ]
+        
       outliers <- getOutliers(data, year, variable)
       
-      outlier_mean <- sum(as.numeric(outliers$perc_miles) * weights, na.rm=TRUE) /
+      # Note that getOutliers returns perc_miles that exceed outliers
+      outlier_mean <- sum(100 - as.numeric(outliers$perc_miles) * weights, na.rm=TRUE) /
         sum(weights[!is.na(outliers$perc_miles)])
       
       dt_output$Outlier_Score[i] <- outlier_mean

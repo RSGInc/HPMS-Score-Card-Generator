@@ -56,7 +56,7 @@ SHOULDER_TYPE,37,Shoulder Type,G,Y,Y,1,2,SP,0,,,,N,,,,N,1,1
 SHOULDER_WIDTH_L,39,Left Shoulder Width,G,Y,Y,1,1,SP,0,,,,N,,,,N,1,1
 SHOULDER_WIDTH_R,38,Right Shoulder Width,G,Y,Y,1,1,SP,0,,,,N,,,,N,1,1
 SIGNAL_TYPE,29,Signal Type,T,Y,Y,1,2,SP,0,,,,N,,,,N,1,1
-SPEED_LIMIT,14,Speed Limit,I,Y,Y,1,1,SP,0,#NAME?,90,,N,,,,N,1,1
+SPEED_LIMIT,14,Speed Limit,I,Y,Y,1,1,SP,0,-Inf,90,,N,,,,N,1,1
 STOP_SIGNS,32,Number of Stop-Sign Controlled Intersections,T,Y,Y,1,1,SP,0,,,,N,,,,N,1,1
 STRAHNET_TYPE,65,Strategic Highway Network,SN,Y,Y,1,2,FE**,0,,,,N,,,,N,1,1
 STRUCTURE_TYPE,4,Structure Type,I,Y,Y,1,2,FE**,0,,,,N,,,,N,1,1

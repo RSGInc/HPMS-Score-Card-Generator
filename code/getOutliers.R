@@ -13,19 +13,18 @@
 
 getOutliers <- function(data, year, variable){
   
-  data <- data[!(F_SYTEMorig == 7 & NHS != 1)&data_item==variable & year_record==year,]
-  
+  data <- data[data_item==variable & year_record==year,]
+
   outlier_threshold_high <- gVariables[Name == variable, Outlier_Max]
   outlier_threshold_low  <- gVariables[Name == variable, Outlier_Min]
   
   d.l <- data    
   
-  result.1 <- d.l[
-    (value_numeric < outlier_threshold_high | 
-       value_numeric > outlier_threshold_low),
-    list(miles = round(sum(end_point - begin_point, na.rm=TRUE), 2), .N),
-    by=list(F_SYSTEM)
-    ]
+  result.1 <- d.l[(value_numeric > outlier_threshold_high | 
+                     value_numeric < outlier_threshold_low),
+                  list(miles = round(sum(end_point - begin_point, na.rm=TRUE), 2), N=sum(num_sections)),
+                  by=list(F_SYSTEM)
+                  ]
   
   total.1 <- d.l[ ,
                   list(totalmiles = round(sum(end_point-begin_point), 2)),
@@ -46,8 +45,9 @@ getOutliers <- function(data, year, variable){
   
   d.l <- data[Interstate == 1,,]    
   
-  result.2 <- d.l[(value_numeric < outlier_threshold_high | value_numeric > outlier_threshold_low),
-                  list(miles=round(sum(end_point-begin_point,na.rm=TRUE),2),.N),
+  result.2 <- d.l[(value_numeric > outlier_threshold_high |
+                     value_numeric < outlier_threshold_low),
+                  list(miles=round(sum(end_point-begin_point,na.rm=TRUE),2),N=sum(num_sections)),
                   ]
   
   total.2 <- d.l[, list(totalmiles = round(sum(end_point - begin_point), 2)), ]
@@ -67,9 +67,10 @@ getOutliers <- function(data, year, variable){
   
   d.l <- data[NHS == 1,,]    
   
+
   result.3 <- d.l[(value_numeric < outlier_threshold_high | value_numeric > outlier_threshold_low),
-                  list(miles=round(sum(end_point-begin_point,na.rm=TRUE),2),.N),]
-  
+                  list(miles=round(sum(end_point-begin_point,na.rm=TRUE),2),N=sum(num_sections)),]
+
   if(nrow(result.3)==0){
     result.3 <- data.table(miles=NA, N=NA)
   }
@@ -92,7 +93,7 @@ getOutliers <- function(data, year, variable){
   
   report <- merge(data.table(groupCat=1:4),report,by="groupCat", all.x=T)
   
-  report[is.na(perc_miles), perc_miles:=NA]
+  report[is.na(perc_miles), perc_miles := NA]
   
   return(report)
 }

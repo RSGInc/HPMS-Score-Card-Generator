@@ -13,14 +13,17 @@
 
 getAdjacency <- function(data, year, variable, adjacency_change){
     
-  data <- data[!(F_SYTEMorig == 7 & NHS != 1)& data_item == variable & year_record == year,]
-  
+
+  data <- data[data_item == variable & year_record == year,]
+
   d.l = d.r = data
   
   d.l[,match_point:=end_point]
   d.r[,match_point:=begin_point]
   
   d.adj = d.l[d.r,on=.(route_id,match_point)]
+  
+  d.adj <- d.adj[!is.na(i.value_numeric)]
   
   # # Instead of this join, use a lagged value_numeric
   # # https://stackoverflow.com/questions/26291988/how-to-create-a-lag-variable-within-each-group
@@ -30,13 +33,13 @@ getAdjacency <- function(data, year, variable, adjacency_change){
   
   if ( adjacency_change == 'N' ){
     result <- d.adj[value_numeric == i.value_numeric,
-                    list(miles=round(sum(end_point - begin_point), 2), .N),
+                    list(miles=round(sum(end_point - begin_point), 2), N=sum(num_sections)),
                     by = list(F_SYSTEM)]
   }
   
   if (adjacency_change == 'Y' ){
     result <- d.adj[value_numeric != i.value_numeric,
-                    list(miles = round(sum(end_point - begin_point), 2), .N),
+                    list(miles = round(sum(end_point - begin_point), 2), N=sum(num_sections)),
                     by = list(F_SYSTEM)]
   }  
   
@@ -45,15 +48,12 @@ getAdjacency <- function(data, year, variable, adjacency_change){
   result[is.na(miles),miles:=0]
   result[is.na(N),N:=0]
   
-  #setnames(result,"F_SYSTEM.x","F_SYSTEM")
-  #setnames(result,"V1","miles")
-  
-  total <- d.l[ ,list(totalmiles=round(sum(end_point-begin_point),2)),by=list(F_SYSTEM)]
+  total <- d.adj[ ,list(totalmiles=round(sum(end_point-begin_point),2)),by=list(F_SYSTEM)]
   
   report.1 <- merge(total,
                     result,
                     by="F_SYSTEM",all.x=TRUE,all.y=FALSE)
-  
+
   report.1[is.na(miles),miles:=0] # setting values to 0 where there are no merges. this mean that the state had no lane miles outside the thresholds set
   
   report.1[,perc_miles:=ifelse(is.na(miles),0,as.character(round(miles/totalmiles,2)*100))]
@@ -73,9 +73,9 @@ getAdjacency <- function(data, year, variable, adjacency_change){
   d.adj = d.l[d.r,on=.(route_id,match_point)]
   
   result <- d.adj[value_numeric == i.value_numeric,
-                  list(miles=round(sum(end_point - begin_point), 2),.N),]
+                  list(miles=round(sum(end_point - begin_point), 2),N=sum(num_sections)),]
   
-  total <- d.l[ , list(totalmiles=round(sum(end_point - begin_point),2)),]
+  total <- d.adj[, list(totalmiles=round(sum(end_point.x - begin_point.x),2)),]
   
   if(nrow(result)==0){
     result <- data.table(miles=0,N=0)
@@ -96,11 +96,11 @@ getAdjacency <- function(data, year, variable, adjacency_change){
   d.r[,match_point:=begin_point]
   
   d.adj = d.l[d.r,on=.(route_id,match_point)]
-  
+
   result <- d.adj[value_numeric == i.value_numeric,
-                  list(miles=round(sum(end_point-begin_point),2),.N),]
+                  list(miles=round(sum(end_point-begin_point),2),N=sum(num_sections)),]
   
-  total <- d.l[ , list(totalmiles = round(sum(end_point - begin_point), 2)),]
+  total <- d.adj[ , list(totalmiles = round(sum(end_point.x - begin_point.x), 2)),]
   
   if(nrow(result) == 0){
     result <- data.table(miles=0, N=0)

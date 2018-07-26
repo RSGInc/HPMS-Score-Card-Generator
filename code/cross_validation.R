@@ -4,6 +4,8 @@
 # exapnds data set to 0.01 mile increments for easier joining
 expand = function(data,increment){
   
+  if (nrow(data) == 0) return(data[, num_sections := vector(mode = 'numeric', length = 0)])
+  
   data[,begin_point:=round(begin_point+ 0.00001,nchar(1/increment)-1)] # forcing rounding to next highest integer
   data[,  end_point:=round(end_point  + 0.00001,nchar(1/increment)-1)]
   
@@ -20,10 +22,12 @@ expand = function(data,increment){
   route_network[,start:=round(start + 0.00001,nchar(1/increment)-1)] # rounding here is necessary to guarantee correct results when looking at inequalities
   route_network[,  end:=round(end   + 0.00001,nchar(1/increment)-1)]
   
-  route_network = route_network[start>=0]
+  route_network = route_network[start >= 0]
   
-  data.expanded = data[route_network,on=.(begin_point<=start,end_point>=end),allow.cartesian=TRUE]
-  
+  data.expanded = data[route_network,
+                       on=.(begin_point <= start, end_point >= end),
+                       allow.cartesian=TRUE]
+
   data.expanded = data.expanded[!is.na(route_id),]
   
   return(data.expanded)
