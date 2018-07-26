@@ -2,29 +2,29 @@
 
 ###################################################################
 # exapnds data set to 0.01 mile increments for easier joining
-expand = function(data){
+expand = function(data,increment){
   
-  data[,Begin_Point:=round(Begin_Point+ 0.00001,2)] # forcing rounding to next highest integer
-  data[,  End_Point:=round(End_Point  + 0.00001,2)]
+  data[,begin_point:=round(begin_point+ 0.00001,nchar(1/increment)-1)] # forcing rounding to next highest integer
+  data[,  end_point:=round(end_point  + 0.00001,nchar(1/increment)-1)]
   
   # dividing up the num sections so we can recover the 
   # num sections later
-  data[,num_sections:=1/((End_Point-Begin_Point)/0.01)]
+  data[,num_sections:=1/((end_point-begin_point)/increment)]
   
   # how long do we have to make the faux road network
-  range = data[,.(start=min(Begin_Point),end=max(End_Point))]
+  range = data[,.(start=min(begin_point),end=max(end_point))]
   
-  route_network = data.table(end = range[,start]:(range[,end]*100)/100)
-  route_network[,start:=end-0.01]
+  route_network = data.table(end = range[,start]:(range[,end]*(1/increment))/(1/increment))
+  route_network[,start:=end-increment]
   
-  route_network[,start:=round(start + 0.00001,2)] # rounding here is necessary to guarantee correct results when looking at inequalities
-  route_network[,  end:=round(end   + 0.00001,2)]
+  route_network[,start:=round(start + 0.00001,nchar(1/increment)-1)] # rounding here is necessary to guarantee correct results when looking at inequalities
+  route_network[,  end:=round(end   + 0.00001,nchar(1/increment)-1)]
   
   route_network = route_network[start>=0]
   
-  data.expanded = data[route_network,on=.(Begin_Point<=start,End_Point>=end),allow.cartesian=TRUE]
+  data.expanded = data[route_network,on=.(begin_point<=start,end_point>=end),allow.cartesian=TRUE]
   
-  data.expanded = data.expanded[!is.na(Route_ID),]
+  data.expanded = data.expanded[!is.na(route_id),]
   
   return(data.expanded)
 }
@@ -61,8 +61,8 @@ summarize_validation = function(results){
 # Through_Lanes>1 when Facility_Type = 2
 cross_validation_53 = function(data){
   
-  through_lanes = data[Data_Item=="THROUGH_LANES",.(Route_ID,Begin_Point,End_Point,THROUGH_LANES=Value_Numeric)]
-  facility_type = data[Data_Item=="FACILITY_TYPE",.(Route_ID,Begin_Point,End_Point,FACILITY_TYPE=Value_Numeric)]
+  through_lanes = data[Data_Item=="THROUGH_LANES",.(route_id,begin_point,End_Point,THROUGH_LANES=Value_Numeric)]
+  facility_type = data[Data_Item=="FACILITY_TYPE",.(route_id,begin_point,End_Point,FACILITY_TYPE=Value_Numeric)]
 
   if(nrow(through_lanes)==0|nrow(facility_type)==0){
     warning("Not applicable - Sufficient data from the state are not available")

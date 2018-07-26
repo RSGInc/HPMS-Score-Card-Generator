@@ -26,47 +26,18 @@ create_yearoveryear_report <- function(data, state, year, variable, yearcomparis
                      year_record == year &
                      data_item == variable & FACILITY_TYPE != 4,
                    list(route_id, begin_point, end_point, value_numeric,
-                        F_SYSTEM, NHS, Interstate)]
+                        F_SYSTEM, NHS, Interstate,num_sections)]
   
   var.2    <- data[state_code == state & year_record == yearcomparison &
                      data_item == variable & FACILITY_TYPE != 4,
                    list(route_id, begin_point, end_point, value_numeric)]
   
-  var.yoy <- sqldf("
-                      select 
-                      A.route_id,
-                      A.F_SYSTEM,
-                      A.Interstate,
-                      A.NHS,
-                      A.begin_point as [begin_point.x],
-                      A.end_point   as [end_point.x],
-                      A.value_numeric as [value_numeric.x],
-                      B.value_numeric as [value_numeric.y],
-                      B.begin_point as [begin_point.y],
-                      B.end_point as [end_point.y]
-                      from [var.1] A 
-                      left join [var.2] B on 
-                      A.route_id = B.route_id and 
-                      (
-                      (
-                      ( A.begin_point <= B.end_point   ) and
-                      ( A.end_point   >= B.begin_point ) and 
-                      ( A.begin_point >= B.begin_point ) and 
-                      ( A.end_point   <= B.end_point   )
-                      ) or
-                      (
-                      ( B.begin_point <= A.end_point   ) and
-                      ( B.end_point   >= A.begin_point ) and 
-                      ( B.begin_point >= A.begin_point ) and 
-                      ( B.end_point   <= A.end_point   )
-                      )
-                      ) 
-                      ")
+  var.yoy = var.2[var.1,on=.(route_id,begin_point,end_point)]
   
   var.yoy <- data.table(var.yoy)
   
-  result <- var.yoy[value_numeric.x == value_numeric.y,
-                    list(miles=round(sum(end_point.x-begin_point.x),2),.N),
+  result <- var.yoy[value_numeric == i.value_numeric,
+                    list(miles=round(sum(end_point-begin_point),2),N=sum(num_sections)),
                     by=list(F_SYSTEM)]
   
   result <- merge(data.table(F_SYSTEM=c(1,2)), result,
@@ -93,8 +64,8 @@ create_yearoveryear_report <- function(data, state, year, variable, yearcomparis
   report.1[,F_SYSTEM:=NULL]
   
   # Calculate report.2, with % miles where Interstate == 1
-  result <- var.yoy[value_numeric.x == value_numeric.y & Interstate==1,
-                    list(miles=round(sum(end_point.x-begin_point.x),2),.N),]
+  result <- var.yoy[value_numeric == i.value_numeric & Interstate==1,
+                    list(miles=round(sum(end_point-begin_point),2),N=sum(num_sections)),]
   
   total <- var.1[Interstate==1,
                  list(totalmiles=round(sum(end_point - begin_point), 2)),]
@@ -120,8 +91,8 @@ create_yearoveryear_report <- function(data, state, year, variable, yearcomparis
   report.2[,groupCat := 1]
   
   # Calculate report.3 with % miles where NHS == 1
-  result <- var.yoy[value_numeric.x == value_numeric.y & NHS == 1,
-                    list(miles=round(sum(end_point.x-begin_point.x),2),.N),]
+  result <- var.yoy[value_numeric == i.value_numeric & NHS == 1,
+                    list(miles=round(sum(end_point-begin_point),2),N=sum(num_sections)),]
   
   total <- var.1[NHS == 1,
                  list(totalmiles=round(sum(end_point-begin_point),2)),]

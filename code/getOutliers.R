@@ -13,12 +13,12 @@
 
 getOutliers <- function(data, year, variable){
   
-  data <- data[!(F_SYTEMorig == 7 & NHS != 1),]
+  data <- data[!(F_SYTEMorig == 7 & NHS != 1)&data_item==variable & year_record==year,]
   
   outlier_threshold_high <- gVariables[Name == variable, Outlier_Max]
   outlier_threshold_low  <- gVariables[Name == variable, Outlier_Min]
   
-  d.l <- data[ data_item==variable & year_record==year, , ]    
+  d.l <- data    
   
   result.1 <- d.l[
     (value_numeric < outlier_threshold_high | 
@@ -44,7 +44,7 @@ getOutliers <- function(data, year, variable){
   report.1[, groupCat := F_SYSTEM + 2]
   report.1[, F_SYSTEM := NULL]
   
-  d.l <- data[data_item == variable & year_record == year & Interstate == 1,,]    
+  d.l <- data[Interstate == 1,,]    
   
   result.2 <- d.l[(value_numeric < outlier_threshold_high | value_numeric > outlier_threshold_low),
                   list(miles=round(sum(end_point-begin_point,na.rm=TRUE),2),.N),
@@ -65,11 +65,10 @@ getOutliers <- function(data, year, variable){
   
   report.2[, groupCat:=1]
   
-  d.l <- data[data_item==variable & year_record==year & NHS == 1,,]    
+  d.l <- data[NHS == 1,,]    
   
   result.3 <- d.l[(value_numeric < outlier_threshold_high | value_numeric > outlier_threshold_low),
-                  list(miles=round(sum(end_point-begin_point,na.rm=TRUE),2),.N),
-                  ]
+                  list(miles=round(sum(end_point-begin_point,na.rm=TRUE),2),.N),]
   
   if(nrow(result.3)==0){
     result.3 <- data.table(miles=NA, N=NA)

@@ -369,18 +369,26 @@ transposeItem <- function(dfname, data_item){
   return(sql)  
 }
 
+append_column = function(data,column){
+  
+  data.column = data[data_item==column,.(year_record,route_id,begin_point,end_point,value_numeric)]
+  setnames(data.column,"value_numeric",column)
+  data[data.column,(column):=get(column),on=.(year_record,route_id,begin_point,end_point)]
+  return(data)
+}
+
 # Format a given data set for use in the score card generation process
 FormatDataSet <- function(dat, state_abbr, year) {
 
-  
-  
   # Merge data on itself to convert rows to columns
   
-  data.formatted <- data.table( sqldf(transposeItem('dat', 'F_SYSTEM') ))
-  data.formatted <- data.table( sqldf(transposeItem('data.formatted', 'NHS')) )
-  data.formatted <- data.table( sqldf(transposeItem('data.formatted', 'FACILITY_TYPE')))
-  data.formatted <- data.table( sqldf(transposeItem('data.formatted', 'THROUGH_LANES')))
-  data.formatted <- data.table( sqldf(transposeItem('data.formatted', 'URBAN_CODE')))
+  data.formatted = expand(dat,0.1)
+  
+  data.formatted = append_column(data.formatted,"F_SYSTEM")
+  data.formatted = append_column(data.formatted,"NHS")
+  data.formatted = append_column(data.formatted,"FACILITY_TYPE")
+  data.formatted = append_column(data.formatted,"THROUGH_LANES")
+  data.formatted = append_column(data.formatted,"URBAN_CODE")
 
   #F_SYSTEM Codes
   # 1 Interstate
@@ -417,23 +425,34 @@ FormatDataSet <- function(dat, state_abbr, year) {
   odbcClose(con)
 
   sp <- cleanUpQuery(sp)
-    
   # setnames(sp,
   #         c("YEAR_RECORD", "STATE_CODE", "ROUTE_ID","BEGIN_POINT", "END_POINT", "SAMPLE_ID","EXPANSION_FACTOR"),
   #         c("year_record", "state_code", "route_id","begin_point", "end_point", "sample_id","expansion_factor"))
   
-  data_exp <- data.table(
-    sqldf("select A.*, B.expansion_factor as expansion_factor
-           from [data_noFT6] A 
-           left join [sp] B on A.route_id = B.route_id and 
-                                           A.year_record = B.year_record and 
-                                           A.state_code = B.state_code and 
-                                           A.begin_point <= B.end_point and 
-                                           A.begin_point >= B.begin_point and 
-                                           A.end_point <= B.end_point and 
-                                           A.end_point >= B.begin_point"))
+  #data_exp <- data.table(
+  #  sqldf("select A.*, B.expansion_factor as expansion_factor
+  #         from [data_noFT6] A 
+  #         left join [sp] B on A.route_id = B.route_id and 
+  #                                         A.year_record = B.year_record and 
+  #                                         A.state_code = B.state_code and 
+  #                                         A.begin_point <= B.end_point and 
+  #                                         A.begin_point >= B.begin_point and 
+  #                                         A.end_point <= B.end_point and 
+  #                                         A.end_point >= B.begin_point"))
+  
+  sp = expand(sp,0.1)
+ 
+  # things we do not need in SP
+  
+  sp[,num_sections:=NULL]
+  sp[,section_length:=NULL]
+  sp[,stateyearkey:=NULL]
+  sp[,state_code:=NULL]
+  
+  data_exp = sp[data_noFT6,on=.(year_record,route_id,begin_point,end_point)]
   
   data_exp[, expansion_factor:=as.numeric(expansion_factor)]
+  
   rm(data.formatted)
   
 
@@ -471,7 +490,7 @@ FormatDataSet <- function(dat, state_abbr, year) {
   
 
   # Prepare to write out the data
-  setkeyv(data_exp, c("year_record", "route_id", "data_item"))
+  setkeyv(data_exp, c("state_code","year_record","route_id","data_item","begin_point","end_point"))
 
   rm(data_noFT6)  
   gc()

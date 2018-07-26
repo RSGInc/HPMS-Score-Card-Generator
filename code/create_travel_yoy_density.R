@@ -28,22 +28,22 @@ create_travel_yoy_density <- function(
   if(type==1){
 
     if(ramps){   
-      var.1    <- data[state_code==state&year_record==year          &data_item==variable&FACILITY_TYPE==4&!is.na(value_numeric),list(route_id,begin_point,end_point,value_numeric,F_SYSTEM,Interstate,NHS)]
-      var.2    <- data[state_code==state&year_record==yearcomparison&data_item==variable&FACILITY_TYPE==4&!is.na(value_numeric),list(route_id,begin_point,end_point,value_numeric,F_SYSTEM,Interstate,NHS)]
+      var.1    <- data[state_code==state&year_record==year          &data_item==variable&FACILITY_TYPE==4&!is.na(value_numeric),list(route_id,begin_point,end_point,value_numeric,F_SYSTEM,Interstate,NHS,num_sections)]
+      var.2    <- data[state_code==state&year_record==yearcomparison&data_item==variable&FACILITY_TYPE==4&!is.na(value_numeric),list(route_id,begin_point,end_point,value_numeric,F_SYSTEM,Interstate,NHS,num_sections)]
     } else {   
-      var.1    <- data[state_code==state&year_record==year          &data_item==variable&FACILITY_TYPE!=4&!is.na(value_numeric),list(route_id,begin_point,end_point,value_numeric,F_SYSTEM,Interstate,NHS)]
-      var.2    <- data[state_code==state&year_record==yearcomparison&data_item==variable&FACILITY_TYPE!=4&!is.na(value_numeric),list(route_id,begin_point,end_point,value_numeric,F_SYSTEM,Interstate,NHS)]
+      var.1    <- data[state_code==state&year_record==year          &data_item==variable&FACILITY_TYPE!=4&!is.na(value_numeric),list(route_id,begin_point,end_point,value_numeric,F_SYSTEM,Interstate,NHS,num_sections)]
+      var.2    <- data[state_code==state&year_record==yearcomparison&data_item==variable&FACILITY_TYPE!=4&!is.na(value_numeric),list(route_id,begin_point,end_point,value_numeric,F_SYSTEM,Interstate,NHS,num_sections)]
     }
   }
   
   if(type==2){
     
     if(ramps){   
-      var.1    <- data[state_code==state & year_record==year           & data_item==variable & FACILITY_TYPE==4 & !is.na(value_date), list(route_id, begin_point, end_point, value_numeric=year(value_date), F_SYSTEM, Interstate, NHS)]
-      var.2    <- data[state_code==state & year_record==yearcomparison & data_item==variable & FACILITY_TYPE==4 & !is.na(value_date), list(route_id, begin_point, end_point, value_numeric=year(value_date), F_SYSTEM, Interstate, NHS)]
+      var.1    <- data[state_code==state & year_record==year           & data_item==variable & FACILITY_TYPE==4 & !is.na(value_date), list(route_id, begin_point, end_point, value_numeric=year(value_date), F_SYSTEM, Interstate, NHS,num_sections)]
+      var.2    <- data[state_code==state & year_record==yearcomparison & data_item==variable & FACILITY_TYPE==4 & !is.na(value_date), list(route_id, begin_point, end_point, value_numeric=year(value_date), F_SYSTEM, Interstate, NHS,num_sections)]
     } else {   
-      var.1    <- data[state_code==state & year_record==year           & data_item==variable & FACILITY_TYPE !=4 & !is.na(value_date), list(route_id, begin_point, end_point, value_numeric=year(value_date), F_SYSTEM, Interstate, NHS)]
-      var.2    <- data[state_code==state & year_record==yearcomparison & data_item==variable & FACILITY_TYPE !=4 & !is.na(value_date), list(route_id, begin_point, end_point, value_numeric=year(value_date), F_SYSTEM, Interstate, NHS)]
+      var.1    <- data[state_code==state & year_record==year           & data_item==variable & FACILITY_TYPE !=4 & !is.na(value_date), list(route_id, begin_point, end_point, value_numeric=year(value_date), F_SYSTEM, Interstate, NHS,num_sections)]
+      var.2    <- data[state_code==state & year_record==yearcomparison & data_item==variable & FACILITY_TYPE !=4 & !is.na(value_date), list(route_id, begin_point, end_point, value_numeric=year(value_date), F_SYSTEM, Interstate, NHS,num_sections)]
     }
   }
   

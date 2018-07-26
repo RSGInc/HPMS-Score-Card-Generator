@@ -12,7 +12,7 @@
 
 create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
   TS <- Sys.time()
-  
+
   cat("Creating score card...\n\n")
   cat(paste(getStateLabelFromNum(state), "-", year, "vs.", year_compare, 
             "\n\n"))
@@ -39,11 +39,11 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
   cat("Title page...")
   ts <- Sys.time()
   create_title_page(data, state, year, year_compare)
-  cat(paste0("\nTitle page completed in: ",
+  cat(paste0(" completed in: ",
              round(difftime(Sys.time(), ts, units = "secs"), 2), " seconds!\n"))
 
   # subset data
-  data <- data[year_record %in% c(year, year_compare), ]
+  # data <- data[year_record %in% c(year, year_compare), ]
 
   cat("Information page...")
   ts <- Sys.time()
@@ -68,7 +68,7 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
   # Ramps: Detailed Review
   cat("Ramps review...")
   ts <- Sys.time()
-
+#browser()
   todo_vec <- (1:nrow(gVariables))[gVariables[, RampAnalysis] == "Y"]
   todo_vec <- c(todo_vec, rep(NA, 3 - (length(todo_vec) %% 3)))
   todo <- matrix(todo_vec, ncol = 3, byrow = TRUE)

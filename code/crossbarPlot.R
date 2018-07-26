@@ -10,8 +10,7 @@
 #
 ###########################################################################
 
-crossbarPlot <- function(result)
-{
+crossbarPlot <- function(result){
 
      p <- ggplot(result, aes(groupCat, mq, ymin = lq, ymax=uq))
      p <- p + 

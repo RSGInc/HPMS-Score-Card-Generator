@@ -23,13 +23,10 @@ create_outlier_report <- function(data, state, year, variable){
                  state_code==state &
                  year_record==year & FACILITY_TYPE!=4, ,]    
   
-  result.1 <- d.l[
-  (value_numeric > outlier_threshold_high |
-     value_numeric < outlier_threshold_low),
-  list(miles=round(sum(end_point-begin_point,na.rm=TRUE),2),.N),
-  by=list(F_SYSTEM)
-  ]
-  
+  result.1 <- d.l[(value_numeric > outlier_threshold_high | value_numeric < outlier_threshold_low),
+    list(miles=round(sum(end_point-begin_point,na.rm=TRUE),2),N=sum(num_sections)),
+  by=list(F_SYSTEM)]
+
   total.1 <- d.l[ ,
                  list(totalmiles = round(sum(end_point-begin_point), 2)),
                  by=list(F_SYSTEM)]
@@ -54,7 +51,7 @@ create_outlier_report <- function(data, state, year, variable){
   
   result.2 <- d.l[(value_numeric > outlier_threshold_high |
                      value_numeric < outlier_threshold_low),
-                  list(miles = round(sum(end_point - begin_point,na.rm=TRUE), 2), .N),
+                  list(miles = round(sum(end_point - begin_point,na.rm=TRUE), 2), N=sum(num_sections)),
                   ]
   
   total.2 <- d.l[ ,list(totalmiles=round(sum(end_point-begin_point),2)),]
@@ -77,7 +74,7 @@ create_outlier_report <- function(data, state, year, variable){
   
   result.3 <- d.l[(value_numeric > outlier_threshold_high |
                      value_numeric < outlier_threshold_low),
-                  list(miles = round(sum(end_point - begin_point, na.rm=TRUE), 2), .N),
+                  list(miles = round(sum(end_point - begin_point, na.rm=TRUE), 2), N=sum(num_sections)),
                   ]
   
   if(nrow(result.3)==0){

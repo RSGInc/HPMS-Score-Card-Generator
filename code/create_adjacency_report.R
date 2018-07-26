@@ -14,12 +14,12 @@
 
 create_adjacency_report <- function(data, state, year, variable){
   
-  data <- data[,.(year_record, state_code, route_id, begin_point, end_point,
-                  data_item, value_numeric, value_text, value_date, F_SYSTEM,
-                  NHS, FACILITY_TYPE, THROUGH_LANES, URBAN_CODE, F_SYTEMorig,
-                  Interstate)]
+  #data <- data[,.(year_record, state_code, route_id, begin_point, end_point,
+  #                data_item, value_numeric, value_text, value_date, F_SYSTEM,
+  #                NHS, FACILITY_TYPE, THROUGH_LANES, URBAN_CODE, F_SYTEMorig,
+  #                Interstate)]
   
-  data <- unique(data)
+  #data <- unique(data)
   
   highlight_threshold <- gVariables[Name==variable,AH_Thresh]
   
@@ -38,7 +38,7 @@ create_adjacency_report <- function(data, state, year, variable){
   )
   
   result <- d.adj[value_numeric.x == value_numeric.y,
-                  list(miles = round(sum(end_point.x - begin_point.x), 2), .N),
+                  list(miles = round(sum(end_point.x - begin_point.x), 2), N=sum(num_sections.x)),
                   by = list(F_SYSTEM.x)]
   
   result <- merge(data.table(F_SYSTEM.x=c(1,2)), result,
@@ -82,7 +82,7 @@ create_adjacency_report <- function(data, state, year, variable){
   )
   
   result <- d.adj[value_numeric.x == value_numeric.y,
-                  list(miles=round(sum(end_point.x - begin_point.x), 2), .N),]
+                  list(miles=round(sum(end_point.x - begin_point.x), 2), N=sum(num_sections.x)),]
   
   total <- d.l[ , list(totalmiles = round(sum(end_point - begin_point),2)),]
   
@@ -119,7 +119,7 @@ create_adjacency_report <- function(data, state, year, variable){
   )
   
   result <- d.adj[value_numeric.x == value_numeric.y,
-                  list(miles = round(sum(end_point.x - begin_point.x),2),.N),]
+                  list(miles = round(sum(end_point.x - begin_point.x),2),N=sum(num_sections.x)),]
   
   total <- d.l[ , list(totalmiles = round(sum(end_point - begin_point),2)),]
   

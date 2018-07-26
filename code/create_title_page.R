@@ -325,7 +325,6 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
   
   dt_quality <- calcQualityAll(data, year, year_compare)
   
-  
   colWidth <- 0.152
   rowWidth <- 0.020 
   space1 <- 0.008    # Space between start of text and completeness symbol
@@ -351,8 +350,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
     nRow     = c(   4,    3,   4,    5,   1,     1))
   
   cat("\nCalculating coverage validation results. This may take some time to complete.")
-  
-  # Print completeness and quality for each data item
+    # Print completeness and quality for each data item
   for ( g in 1:nrow(group_params)){
     
     R <- 1
@@ -374,7 +372,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
         gp = gpar(col = "slategray", fontsize = 7)
       ))
       
-      CompleteType <-
+      CompleteType <- 
         plotCompleteness(data, year, variable,
                         x = startx + (C - 1) * colWidth + space1,
                         y = starty - (R - 1) * rowWidth)
@@ -407,7 +405,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
   #QualityScoreMax <-
   #  QualityScoreMax + 100 * group_vars$Quality_Weight[i]
   
-  QualityScore <- sum(dt_quality$Quality_Score * dt_quality$Quality_Weight, na.rm=TRUE)
+  QualityScore    <- sum(dt_quality$Quality_Score * dt_quality$Quality_Weight, na.rm=TRUE)
   QualityScoreMax <- sum(!is.na(dt_quality$Quality_Score) * dt_quality$Quality_Weight) * 100
   
   path <- file.path('data', getStateLabelFromNum(data$state_code[1]))

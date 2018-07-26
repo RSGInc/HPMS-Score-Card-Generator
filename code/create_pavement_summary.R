@@ -16,14 +16,12 @@ create_pavement_summary <- function(data, state, year){
   #browser()
   
   # Subset the data
-  dt <- data[state_code == state & year_record == year &
-               data_item %in% c('THROUGH_LANES', 'SURFACE_TYPE'),
-             list(year_record, state_code, begin_point, end_point,
-                  data_item, value_numeric, section_length,
-                  F_SYSTEM, Interstate, NHS, FACILITY_TYPE, THROUGH_LANES, URBAN_CODE)]
+  dt <- data[state_code == state & 
+             year_record == year &
+             data_item %in% c('THROUGH_LANES', 'SURFACE_TYPE'),]
   
   # Create "by" variable for summaries
-  #warning("Jeff, please check the calculation of the group variable",
+  # warning("Jeff, please check the calculation of the group variable",
   #        immediate. = TRUE)
   
   dt[, group := 0]
@@ -41,7 +39,7 @@ create_pavement_summary <- function(data, state, year){
   # Missing through lanes
   dt_through_lanes <- 
     dt[state_code  ==  state & year_record == year & data_item == "THROUGH_LANES",
-       list(n_missing = sum(is.na(value_numeric) | is.null(value_numeric))),
+       list(n_missing = sum(num_sections * ( is.na(value_numeric) | is.null(value_numeric)))),
        by=group]
   
   dt_through_lanes = merge(data.table(group=1:length(gF_SYSTEM_levels)),dt_through_lanes,by="group",all.x=T)
@@ -50,10 +48,10 @@ create_pavement_summary <- function(data, state, year){
   # Summarize surface type
   dt_surftype <- 
     dt[state_code == state & year_record == year & data_item == 'SURFACE_TYPE',
-       list(n_missing = sum(is.na(value_numeric) | is.null(value_numeric)),
-            n_1 = sum(value_numeric == 1 & !is.na(value_numeric)),
-            n_11 = sum(value_numeric == 1 & !is.na(value_numeric)),
-            n_sec_gt_011 = sum(section_length >= 0.11)),
+       list(n_missing = sum(num_sections * (is.na(value_numeric) | is.null(value_numeric))),
+            n_1 =  sum(num_sections * (value_numeric == 1 & !is.na(value_numeric))),
+            n_11 = sum(num_sections * (value_numeric == 1 & !is.na(value_numeric))),
+            n_sec_gt_011 = sum(num_sections * (section_length >= 0.11))),
        by=group]
   
   dt_surftype = merge(data.table(group=1:length(gF_SYSTEM_levels)),dt_surftype,by="group",all.x=T)

@@ -24,8 +24,8 @@ create_data_summary <- function(data, state, year, year_compare){
   # (total length for Rural Minor Collectors x 2)
   
 
-  n_Records.1   <- data[state_code == state & year_record == year, .N, ]        
-  n_Records.2   <- data[state_code == state & year_record == year_compare, .N, ]
+  n_Records.1   <- data[state_code == state & year_record == year, sum(num_sections), ]        
+  n_Records.2   <- data[state_code == state & year_record == year_compare, sum(num_sections), ]
 
   # Generate an index to keep only certain rows that meet certain criteria
   idx_st_fsystem <- with(data, (state_code == state & data_item == 'F_SYSTEM'))
@@ -83,28 +83,9 @@ create_data_summary <- function(data, state, year, year_compare){
 
   # Match sections, then get counts of unmatched sections
 
-  dt_sections_j <- sqldf(
-    'select A.id_1, A.route_id, A.begin_point as [begin_point.1], A.end_point as [end_point.1],
-            B.id_2, B.route_id, B.begin_point as [begin_point.2], B.end_point as [end_point.2]
-     from [dt_sections.1] A
-     left join [dt_sections.2] B on
-     A.route_id = B.route_id and
-     ((
-        (A.begin_point >= B.begin_point) and
-        (A.end_point <= B.end_point) and
-        (A.begin_point <= B.end_point) and
-        (A.end_point >= B.begin_point)
-       ) or (
-        (B.begin_point >= A.begin_point) and
-        (B.end_point <= A.end_point) and
-        (B.begin_point <= A.end_point) and
-        (B.end_point >= A.begin_point)
-       ))'
-    )
-
-  dt_sections_j <- data.table(dt_sections_j)
+  dt_sections_j = dt_sections.2[dt_sections.1,on=.(route_id,begin_point,end_point)]
   
-  dt_sec_nomatch.1 <- dt_sections_j[is.na(begin_point.2)]
+  dt_sec_nomatch.1 <- dt_sections_j[is.na(id_2)]
   dt_sec_nomatch.2 <- dt_sections.2[!id_2 %in% dt_sections_j$id_2]
 
   pct_sec_nomatch.1 <- nrow(dt_sec_nomatch.1) / n_sections.1 * 100

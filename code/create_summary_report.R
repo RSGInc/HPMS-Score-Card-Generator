@@ -49,9 +49,9 @@ create_summary_report <- function(
   }
 
   result1 <- switch(variable_type,
-                    result1[,summaryFunc(value_numeric),by=list(F_SYSTEM,miles,expandedmiles,lanemiles,expandedlanemiles)],
-                    result1[,summaryFunc(as.Date(as.character(value_date))),by=list(F_SYSTEM,miles,expandedmiles,lanemiles,expandedlanemiles)],
-                    result1[,summaryFunc(value_numeric)[1:2],by=list(F_SYSTEM,miles,expandedmiles,lanemiles,expandedlanemiles)]
+                    result1[,summaryFunc(value_numeric,weights=num_sections),by=list(F_SYSTEM,miles,expandedmiles,lanemiles,expandedlanemiles)],
+                    result1[,summaryFunc(lubridate::year(as.Date(as.character(value_date))),weights=num_sections),by=list(F_SYSTEM,miles,expandedmiles,lanemiles,expandedlanemiles)],
+                    result1[,summaryFunc(value_numeric,weights=num_sections)[1:2],by=list(F_SYSTEM,miles,expandedmiles,lanemiles,expandedlanemiles)]
   )
   
   result1[,groupCat:=F_SYSTEM+2]
@@ -79,9 +79,9 @@ create_summary_report <- function(
   }
 
   result2 <- switch(variable_type,
-                    result2[,summaryFunc(value_numeric),by=list(miles,expandedmiles,lanemiles,expandedlanemiles)],
-                    result2[,summaryFunc(as.Date(as.character(value_date))),by=list(miles,expandedmiles,lanemiles,expandedlanemiles)],
-                    result2[,summaryFunc(value_numeric)[1:2],by=list(miles,expandedmiles,lanemiles,expandedlanemiles)]
+                    result2[,summaryFunc(value_numeric,weights=num_sections),by=list(miles,expandedmiles,lanemiles,expandedlanemiles)],
+                    result2[,summaryFunc(lubridate::year(as.Date(as.character(value_date))),weights=num_sections),by=list(miles,expandedmiles,lanemiles,expandedlanemiles)],
+                    result2[,summaryFunc(value_numeric,weights=num_sections)[1:2],by=list(miles,expandedmiles,lanemiles,expandedlanemiles)]
   )
   
   result2[,groupCat:=1]
@@ -107,9 +107,9 @@ create_summary_report <- function(
   }
   
   result3 <- switch(variable_type,
-                    result3[,summaryFunc(value_numeric),by=list(miles,expandedmiles,lanemiles,expandedlanemiles)],
-                    result3[,summaryFunc(as.Date(as.character(value_date))),by=list(miles,expandedmiles,lanemiles,expandedlanemiles)],
-                    result3[,summaryFunc(value_numeric)[1:2],by=list(miles,expandedmiles,lanemiles,expandedlanemiles)]
+                    result3[,summaryFunc(value_numeric,weights=num_sections),by=list(miles,expandedmiles,lanemiles,expandedlanemiles)],
+                    result3[,summaryFunc(lubridate::year(as.Date(as.character(value_date))),weights=num_sections),by=list(miles,expandedmiles,lanemiles,expandedlanemiles)],
+                    result3[,summaryFunc(value_numeric,weights=num_sections)[1:2],by=list(miles,expandedmiles,lanemiles,expandedlanemiles)]
   )
   
   result3[,groupCat:=2]
@@ -132,20 +132,20 @@ create_summary_report <- function(
                     result, by="groupCat", all.x=T)
   }
   
-  if(variable_type==1)
+  if(variable_type%in%c(1,2))
   {
     result[,min:=string_format(min)]    
     result[,mean:=string_format(mean)]
     result[,median:=string_format(median)]
     result[,max:=string_format(max)]
   }
-  if(variable_type==2)
-  {
-    result[,min:=year(min)]    
-    result[,mean:=year(mean)]
-    result[,median:=year(median)]
-    result[,max:=year(max)]
-  }
+  #if(variable_type==2)
+  #{
+  #  result[,min:=year(min)]    
+  #  result[,mean:=year(mean)]
+  #  result[,median:=year(median)]
+  #  result[,max:=year(max)]
+  #}
   
   if(nrow(result)>0)
   {

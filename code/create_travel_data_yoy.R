@@ -28,36 +28,29 @@ create_travel_data_yoy <- function(
 {
   type <- gVariables[Name==variable,Type]
   
-  if(type==1)
-  {
-    if(ramps)
-    {
-      var.1    <- data[state_code==state&year_record==year          &data_item==variable&FACILITY_TYPE==4,list(route_id,begin_point,end_point,value_numeric,F_SYSTEM)]
-      var.2    <- data[state_code==state&year_record==yearcomparison&data_item==variable&FACILITY_TYPE==4,list(route_id,begin_point,end_point,value_numeric,F_SYSTEM)]
+  if(type==1){
+    if(ramps){
+      var.1 = data[state_code==state&year_record==year          &data_item==variable&FACILITY_TYPE==4,list(route_id,begin_point,end_point,value_numeric,F_SYSTEM)]
+      var.2 = data[state_code==state&year_record==yearcomparison&data_item==variable&FACILITY_TYPE==4,list(route_id,begin_point,end_point,value_numeric,F_SYSTEM)]
     } else {
-      var.1    <- data[state_code==state&year_record==year          &data_item==variable&FACILITY_TYPE!=4,list(route_id,begin_point,end_point,value_numeric,F_SYSTEM)]
-      var.2    <- data[state_code==state&year_record==yearcomparison&data_item==variable&FACILITY_TYPE!=4,list(route_id,begin_point,end_point,value_numeric,F_SYSTEM)]       
+      var.1 = data[state_code==state&year_record==year          &data_item==variable&FACILITY_TYPE!=4,list(route_id,begin_point,end_point,value_numeric,F_SYSTEM)]
+      var.2 = data[state_code==state&year_record==yearcomparison&data_item==variable&FACILITY_TYPE!=4,list(route_id,begin_point,end_point,value_numeric,F_SYSTEM)]       
     }   
   }
   
-  if(type==2)
-  {
-    if(ramps)
-    {
-      var.1    <- data[state_code==state&year_record==year          &data_item==variable&FACILITY_TYPE==4&!is.na(value_date),list(route_id,begin_point,end_point,value_numeric=year(value_date),F_SYSTEM)]
-      var.2    <- data[state_code==state&year_record==yearcomparison&data_item==variable&FACILITY_TYPE==4&!is.na(value_date),list(route_id,begin_point,end_point,value_numeric=year(value_date),F_SYSTEM)]
+  if(type==2){
+    if(ramps){
+      var.1 = data[state_code==state&year_record==year          &data_item==variable&FACILITY_TYPE==4&!is.na(value_date),list(route_id,begin_point,end_point,value_numeric=year(value_date),F_SYSTEM)]
+      var.2 = data[state_code==state&year_record==yearcomparison&data_item==variable&FACILITY_TYPE==4&!is.na(value_date),list(route_id,begin_point,end_point,value_numeric=year(value_date),F_SYSTEM)]
     } else {
-      var.1    <- data[state_code==state&year_record==year          &data_item==variable&FACILITY_TYPE!=4&!is.na(value_date),list(route_id,begin_point,end_point,value_numeric=year(value_date),F_SYSTEM)]
-      var.2    <- data[state_code==state&year_record==yearcomparison&data_item==variable&FACILITY_TYPE!=4&!is.na(value_date),list(route_id,begin_point,end_point,value_numeric=year(value_date),F_SYSTEM)]       
+      var.1 = data[state_code==state&year_record==year          &data_item==variable&FACILITY_TYPE!=4&!is.na(value_date),list(route_id,begin_point,end_point,value_numeric=year(value_date),F_SYSTEM)]
+      var.2 = data[state_code==state&year_record==yearcomparison&data_item==variable&FACILITY_TYPE!=4&!is.na(value_date),list(route_id,begin_point,end_point,value_numeric=year(value_date),F_SYSTEM)]       
     }
   }
   
-  
-  
   expectedChange <- gVariables[Name==variable,YOY_Change]
   
-  if(expectedChange=="Y")
-  {
+  if(expectedChange=="Y"){
     ff1<-"*"
     ff2<-""
   } else {
@@ -67,63 +60,31 @@ create_travel_data_yoy <- function(
   
   # this does the merge at the most disaggregate level
   
-  var.yoy <- sqldf("
-                      select 
-                      A.route_id,
-                      A.F_SYSTEM,
-                      A.begin_point as [begin_point.x],
-                      A.end_point   as [end_point.x],
-                      A.value_numeric as [value_numeric.x],
-                      B.value_numeric as [value_numeric.y]
-                      from [var.1] A 
-                      left join [var.2] B on 
-                      A.route_id = B.route_id and 
-                      (
-                      (
-                      ( A.begin_point <= B.end_point   ) and
-                      ( A.end_point   >= B.begin_point ) and 
-                      ( A.begin_point >= B.begin_point ) and 
-                      ( A.end_point   <= B.end_point   )
-                      ) or
-                      (
-                      ( B.begin_point <= A.end_point   ) and
-                      ( B.end_point   >= A.begin_point ) and 
-                      ( B.begin_point >= A.begin_point ) and 
-                      ( B.end_point   <= A.end_point   )
-                      )
-                      ) 
-                      ")
+  var.yoy = var.1[var.2,on=.(route_id,begin_point,end_point)]
   
-  var.yoy <- data.table(var.yoy)
-  
-  var.yoy <- unique(var.yoy)
-  
-  if(nrow(var.yoy)>0) # we have something to report
-  {
+  if(nrow(var.yoy)>0){ # we have something to report
     
-    if(histtype==1)
-    {
-      report <- var.yoy[,change:=value_numeric.x/value_numeric.y]
+    if(histtype==1){
+      report = var.yoy[,change:=value_numeric/i.value_numeric]
       report[,change:=(change-1)*100]
       
       # need to use geom_bar and construct a custom histogram
       report[, bin2 := cut_custom(change)] # using custom function to have more control
-      totalmiles<-report[,sum(end_point.x-begin_point.x)]
-      report <- report[,end_point.x:=end_point.x/totalmiles]
-      report <- report[,begin_point.x:=begin_point.x/totalmiles]
-      report[change< -1e-3 ,color:=factor("Reduction")]
+      totalmiles<-report[,sum(end_point-begin_point)]
+      report <- report[,end_point:=end_point/totalmiles]
+      report <- report[,begin_point:=begin_point/totalmiles]
+      report[change <-1e-3 ,color:=factor("Reduction")]
       report[change>=-1e-3&change<=1e3,color:=factor("Same")]
-      report[change>1e-3 ,color:=factor("Increase")]
+      report[change > 1e-3 ,color:=factor("Increase")]
       report[is.na(change) ,color:=factor("No Match")]
       
-    } else
-    {
-      report <- var.yoy[,bin2:=factor(1+1*(value_numeric.x!=value_numeric.y),levels=c(1,2),labels=c("No Change","Changed"))]
+    } else {
+      report <- var.yoy[,bin2:=factor(1+1*(value_numeric!=i.value_numeric),levels=c(1,2),labels=c("No Change","Changed"))]
       report[as.numeric(bin2)==1,color:="No"]
       report[as.numeric(bin2)==2,color:="Yes"]
       report[is.na(bin2)        ,color:="NA"]
       report$color <- factor(report$color, levels=c('NA', 'Yes', 'No'))
-      report <- report[,sum(end_point.x-begin_point.x),by=.(color)]
+      report <- report[,sum(end_point-begin_point),by=.(color)]
       totalmiles <- report[,sum(V1)]
       report <- report[,V1:=V1/totalmiles]
       report[,color2:=color]
@@ -133,13 +94,11 @@ create_travel_data_yoy <- function(
       report[is.na(color), V1:=0]
       report[is.na(color), color:=color2]
       
-      
     }
     
     # custom axis labels
-    if(histtype==1)
-    {
-      p <- ggplot(report, aes(x=bin2,fill=color,weight=end_point.x-begin_point.x)) + geom_bar(width=0.75)
+    if(histtype==1){
+      p <- ggplot(report, aes(x=bin2,fill=color,weight=end_point-begin_point)) + geom_bar(width=0.75)
       p <- p + scale_x_discrete("", breaks=factor(c(1:17,18),levels=c(1:17,18),labels=c("< -100%","-100%","-75%","-50%","-25%","-15%","-5%","-1%","0%","1%","5%","15%","25%","50%","75%","100%","> 100%","No Match"),exclude=NULL), drop=FALSE)
       p <- p + scale_fill_manual("",values=c("Same"="slategray","Reduction"="gray50","Increase"="gray50","No Match"="black"))
       p <- p + scale_y_continuous(labels=percent,limits=c(0,1)) 
@@ -168,8 +127,7 @@ create_travel_data_yoy <- function(
                    panel.grid.minor=element_blank(),
                    plot.background=element_blank())
     
-    if(histtype==1)
-    {
+    if(histtype==1){
       p <- p + theme(
         axis.text.y = element_text(hjust = 1, size=fontsize),
         legend.position = "none",
@@ -181,11 +139,9 @@ create_travel_data_yoy <- function(
         arrangeGrob(textGrob(paste0("Total of ",string_format(totalmiles)," centerline miles."),hjust=0.5 ,vjust=0  ,gp=gpar(fontsize=4.5, col="gray50"))),
         nrow=2,
         heights=unit(c(0.90, 0.1),units="npc"),
-        widths=unit(1, units="npc")
-      )
+        widths=unit(1, units="npc"))
       
-    } else 
-    {
+    } else {
       p <- p + theme(
         axis.text.y     = element_blank(),
         axis.ticks      = element_blank(),
@@ -209,9 +165,7 @@ create_travel_data_yoy <- function(
                        heights=unit(c(0.05, 0.4, 0.22, 0.23, 0.1),units="npc"),
                        widths=unit(1,units="npc")
       )
-      
-      
-      
+
     }
     
     return(p)

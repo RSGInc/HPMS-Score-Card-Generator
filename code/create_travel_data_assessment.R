@@ -24,10 +24,10 @@ create_travel_data_assessment <- function(
      # AADT_SINGLE_UNIT = Single Unit Trucks/Buses
      # FUTURE_AADT
      
-     aadt    <- data[state_code==state&year_record==year&data_item=="AADT"&FACILITY_TYPE!=4,list(route_id,begin_point,end_point,value_numeric,F_SYSTEM,NHS,Interstate)]
-     aadt_cu <- data[state_code==state&year_record==year&data_item=="AADT_COMBINATION"&FACILITY_TYPE!=4,list(route_id,begin_point,end_point,value_numeric,F_SYSTEM,NHS,Interstate)]
-     aadt_su <- data[state_code==state&year_record==year&data_item=="AADT_SINGLE_UNIT"&FACILITY_TYPE!=4,list(route_id,begin_point,end_point,value_numeric,F_SYSTEM,NHS,Interstate)]
-     faadt   <- data[state_code==state&year_record==year&data_item=="FUTURE_AADT"&FACILITY_TYPE!=4,list(route_id,begin_point,end_point,value_numeric,F_SYSTEM,NHS,Interstate)]
+     aadt    <- data[state_code==state&year_record==year&data_item=="AADT"&FACILITY_TYPE!=4,list(route_id,begin_point,end_point,value_numeric,F_SYSTEM,NHS,Interstate,num_sections)]
+     aadt_cu <- data[state_code==state&year_record==year&data_item=="AADT_COMBINATION"&FACILITY_TYPE!=4,list(route_id,begin_point,end_point,value_numeric,F_SYSTEM,NHS,Interstate,num_sections)]
+     aadt_su <- data[state_code==state&year_record==year&data_item=="AADT_SINGLE_UNIT"&FACILITY_TYPE!=4,list(route_id,begin_point,end_point,value_numeric,F_SYSTEM,NHS,Interstate,num_sections)]
+     faadt   <- data[state_code==state&year_record==year&data_item=="FUTURE_AADT"&FACILITY_TYPE!=4,list(route_id,begin_point,end_point,value_numeric,F_SYSTEM,NHS,Interstate,num_sections)]
      
      aadt    <- unique(aadt)
      aadt_cu <- unique(aadt_cu)
@@ -44,23 +44,23 @@ create_travel_data_assessment <- function(
      
      comparison[,miles:=sum(end_point-begin_point),by=.(F_SYSTEM)]
      
-     sf <- function(x,diff=0)
+     sf <- function(x,diff=0,weight=rep(1,length(x)))
      {
           x <- (x - diff)
           return(list(
                min=min(x,na.rm=TRUE),
-               lq=quantile(x,c(0.25),na.rm=TRUE),
-               mq=quantile(x,c(0.5),na.rm=TRUE),
-               uq=quantile(x,c(0.75),na.rm=TRUE),
+               lq=weighted.quantile(x,w=weight,c(0.25),na.rm=TRUE),
+               mq=weighted.quantile(x,w=weight,c(0.5),na.rm=TRUE),
+               uq=weighted.quantile(x,w=weight,c(0.75),na.rm=TRUE),
                max=max(x,na.rm=TRUE)
                )
           )
      }
      
-     faadt.compare.1      <- comparison[Interstate==1,sf(FUTURE_AADT/AADT),]
-     faadt.compare.2      <- comparison[NHS==1,sf(FUTURE_AADT/AADT),]
-     faadt.compare.3      <- comparison[F_SYSTEM==1,sf(FUTURE_AADT/AADT),]
-     faadt.compare.4      <- comparison[F_SYSTEM==2,sf(FUTURE_AADT/AADT),]
+     faadt.compare.1      <- comparison[Interstate==1,sf(FUTURE_AADT/AADT,weight=num_sections.x),]
+     faadt.compare.2      <- comparison[NHS==1,sf(FUTURE_AADT/AADT,weight=num_sections.x),]
+     faadt.compare.3      <- comparison[F_SYSTEM==1,sf(FUTURE_AADT/AADT,weight=num_sections.x),]
+     faadt.compare.4      <- comparison[F_SYSTEM==2,sf(FUTURE_AADT/AADT,weight=num_sections.x),]
      
      faadt.compare.1[,groupCat:=1]
      faadt.compare.2[,groupCat:=2]
@@ -73,10 +73,10 @@ create_travel_data_assessment <- function(
      
      
      
-     aadt_combo.compare.1      <- comparison[Interstate==1,sf(AADT_COMBINATION/AADT),]
-     aadt_combo.compare.2      <- comparison[NHS==1,sf(AADT_COMBINATION/AADT),]
-     aadt_combo.compare.3      <- comparison[F_SYSTEM==1,sf(AADT_COMBINATION/AADT),]
-     aadt_combo.compare.4      <- comparison[F_SYSTEM==2,sf(AADT_COMBINATION/AADT),]
+     aadt_combo.compare.1      <- comparison[Interstate==1,sf(AADT_COMBINATION/AADT,weight=num_sections.x),]
+     aadt_combo.compare.2      <- comparison[NHS==1,sf(AADT_COMBINATION/AADT,weight=num_sections.x),]
+     aadt_combo.compare.3      <- comparison[F_SYSTEM==1,sf(AADT_COMBINATION/AADT,weight=num_sections.x),]
+     aadt_combo.compare.4      <- comparison[F_SYSTEM==2,sf(AADT_COMBINATION/AADT,weight=num_sections.x),]
      
      aadt_combo.compare.1[,groupCat:=1]
      aadt_combo.compare.2[,groupCat:=2]
@@ -89,10 +89,10 @@ create_travel_data_assessment <- function(
      
      
      
-     aadt_su.compare.1      <- comparison[Interstate==1,sf(AADT_SINGLE_UNIT/AADT),]
-     aadt_su.compare.2      <- comparison[NHS==1,sf(AADT_SINGLE_UNIT/AADT),]
-     aadt_su.compare.3      <- comparison[F_SYSTEM==1,sf(AADT_SINGLE_UNIT/AADT),]
-     aadt_su.compare.4      <- comparison[F_SYSTEM==2,sf(AADT_SINGLE_UNIT/AADT),]
+     aadt_su.compare.1      <- comparison[Interstate==1,sf(AADT_SINGLE_UNIT/AADT,weight=num_sections.x),]
+     aadt_su.compare.2      <- comparison[NHS==1,sf(AADT_SINGLE_UNIT/AADT,weight=num_sections.x),]
+     aadt_su.compare.3      <- comparison[F_SYSTEM==1,sf(AADT_SINGLE_UNIT/AADT,weight=num_sections.x),]
+     aadt_su.compare.4      <- comparison[F_SYSTEM==2,sf(AADT_SINGLE_UNIT/AADT,weight=num_sections.x),]
      
      aadt_su.compare.1[,groupCat:=1]
      aadt_su.compare.2[,groupCat:=2]
