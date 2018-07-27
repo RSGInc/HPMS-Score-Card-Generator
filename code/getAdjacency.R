@@ -13,32 +13,26 @@
 
 getAdjacency <- function(data, year, variable, adjacency_change){
     
-
   data <- data[data_item == variable & year_record == year,]
 
-  d.l = d.r = data
+  d.l <- data
   
-  d.l[,match_point:=end_point]
-  d.r[,match_point:=begin_point]
-  
-  d.adj = d.l[d.r,on=.(route_id,match_point)]
-  
-  d.adj <- d.adj[!is.na(i.value_numeric)]
-  
-  # # Instead of this join, use a lagged value_numeric
+  # Instead of a join, use a lagged value_numeric
   # # https://stackoverflow.com/questions/26291988/how-to-create-a-lag-variable-within-each-group
-  # d.adj2 <- d.l[order(route_id, begin_point), value_numeric_lag := shift(value_numeric), by = route_id]
-  # d.adj2[, .(route_id, begin_point, end_point, value_numeric, value_numeric_lag)]
-  # table(d.adj2[, .N, by=route_id]$N)
+  d.adj <- d.l[order(route_id, begin_point), value_numeric_lag := data.table::shift(value_numeric), by = route_id]
+  #d.adj[, .(route_id, begin_point, end_point, value_numeric, value_numeric_lag)]
+  d.adj <- d.adj[!is.na(value_numeric_lag)]
+  # table(d.adj$value_numeric == d.adj2$value_numeric_lag)
+  # table(d.adj[, .N, by=route_id]$N)
   
   if ( adjacency_change == 'N' ){
-    result <- d.adj[value_numeric == i.value_numeric,
+    result <- d.adj[value_numeric == value_numeric_lag,
                     list(miles=round(sum(end_point - begin_point), 2), N=sum(num_sections)),
                     by = list(F_SYSTEM)]
   }
   
   if (adjacency_change == 'Y' ){
-    result <- d.adj[value_numeric != i.value_numeric,
+    result <- d.adj[value_numeric != value_numeric_lag,
                     list(miles = round(sum(end_point - begin_point), 2), N=sum(num_sections)),
                     by = list(F_SYSTEM)]
   }  
@@ -65,17 +59,15 @@ getAdjacency <- function(data, year, variable, adjacency_change){
   report.1[,groupCat:=F_SYSTEM + 2]
   report.1[,F_SYSTEM := NULL]
   
-  d.l = d.r = data[Interstate == 1]
+  d.l = data[Interstate == 1]
   
-  d.l[,match_point:=end_point]
-  d.r[,match_point:=begin_point]
+  d.adj <- d.l[order(route_id, begin_point), value_numeric_lag := data.table::shift(value_numeric), by = route_id]
+  d.adj <- d.adj[!is.na(value_numeric_lag)]
   
-  d.adj = d.l[d.r,on=.(route_id,match_point)]
-  
-  result <- d.adj[value_numeric == i.value_numeric,
+  result <- d.adj[value_numeric == value_numeric_lag,
                   list(miles=round(sum(end_point - begin_point), 2),N=sum(num_sections)),]
   
-  total <- d.adj[, list(totalmiles=round(sum(end_point.x - begin_point.x),2)),]
+  total <- d.adj[, list(totalmiles=round(sum(end_point - begin_point),2)),]
   
   if(nrow(result)==0){
     result <- data.table(miles=0,N=0)
@@ -90,17 +82,15 @@ getAdjacency <- function(data, year, variable, adjacency_change){
   
   report.2[, groupCat := 1]
   
-  d.l = d.r = data[NHS == 1]
+  d.l = data[NHS == 1]
   
-  d.l[,match_point:=end_point]
-  d.r[,match_point:=begin_point]
+  d.adj <- d.l[order(route_id, begin_point), value_numeric_lag := data.table::shift(value_numeric), by = route_id]
+  d.adj <- d.adj[!is.na(value_numeric_lag)]
   
-  d.adj = d.l[d.r,on=.(route_id,match_point)]
-
-  result <- d.adj[value_numeric == i.value_numeric,
+  result <- d.adj[value_numeric == value_numeric_lag,
                   list(miles=round(sum(end_point-begin_point),2),N=sum(num_sections)),]
   
-  total <- d.adj[ , list(totalmiles = round(sum(end_point.x - begin_point.x), 2)),]
+  total <- d.adj[ , list(totalmiles = round(sum(end_point - begin_point), 2)),]
   
   if(nrow(result) == 0){
     result <- data.table(miles=0, N=0)

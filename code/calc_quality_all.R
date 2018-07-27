@@ -22,9 +22,13 @@ calcQualityAll <- function(data, year, year_compare){
   dt_output$YOY_Score <- NA
   dt_output$Quality_Score <- NA
   
+  # Filter out non-NHS local roads
+  data <- data[!(F_SYTEMorig == 7 & NHS != 1), ]
+  
   for ( i in 1:nrow(dt_output)){
     
     variable <- dt_output$Name[i]
+    
     cat('\t', variable, '\n')
     
     if (nrow(data[year_record == year & data_item == variable]) == 0){
@@ -35,9 +39,6 @@ calcQualityAll <- function(data, year, year_compare){
       
       weights <- c(1, 1, 1, 1)
 
-      # Filter out non-NHS local roads
-      data <- data[!(F_SYTEMorig == 7 & NHS != 1), ]
-        
       outliers <- getOutliers(data, year, variable)
       
       # Note that getOutliers returns perc_miles that exceed outliers
