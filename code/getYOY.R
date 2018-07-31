@@ -18,16 +18,12 @@ getYOY <- function(data, year, yearcomparison, variable, yoy_change){
   
   var.1    <- data[year_record == year & data_item==variable,
                    list(route_id, begin_point, end_point, value_numeric,
-                        F_SYSTEM, NHS, Interstate)]
-  var.1 <- expand(var.1)
-  
-  
+                        F_SYSTEM, NHS, Interstate, num_sections)]
+
   var.2    <- data[year_record == yearcomparison & data_item==variable,
                    list(route_id, begin_point, end_point, value_numeric)]
     
   var.yoy = var.1[var.2,on=.(route_id,begin_point,end_point)]
-
-  
 
   
   # # Check result of join.  

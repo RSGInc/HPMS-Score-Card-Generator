@@ -69,17 +69,17 @@ create_data_summary <- function(data, state, year, year_compare){
 #browser()
   # Get n_sections  
   dt_sections.1 <- data[IDX & year_record == year,
-                       list(route_id, begin_point, end_point)]
+                       list(route_id, begin_point, end_point, num_sections)]
   
   dt_sections.2 <- data[IDX & year_record == year_compare,
-                       list(route_id, begin_point, end_point)]
+                       list(route_id, begin_point, end_point, num_sections)]
 
   # Add an id column so we can easily pull out the unmatched rows later
   dt_sections.1[, id_1 := 1:nrow(dt_sections.1)]
   dt_sections.2[, id_2 := 1:nrow(dt_sections.2)]
   
-  n_sections.1 <- nrow(unique(dt_sections.1))
-  n_sections.2 <- nrow(unique(dt_sections.2))
+  n_sections.1 <- round(sum(dt_sections.1$num_sections))
+  n_sections.2 <- round(sum(dt_sections.2$num_sections))
 
   # Match sections, then get counts of unmatched sections
 
@@ -88,8 +88,8 @@ create_data_summary <- function(data, state, year, year_compare){
   dt_sec_nomatch.1 <- dt_sections_j[is.na(id_2)]
   dt_sec_nomatch.2 <- dt_sections.2[!id_2 %in% dt_sections_j$id_2]
 
-  pct_sec_nomatch.1 <- nrow(dt_sec_nomatch.1) / n_sections.1 * 100
-  pct_sec_nomatch.2 <- nrow(dt_sec_nomatch.2) / n_sections.2 * 100
+  pct_sec_nomatch.1 <- round(sum(dt_sec_nomatch.1$i.num_sections)) / n_sections.1 * 100
+  pct_sec_nomatch.2 <- round(sum(dt_sec_nomatch.2$num_sections)) / n_sections.2 * 100
   
   # Put the data together into a table.
   result <- data.table(

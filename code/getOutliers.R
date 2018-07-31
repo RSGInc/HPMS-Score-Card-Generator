@@ -57,7 +57,7 @@ getOutliers <- function(data, year, variable){
   }
   
   report.2 <- data.table(result.2, total.2)
-  #report.2[is.na(miles),miles:=0] # setting values to 0 where there are no merges. this mean that the state had no lane miles outside the thresholds set
+  report.2[is.na(miles),miles:=0] # setting values to 0 where there are no merges. this mean that the state had no lane miles outside the thresholds set
   
   report.2[, perc_miles:=as.character(round(miles/totalmiles,2)*100)]
   
@@ -68,7 +68,8 @@ getOutliers <- function(data, year, variable){
   d.l <- data[NHS == 1,,]    
   
 
-  result.3 <- d.l[(value_numeric < outlier_threshold_high | value_numeric > outlier_threshold_low),
+  result.3 <- d.l[(value_numeric > outlier_threshold_high |
+                     value_numeric < outlier_threshold_low),
                   list(miles=round(sum(end_point-begin_point,na.rm=TRUE),2),N=sum(num_sections)),]
 
   if(nrow(result.3)==0){
@@ -78,7 +79,7 @@ getOutliers <- function(data, year, variable){
   total.3 <- d.l[ ,list(totalmiles=round(sum(end_point-begin_point),2)),]
   
   report.3 <- data.table(result.3,total.3)
-  #report.3[is.na(miles),miles:=0] # setting values to 0 where there are no merges. this mean that the state had no lane miles outside the thresholds set
+  report.3[is.na(miles),miles:=0] # setting values to 0 where there are no merges. this mean that the state had no lane miles outside the thresholds set
   
   report.3[, perc_miles:=as.character(round(miles/totalmiles,2)*100)]
   
