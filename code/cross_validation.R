@@ -109,7 +109,7 @@ cross_validation_x = function(data){
                               data_item=="PEAK_LANES",
                             .(route_id,begin_point,end_point,PEAK_LANES=value_numeric)]
 
-  if(nrow(through_lanes)==0|nrow(counter_peak_lanes)==0|nrow(peak_lanes)==0){
+  if(nrow(through_lanes)==0|(nrow(counter_peak_lanes)+nrow(peak_lanes))==0){
     warning("Not applicable - Sufficient data from the state are not available")
     return(list(results=NULL,comparison=NULL))
   }
