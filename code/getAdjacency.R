@@ -13,27 +13,30 @@
 
 getAdjacency <- function(data, year, variable, adjacency_change){
     
-  data <- data[data_item == variable & year_record == year,]
+  #browser()
 
-  d.l <- data
+  # Retain only one row per section_id
+  data <- unique(data[data_item == variable & year_record == year,
+                      .(route_id, section_id, begin_point_og, end_point_og,
+                        value_numeric, F_SYSTEM, Interstate, NHS)])
+  
+  d.l <- data[order(route_id, begin_point_og)]
   
   # Instead of a join, use a lagged value_numeric
   # # https://stackoverflow.com/questions/26291988/how-to-create-a-lag-variable-within-each-group
-  d.adj <- d.l[order(route_id, begin_point), value_numeric_lag := data.table::shift(value_numeric), by = route_id]
-  #d.adj[, .(route_id, begin_point, end_point, value_numeric, value_numeric_lag)]
+  d.adj <- d.l[, value_numeric_lag := data.table::shift(value_numeric),
+               by = route_id]
   d.adj <- d.adj[!is.na(value_numeric_lag)]
-  # table(d.adj$value_numeric == d.adj2$value_numeric_lag)
-  # table(d.adj[, .N, by=route_id]$N)
-  
+
   if ( adjacency_change == 'N' ){
     result <- d.adj[value_numeric == value_numeric_lag,
-                    list(miles=round(sum(end_point - begin_point), 2), N=sum(num_sections)),
+                    list(miles=round(sum(end_point_og - begin_point_og), 2), .N),
                     by = list(F_SYSTEM)]
   }
   
   if (adjacency_change == 'Y' ){
     result <- d.adj[value_numeric != value_numeric_lag,
-                    list(miles = round(sum(end_point - begin_point), 2), N=sum(num_sections)),
+                    list(miles = round(sum(end_point_og - begin_point_og), 2), .N),
                     by = list(F_SYSTEM)]
   }  
   
@@ -42,7 +45,8 @@ getAdjacency <- function(data, year, variable, adjacency_change){
   result[is.na(miles),miles:=0]
   result[is.na(N),N:=0]
   
-  total <- d.adj[ ,list(totalmiles=round(sum(end_point-begin_point),2)),by=list(F_SYSTEM)]
+  total <- d.adj[ ,list(totalmiles=round(sum(end_point_og-begin_point_og),2)),
+                  by=list(F_SYSTEM)]
   
   report.1 <- merge(total,
                     result,
@@ -50,7 +54,8 @@ getAdjacency <- function(data, year, variable, adjacency_change){
 
   report.1[is.na(miles),miles:=0] # setting values to 0 where there are no merges. this mean that the state had no lane miles outside the thresholds set
   
-  report.1[,perc_miles:=ifelse(is.na(miles),0,as.character(round(miles/totalmiles,2)*100))]
+  report.1[,perc_miles:=ifelse(is.na(miles),0,
+                               as.character(round(miles/totalmiles,2)*100))]
   
   report.1[,totalmiles:=NULL]
   
@@ -59,15 +64,24 @@ getAdjacency <- function(data, year, variable, adjacency_change){
   report.1[,groupCat:=F_SYSTEM + 2]
   report.1[,F_SYSTEM := NULL]
   
-  d.l = data[Interstate == 1]
+  d.l = data[Interstate == 1][order(route_id, begin_point_og)]
   
-  d.adj <- d.l[order(route_id, begin_point), value_numeric_lag := data.table::shift(value_numeric), by = route_id]
+  d.adj <- d.l[, value_numeric_lag := data.table::shift(value_numeric),
+               by = route_id]
   d.adj <- d.adj[!is.na(value_numeric_lag)]
   
-  result <- d.adj[value_numeric == value_numeric_lag,
-                  list(miles=round(sum(end_point - begin_point), 2),N=sum(num_sections)),]
+  if ( adjacency_change == 'N'){
+    result <- d.adj[value_numeric == value_numeric_lag,
+                    list(miles=round(sum(end_point_og - begin_point_og), 2), .N),]
+    
+  }
   
-  total <- d.adj[, list(totalmiles=round(sum(end_point - begin_point),2)),]
+  if ( adjacency_change == 'Y'){
+    result <- d.adj[value_numeric != value_numeric_lag,
+                    list(miles=round(sum(end_point_og - begin_point_og), 2), .N),]
+    
+  }
+  total <- d.adj[, list(totalmiles=round(sum(end_point_og - begin_point_og),2)),]
   
   if(nrow(result)==0){
     result <- data.table(miles=0,N=0)
@@ -82,15 +96,24 @@ getAdjacency <- function(data, year, variable, adjacency_change){
   
   report.2[, groupCat := 1]
   
-  d.l = data[NHS == 1]
+  d.l = data[NHS == 1][order(route_id, begin_point_og)]
   
-  d.adj <- d.l[order(route_id, begin_point), value_numeric_lag := data.table::shift(value_numeric), by = route_id]
+  d.adj <- d.l[, value_numeric_lag := data.table::shift(value_numeric),
+               by = route_id]
   d.adj <- d.adj[!is.na(value_numeric_lag)]
   
-  result <- d.adj[value_numeric == value_numeric_lag,
-                  list(miles=round(sum(end_point-begin_point),2),N=sum(num_sections)),]
+  if ( adjacency_change == 'N'){
+    result <- d.adj[value_numeric == value_numeric_lag,
+                    list(miles=round(sum(end_point_og-begin_point_og),2), .N),]
+  }
   
-  total <- d.adj[ , list(totalmiles = round(sum(end_point - begin_point), 2)),]
+  if ( adjacency_change == 'Y'){
+    result <- d.adj[value_numeric != value_numeric_lag,
+                    list(miles=round(sum(end_point_og-begin_point_og),2), .N),]
+  }
+  
+  
+  total <- d.adj[ , list(totalmiles = round(sum(end_point_og - begin_point_og), 2)),]
   
   if(nrow(result) == 0){
     result <- data.table(miles=0, N=0)

@@ -380,9 +380,14 @@ append_column = function(data,column){
 # Format a given data set for use in the score card generation process
 FormatDataSet <- function(dat, state_abbr, year) {
 
-  # Merge data on itself to convert rows to columns
+  # Keep track of the original sections 
+  dat <- dat[order(route_id, data_item, begin_point)]
+  dat[, section_id := 1:.N, by=.(route_id, data_item)]
+  dat[, c('begin_point_og', 'end_point_og') := list(begin_point, end_point)]
   
   data.formatted = expand(dat,0.1)
+  
+  # Merge data on itself to convert rows to columns
   
   data.formatted = append_column(data.formatted,"F_SYSTEM")
   data.formatted = append_column(data.formatted,"NHS")
@@ -449,7 +454,8 @@ FormatDataSet <- function(dat, state_abbr, year) {
   sp[,section_length:=NULL]
   sp[,stateyearkey:=NULL]
   sp[,state_code:=NULL]
-  #browser()
+  
+  
   data_exp = sp[data_noFT6,on=.(year_record,route_id,begin_point,end_point)]
   
   data_exp[, expansion_factor:=as.numeric(expansion_factor)]
@@ -459,25 +465,34 @@ FormatDataSet <- function(dat, state_abbr, year) {
   #browser()
   extent_detail = fread("resources/dat/extent_detail.csv")
   
-  data_exp[,rural_urban:=c("Urban","Rural")[1+1*(URBAN_CODE==99999)]]
+  data_exp[,rural_urban:=c("Urban","Rural")[1 + 1 * (URBAN_CODE == 99999)]]
   
-  data_exp = extent_detail[data_exp,on=.(data_item,rural_urban)]
+  data_exp = extent_detail[data_exp,on=.(data_item, rural_urban)]
 
-  data_exp[,section_extent:=""]
+  data_exp[, section_extent := ""]
   
-  data_exp[NHS==1,section_extent:=nhs]
-  data_exp[section_extent==""&F_SYTEMorig==1,section_extent:=fs1]
-  data_exp[section_extent==""&F_SYTEMorig==2,section_extent:=fs2]
-  data_exp[section_extent==""&F_SYTEMorig==3,section_extent:=fs3]
-  data_exp[section_extent==""&F_SYTEMorig==4,section_extent:=fs4]
-  data_exp[section_extent==""&F_SYTEMorig==5,section_extent:=fs5]
-  data_exp[section_extent==""&F_SYTEMorig==6,section_extent:=fs6]
-  data_exp[section_extent==""&F_SYTEMorig==7,section_extent:=fs7]
+  data_exp[NHS == 1, section_extent := nhs]
+  data_exp[section_extent == "" & F_SYTEMorig==1, section_extent := fs1]
+  data_exp[section_extent == "" & F_SYTEMorig==2, section_extent := fs2]
+  data_exp[section_extent == "" & F_SYTEMorig==3, section_extent := fs3]
+  data_exp[section_extent == "" & F_SYTEMorig==4, section_extent := fs4]
+  data_exp[section_extent == "" & F_SYTEMorig==5, section_extent := fs5]
+  data_exp[section_extent == "" & F_SYTEMorig==6, section_extent := fs6]
+  data_exp[section_extent == "" & F_SYTEMorig==7, section_extent := fs7]
   
-  for(name in c("extent","rural_urban","nhs","fs1","fs2","fs3","fs4","fs5","fs6","fs7")){
-    data_exp[,(name):=NULL]
+  for(name in c("extent", "rural_urban", "nhs",
+                "fs1", "fs2", "fs3", "fs4", "fs5", "fs6", "fs7")){
+    data_exp[, (name) := NULL]
   }
     
+  # Filter out sections that are not needed.  E.g. SP items with no expansion factor or sample_id
+  # E.g. Ramps (FACILITY_TYPE = 4) for non FE+R
+  
+  drop_idx <- data_exp$section_extent %in% c('SP', 'SP*') & is.na(data_exp$expansion_factor)
+  data_exp <- data_exp[!drop_idx]
+  
+  drop_idx <- data_exp$FACILITY_TYPE == 4 & !data_exp$section_extent %in% c('SP', 'SP*', 'FE + R')
+  data_exp <- data_exp[!drop_idx]
   
   # Check formatted data against the FHWA summary
   # Create a dataset to compare (need to bindrows the FT6 data)
