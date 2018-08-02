@@ -19,6 +19,10 @@ create_adjacency_report <- function(data, year, variable){
   report <- getAdjacency(data[FACILITY_TYPE != 4],
                          year, variable, adjacency_change = 'N') 
 
-  return(format_report(report, highlight_threshold))
+  output <- format_report(report, highlight_threshold)
+  
+  output <- output[variable != 'Number of\nSections']
+  
+  return(output)
 
 }

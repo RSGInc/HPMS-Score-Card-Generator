@@ -19,6 +19,10 @@ create_outlier_report <- function(data, year, variable){
 
   report <- getOutliers(data[FACILITY_TYPE != 4], year, variable)
 
-  return(format_report(report, highlight_threshold))
+  output <- format_report(report, highlight_threshold)
+  
+  output <- output[variable != 'Number of\nSections']
+  
+  return(output)
 
 }

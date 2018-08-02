@@ -66,7 +66,7 @@ create_data_summary <- function(data, state, year, year_compare){
 
   pct_route_nomatch.1 <- n_route_nomatch.1 / n_routes.1 * 100
   pct_route_nomatch.2 <- n_route_nomatch.2 / n_routes.2 * 100
-#browser()
+
   # Get n_sections  
   dt_sections.1 <- data[IDX & year_record == year,
                        list(route_id, begin_point, end_point, num_sections)]
@@ -96,7 +96,7 @@ create_data_summary <- function(data, state, year, year_compare){
     Label=c("Number of Records", "Number of Data Items",
             "Number of Routes", "Pct. Unmatched Routes",
             "Number of Sections", "Pct. Unmatched Sections",
-            "Total Center Line Miles*", "Total Lane Miles*"),
+            "Total Centerline Miles*", "Total Lane Miles*"),
     Val.1=string_format(c(n_Records.1, n_Variables.1,
                           n_routes.1, pct_route_nomatch.1,
                           n_sections.1, pct_sec_nomatch.1,
@@ -111,6 +111,6 @@ create_data_summary <- function(data, state, year, year_compare){
   setnames(result,"Val.2",paste0("Year ",year_compare))
   setnames(result,"Label","")
   
-  return(result)
+  return(result[-c(5,6)])
   
 }
