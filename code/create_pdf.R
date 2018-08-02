@@ -61,14 +61,14 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
   # Traffic: Detailed Review
   cat("Traffic review...")
   ts <- Sys.time()
-  create_page3(data, state, year, year_compare)
+  create_traffic_detailed_review(data, state, year, year_compare)
   cat(paste0(" completed in: ",
              round(difftime(Sys.time(), ts, units = "secs"), 2), " seconds!\n"))
 
   # Ramps: Detailed Review
   cat("Ramps review...")
   ts <- Sys.time()
-#browser()
+
   todo_vec <- (1:nrow(gVariables))[gVariables[, RampAnalysis] == "Y"]
   todo_vec <- c(todo_vec, rep(NA, 3 - (length(todo_vec) %% 3)))
   todo <- matrix(todo_vec, ncol = 3, byrow = TRUE)
