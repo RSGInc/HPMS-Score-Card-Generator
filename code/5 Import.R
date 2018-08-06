@@ -462,12 +462,9 @@ FormatDataSet <- function(dat, state_abbr, year) {
   
   rm(data.formatted)
   
-  #browser()
-  extent_detail = fread("resources/dat/extent_detail.csv")
-  
   data_exp[,rural_urban:=c("Urban","Rural")[1 + 1 * (URBAN_CODE == 99999)]]
   
-  data_exp = extent_detail[data_exp,on=.(data_item, rural_urban)]
+  data_exp = gExtentDetail[data_exp,on=.(data_item, rural_urban)]
 
   data_exp[, section_extent := ""]
   

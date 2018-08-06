@@ -21,7 +21,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
   time_weight     <- scorestotals[, "timeliness"]
   complete_weight <- scorestotals[, "completeness"]
   quality_weight  <- scorestotals[, "quality"]
-  
+  cvWeight        <- scorestotals[, 'cross_validation']
   
   # Page setup ==============================================================
   
@@ -324,6 +324,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
   cat("\nCalculating quality score for each item. This may take some time to complete.\n")
   
   dt_quality <- calcQualityAll(data, year, year_compare)
+  dt_cross <- calc_cross_validation(data, year)
   
   colWidth <- 0.152
   rowWidth <- 0.020 
@@ -372,18 +373,18 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
         gp = gpar(col = "slategray", fontsize = 7)
       ))
       
-      CompleteType <- 
-        plotCompleteness(data, year, variable,
-                        x = startx + (C - 1) * colWidth + space1,
-                        y = starty - (R - 1) * rowWidth)
-      
-      CompletedScore <-
-        CompletedScore + c(0, CompleteMed, CompleteHigh)[CompleteType] * group_vars$Completeness_Weight[i]
-      
-      CompletedScoreMax <-
-        CompletedScoreMax + CompleteHigh * group_vars$Completeness_Weight[i]
-      
-      submittedN <- submittedN + 1 * (CompleteType >= 2)
+      # CompleteType <- 
+      #   plotCompleteness(data, year, variable,
+      #                   x = startx + (C - 1) * colWidth + space1,
+      #                   y = starty - (R - 1) * rowWidth)
+      # 
+      # CompletedScore <-
+      #   CompletedScore + c(0, CompleteMed, CompleteHigh)[CompleteType] * group_vars$Completeness_Weight[i]
+      # 
+      # CompletedScoreMax <-
+      #   CompletedScoreMax + CompleteHigh * group_vars$Completeness_Weight[i]
+      # 
+      # submittedN <- submittedN + 1 * (CompleteType >= 2)
       
       thisQuality <- group_vars$Quality_Score[i] 
       
@@ -400,25 +401,43 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
     }
   }
   
-  #QualityScore <- QualityScore + thisQuality * group_vars$Quality_Weight[i]
-  
-  #QualityScoreMax <-
-  #  QualityScoreMax + 100 * group_vars$Quality_Weight[i]
+  CompletedScore <- 1
+  CompletedScoreMax <- 1
   
   QualityScore    <- sum(dt_quality$Quality_Score * dt_quality$Quality_Weight, na.rm=TRUE)
   QualityScoreMax <- sum(!is.na(dt_quality$Quality_Score) * dt_quality$Quality_Weight) * 100
+  qMean <- QualityScore / QualityScoreMax
+  
+  # Incorporate cross-validation score
+  cvMean <- mean(dt_cross$mileage_pass, na.rm=TRUE)
+  
+  QualityCross <- qMean * (1 - cvWeight) + cvMean * cvWeight  
+  
+  #(cvMean * nrow(dt_cross) + qMean * nrow(dt_quality)) /
+  #  (nrow(dt_cross) + nrow(dt_quality))
+  
+  
+  # Write out the quality scores ----------------
   
   path <- file.path('data', getStateLabelFromNum(data$state_code[1]))
   file <- paste0(getStateLabelFromNum(data$state_code[1]), '_', year, '_', year_compare,
                  '_quality_summary.csv')
   fullpath <- file.path(path, file)
   
-  # Create new directory if needed
   if (!dir.exists(path)) dir.create(path)
   
-  # Write the file
   write.csv(x=dt_quality, file=fullpath, na='', row.names=FALSE)
 
+  # Write out the cross-validation scores ----------------
+  path <- file.path('data', getStateLabelFromNum(data$state_code[1]))
+  file <- paste0(getStateLabelFromNum(data$state_code[1]), '_', year,
+                 '_cross_validation_summary.csv')
+  fullpath <- file.path(path, file)
+  
+  if (!dir.exists(path)) dir.create(path)
+  
+  write.csv(x=dt_cross, file=fullpath, na='', row.names=FALSE)
+  
   
   # legend ----------------------------------------------------------------
   
@@ -593,7 +612,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
   cscore <-
     round(complete_weight * CompletedScore / CompletedScoreMax, 1)
   qscore <-
-    round(quality_weight * QualityScore / QualityScoreMax, 1)
+    round(quality_weight * QualityCross, 1)
   
   scores <- data.table(
     type = c("Timeliness", "Completeness", "Quality"),
@@ -745,4 +764,6 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
     gp = gpar(fontsize = 13, col = "gray50"),
     hjust = 0.5
   )
+  
+  return(list(quality = dt_quality, cross_validation = dt_cross))
 }

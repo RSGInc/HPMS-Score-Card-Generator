@@ -11,7 +11,7 @@
 #
 ###########################################################################
 
-create_page3 <- function(
+create_traffic_detailed_review <- function(
      data,
      state,
      year,

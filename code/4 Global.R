@@ -100,7 +100,8 @@ gF_SYSTEM_levels <- c("Interstate",
 # tables of variables (data items) and labels used in the output
 gVariables       <- data.table(read.table("resources/dat/data_elements.csv",sep=",",header=TRUE,stringsAsFactors=FALSE))
 gVariablesLabels <- data.table(read.table("resources/dat/data_labels.csv",  sep=",",header=TRUE,stringsAsFactors=FALSE))
-
+gCrossLabels     <- data.table(read.table('resources/dat/cross_validation_labels.csv', sep=',', header=TRUE, stringsAsFactors=FALSE))
+gExtentDetail    <- data.table(read.table('resources/dat/extent_detail.csv', sep=',', header=TRUE, stringsAsFactors=FALSE))
 
 # reformatting the labels
 gVariablesLabels[Name=="F_SYSTEM",Code2:="Principal Arterial -\nOther Freeways and Expressways"]

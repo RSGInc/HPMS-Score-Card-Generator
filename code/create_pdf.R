@@ -38,10 +38,18 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
   # Create title page
   cat("Title page...")
   ts <- Sys.time()
-  create_title_page(data, state, year, year_compare)
+  scores_list <- create_title_page(data, state, year, year_compare)
   cat(paste0(" completed in: ",
              round(difftime(Sys.time(), ts, units = "secs"), 2), " seconds!\n"))
 
+  # Show the results of the cross-validations
+  cat('Cross-validations...')
+  ts <- Sys.time()
+  create_cross_validation_page(scores_list$cross_validation, state, year)
+  
+  cat(paste0(' completed in: ',
+             round(difftime(Sys.time(), ts, units='secs'), 2), ' seconds!\n'))
+  
   # subset data
   # data <- data[year_record %in% c(year, year_compare), ]
 
