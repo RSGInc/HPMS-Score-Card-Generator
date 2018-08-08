@@ -28,6 +28,8 @@ create_summary_report <- function(
   result1[, lanemiles := sum((end_point - begin_point) * THROUGH_LANES, na.rm = TRUE),
           by=list(F_SYSTEM)]
   
+  browser()
+  
   if(variable_extent %in% c("SP", "SP*", "FE*")){
     result1[, expandedmiles := sum((end_point-begin_point) * expansion_factor,
                                    na.rm=TRUE), by=list(F_SYSTEM)]
@@ -36,18 +38,18 @@ create_summary_report <- function(
                                        na.rm=TRUE), by=list(F_SYSTEM)]
 
     if(variable_extent_fs == 4){ # F_SYSTEM 1 is unexpanded
-      result1[F_SYSTEM == 1, expandedmiles := NA]     
-      result1[F_SYSTEM == 1, expandedlanemiles := NA]     
+      result1[F_SYSTEM == 1, expandedmiles := miles]     
+      result1[F_SYSTEM == 1, expandedlanemiles := lanemiles]     
     }
     
     if(variable_extent_fs == 2){
-      result1[Interstate == 1, expandedmiles := NA]     
-      result1[Interstate == 1, expandedlanemiles := NA]     
+      result1[Interstate == 1, expandedmiles := miles]     
+      result1[Interstate == 1, expandedlanemiles := lanemiles]     
     }          
     
   } else {
-    result1[, expandedmiles := NA,]
-    result1[, expandedlanemiles := NA,]
+    result1[, expandedmiles := miles,]
+    result1[, expandedlanemiles := lanemiles,]
   }
 
   result1 <- switch(variable_type,
@@ -83,8 +85,8 @@ create_summary_report <- function(
   
   } else {
 
-    result2[, expandedmiles := NA,]
-    result2[, expandedlanemiles := NA,]
+    result2[, expandedmiles := miles,]
+    result2[, expandedlanemiles := lanemiles,]
   
   }
 
@@ -124,8 +126,8 @@ create_summary_report <- function(
   
   } else {
 
-    result3[, expandedmiles := NA, ]
-    result3[, expandedlanemiles := NA, ]
+    result3[, expandedmiles := miles, ]
+    result3[, expandedlanemiles := lanemiles, ]
   
   }
   
