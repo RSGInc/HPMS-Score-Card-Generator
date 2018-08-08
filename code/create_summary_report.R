@@ -28,7 +28,6 @@ create_summary_report <- function(
   result1[, lanemiles := sum((end_point - begin_point) * THROUGH_LANES, na.rm = TRUE),
           by=list(F_SYSTEM)]
   
-  browser()
   
   if(variable_extent %in% c("SP", "SP*", "FE*")){
     result1[, expandedmiles := sum((end_point-begin_point) * expansion_factor,
