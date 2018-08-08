@@ -240,40 +240,36 @@ ImportData <- function(state_selection, year_selection) {
         # Format data sets
         cat("\nFormatting...")
         
-        data <- FormatDataSet(dat=data, state_abbr=state, year=year)
-        cat(" complete!\n")
-        
-        #for (i in 1:length(data)){
-        
-        #data[[i]][["data"]] <- FormatDataSet(data[[i]][["data"]],state,year)
-        
-        #}
-        
-        
-        # Save data sets ------------------
-        
-        cat("Saving to", fullpath, '...')
-        
-        # Create new directory if needed
-        if (!dir.exists(path)) dir.create(path)
-        
-        saveRDS(data, file = fullpath)
-        
-        # for (i in 1:length(data)){
-        #   
-        #   SaveDataSet(year = data[[i]][["year"]],
-        #               state = data[[i]][["state"]],
-        #               dat = data[[i]][["data"]])
-        # }   
+        tryCatch({
+          data <- FormatDataSet(dat=data, state_abbr=state, year=year)
+          },
+          error=function(cond) {
+            message(cond)
+            data <- NULL
+          })
         
         cat(" complete!\n")
         
-        #} # if (length(data) > 0)
-        
-        success <- c(success, TRUE)
+        if ( is.null(data) | nrow(data) == 0 ){
+          success <- c(success, FALSE)
+          
+         } else {
+          
+           # Save data sets ------------------
+          
+          cat("Saving to", fullpath, '...')
+          
+          # Create new directory if needed
+          if (!dir.exists(path)) dir.create(path)
+          
+          saveRDS(data, file = fullpath)
+          
+          cat(" complete!\n")
+          success <- c(success, TRUE)
+          
+        }
         
       }
-      
     } # year
   } # state
   
@@ -430,6 +426,9 @@ FormatDataSet <- function(dat, state_abbr, year) {
   
   odbcClose(con)
 
+  if (nrow(sp) == 0){
+    stop('Result of query:"', query, '" had zero rows.')
+  }
   sp <- cleanUpQuery(sp)
   # setnames(sp,
   #         c("YEAR_RECORD", "STATE_CODE", "ROUTE_ID","BEGIN_POINT", "END_POINT", "SAMPLE_ID","EXPANSION_FACTOR"),
@@ -454,7 +453,6 @@ FormatDataSet <- function(dat, state_abbr, year) {
   sp[,section_length:=NULL]
   sp[,stateyearkey:=NULL]
   sp[,state_code:=NULL]
-  
   
   data_exp = sp[data_noFT6,on=.(year_record,route_id,begin_point,end_point)]
   
