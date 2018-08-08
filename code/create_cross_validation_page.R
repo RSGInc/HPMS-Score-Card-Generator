@@ -12,8 +12,9 @@
 
 create_cross_validation_page <- function(dt_cross, state, year){
   color <- 'white'
-  
+
   setnames(dt_cross, old = '.id', new = 'ID')
+  dt_cross <- dt_cross[order(as.numeric(ID))]
   
   grid.arrange(
     # header
@@ -21,16 +22,13 @@ create_cross_validation_page <- function(dt_cross, state, year){
     
     rectGrob(gp = gpar(fill = "slategray", col = "white")), 
     
-    # this text gets overlayed by Kevin's image
-    #textGrob("information goes here!",gp = gpar(fill = "white", col = "red")), 
-    #format_cross_validation_report(dt_cross[, 1:2], fontsize=7),
-    
-    nrow=3, heights = unit(c(0.6, 0.03, 7.5-0.63), units="inches"))
+    nrow=3, heights = unit(c(0.6, 0.03, 7.5-0.63), units="inches")
+  )
   
   add_header(state, year, "cross-validation scores","cv")
   
-  rowHeight <- 0.03
-  colWidth <- 0.45
+  rowHeight <- 0.035
+  colWidth <- 0.5
   x1 <- 0.08
   x2 <- x1 + 0.32
   x3 <- x2 + 0.01
@@ -38,18 +36,18 @@ create_cross_validation_page <- function(dt_cross, state, year){
   
   C <- 1
   R <- 1
-  maxrows <- 17
+  maxrows <- 20
   
   #browser()
   
-  grid.draw(textGrob(
-    label='ID',
-    x=x1 + (C - 1) * colWidth,
-    y=starty + rowHeight,
-    hjust = 1,
-    gp = gpar(col = "black", fontsize = 10)
-  ))
-  
+  # grid.draw(textGrob(
+  #   label='ID',
+  #   x=x1 + (C - 1) * colWidth,
+  #   y=starty + rowHeight,
+  #   hjust = 1,
+  #   gp = gpar(col = "black", fontsize = 10)
+  # ))
+  # 
   grid.draw(textGrob(
     label='Description',
     x=x2 + (C - 1) * colWidth,
@@ -72,14 +70,14 @@ create_cross_validation_page <- function(dt_cross, state, year){
     label <- dt_cross[i, Description]
     score <- round(dt_cross[i, mileage_pass] * 100 )
     
-    grid.draw(textGrob(
-      label=id,
-      x=x1 + (C - 1) * colWidth,
-      y=starty - (R - 1) * rowHeight,
-      hjust = 1,
-      gp = gpar(col = "slategray", fontsize = 8)
-    ))
-    
+    # grid.draw(textGrob(
+    #   label=id,
+    #   x=x1 + (C - 1) * colWidth,
+    #   y=starty - (R - 1) * rowHeight,
+    #   hjust = 1,
+    #   gp = gpar(col = "slategray", fontsize = 8)
+    # ))
+    # 
     grid.draw(textGrob(
       label=label,
       x=x2 + (C - 1) * colWidth,
@@ -97,14 +95,14 @@ create_cross_validation_page <- function(dt_cross, state, year){
     } else {
       R <- 1
       C <- C + 1
-      grid.draw(textGrob(
-        label='ID',
-        x=x1 + (C - 1) * colWidth,
-        y=starty + rowHeight,
-        hjust = 1,
-        gp = gpar(col = "black", fontsize = 10)
-      ))
-      
+      # grid.draw(textGrob(
+      #   label='ID',
+      #   x=x1 + (C - 1) * colWidth,
+      #   y=starty + rowHeight,
+      #   hjust = 1,
+      #   gp = gpar(col = "black", fontsize = 10)
+      # ))
+      # 
       grid.draw(textGrob(
         label='Description',
         x=x2 + (C - 1) * colWidth,
@@ -123,4 +121,5 @@ create_cross_validation_page <- function(dt_cross, state, year){
       
     }
   }
+  #browser()
 }

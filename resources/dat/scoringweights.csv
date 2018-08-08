@@ -1,2 +1,2 @@
-timeliness,completeness,quality
-10,20,20
+timeliness,completeness,quality,cross_validation
+10,20,20,0.5

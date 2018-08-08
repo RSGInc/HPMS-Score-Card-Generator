@@ -1,30 +1,43 @@
 .id,Description
-1,IRI: >= 30 and <= 400
-9,Year_Last_Construction: <= Year_Record or NULL
-14,Lane Width: > 5 and <19
-15,"Speed Limit: Divisible by 5, and < 90 OR = 999"
-16,Counter Peak Lanes: NULL if FACILITY_TYPE is 1
-17,Single Unit / Combination: SU AADT + CU AADT < (0.8*AADT)
-20,Median Width: NULL if (FACILITY_TYPE is 1 or 4) or Median_Type Code <2
-22,"Median Type in (2,3,4,5,6,7): Median Width > 0"
-23,Widening_Obstacle: Should contain A-G where Widening_Potential <9
-39,DIR_Factor: DIR_Factor must be 100 where Facility_Type = 1
-40,DIR_Factor: DIR_Factor must be 50=< and <=70 where Facility_Type = 2
-41,Future_AADT: AADT < FAADT < 3*AADT
-42,PCT_Peak_Single: AADT*PCT_Peak_Single/100 < =AADT_Single_Unit 
-43,PCT_Peak_Combination: AADT*PCT_Peak_Combination/100 < =AADT_Combination
-44,AADT Combination: AADT_Combination < AADT/2.5
-45,AADT_Single_Unit: AADT_Single_Unit < AADT/2.5
-47,Faulting: <=1
-49,K_Factor: K_Factor must be > 4 and <20 
-51,"Cracking_Percent: Should be < 75 where Surface Type is in (3,4,5,9,10) "
-52,Rutting: Should be < 1
-53,Through_Lanes: >1 when Facility_Type = 2
-54,AADT Combination: Should be > 0 
-55,AADT_Single_Unit: Shoud be > 0
-56,PCT_Peak_Combination: >0 and < 20%
-57,PCT_Peak_Single: >0 and < 20%
-60,Left Shoulder Width: Should be < Median_Width
+53,Through_Lanes: >1 when Facility_Type = 2 (53)
+x,Through_Lanes: Counter_Peak_Lanes + Peak_Lanes Must Be >= Through Lanes (x)
+16,Counter Peak Lanes: NULL if FACILITY_TYPE is 1 (16)
+15,Speed Limit: Divisible by 5 and < 90 OR = 999 (15)
+45,AADT_Single_Unit :  < AADT/2.5 (45)
+55,AADT_Single_Unit :  > 0 (55)
+17,Single Unit / Combination: SU AADT + CU AADT < (0.8*AADT) (17)
+42,PCT_Peak_Single: AADT*PCT_Peak_Single/100 < =AADT_Single_Unit  (42)
+57,PCT_Peak_Single: >0 and < 20% (57)
+44,AADT Combination: < AADT/2.5 (44)
+54,AADT Combination: > 0  (54)
+43,PCT_Peak_Combination: AADT*PCT_Peak_Combination/100 < =AADT_Combination (43)
+56,PCT_Peak_Combination: >0 and < 20% (56)
+49,K_Factor : > 4 and <20  (49)
+39,DIR_Factor : = 100 where Facility_Type = 1 (39)
+40,DIR_Factor: >=  50 and <=70 where Facility_Type = 2 (40)
+41,Future_AADT: AADT < FAADT < 3*AADT (41)
+y,"Signal_Type: Where F_System = 1 and Urban Code <> 99999, Signal_Type should = 5 or Null (y)"
+14,Lane Width: > 5 and <19 (14)
+22,"Median Type in (2,3,4,5,6,7): Median Width > 0 (22)"
+20,Median Width: NULL if (FACILITY_TYPE is 1 or 4) or Median_Type Code <2 (20)
+60,Left Shoulder Width:  < Median_Width (60)
+23,Widening_Obstacle: must contain A-G where Widening_Potential <9 (23)
+46,"IRI, Rutting, Faulting, Cracking Percent: Value_Date >= Year_Record – 2\nWhere Sample OR (Value_Text is Null AND F_System >1 and NHS in (1,2,3,4,5,6,7,8,9) ) (46)"
+61,"IRI, Rutting, Faulting, Cracking Percent: Value_Date = Year Record\n  Where Value_Text is Null AND F_System =1  (61)"
+64,"IRI, Rutting, Faulting, Cracking Percent: Value_Text In (A,B,C,D) Where\nValue_Date <> Year Record and F_Sytem = 1 OR (Value_Date < Year Record -2 on NHS) (64)"
+65,"PSR: Value_Date >= Year_Record – 2 Where\nSample OR F_System >1 and NHS in (1,2,3,4,5,6,7,8,9) (65)"
+66,"PSR: Value_Date = Year Record  Where Value_Text is ""A"" AND F_System =1  (66)"
+1,IRI: >= 30 and <= 400 (1)
+62,"IRI and PSR: Where F_System =1, and IRI is Null,\nPSR Value_Numeric > 0 and PSR Value_Text = A (62)"
+52,Rutting: < 1 (52)
+47,Faulting: <=1 (47)
 63,"Cracking_Percent: Should be < X where Surface Type is in (2,6,7,8) "
-x,Through_Lanes: Counter + Peak >= Through
-y,Signal_Type: should = 5 or Null where F_System = 1 and Urban Code <> 99999
+51,"Cracking_Percent: < 75 Where Surface Type is in (3,4,5,9,10)  (51)"
+9,Year_Last_Construction: <= Year_Record or NULL (9)
+2,"Sample: only allow where Facility_Type IN 1,2 and\n(F_System = 1-5 or F_System = 6 and Urban Code <99999) (2)"
+4,TOPS Not Found: No TOPS record was created for a given section of the network.  One or more of the five TOPS data items is likely missing from this section. (4)
+129,IRI: Section Length <= 0.11 Miles (129)
+129,PSR: Section Length <=  0.11 Miles (129)
+129,Rutting: Section Length <=  0.11 Miles (129)
+129,Faulting: Section Length <= 0.11 Miles (129)
+129,Cracking_Percent: Section Length <= 0.11 Miles (129)

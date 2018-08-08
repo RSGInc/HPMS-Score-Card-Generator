@@ -5,84 +5,113 @@ calc_cross_validation = function(data, year){
   data <- data[year_record == year]
   
   results = list()
-  results[["1"]]  = summarize_validation(cross_validation_1(data))
-  results[["9"]]  = summarize_validation(cross_validation_9(data))
-  results[["14"]] = summarize_validation(cross_validation_14(data))
-  results[["15"]] = summarize_validation(cross_validation_15(data))
+  results[["53"]] = summarize_validation(cross_validation_53(data))
+  results[["x"]]  = summarize_validation(cross_validation_x(data))
   results[["16"]] = summarize_validation(cross_validation_16(data))
+  results[["15"]] = summarize_validation(cross_validation_15(data))
+  results[["45"]] = summarize_validation(cross_validation_45(data))
+  results[["55"]] = summarize_validation(cross_validation_55(data))
   results[["17"]] = summarize_validation(cross_validation_17(data))
-  results[["20"]] = summarize_validation(cross_validation_20(data))
-  results[["22"]] = summarize_validation(cross_validation_22(data))
-  results[["23"]] = summarize_validation(cross_validation_23(data))
+  results[["42"]] = summarize_validation(cross_validation_42(data))
+  results[["57"]] = summarize_validation(cross_validation_57(data))
+  results[["44"]] = summarize_validation(cross_validation_44(data))
+  results[["54"]] = summarize_validation(cross_validation_54(data))
+  results[["43"]] = summarize_validation(cross_validation_43(data))
+  results[["56"]] = summarize_validation(cross_validation_56(data))
+  results[["49"]] = summarize_validation(cross_validation_49(data))
   results[["39"]] = summarize_validation(cross_validation_39(data))
   results[["40"]] = summarize_validation(cross_validation_40(data))
   results[["41"]] = summarize_validation(cross_validation_41(data))
-  results[["42"]] = summarize_validation(cross_validation_42(data))
-  results[["43"]] = summarize_validation(cross_validation_43(data))
-  results[["44"]] = summarize_validation(cross_validation_44(data))
-  results[["45"]] = summarize_validation(cross_validation_45(data))
-  results[["47"]] = summarize_validation(cross_validation_47(data))
-  results[["49"]] = summarize_validation(cross_validation_49(data))
-  results[["51"]] = summarize_validation(cross_validation_51(data))
-  results[["52"]] = summarize_validation(cross_validation_52(data))
-  results[["53"]] = summarize_validation(cross_validation_53(data))
-  results[["54"]] = summarize_validation(cross_validation_54(data))
-  results[["55"]] = summarize_validation(cross_validation_55(data))
-  results[["56"]] = summarize_validation(cross_validation_56(data))
-  results[["57"]] = summarize_validation(cross_validation_57(data))
-  results[["60"]] = summarize_validation(cross_validation_60(data))
-  results[["63"]] = summarize_validation(cross_validation_63(data))
-  results[["x"]]  = summarize_validation(cross_validation_x(data))
   results[["y"]]  = summarize_validation(cross_validation_y(data))
-  
+  results[["14"]] = summarize_validation(cross_validation_14(data))
+  results[["22"]] = summarize_validation(cross_validation_22(data))
+  results[["20"]] = summarize_validation(cross_validation_20(data))
+  results[["60"]] = summarize_validation(cross_validation_60(data))
+  results[["23"]] = summarize_validation(cross_validation_23(data))
+
+  results[["46"]] = summarize_validation(cross_validation_46(data, 'IRI'))
+  results[["46"]] = summarize_validation(cross_validation_46(data, 'RUTTING'))
+  results[["46"]] = summarize_validation(cross_validation_46(data, 'FAULTING'))
+  results[["46"]] = summarize_validation(cross_validation_46(data, 'CRACKING_PERCENT'))
+
+  results[["61"]] = summarize_validation(cross_validation_61(data, 'IRI'))
+  results[["61"]] = summarize_validation(cross_validation_61(data, 'RUTTING'))
+  results[["61"]] = summarize_validation(cross_validation_61(data, 'FAULTING'))
+  results[["61"]] = summarize_validation(cross_validation_61(data, 'CRACKING_PERCENT'))
+
+  results[["64"]] = summarize_validation(cross_validation_64(data, 'IRI'))
+  results[["64"]] = summarize_validation(cross_validation_64(data, 'RUTTING'))
+  results[["64"]] = summarize_validation(cross_validation_64(data, 'FAULTING'))
+  results[["64"]] = summarize_validation(cross_validation_64(data, 'CRACKING_PERCENT'))
+
+  results[["65"]] = summarize_validation(cross_validation_65(data))
+  results[["66"]] = summarize_validation(cross_validation_66(data))
+  results[["1"]]  = summarize_validation(cross_validation_1(data))
+  results[["62"]] = summarize_validation(cross_validation_62(data))
+  results[["52"]] = summarize_validation(cross_validation_52(data))
+  results[["47"]] = summarize_validation(cross_validation_47(data))
+  results[["63"]] = summarize_validation(cross_validation_63(data))
+  results[["51"]] = summarize_validation(cross_validation_51(data))
+  results[["9"]]  = summarize_validation(cross_validation_9(data))
+  results[["2"]]  = summarize_validation(cross_validation_2(data))
   results = rbindlist(results,idcol=TRUE)
   results = rbindlist(list(gCrossLabels[results,on=.(.id)], measurement_checks(data)))
   
   return(results)
 }
 
-format_cross_validation_report <- function(report, fontsize){
-  thm <- ttheme_default(
-    core    = list(fg_params=list(col='slategray', fontsize=fontsize, hjust=1, x=0.95),
-                   bg_params=list(fill='white'),
-                   padding=unit(c(0.1, 0.1), 'inches')),
-    colhead = list(fg_params=list(col='black', fontsize=fontsize,
-                                  fontface='bold', hjust=1, x=0.95),
-                   bg_params=list(fill='white'),
-                   padding=unit(c(0.1, 0.1), 'inches')))
-  
-  ob <- tableGrob(report, rows=NULL, theme=thm )
-  
-  ob <- vertically_align(ob)
-  return(ob)
-}
+# format_cross_validation_report <- function(report, fontsize){
+#   thm <- ttheme_default(
+#     core    = list(fg_params=list(col='slategray', fontsize=fontsize, hjust=1, x=0.95),
+#                    bg_params=list(fill='white'),
+#                    padding=unit(c(0.1, 0.1), 'inches')),
+#     colhead = list(fg_params=list(col='black', fontsize=fontsize,
+#                                   fontface='bold', hjust=1, x=0.95),
+#                    bg_params=list(fill='white'),
+#                    padding=unit(c(0.1, 0.1), 'inches')))
+#   
+#   ob <- tableGrob(report, rows=NULL, theme=thm )
+#   
+#   ob <- vertically_align(ob)
+#   return(ob)
+# }
 
 
 ###################################################################
 # summarize the results of the validation
 summarize_validation = function(results){
+  tbl <- results[['results']]
   
- if(is.null(results[["results"]])){
-   return(
-     data.table(section_total=NA, 
-                mileage_total=NA,
-                sections_pass=NA,
-                mileage_pass=NA)
-     ) 
- }
- 
- if(nrow(results[["results"]][applies==TRUE&passes==TRUE])==0){
-   results[["results"]]=rbindlist(list(
-     results[["results"]],
-     data.table(applies=TRUE,passes=TRUE,N=0,num_sections=0,mileage=0))
+  if(is.null(tbl)){
+    return(
+      data.table(section_total=0, 
+                 mileage_total=0,
+                 sections_pass=NA,
+                 mileage_pass=NA)
+    ) 
+  }
+  
+  if(nrow(tbl[applies == TRUE & passes == TRUE]) == 0){
+    tbl=rbindlist(list(tbl,
+      data.table(applies=TRUE, passes=TRUE, N=0, num_sections=0, mileage=0))
     )
- }
- results[["results"]][applies==TRUE,c("section_total","mileage_total"):=.(sum(num_sections),sum(mileage))]  
+  }
+  tbl[applies==TRUE,
+                         c("section_total", "mileage_total") :=
+                         .(sum(num_sections), sum(mileage))]  
   
- return(results[["results"]][applies==TRUE&passes==TRUE,.(section_total, mileage_total,sections_pass=num_sections/section_total,mileage_pass=mileage/mileage_total)])   
+  tbl[applies==TRUE & passes == TRUE,
+                       c("sections_pass", "mileage_pass") :=
+                         .(sections_pass=num_sections/section_total,
+                           mileage_pass=mileage/mileage_total)]  
+  
+  tbl$sections_pass[is.nan(tbl$sections_pass)] <- NA
+  tbl$mileage_pass[is.nan(tbl$mileage_pass)] <- NA
+  
+  return(tbl[applies == TRUE & passes == TRUE,
+             .(section_total, mileage_total, sections_pass, mileage_pass)])   
 }
 
-# -----------------------------------------------------------------------
 
 ###################################################################
 # Through_Lanes>1 when Facility_Type = 2
@@ -108,6 +137,12 @@ cross_validation_53 = function(data){
               ),
              .(applies = FACILITY_TYPE==2,
                passes  = FACILITY_TYPE==2&THROUGH_LANES > 1 )][order(applies,passes)]
+  
+  if(nrow(results[applies == TRUE])==0){
+    warning("Not applicable - Sufficient data from the state are not available")
+    return(list(results=NULL,comparison=NULL))  
+  }
+  
   
   return(list(results=results,comparison=comparison))
 
@@ -154,6 +189,12 @@ cross_validation_x = function(data){
              .(applies = !is.na(THROUGH_LANES), # always applies if through_lanes exists
                passes  = COUNTER_PEAK_LANES + PEAK_LANES >= THROUGH_LANES )][order(applies,passes)]
   
+  if(nrow(results[applies == TRUE])==0){
+    warning("Not applicable - Sufficient data from the state are not available")
+    return(list(results=NULL,comparison=NULL))  
+  }
+  
+  
   return(list(results=results,comparison=comparison))
 
 }
@@ -187,6 +228,12 @@ cross_validation_16 = function(data){
              .(applies = FACILITY_TYPE==1, 
                passes  = is.na(COUNTER_PEAK_LANES))][order(applies,passes)]
   
+  if(nrow(results[applies == TRUE])==0){
+    warning("Not applicable - Sufficient data from the state are not available")
+    return(list(results=NULL,comparison=NULL))  
+  }
+  
+  
   return(list(results=results,comparison=comparison))
 
 }
@@ -215,6 +262,12 @@ cross_validation_15 = function(data){
               ),
              .(applies = !is.na(SPEED_LIMIT), 
                passes  = (SPEED_LIMIT==999)|(SPEED_LIMIT%%5==0&SPEED_LIMIT<90))][order(applies,passes)]
+  
+  if(nrow(results[applies == TRUE])==0){
+    warning("Not applicable - Sufficient data from the state are not available")
+    return(list(results=NULL,comparison=NULL))  
+  }
+  
   
   return(list(results=results,comparison=comparison))
 
@@ -247,6 +300,12 @@ cross_validation_45 = function(data){
              .(applies = !is.na(AADT_SINGLE_UNIT), 
                passes  = AADT_SINGLE_UNIT < AADT/2.5)][order(applies,passes)]
   
+  if(nrow(results[applies == TRUE])==0){
+    warning("Not applicable - Sufficient data from the state are not available")
+    return(list(results=NULL,comparison=NULL))  
+  }
+  
+  
   return(list(results=results,comparison=comparison))
 
 }
@@ -276,6 +335,12 @@ cross_validation_55 = function(data){
               ),
              .(applies = !is.na(AADT_SINGLE_UNIT), 
                passes  = AADT_SINGLE_UNIT >0 )][order(applies,passes)]
+  
+  if(nrow(results[applies == TRUE])==0){
+    warning("Not applicable - Sufficient data from the state are not available")
+    return(list(results=NULL,comparison=NULL))  
+  }
+  
   
   return(list(results=results,comparison=comparison))
 
@@ -318,6 +383,12 @@ cross_validation_17 = function(data){
              .(applies = !is.na(AADT_COMBINATION), # always applies if through_lanes exists
                passes  = AADT_SINGLE_UNIT + AADT_COMBINATION < (0.8*AADT) )][order(applies,passes)]
   
+  if(nrow(results[applies == TRUE])==0){
+    warning("Not applicable - Sufficient data from the state are not available")
+    return(list(results=NULL,comparison=NULL))  
+  }
+  
+  
   return(list(results=results,comparison=comparison))
 
 }
@@ -359,6 +430,12 @@ cross_validation_42 = function(data){
              .(applies = !is.na(PCT_PEAK_SINGLE), 
                passes  = AADT * PCT_PEAK_SINGLE / 100 <= AADT_SINGLE_UNIT)][order(applies,passes)]
   
+  if(nrow(results[applies == TRUE])==0){
+    warning("Not applicable - Sufficient data from the state are not available")
+    return(list(results=NULL,comparison=NULL))  
+  }
+  
+  
   return(list(results=results,comparison=comparison))
 
 }
@@ -389,6 +466,12 @@ cross_validation_57 = function(data){
               ),
              .(applies = !is.na(PCT_PEAK_SINGLE), 
                passes  = PCT_PEAK_SINGLE > 0 & PCT_PEAK_SINGLE < 20)][order(applies,passes)]
+  
+  if(nrow(results[applies == TRUE])==0){
+    warning("Not applicable - Sufficient data from the state are not available")
+    return(list(results=NULL,comparison=NULL))  
+  }
+  
   
   return(list(results=results,comparison=comparison))
 
@@ -424,6 +507,12 @@ cross_validation_44 = function(data){
              .(applies = !is.na(AADT_COMBINATION), # always applies if through_lanes exists
                passes  = AADT_COMBINATION < (AADT/2.5) )][order(applies,passes)]
   
+  if(nrow(results[applies == TRUE])==0){
+    warning("Not applicable - Sufficient data from the state are not available")
+    return(list(results=NULL,comparison=NULL))  
+  }
+  
+  
   return(list(results=results,comparison=comparison))
 
 }
@@ -454,6 +543,12 @@ cross_validation_54 = function(data){
               ),
              .(applies = !is.na(AADT_COMBINATION), # always applies if through_lanes exists
                passes  = AADT_COMBINATION > 0 )][order(applies,passes)]
+  
+  if(nrow(results[applies == TRUE])==0){
+    warning("Not applicable - Sufficient data from the state are not available")
+    return(list(results=NULL,comparison=NULL))  
+  }
+  
   
   return(list(results=results,comparison=comparison))
 
@@ -492,6 +587,12 @@ cross_validation_43 = function(data){
              .(applies = !is.na(PCT_PEAK_COMBINATION), 
                passes  = AADT * PCT_PEAK_COMBINATION / 100 <= AADT_COMBINATION)][order(applies,passes)]
   
+  if(nrow(results[applies == TRUE])==0){
+    warning("Not applicable - Sufficient data from the state are not available")
+    return(list(results=NULL,comparison=NULL))  
+  }
+  
+  
   return(list(results=results,comparison=comparison))
 
 }
@@ -523,6 +624,12 @@ cross_validation_56 = function(data){
              .(applies = !is.na(PCT_PEAK_COMBINATION), 
                passes  = PCT_PEAK_COMBINATION > 0 & PCT_PEAK_COMBINATION < 20)][order(applies,passes)]
   
+  if(nrow(results[applies == TRUE])==0){
+    warning("Not applicable - Sufficient data from the state are not available")
+    return(list(results=NULL,comparison=NULL))  
+  }
+  
+  
   return(list(results=results,comparison=comparison))
 
 }
@@ -552,6 +659,12 @@ cross_validation_49 = function(data){
               ),
              .(applies = !is.na(K_FACTOR), 
                passes  = K_FACTOR > 4 & K_FACTOR < 20)][order(applies,passes)]
+  
+  if(nrow(results[applies == TRUE])==0){
+    warning("Not applicable - Sufficient data from the state are not available")
+    return(list(results=NULL,comparison=NULL))  
+  }
+  
   
   return(list(results=results,comparison=comparison))
 
@@ -586,6 +699,12 @@ cross_validation_39 = function(data){
              .(applies = FACILITY_TYPE==1&!is.na(DIR_FACTOR), # DIR_FACTOR is SP 
                passes  = DIR_FACTOR==100)][order(applies,passes)]
   
+  if(nrow(results[applies == TRUE])==0){
+    warning("Not applicable - Sufficient data from the state are not available")
+    return(list(results=NULL,comparison=NULL))  
+  }
+  
+  
   return(list(results=results,comparison=comparison))
 
 }
@@ -618,6 +737,12 @@ cross_validation_40 = function(data){
               ),
              .(applies = FACILITY_TYPE==2&!is.na(DIR_FACTOR), # DIR_FACTOR is SP
                passes  = DIR_FACTOR>=50&DIR_FACTOR<=70)][order(applies,passes)]
+  
+  if(nrow(results[applies == TRUE])==0){
+    warning("Not applicable - Sufficient data from the state are not available")
+    return(list(results=NULL,comparison=NULL))  
+  }
+  
   
   return(list(results=results,comparison=comparison))
 
@@ -652,6 +777,12 @@ cross_validation_41 = function(data){
               ),
              .(applies = !is.na(FUTURE_AADT), 
                passes  = FUTURE_AADT > AADT  & FUTURE_AADT < 3 * AADT)][order(applies,passes)]
+  
+  if(nrow(results[applies == TRUE])==0){
+    warning("Not applicable - Sufficient data from the state are not available")
+    return(list(results=NULL,comparison=NULL))  
+  }
+  
   
   return(list(results=results,comparison=comparison))
 
@@ -689,6 +820,12 @@ cross_validation_y = function(data){
              .(applies = F_SYSTEM == 1 & URBAN_CODE != 99999 , 
                passes  = SIGNAL_TYPE==5 | is.na(SIGNAL_TYPE) )][order(applies,passes)]
   
+  if(nrow(results[applies == TRUE])==0){
+    warning("Not applicable - Sufficient data from the state are not available")
+    return(list(results=NULL,comparison=NULL))  
+  }
+  
+  
   return(list(results=results,comparison=comparison))
 
 }
@@ -718,6 +855,12 @@ cross_validation_14 = function(data){
               ),
              .(applies = !is.na(LANE_WIDTH), 
                passes  = LANE_WIDTH > 5 & LANE_WIDTH < 19)][order(applies,passes)]
+  
+  if(nrow(results[applies == TRUE])==0){
+    warning("Not applicable - Sufficient data from the state are not available")
+    return(list(results=NULL,comparison=NULL))  
+  }
+  
   
   return(list(results=results,comparison=comparison))
 
@@ -751,6 +894,12 @@ cross_validation_22 = function(data){
               ),
              .(applies = MEDIAN_TYPE%in%2:7, 
                passes  = MEDIAN_WIDTH>0)][order(applies,passes)]
+  
+  if(nrow(results[applies == TRUE])==0){
+    warning("Not applicable - Sufficient data from the state are not available")
+    return(list(results=NULL,comparison=NULL))  
+  }
+  
   
   return(list(results=results,comparison=comparison))
 
@@ -789,6 +938,12 @@ cross_validation_20 = function(data){
              .(applies = MEDIAN_TYPE<1|FACILITY_TYPE%in%c(1,4), 
                passes  = is.na(MEDIAN_WIDTH))][order(applies,passes)]
   
+  if(nrow(results[applies == TRUE])==0){
+    warning("Not applicable - Sufficient data from the state are not available")
+    return(list(results=NULL,comparison=NULL))  
+  }
+  
+  
   return(list(results=results,comparison=comparison))
 
 }
@@ -822,6 +977,12 @@ cross_validation_60 = function(data){
              .(applies = !is.na(SHOULDER_WIDTH_L), 
                passes  = SHOULDER_WIDTH_L<MEDIAN_WIDTH)][order(applies,passes)]
   
+  if(nrow(results[applies == TRUE])==0){
+    warning("Not applicable - Sufficient data from the state are not available")
+    return(list(results=NULL,comparison=NULL))  
+  }
+  
+  
   return(list(results=results,comparison=comparison))
 
 }
@@ -837,7 +998,7 @@ cross_validation_23 = function(data){
   widening_potential = data[data_item=="WIDENING_POTENTIAL",
                             .(route_id,begin_point,end_point,WIDENING_POTENTIAL=value_numeric)]
   
-  if(nrow(widening_obstacle)==0|nrow(widening_potential)==0){
+  if(nrow(widening_obstacle)==0 | nrow(widening_potential)==0){
     warning("Not applicable - Sufficient data from the state are not available")
     return(list(results=NULL,comparison=NULL))  
   }
@@ -855,9 +1016,203 @@ cross_validation_23 = function(data){
              .(applies = WIDENING_POTENTIAL<9, 
                passes  = grepl("[a-gA-G]+",WIDENING_OBSTACLE)&WIDENING_POTENTIAL<9)][order(applies,passes)]
   
+  if(nrow(results[applies == TRUE]) == 0){
+    warning("Not applicable - Sufficient data from the state are not available")
+    return(list(results=NULL,comparison=NULL))  
+  }
+  
+  
   return(list(results=results,comparison=comparison))
 
 }
+
+###################################################################
+# Value_Date must >= Year_Record - 2 where (sample | (Value_text is NULL and F_System > 1 and
+# NHS in (1,2,3,4,5,6,7,8,9)) 
+
+cross_validation_46 = function(data, variable){
+  # variable %in% c('IRI', 'RUTTING', 'FAULTING', 'CRACKING_PERCENT')
+  
+  #browser()
+  
+  comparison = data[data_item == variable,
+               .(route_id, begin_point, end_point, year_record, F_SYTEMorig, NHS,
+                 value_date, value_text, sample = !is.na(expansion_factor), num_sections)]
+  
+  if(nrow(comparison) == 0){
+    warning("Not applicable - Sufficient data from the state are not available")
+    return(list(results=NULL, comparison=NULL))  
+  }
+  
+
+  # apply the condition
+  results = comparison[,
+                       .(
+                         .N,
+                         num_sections = sum(num_sections,na.rm=TRUE),
+                         mileage      = sum(end_point-begin_point)
+                       ),
+                       .(applies = sample | (is.na(value_text) & F_SYTEMorig > 1 & NHS %in% 1:9), 
+                         passes  = value_date >= year_record - 2)][order(applies,passes)]
+  
+  if(nrow(results[applies == TRUE])==0){
+    warning("Not applicable - Sufficient data from the state are not available")
+    return(list(results=NULL,comparison=NULL))  
+  }
+  
+  
+  return(list(results=results, comparison=comparison))
+  
+}
+
+###################################################################
+# Value_Date Must = Year Record  Where Value_Text is Null AND F_System =1 
+
+cross_validation_61 = function(data, variable){
+  # variable %in% c('IRI', 'RUTTING', 'FAULTING', 'CRACKING_PERCENT')
+  
+  comparison = data[data_item == variable,
+                    .(route_id, begin_point, end_point, year_record, F_SYTEMorig,
+                      value_date, value_text, num_sections)]
+  
+  if(nrow(comparison) == 0){
+    warning("Not applicable - Sufficient data from the state are not available")
+    return(list(results=NULL, comparison=NULL))  
+  }
+  
+  
+  # apply the condition
+  results = comparison[,
+                       .(
+                         .N,
+                         num_sections = sum(num_sections,na.rm=TRUE),
+                         mileage      = sum(end_point-begin_point)
+                       ),
+                       .(applies = is.na(value_text) & F_SYTEMorig == 1, 
+                         passes  = value_date >= year_record - 2)][order(applies,passes)]
+  
+  if(nrow(results[applies == TRUE])==0){
+    warning("Not applicable - no sections meet application criteria")
+    return(list(results=NULL,comparison=NULL))  
+  }
+  
+  
+  return(list(results=results, comparison=comparison))
+  
+}
+
+###################################################################
+# Value_Text Must Be In (A,B,C,D) Where Value_Date <> Year Record and
+# F_Sytem = 1 OR if Value_Date < Year Record -2 on NHS
+
+cross_validation_64 = function(data, variable){
+  # variable %in% c('IRI', 'RUTTING', 'FAULTING', 'CRACKING_PERCENT')
+  
+  comparison = data[data_item == variable,
+                    .(route_id, begin_point, end_point, year_record, F_SYTEMorig, NHS,
+                      value_date, value_text, num_sections)]
+  
+  if(nrow(comparison) == 0){
+    warning("Not applicable - Sufficient data from the state are not available")
+    return(list(results=NULL, comparison=NULL))  
+  }
+  
+  
+  # apply the condition
+  results = comparison[,
+                       .(
+                         .N,
+                         num_sections = sum(num_sections,na.rm=TRUE),
+                         mileage      = sum(end_point-begin_point)
+                       ),
+                       .(applies = (value_date != year_record & F_SYTEMorig == 1) | (value_date < year_record - 2 & NHS > 1), 
+                         passes  = value_text %in% c('A', 'B', 'C', 'D'))][order(applies,passes)]
+  
+  if(nrow(results[applies == TRUE])==0){
+    warning("Not applicable - no sections meet application criteria")
+    return(list(results=NULL,comparison=NULL))  
+  }
+  
+  
+  return(list(results=results, comparison=comparison))
+  
+  
+}
+
+
+###################################################################
+# Value_Date Must Must >= Year_Record – 2 Where Sample OR F_System >1 and 
+# NHS in (1,2,3,4,5,6,7,8,9)
+
+cross_validation_65 = function(data){
+  comparison = data[data_item == "PSR",
+                    .(route_id, begin_point, end_point, year_record,
+                      F_SYTEMorig, NHS,
+                      value_date, sample = !is.na(expansion_factor), num_sections)]
+  
+  if(nrow(comparison) == 0){
+    warning("Not applicable - Sufficient data from the state are not available")
+    return(list(results=NULL, comparison=NULL))  
+  }
+  
+  
+  # apply the condition
+  results = comparison[,
+                       .(
+                         .N,
+                         num_sections = sum(num_sections,na.rm=TRUE),
+                         mileage      = sum(end_point-begin_point)
+                       ),
+                       .(applies = sample | (F_SYTEMorig > 1 & NHS %in% 1:9), 
+                         passes  = value_date >= year_record - 2)][order(applies,passes)]
+  
+  if(nrow(results[applies == TRUE])==0){
+    warning("Not applicable - Sufficient data from the state are not available")
+    return(list(results=NULL,comparison=NULL))  
+  }
+  
+  
+  return(list(results=results, comparison=comparison))
+  
+}
+
+###################################################################
+# Value_Date Must = Year Record  Where Value_Text is "A" AND F_System =1 
+
+cross_validation_66 = function(data){
+  
+  comparison = data[data_item == "PSR",
+                    .(route_id, begin_point, end_point, year_record,
+                      F_SYTEMorig, value_text, value_date, num_sections)]
+  
+  if(nrow(comparison) == 0){
+    warning("Not applicable - Sufficient data from the state are not available")
+    return(list(results=NULL, comparison=NULL))  
+  }
+  
+  
+  # apply the condition
+  results = comparison[,
+                       .(
+                         .N,
+                         num_sections = sum(num_sections,na.rm=TRUE),
+                         mileage      = sum(end_point-begin_point)
+                       ),
+                       .(applies = value_text == 'A' & F_SYTEMorig == 1, 
+                         passes  = value_date == year_record)][order(applies,passes)]
+  
+  if(nrow(results[applies == TRUE]) == 0){
+    warning("Not applicable - Sufficient data from the state are not available")
+    return(list(results=NULL,comparison=NULL))  
+  }
+  
+  
+  return(list(results=results, comparison=comparison))
+  
+  
+}
+
+
 
 ###################################################################
 # IRI >= 30 and <= 400
@@ -865,7 +1220,8 @@ cross_validation_23 = function(data){
 cross_validation_1 = function(data){
   
   #browser()
-  iri = data[data_item=="IRI", .(route_id,begin_point,end_point,IRI=value_numeric, num_sections)]
+  iri = data[data_item=="IRI",
+             .(route_id, begin_point, end_point, IRI=value_numeric, num_sections)]
   
   if(nrow(iri)==0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -885,8 +1241,54 @@ cross_validation_1 = function(data){
              .(applies = !is.na(IRI), 
                passes  = !is.na(IRI)&IRI>=30&IRI<=400)][order(applies,passes)]
   
+  if(nrow(results[applies == TRUE])==0){
+    warning("Not applicable - Sufficient data from the state are not available")
+    return(list(results=NULL,comparison=NULL))  
+  }
+  
+  
   return(list(results=results,comparison=comparison))
 
+}
+
+###################################################################
+# Where F_System =1, and IRI is Null, 
+# PSR Value_Numeric Must be >0 and PSR Value_Text must = A
+
+cross_validation_62 = function(data){
+  psr = data[data_item == "PSR",
+                    .(route_id, begin_point, end_point,
+                      F_SYTEMorig, value_text, value_numeric, num_sections)]
+  
+  iri = data[data_item == 'IRI',
+             .(route_id, begin_point, end_point, IRI = value_numeric)]
+  
+  if(nrow(psr) == 0 | nrow(iri) == 0){
+    warning("Not applicable - Sufficient data from the state are not available")
+    return(list(results=NULL, comparison=NULL))  
+  }
+  
+  comparison = iri[psr, on=.(route_id, begin_point, end_point)]
+  
+  # apply the condition
+  results = comparison[,
+                       .(
+                         .N,
+                         num_sections = sum(num_sections,na.rm=TRUE),
+                         mileage      = sum(end_point-begin_point)
+                       ),
+                       .(applies = is.na(IRI) & F_SYTEMorig == 1, 
+                         passes  = value_numeric > 0 & value_text == 'A')][order(applies,passes)]
+  
+  if(nrow(results[applies == TRUE]) == 0){
+    warning("Not applicable - Sufficient data from the state are not available")
+    return(list(results=NULL,comparison=NULL))  
+  }
+  
+  
+  return(list(results=results, comparison=comparison))
+  
+  
 }
 
 ###################################################################
@@ -915,6 +1317,12 @@ cross_validation_52 = function(data){
               ),
              .(applies = !is.na(RUTTING), 
                passes  = !is.na(RUTTING)&RUTTING<1)][order(applies,passes)]
+  
+  if(nrow(results[applies == TRUE])==0){
+    warning("Not applicable - Sufficient data from the state are not available")
+    return(list(results=NULL,comparison=NULL))  
+  }
+  
   
   return(list(results=results,comparison=comparison))
 
@@ -947,7 +1355,18 @@ cross_validation_47 = function(data){
              .(applies = !is.na(FAULTING), 
                passes  = !is.na(FAULTING)&FAULTING<=1)][order(applies,passes)]
   
-  return(list(results=results,comparison=comparison))
+  if(nrow(results[applies == TRUE])==0){
+    warning("Not applicable - Sufficient data from the state are not available")
+    return(list(results=NULL,comparison=NULL))  
+  }
+  
+  if(nrow(results[applies == TRUE])==0){
+    warning("Not applicable - Sufficient data from the state are not available")
+    return(list(results=NULL,comparison=NULL))  
+  }
+  
+  
+  return(list(results=results, comparison=comparison))
 
 }
 
@@ -990,6 +1409,12 @@ cross_validation_63 = function(data){
                passes  = SURFACE_TYPE %in% c(2,6,7,8) & 
                  CRACKING_PERCENT <= max_cracking_pct[1 + LANE_WIDTH])][order(applies,passes)]
   
+  if(nrow(results[applies == TRUE])==0){
+    warning("Not applicable - Sufficient data from the state are not available")
+    return(list(results=NULL,comparison=NULL))  
+  }
+  
+  
   return(list(results=results,comparison=comparison))
 
 }
@@ -1023,6 +1448,12 @@ cross_validation_51 = function(data){
              .(applies = SURFACE_TYPE%in%c(3,4,5,9,10), 
                passes  = SURFACE_TYPE%in%c(3,4,5,9,10)&CRACKING_PERCENT<=75)][order(applies,passes)]
   
+  if(nrow(results[applies == TRUE])==0){
+    warning("Not applicable - Sufficient data from the state are not available")
+    return(list(results=NULL,comparison=NULL))  
+  }
+  
+  
   return(list(results=results,comparison=comparison))
 
 }
@@ -1054,9 +1485,57 @@ cross_validation_9 = function(data){
              .(applies = !is.na(YEAR_LAST_CONSTRUCTION), 
                passes  = !is.na(YEAR_LAST_CONSTRUCTION)&year(YEAR_LAST_CONSTRUCTION)<=year_record)][order(applies,passes)]
   
+  if(nrow(results[applies == TRUE])==0){
+    warning("Not applicable - Sufficient data from the state are not available")
+    return(list(results=NULL,comparison=NULL))  
+  }
+  
+  
   return(list(results=results,comparison=comparison))
 
 }
+
+
+###################################################################
+# only allow Sample where Facility_Type IN 1,2 and 
+# (F_System = 1-5 or F_System = 6 and Urban Code <99999)
+
+cross_validation_2 = function(data){
+  
+  #browser()
+  
+  comparison = data[, 
+                    .(route_id, begin_point, end_point, num_sections,
+                      sample = !is.na(expansion_factor), F_SYTEMorig, 
+                      URBAN_CODE, FACILITY_TYPE)]
+  
+  if(nrow(comparison)==0){
+    warning("Not applicable - Sufficient data from the state are not available")
+    return(list(results=NULL,comparison=NULL))  
+  }
+  
+  
+  # apply the condition
+  results = comparison[,
+                       .(
+                         .N,
+                         num_sections = sum(num_sections,na.rm=TRUE),
+                         mileage      = sum(end_point-begin_point)
+                       ),
+                       .(applies = !(FACILITY_TYPE %in% c(1, 2) &
+                                       (F_SYTEMorig %in% 1:5 | (F_SYTEMorig == 6 & URBAN_CODE < 99999)))  , 
+                         passes  = !sample)][order(applies,passes)]
+  
+  if(nrow(results[applies == TRUE])==0){
+    warning("Not applicable - Sufficient data from the state are not available")
+    return(list(results=NULL,comparison=NULL))  
+  }
+  
+  
+  return(list(results=results,comparison=comparison))
+  
+}
+
 
 ###################################################################
 # Measurement checks
@@ -1079,7 +1558,7 @@ measurement_checks = function(data){
   results[,c("section_total","mileage_total"):=.(sum(num_sections),sum(mileage)),.(data_item)]
   results[,c("sections_pass","mileage_pass"):=.(num_sections/section_total,mileage/mileage_total)]
   results = results[passes==TRUE]
-  results[,.id:=data_item]
+  results[,.id:='129']
   results[,c("num_sections","mileage","passes"):=NULL]
   results[,data_item:=paste0("Mileage measurement (<0.11 miles): ",data_item)]
   setnames(results,"data_item","Description")
