@@ -1548,19 +1548,21 @@ cross_validation_2 = function(data){
 
 
 measurement_checks = function(data){
+
+  comparison = data[data_item %in% c("IRI", "PSR", "RUTTING", "FAULTING", "CRACKING_PERCENT"),
+                    .(route_id, section_id, begin_point_og, end_point_og, data_item)]
+  comparison <- unique(comparison)
+  comparison[, section_length := end_point_og - begin_point_og]
   
-  comparison = data[data_item%in%c("IRI","PSR","RUTTING","FAULTING","CRACKING_PERCENT"),.(route_id,begin_point,end_point,data_item)]
+  results = comparison[, .(num_sections = .N, mileage = sum(section_length)),
+                       .(data_item, passes = section_length <= 0.11)][order(data_item,passes)]
   
-  comparison[,section_length:=end_point-begin_point]
-  
-  results = comparison[,.(num_sections=.N,mileage = sum(section_length)),.(data_item,passes=section_length<=0.11)][order(data_item,passes)]
-  
-  results[,c("section_total","mileage_total"):=.(sum(num_sections),sum(mileage)),.(data_item)]
-  results[,c("sections_pass","mileage_pass"):=.(num_sections/section_total,mileage/mileage_total)]
+  results[, c("section_total", "mileage_total") := .(sum(num_sections), sum(mileage)), .(data_item)]
+  results[, c("sections_pass", "mileage_pass") := .(num_sections / section_total, mileage/mileage_total)]
   results = results[passes==TRUE]
   results[,.id:='129']
   results[,c("num_sections","mileage","passes"):=NULL]
-  results[,data_item:=paste0("Mileage measurement (<0.11 miles): ",data_item)]
+  results[,data_item:=paste0(data_item, ": Mileage measurement (<0.11 miles) (129)")]
   setnames(results,"data_item","Description")
   
   setcolorder(results,c(".id","Description","section_total","mileage_total","sections_pass","mileage_pass" ))
