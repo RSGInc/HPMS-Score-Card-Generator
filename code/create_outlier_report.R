@@ -16,7 +16,7 @@
 create_outlier_report <- function(data, year, variable){
   
   highlight_threshold    <- gVariables[Name==variable, OH_Thresh]
-
+  
   report <- getOutliers(data[FACILITY_TYPE != 4], year, variable)
 
   output <- format_report(report, highlight_threshold)

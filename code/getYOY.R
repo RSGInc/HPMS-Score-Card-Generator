@@ -13,7 +13,6 @@
 
 getYOY <- function(data, year, yearcomparison, variable, yoy_change){
  
-
   #data <- data[!(F_SYTEMorig == 7 & NHS != 1), ]
   
   var.1    <- data[year_record == year & data_item==variable,
@@ -98,10 +97,18 @@ getYOY <- function(data, year, yearcomparison, variable, yoy_change){
   # Calcualte report.2, with percent miles where values matched across years
   # where Interstate == 1
   
-  result <- var.yoy[value_numeric == i.value_numeric & Interstate==1,
-                    .(miles = round(sum(end_point - begin_point), 2), 
-                         N=round(sum(num_sections))),]
-
+   if ( yoy_change == 'N' ){
+    result <- var.yoy[value_numeric == i.value_numeric & Interstate==1,
+                      .(miles=round(sum(end_point-begin_point), 2), 
+                        N=round(sum(num_sections))),]
+  }
+  
+  if ( yoy_change == 'Y' ){
+    result <- var.yoy[value_numeric != i.value_numeric & Interstate==1,
+                      .(miles=round(sum(end_point-begin_point), 2), 
+                        N=round(sum(num_sections))),]
+  }
+  
   total <- var.1[Interstate == 1,
                  list(totalmiles = round(sum(end_point - begin_point), 2)),]
 
@@ -130,10 +137,19 @@ getYOY <- function(data, year, yearcomparison, variable, yoy_change){
   # Calculate report.3, with percent miles where values matched across years 
   # where NHS == 1
   
-  result <- var.yoy[value_numeric == i.value_numeric & NHS == 1,
-                    .(miles=round(sum(end_point-begin_point),2), 
-                         N=round(sum(num_sections))),]
-
+  if ( yoy_change == 'N' ){
+    result <- var.yoy[value_numeric == i.value_numeric & NHS == 1,
+                      .(miles=round(sum(end_point-begin_point),2), 
+                        N=round(sum(num_sections))),]
+  }
+  
+  if ( yoy_change == 'Y' ){
+    result <- var.yoy[value_numeric != i.value_numeric & NHS == 1,
+                      .(miles=round(sum(end_point-begin_point),2), 
+                        N=round(sum(num_sections))),]
+  }
+  
+  
   total <- var.1[NHS == 1, 
                  list(totalmiles=round(sum(end_point-begin_point), 2)), ]
   
