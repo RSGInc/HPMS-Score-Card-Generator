@@ -24,8 +24,8 @@ create_travel_data_yoy <- function(
   histtype,
   fontsize=6,
   ramps
-)
-{
+){
+  
   type <- gVariables[Name==variable,Type]
   
   if(type==1){
