@@ -421,7 +421,7 @@ FormatDataSet <- function(dat, state_abbr, year) {
   data.formatted[, F_SYSTEM := c(NA,1,1,1,2,2,2)[F_SYSTEM]]
   
   # remove non-inventory data but keep for summary
-  data_noFT6 <- data.formatted[FACILITY_TYPE %in% c(6,7), ]
+  data_noFT6 <- data.formatted[!FACILITY_TYPE %in% c(6,7), ]
   
   # merge in expansion factors ---------------------------------------------
 
