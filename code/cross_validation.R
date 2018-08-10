@@ -5,7 +5,6 @@ calc_cross_validation = function(data, year){
   data <- data[year_record == year]
   
   # Tests commented out are evaluated as outliers
-  
   results = list()
   results[["53"]] = summarize_validation(cross_validation_53(data))
   results[["x"]]  = summarize_validation(cross_validation_x(data))
@@ -31,20 +30,20 @@ calc_cross_validation = function(data, year){
   results[["60"]] = summarize_validation(cross_validation_60(data))
   results[["23"]] = summarize_validation(cross_validation_23(data))
 
-  results[["46"]] = summarize_validation(cross_validation_46(data, 'IRI'))
-  results[["46"]] = summarize_validation(cross_validation_46(data, 'RUTTING'))
-  results[["46"]] = summarize_validation(cross_validation_46(data, 'FAULTING'))
-  results[["46"]] = summarize_validation(cross_validation_46(data, 'CRACKING_PERCENT'))
+  results[["46.1"]] = summarize_validation(cross_validation_46(data, 'IRI'))
+  results[["46.2"]] = summarize_validation(cross_validation_46(data, 'RUTTING'))
+  results[["46.3"]] = summarize_validation(cross_validation_46(data, 'FAULTING'))
+  results[["46.4"]] = summarize_validation(cross_validation_46(data, 'CRACKING_PERCENT'))
 
-  results[["61"]] = summarize_validation(cross_validation_61(data, 'IRI'))
-  results[["61"]] = summarize_validation(cross_validation_61(data, 'RUTTING'))
-  results[["61"]] = summarize_validation(cross_validation_61(data, 'FAULTING'))
-  results[["61"]] = summarize_validation(cross_validation_61(data, 'CRACKING_PERCENT'))
+  results[["61.1"]] = summarize_validation(cross_validation_61(data, 'IRI'))
+  results[["61.2"]] = summarize_validation(cross_validation_61(data, 'RUTTING'))
+  results[["61.3"]] = summarize_validation(cross_validation_61(data, 'FAULTING'))
+  results[["61.4"]] = summarize_validation(cross_validation_61(data, 'CRACKING_PERCENT'))
 
-  results[["64"]] = summarize_validation(cross_validation_64(data, 'IRI'))
-  results[["64"]] = summarize_validation(cross_validation_64(data, 'RUTTING'))
-  results[["64"]] = summarize_validation(cross_validation_64(data, 'FAULTING'))
-  results[["64"]] = summarize_validation(cross_validation_64(data, 'CRACKING_PERCENT'))
+  results[["64.1"]] = summarize_validation(cross_validation_64(data, 'IRI'))
+  results[["64.2"]] = summarize_validation(cross_validation_64(data, 'RUTTING'))
+  results[["64.3"]] = summarize_validation(cross_validation_64(data, 'FAULTING'))
+  results[["64.4"]] = summarize_validation(cross_validation_64(data, 'CRACKING_PERCENT'))
 
   results[["65"]] = summarize_validation(cross_validation_65(data))
   results[["66"]] = summarize_validation(cross_validation_66(data))
@@ -61,22 +60,6 @@ calc_cross_validation = function(data, year){
   
   return(results)
 }
-
-# format_cross_validation_report <- function(report, fontsize){
-#   thm <- ttheme_default(
-#     core    = list(fg_params=list(col='slategray', fontsize=fontsize, hjust=1, x=0.95),
-#                    bg_params=list(fill='white'),
-#                    padding=unit(c(0.1, 0.1), 'inches')),
-#     colhead = list(fg_params=list(col='black', fontsize=fontsize,
-#                                   fontface='bold', hjust=1, x=0.95),
-#                    bg_params=list(fill='white'),
-#                    padding=unit(c(0.1, 0.1), 'inches')))
-#   
-#   ob <- tableGrob(report, rows=NULL, theme=thm )
-#   
-#   ob <- vertically_align(ob)
-#   return(ob)
-# }
 
 
 ###################################################################

@@ -37,7 +37,7 @@ calcQualityAll <- function(data, year, year_compare){
       
     } else {
       
-      weights <- c(1, 1, 1, 1)
+      weights <- c(Interstate = 1, NHS = 0, FSYSTEM1 = 1, FSYSTEM2 = 1)
 
       outliers <- getOutliers(data, year, variable)
       
