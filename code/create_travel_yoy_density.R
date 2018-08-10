@@ -21,8 +21,6 @@ create_travel_yoy_density <- function(
   ramps
 ){
   
-  #if ( variable == 'AADT_COMBINATION' ) browser()
-  
   type <- gVariables[Name==variable,Type]
   
   if(type==1){
@@ -136,15 +134,24 @@ create_travel_yoy_density <- function(
     } else {
       
       labels <- 1:7
-      
-      scale <- max(c(var.1[,sum(end_point-begin_point),by=list(F_SYSTEM,Interstate,NHS,value_numeric)][,max(V1)],
-                     var.2[,sum(end_point-begin_point),by=list(F_SYSTEM,Interstate,NHS,value_numeric)][,max(V1)]
+
+      scale <- max(c(var.1[, sum(end_point-begin_point),
+                           by=list(F_SYSTEM, NHS, value_numeric)][, max(V1)],
+                     var.1[NHS == 1, sum(end_point - begin_point),
+                           by = list(value_numeric)][, max(V1)],
+                     var.2[,sum(end_point-begin_point),
+                           by=list(F_SYSTEM, NHS, value_numeric)][, max(V1)],
+                     var.2[NHS == 1, sum(end_point - begin_point),
+                           by = list(value_numeric)][, max(V1)]
       ))
       
       natWeight <- scale/national[,sum(end_point-begin_point),by=list(F_SYSTEM,Interstate,NHS,value_numeric)][,max(V1)]
       
       national[,end_point  :=natWeight*end_point]
       national[,begin_point:=natWeight*begin_point]
+      
+      # Pad scale slightly so we don't have problems with the bar plots
+      scale <- scale * 1.001
       
       p11 <- barPlot(var.1[Interstate==1],labels,title=gF_SYSTEM_levels[1],barcolor="slategray",bottomMargin=-0.5,scale=scale,showLabel=TRUE)
       p12 <- barPlot(var.1[NHS==1]       ,labels,title=gF_SYSTEM_levels[2],barcolor="slategray",bottomMargin=-0.5,scale=scale)
@@ -177,8 +184,7 @@ create_travel_yoy_density <- function(
       
     }
     return(obj)
-  } else
-  {
+  } else {
     # nothing to report because data are missing
     return(textGrob(NoDataString,gp=gpar(fontsize=8, col="Red")))
   }
