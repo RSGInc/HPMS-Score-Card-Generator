@@ -80,7 +80,7 @@ checkSummary <- function(year, state_code, data){
   }
  
   if(!isTRUE(check)){
-    cat('...FAILED!\n')
+    cat('... saving a diff!\n')
     # Save a dataset
     comp[, diff := from_sql - from_r]
     diffs <- comp[abs(diff) >= 1e-3, ]

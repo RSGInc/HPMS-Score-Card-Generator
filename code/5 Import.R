@@ -376,6 +376,13 @@ append_column = function(data,column){
 # Format a given data set for use in the score card generation process
 FormatDataSet <- function(dat, state_abbr, year) {
 
+  # summary of the sections that are dropped as part of this formatting
+  # 1. Any section where FACILITY_TYPE = 6 or 7. 6 is Non-Inventory Direction and 7 is Planned/Unbuilt. We had previously only been removing where facility_type = 6 so the exclusion of the Planned/Unbuilt is new.
+  #	Should we also exclude 5 "Non Mainline"? The HPMS guide says "Public road mileage is based only on sections coded '1,' or '2'. This includes only those roads that are open to public travel regardless of the ownership or maintenance responsibilities. Ramps are not included in the public road mileage calculation."
+  # Any section that is SP or SP* and does not have a corresponding expansion factor.
+  # Any section that is facility_type = 4 (a ramp) but has an extent that is not "FE + R". We should check with Justin if ramps should be included with SP data items. I don't think they should be.
+  # Any section that has a blank section extent in the extent details spreadsheet.
+  
   # Keep track of the original sections 
   dat <- dat[order(route_id, data_item, begin_point)]
   dat[, section_id := 1:.N, by=.(route_id, data_item)]
@@ -384,13 +391,19 @@ FormatDataSet <- function(dat, state_abbr, year) {
   data.formatted = expand(dat,0.1)
   
   # Merge data on itself to convert rows to columns
-  
   data.formatted = append_column(data.formatted,"F_SYSTEM")
   data.formatted = append_column(data.formatted,"NHS")
   data.formatted = append_column(data.formatted,"FACILITY_TYPE")
   data.formatted = append_column(data.formatted,"THROUGH_LANES")
   data.formatted = append_column(data.formatted,"URBAN_CODE")
 
+  # THROUGH_LANES needs to be smarter
+  # Lane Miles - 
+  # (Through_Lanes x F_System in (1,2,3,4,5,6-Urban)) plus
+  # (total length for Rural Minor Collectors x 2)
+  
+  data.formatted[F_SYSTEM>=6&URBAN_CODE==99999&FACILITY_TYPE<6&is.na(THROUGH_LANES),THROUGH_LANES:=2]
+  
   #F_SYSTEM Codes
   # 1 Interstate
   # 2 Principal Arterial - Other Freeways and Expressways
@@ -408,17 +421,12 @@ FormatDataSet <- function(dat, state_abbr, year) {
   data.formatted[, F_SYSTEM := c(NA,1,1,1,2,2,2)[F_SYSTEM]]
   
   # remove non-inventory data but keep for summary
-  data_noFT6 <- data.formatted[FACILITY_TYPE != 6, ]
-  data_FT6 <- data.formatted[FACILITY_TYPE == 6 | is.na(FACILITY_TYPE), ]
+  data_noFT6 <- data.formatted[!FACILITY_TYPE %in% c(6,7), ]
   
   # merge in expansion factors ---------------------------------------------
 
-  #sp <- data.table(read.table(spfile,sep="|",header=TRUE,stringsAsFactors=FALSE))
-
   con <- odbcConnect("HPMS")
 
-  # query <- paste0("select YEAR_RECORD as YEAR_RECORD, STATE_CODE as STATE_CODE, ROUTE_ID as ROUTE_ID, BEGIN_POINT as BEGIN_POINT, END_POINT as END_POINT, SAMPLE_ID as SAMPLE_ID, EXPANSION_FACTOR as EXPANSION_FACTOR from samples",year," where state_code = ",getStateNumFromCode(state)," and year_record = ",year)
-  
   query <- paste0('select * from ', samples_table, ' where StateYearKey = ',
                   getStateNumFromCode(state_abbr), as.numeric(year) %% 100)
   
@@ -430,21 +438,7 @@ FormatDataSet <- function(dat, state_abbr, year) {
     stop('Result of query:"', query, '" had zero rows.')
   }
   sp <- cleanUpQuery(sp)
-  # setnames(sp,
-  #         c("YEAR_RECORD", "STATE_CODE", "ROUTE_ID","BEGIN_POINT", "END_POINT", "SAMPLE_ID","EXPANSION_FACTOR"),
-  #         c("year_record", "state_code", "route_id","begin_point", "end_point", "sample_id","expansion_factor"))
-  
-  #data_exp <- data.table(
-  #  sqldf("select A.*, B.expansion_factor as expansion_factor
-  #         from [data_noFT6] A 
-  #         left join [sp] B on A.route_id = B.route_id and 
-  #                                         A.year_record = B.year_record and 
-  #                                         A.state_code = B.state_code and 
-  #                                         A.begin_point <= B.end_point and 
-  #                                         A.begin_point >= B.begin_point and 
-  #                                         A.end_point <= B.end_point and 
-  #                                         A.end_point >= B.begin_point"))
-  
+ 
   sp = expand(sp,0.1)
  
   # things we do not need in SP
@@ -453,7 +447,7 @@ FormatDataSet <- function(dat, state_abbr, year) {
   sp[,section_length:=NULL]
   sp[,stateyearkey:=NULL]
   sp[,state_code:=NULL]
-  
+
   data_exp = sp[data_noFT6,on=.(year_record,route_id,begin_point,end_point)]
   
   data_exp[, expansion_factor:=as.numeric(expansion_factor)]
@@ -486,20 +480,16 @@ FormatDataSet <- function(dat, state_abbr, year) {
   drop_idx <- data_exp$section_extent %in% c('SP', 'SP*') & is.na(data_exp$expansion_factor)
   data_exp <- data_exp[!drop_idx]
   
-  drop_idx <- data_exp$FACILITY_TYPE == 4 & !data_exp$section_extent %in% c('SP', 'SP*', 'FE + R')
+  # to do: check to see if sp and sp* have ramp reporting requirements
+  drop_idx <- data_exp$FACILITY_TYPE == 4 & !data_exp$section_extent %in% c('FE + R')
   data_exp <- data_exp[!drop_idx]
   
-  # Check formatted data against the FHWA summary
-  # Create a dataset to compare (need to bindrows the FT6 data)
-  keep_cols <- c('year_record', 'state_code', 'data_item', 'route_id', 'section_length')
-  for_comp <- rbindlist(
-    list(data_exp[, keep_cols, with=FALSE], data_FT6[, keep_cols, with=FALSE]),
-    use.names=TRUE)
+  data_exp = data_exp[section_extent!='',]
   
   # Check imported data against summary table -------------------------------
   state_code <- getStateNumFromCode(state_abbr)
   
-  check <- checkSummary(year, state_code, dat)
+  check <- checkSummary(year, state_code, data_exp)
   
   if ( !isTRUE(check) ){
    

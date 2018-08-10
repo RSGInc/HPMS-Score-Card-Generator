@@ -39,19 +39,14 @@ create_data_summary <- function(data, state, year, year_compare){
 
   # Lane miles
   n_LaneMiles.1 <- data[IDX & year_record==year,
-                        sum(THROUGH_LANES * (end_point - begin_point), na.rm = TRUE), ] + 
-    data[idx_st_fsystem & year_record == year & (F_SYTEMorig == 6) & (URBAN_CODE == 99999),
-         sum(2 * (end_point - begin_point), na.rm = TRUE), ]
+                        sum(THROUGH_LANES * (end_point - begin_point), na.rm = TRUE), ]
   
   n_LaneMiles.2 <- data[IDX & year_record == year_compare,
-                        sum(THROUGH_LANES * (end_point - begin_point), na.rm = TRUE), ] + 
-    data[idx_st_fsystem & year_record == (year_compare) & (F_SYTEMorig == 6) & (URBAN_CODE == 99999),
-         sum(2 * (end_point - begin_point), na.rm = TRUE), ]
+                        sum(THROUGH_LANES * (end_point - begin_point), na.rm = TRUE), ]
 
   # Data items
   n_Variables.1 <- length(data[state_code == state & year_record == year, unique(data_item), ])
   n_Variables.2 <- length(data[state_code == state & year_record == year_compare, unique(data_item), ])
-
   
   # Route ids
   route_id.1 <- unique(data[IDX & year_record == year]$route_id)
