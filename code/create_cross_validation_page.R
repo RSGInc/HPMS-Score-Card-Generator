@@ -13,7 +13,7 @@
 create_cross_validation_page <- function(dt_cross, state, year){
   color <- 'white'
 
-  maxrows <- 20
+  maxrows <- 21
   max_stringwidth <- 90
   desc_width <- 120 # mm
   rowHeight <- 8   # mm
@@ -40,12 +40,12 @@ create_cross_validation_page <- function(dt_cross, state, year){
   tbl_1 <- tableGrob(dt_1[, .(Description, Score = '')], rows=NULL, theme=thm,
                    heights=unit(rep(rowHeight, nrow(dt_1)), 'mm'),
                    widths=unit(c(desc_width, 20), 'mm'))
-  tbl_1$vp <- viewport(x=0.5, y=0.5)
+  tbl_1$vp <- viewport(x=0.5, y=unit(1, 'npc') - 0.5 * sum(tbl_1$heights))
   
   tbl_2 <- tableGrob(dt_2[, .(Description, Score = '')], rows=NULL, theme=thm,
                      heights=unit(rep(rowHeight, nrow(dt_2)), 'mm'),
                      widths=unit(c(desc_width, 20), 'mm'))
-  tbl_2$vp <- viewport(x=0.5, y=0.5)
+  tbl_2$vp <- viewport(x=0.5, y=unit(1, 'npc') - 0.5 * sum(tbl_2$heights))
   
   ob <- arrangeGrob(
     # header
@@ -64,7 +64,7 @@ create_cross_validation_page <- function(dt_cross, state, year){
   # Add the scores
   colWidth <- 0.5
   startx <- 0.415
-  starty <- 0.843
+  starty <- 0.867
   
   C <- 1
   R <- 1
@@ -87,4 +87,5 @@ create_cross_validation_page <- function(dt_cross, state, year){
       R <- R + 1
     }
   }
+  browser()
 }

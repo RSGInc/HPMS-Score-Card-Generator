@@ -16,7 +16,7 @@ calcQualityAll <- function(data, year, year_compare){
                               Outlier_Min, Outlier_Max,
                               Adjacency_Change, YOY_Change,
                               Quality_Weight, Completeness_Weight)]
-  
+
   dt_output$Outlier_Score <- NA
   dt_output$Adjacency_Score <- NA
   dt_output$YOY_Score <- NA
@@ -45,7 +45,7 @@ calcQualityAll <- function(data, year, year_compare){
         outlier_mean <- NA
       } else {
         # Note that getOutliers returns perc_miles that exceed outliers
-        outlier_mean <- sum(100 - as.numeric(outliers$perc_miles) * weights, na.rm=TRUE) /
+        outlier_mean <- sum((100 - as.numeric(outliers$perc_miles)) * weights, na.rm=TRUE) /
           sum(weights[!(is.na(outliers$perc_miles) | is.nan(outliers$perc_miles))])
       }
       
