@@ -16,7 +16,7 @@ calcQualityAll <- function(data, year, year_compare){
                               Outlier_Min, Outlier_Max,
                               Adjacency_Change, YOY_Change,
                               Quality_Weight, Completeness_Weight)]
-
+  
   dt_output$Outlier_Score <- NA
   dt_output$Adjacency_Score <- NA
   dt_output$YOY_Score <- NA
@@ -24,9 +24,6 @@ calcQualityAll <- function(data, year, year_compare){
   
   # Filter out non-NHS local roads
   data <- data[!(F_SYTEMorig == 7 & NHS != 1), ]
-  
-  # filter ramps (facility type == 4) 
-  data = data[FACILITY_TYPE%in%c(1,2)]
   
   for ( i in 1:nrow(dt_output)){
     
@@ -40,15 +37,15 @@ calcQualityAll <- function(data, year, year_compare){
       
     } else {
       
-      weights <- c(Interstate = 1, NHS = 0, FSYSTEM1 = 1, FSYSTEM2 = 1)
-
+      weights <- c(1, 1, 1, 1)
+      
       outliers <- getOutliers(data, year, variable)
       
       if ( is.null(outliers) ){
         outlier_mean <- NA
       } else {
         # Note that getOutliers returns perc_miles that exceed outliers
-        outlier_mean <- sum((100 - as.numeric(outliers$perc_miles)) * weights, na.rm=TRUE) /
+        outlier_mean <- sum(100 - as.numeric(outliers$perc_miles) * weights, na.rm=TRUE) /
           sum(weights[!(is.na(outliers$perc_miles) | is.nan(outliers$perc_miles))])
       }
       

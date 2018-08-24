@@ -2,7 +2,8 @@
 
 calc_cross_validation = function(data, year){
   
-  data <- data[year_record == year]
+  # filter ramps (facility type == 4) 
+  data = data[year_record == year&FACILITY_TYPE%in%c(1,2)]
   
   # Tests commented out are evaluated as outliers
   results = list()

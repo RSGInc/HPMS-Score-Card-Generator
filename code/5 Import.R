@@ -421,7 +421,12 @@ FormatDataSet <- function(dat, state_abbr, year) {
   data.formatted[, F_SYSTEM := c(NA,1,1,1,2,2,2)[F_SYSTEM]]
   
   # remove non-inventory data but keep for summary
-  data_noFT6 <- data.formatted[!FACILITY_TYPE %in% c(6,7), ]
+  data_noFT6 <- data.formatted[!FACILITY_TYPE %in% c(5,6,7), ] # keeping 1,2,4. 3 is not a code in the field guide
+  
+  # keeping only ramps for the ramp detail data items
+  # ramp detail data items are "AADT","F_SYSTEM","FACILITY_TYPE","THROUGH_LANES","URBAN_CODE"
+  
+  data_noFT6 = data_noFT6[(FACILITY_TYPE==4&data_item%in%c("AADT","F_SYSTEM","FACILITY_TYPE","THROUGH_LANES","URBAN_CODE"))|(FACILITY_TYPE%in%c(1,2))]
   
   # merge in expansion factors ---------------------------------------------
 
@@ -477,12 +482,9 @@ FormatDataSet <- function(dat, state_abbr, year) {
   # Filter out sections that are not needed.  E.g. SP items with no expansion factor or sample_id
   # E.g. Ramps (FACILITY_TYPE = 4) for non FE+R
   
-  drop_idx <- data_exp$section_extent %in% c('SP', 'SP*') & is.na(data_exp$expansion_factor)
-  data_exp <- data_exp[!drop_idx]
+  cat("Mileage removed for SP sections with no expansion factors: ",data_exp[(section_extent %in% c('SP', 'SP*') & is.na(data_exp$expansion_factor)),sum(end_point-begin_point)],"\n")
   
-  # to do: check to see if sp and sp* have ramp reporting requirements
-  drop_idx <- data_exp$FACILITY_TYPE == 4 & !data_exp$section_extent %in% c('FE + R')
-  data_exp <- data_exp[!drop_idx]
+  data_exp = data_exp[!(section_extent %in% c('SP', 'SP*') & is.na(data_exp$expansion_factor))]
   
   data_exp = data_exp[section_extent!='',]
   
