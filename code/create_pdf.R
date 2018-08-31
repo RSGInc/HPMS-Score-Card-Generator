@@ -85,16 +85,20 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
     x2 <- todo[i, 2]
     x3 <- todo[i, 3]
 
+    gPageNumber <<- gPageNumber + 1
+    
     create_page_summary(data, state, year, year_compare,
                         x1 = x1, x2 = x2, x3 = x3,
                         title = "ramps: detailed review", icontext = "r",
-                        page = 3 + i, ramps = TRUE)
+                        page = gPageNumber, ramps = TRUE)
     cat(".")
   }
+  
+  gPageNumber <<- gPageNumber + 1
   create_page_summary(data, state, year, year_compare,
                       x1 = todo[i + 1, 1], x2 = todo[i + 1, 2],
                       title = "ramps: detailed review", icontext = "r",
-                      page = 5, ramps = TRUE)
+                      page = gPageNumber, ramps = TRUE)
   cat(paste0(" completed in: ",
              round(difftime(Sys.time(), ts, units = "secs"), 2), " seconds!\n"))
 
@@ -107,12 +111,15 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
   todo_vec <- c(todo_vec, rep(NA, 3 - (length(todo_vec) %% 3)))
   todo <- matrix(todo_vec, ncol = 3, byrow = TRUE)
   for (i in 1:6) {
+    
     x1 <- todo[i, 1]
     x2 <- todo[i, 2]
     x3 <- todo[i, 3]
+    
+    gPageNumber <<- gPageNumber + 1
     create_page_summary(data, state, year, year_compare,
                         x1 = x1, x2 = x2, x3 = x3,
-                        title = "inventory", icontext = "i", page = 5 + i)
+                        title = "inventory", icontext = "i", page = gPageNumber)
     cat(".")
   }
   cat(paste0(" completed in: ", round(difftime(Sys.time(), ts, units = "secs"),
@@ -129,14 +136,17 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
     x1 <- todo[i, 1]
     x2 <- todo[i, 2]
     x3 <- todo[i, 3]
+    
+    gPageNumber <<- gPageNumber + 1
     create_page_summary(data, state, year, year_compare,
                         x1 = x1, x2 = x2, x3 = x3, title = "pavement",
-                        icontext = "p", page = 11 + i)
+                        icontext = "p", page = gPageNumber)
     cat(".")
   }
+  gPageNumber <<- gPageNumber + 1
   create_page_summary(data, state, year, year_compare,
                       x1 = todo[i + 1, 1], title = "pavement", icontext = "p",
-                      page = 12 + i)
+                      page = gPageNumber)
   cat(paste0(" completed in: ",
              round(difftime(Sys.time(), ts, units = "secs"), 2), " seconds!\n"))
 
@@ -151,15 +161,19 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
     x1 <- todo[i, 1]
     x2 <- todo[i, 2]
     x3 <- todo[i, 3]
+    
+    gPageNumber <<- gPageNumber + 1
     create_page_summary(data, state, year, year_compare,
                         x1 = x1, x2 = x2,  x3 = x3,
-                        title = "traffic", icontext = "t", page = 16 + i)
+                        title = "traffic", icontext = "t", page = gPageNumber)
     cat(".")
   }
+  
+  gPageNumber <<- gPageNumber + 1
   create_page_summary(data, state, year, year_compare,
                       x1 = todo[i +  1, 1],
                       x2 = todo[i + 1, 2],
-                      title = "traffic", icontext = "t", page = 17 + i)
+                      title = "traffic", icontext = "t", page = gPageNumber)
   cat(paste0(" completed in: ", round(difftime(Sys.time(), ts, units = "secs"), 
                                       2), " seconds!\n"))
   
@@ -173,13 +187,17 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
     x1 <- todo[i, 1]
     x2 <- todo[i, 2]
     x3 <- todo[i, 3]
+    
+    gPageNumber <<- gPageNumber + 1
     create_page_summary(data, state, year, year_compare,
-                        x1 = x1, x2 = x2, x3 = x3, title = "geometric", icontext = "g", page = 21 + i)
+                        x1 = x1, x2 = x2, x3 = x3, title = "geometric", icontext = "g", page = gPageNumber)
     cat(".")
   }
+  
+  gPageNumber <<- gPageNumber + 1
   create_page_summary(data, state, year, year_compare,
                       x1 = todo[i + 1, 1], x2 = todo[i + 1, 2],
-                      title = "geometric", icontext = "g", page = 29)
+                      title = "geometric", icontext = "g", page = gPageNumber)
   cat(paste0(" completed in: ",
              round(difftime(Sys.time(), ts, units = "secs"), 2), " seconds!\n"))
   
@@ -193,9 +211,11 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
     x1 <- todo[i, 1]
     x2 <- todo[i, 2]
     x3 <- todo[i, 3]
+    
+    gPageNumber <<- gPageNumber + 1
     create_page_summary(data, state, year, year_compare,
                         x1 = x1, x2 = x2, x3 = x3,
-                        title = "route", icontext = "r", page = 29 + i)
+                        title = "route", icontext = "r", page = gPageNumber)
     cat(".")
   }
   cat(paste0(" completed in: ",
@@ -211,14 +231,19 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
     x1 <- todo[i, 1]
     x2 <- todo[i, 2]
     x3 <- todo[i, 3]
+    
+    gPageNumber <<- gPageNumber + 1
     create_page_summary(data, state, year, year_compare,
                         x1 = x1, x2 = x2, x3 = x3,
                         title = "special network", icontext = "sn",
-                        page = 30 + i)
+                        page = gPageNumber)
     cat(".")
   }
-  create_page_summary(data, state, year, year_compare, x1 = todo[i + 
-                                                                   1, 1], title = "special network", icontext = "sn", page = 32)
+  
+  gPageNumber <<- gPageNumber + 1
+  create_page_summary(data, state, year, year_compare,
+                      x1 = todo[i + 1, 1], title = "special network", icontext = "sn",
+                      page = gPageNumber)
   cat(paste0(" completed in: ",
              round(difftime(Sys.time(), ts, units = "secs"), 2), " seconds!\n"))
   

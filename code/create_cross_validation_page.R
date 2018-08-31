@@ -87,5 +87,8 @@ create_cross_validation_page <- function(dt_cross, state, year){
       R <- R + 1
     }
   }
-  #browser()
+  gPageNumber <<- gPageNumber + 1
+  add_page_number(gPageNumber)
 }
+
+# End

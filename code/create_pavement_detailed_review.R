@@ -128,7 +128,8 @@ create_pavement_detailed_review <- function(
   grid.text(paste0("% > ", gVariables[Name=="RUTTING",YOYH_Thresh]," are highlighted"),         x=0.585,y=0.1,hjust=0,gp=gpar(fontsize=5.75, fontface="italic",col="slategray"))
   grid.text(paste0("% > ", gVariables[Name=="IRI",YOYH_Thresh]," are highlighted"),             x=0.7975,y=0.1,hjust=0,gp=gpar(fontsize=5.75, fontface="italic",col="slategray"))
   
-  add_page_number(2)
+  gPageNumber <<- gPageNumber + 1
+  add_page_number(gPageNumber)
   
   
   

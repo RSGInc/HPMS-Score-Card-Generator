@@ -129,6 +129,7 @@ create_traffic_detailed_review <- function(
      grid.text(paste0("% > ",gVariables[Name=="AADT_SINGLE_UNIT",YOYH_Thresh]," are highlighted"),x=0.7975,y=0.135,hjust=0,gp=gpar(fontsize=5.75, fontface="italic",col="slategray"))
 
      
-     add_page_number(3)
+     gPageNumber <<- gPageNumber + 1
+     add_page_number(gPageNumber)
      
 }

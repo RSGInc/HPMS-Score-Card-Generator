@@ -114,5 +114,8 @@ gVariablesLabels[Name=="ACCESS_CONTROL",Code1:="Full\nAccess\nControl"]
 gVariablesLabels[Name=="ACCESS_CONTROL",Code2:="Partial\nAccess\nControl"]
 gVariablesLabels[Name=="ACCESS_CONTROL",Code3:="No\nAccess\nControl"]
 
+# track page number
+gPageNumber <- 1
+
 # this is the output if there is a problem with any analysis of a data item
 NoDataString <- "Data item may not be required\nfor this State, follow up with\nState DOT and FHWA to confirm."
