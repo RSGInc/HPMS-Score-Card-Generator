@@ -12,39 +12,56 @@
 
 create_cross_validation_page <- function(dt_cross, state, year){
   color <- 'white'
-
+  
   maxrows <- 21
   max_stringwidth <- 90
   desc_width <- 120 # mm
   rowHeight <- 8   # mm
   fontsize <- 7
   
-  setnames(dt_cross, old = c('.id', 'Description'), new = c('ID', 'Desc_old'))
+  setnames(dt_cross, old = c('.id', 'Description', 'mileage_total'), new = c('ID', 'Desc_old', 'Miles'))
   dt_cross <- dt_cross[order(as.numeric(ID))]
   desc_new <- sapply(
     strwrap(dt_cross$Desc_old, width=max_stringwidth, simplify=FALSE),
     paste, collapse='\n')
   dt_cross[, Description := desc_new]
+  dt_cross[, Miles := round(Miles)]
   
   dt_1 <- dt_cross[1:maxrows]
   dt_2 <- dt_cross[(maxrows + 1):nrow(dt_cross)]
   
   # Make tables
+  
+  # Left table
+  core_hjust <- matrix(c(1, 1, 1), ncol=3, nrow=nrow(dt_1), byrow=TRUE)
+  core_x <- matrix(c(0.99, 0.9, 0.99), ncol=3, nrow=nrow(dt_1), byrow=TRUE)
+  
   thm <- ttheme_default(
-    core    = list(fg_params=list(col='slategray', fontsize=fontsize, hjust=1, x=0.99),
-                   padding = unit(c(0,0), 'mm')),
+    core    = list(fg_params=list(col='slategray', fontsize=fontsize, hjust=core_hjust, x=core_x),
+                   padding = unit(c(0, 0), 'mm')),
     colhead = list(fg_params=list(col='black', fontsize=fontsize,
                                   fontface='bold', hjust=0.5),
                    padding=unit(c(3, 3), 'mm')))
   
-  tbl_1 <- tableGrob(dt_1[, .(Description, Score = '')], rows=NULL, theme=thm,
+  tbl_1 <- tableGrob(dt_1[, .(Description, Miles, Score = '')], rows=NULL, theme=thm,
                    heights=unit(rep(rowHeight, nrow(dt_1)), 'mm'),
-                   widths=unit(c(desc_width, 20), 'mm'))
+                   widths=unit(c(desc_width, 15, 20), 'mm'))
   tbl_1$vp <- viewport(x=0.5, y=unit(1, 'npc') - 0.5 * sum(tbl_1$heights))
   
-  tbl_2 <- tableGrob(dt_2[, .(Description, Score = '')], rows=NULL, theme=thm,
+  # Right table
+  core_hjust <- matrix(c(1, 1, 1), ncol=3, nrow=nrow(dt_2), byrow=TRUE)
+  core_x <- matrix(c(0.99, 0.9, 0.99), ncol=3, nrow=nrow(dt_2), byrow=TRUE)
+  
+  thm <- ttheme_default(
+    core    = list(fg_params=list(col='slategray', fontsize=fontsize, hjust=core_hjust, x=core_x),
+                   padding = unit(c(0, 0), 'mm')),
+    colhead = list(fg_params=list(col='black', fontsize=fontsize,
+                                  fontface='bold', hjust=0.5),
+                   padding=unit(c(3, 3), 'mm')))
+  
+  tbl_2 <- tableGrob(dt_2[, .(Description, Miles, Score = '')], rows=NULL, theme=thm,
                      heights=unit(rep(rowHeight, nrow(dt_2)), 'mm'),
-                     widths=unit(c(desc_width, 20), 'mm'))
+                     widths=unit(c(desc_width, 15, 20), 'mm'))
   tbl_2$vp <- viewport(x=0.5, y=unit(1, 'npc') - 0.5 * sum(tbl_2$heights))
   
   ob <- arrangeGrob(
@@ -56,6 +73,8 @@ create_cross_validation_page <- function(dt_cross, state, year){
     heights = unit(c(0.6, 0.03, 7.5-0.63), units="inches")
   )
   
+  #browser()
+  
   grid.newpage()
   grid.draw(ob)
     
@@ -63,8 +82,8 @@ create_cross_validation_page <- function(dt_cross, state, year){
   
   # Add the scores
   colWidth <- 0.5
-  startx <- 0.415
-  starty <- 0.867
+  startx <- 0.430
+  starty <- 0.8675
   
   C <- 1
   R <- 1
