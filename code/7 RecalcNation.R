@@ -56,14 +56,19 @@ SummarizeNation <- function(year) {
   
   sumDT <- NULL
   cat("Processing national data. This will take a while to complete.\n")
-  for(variable in variables)
-  {
-    for(stateRDS in 1:length(RDSfiles))
-    {
-      sumDT <- rbind(sumDT,readRDS(RDSfiles[stateRDS])[data_item==variable,])
-        
+  for(variable in variables){
+    for(stateRDS in 1:length(RDSfiles)){
+      stateDT <- readRDS(RDSfiles[stateRDS])[data_item == variable, ]
+      #if ( !is.null(sumDT) && (ncol(stateDT) != ncol(sumDT))) browser()
+      sumDT <- rbind(sumDT, stateDT, fill=TRUE)
     }
-    saveRDS(sumDT,file=paste0("data\\+National\\",year,"\\",variable,".rds"))
+    
+    yearDir <- file.path('data/+National', year)
+    if ( !dir.exists(yearDir) ){
+      dir.create(yearDir, recursive = TRUE)
+    }
+    
+    saveRDS(sumDT, file=file.path(yearDir, paste0(variable, ".rds") ))
     sumDT <- NULL
     cat(paste0("Completed: ",variable,"\n"))
   }

@@ -249,6 +249,6 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
   
   # showtext.end()
   dev.off()
-  
+  gPageNumber <<- 1
   whitespace(4)
 }

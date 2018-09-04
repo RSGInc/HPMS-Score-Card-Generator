@@ -442,24 +442,32 @@ FormatDataSet <- function(dat, state_abbr, year) {
   
   odbcClose(con)
 
-  if (nrow(sp) == 0){
-    stop('Result of query:"', query, '" had zero rows.')
+  if (nrow(sp) > 0){
+    
+    sp <- cleanUpQuery(sp)
+    
+    sp = expand(sp,0.1)
+    
+    # things we do not need in SP
+    
+    sp[,num_sections:=NULL]
+    sp[,section_length:=NULL]
+    sp[,stateyearkey:=NULL]
+    sp[,state_code:=NULL]
+    
+    if ( typeof(sp$route_id) != typeof(data_noFT6) ){
+      sp$route_id <- as.character(sp$route_id)
+    }
+    
+    data_exp = sp[data_noFT6, on = .(year_record, route_id, begin_point, end_point)]
+    
+    data_exp[, expansion_factor := as.numeric(expansion_factor)]
+    
+  } else {
+    data_exp <- data_noFT6
+    data_exp[, expansion_factor := as.numeric(NA)]
+    warning('Result of query:"', query, '" had zero rows.')
   }
-  sp <- cleanUpQuery(sp)
- 
-  sp = expand(sp,0.1)
- 
-  # things we do not need in SP
-  
-  sp[,num_sections:=NULL]
-  sp[,section_length:=NULL]
-  sp[,stateyearkey:=NULL]
-  sp[,state_code:=NULL]
-
-  
-  data_exp = sp[data_noFT6, on = .(year_record, route_id, begin_point, end_point)]
-  
-  data_exp[, expansion_factor := as.numeric(expansion_factor)]
   
   rm(data.formatted)
   
@@ -501,8 +509,10 @@ FormatDataSet <- function(dat, state_abbr, year) {
    
     # Save the mismatches
     path <- file.path('data', getStateLabelFromNum(state_code))
-    file <- paste0(year, '_summary_fail_on_formatting.csv')
+    file <- paste0(year, '_summary_formatting_differences.csv')
     fullpath <- file.path(path, file)
+    
+    cat('... saving differences to', fullpath, '\n')
     
     # Create new directory if needed
     if (!dir.exists(path)) dir.create(path)
@@ -510,10 +520,10 @@ FormatDataSet <- function(dat, state_abbr, year) {
     # Write the file
     write.csv(x=check, file=fullpath, na='', row.names=FALSE)
    
-    warntext <- paste(year, getStateAbbrFromNum(state_code),
-                      'failed summary check.  Saving diffs to',
-                      fullpath, '\n')
-    warning(warntext)
+    # warntext <- paste(year, getStateAbbrFromNum(state_code),
+    #                   'Saving differences to',
+    #                   fullpath, '\n')
+    # warning(warntext)
   }
   
   # Prepare to write out the data
