@@ -25,7 +25,7 @@ create_cross_validation_page <- function(dt_cross, state, year){
     strwrap(dt_cross$Desc_old, width=max_stringwidth, simplify=FALSE),
     paste, collapse='\n')
   dt_cross[, Description := desc_new]
-  dt_cross[, Miles := round(Miles)]
+  dt_cross[, Miles := string_format(round(Miles, 1))]
   
   dt_1 <- dt_cross[1:maxrows]
   dt_2 <- dt_cross[(maxrows + 1):nrow(dt_cross)]
@@ -72,8 +72,6 @@ create_cross_validation_page <- function(dt_cross, state, year){
     layout_matrix = rbind(c(1,1), c(2,2), c(3, 4)),
     heights = unit(c(0.6, 0.03, 7.5-0.63), units="inches")
   )
-  
-  #browser()
   
   grid.newpage()
   grid.draw(ob)

@@ -11,11 +11,9 @@
 #
 ###########################################################################
 
-string_format <- function(x)
-{
-     if(is.numeric(x))
-     {
-          x <- round(x,2)
-     }
-     return(format(x, big.mark=",",scientific=FALSE))
+string_format <- function(x){
+  if(is.numeric(x)){
+    x <- round(x,2)
+  }
+  return(format(x, big.mark=",", scientific=FALSE))
 }
