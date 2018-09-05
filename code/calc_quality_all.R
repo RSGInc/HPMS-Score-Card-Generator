@@ -31,7 +31,7 @@ calcQualityAll <- function(data, year, year_compare){
   for ( i in 1:nrow(dt_output)){
     
     variable <- dt_output$Name[i]
-    
+
     cat('\t', variable, '\n')
     
     if (nrow(data[year_record == year & data_item == variable]) == 0){
@@ -52,7 +52,7 @@ calcQualityAll <- function(data, year, year_compare){
           sum(weights[!(is.na(outliers$perc_miles) | is.nan(outliers$perc_miles))])
       }
       
-      dt_output$Outlier_Score[i] <- outlier_mean
+      dt_output$Outlier_Score[i] <- round(outlier_mean)
       
       # Check if adjacency change is set for this variable
       adjacency_change <- toupper(gVariables[Name == variable, Adjacency_Change])
@@ -64,7 +64,7 @@ calcQualityAll <- function(data, year, year_compare){
         adj_mean <- NA
       }
 
-      dt_output$Adjacency_Score[i] <- adj_mean
+      dt_output$Adjacency_Score[i] <- round(adj_mean)
       
       # Check if yoy direction is set
       yoy_change <- toupper(gVariables[Name == variable, YOY_Change])
@@ -76,7 +76,7 @@ calcQualityAll <- function(data, year, year_compare){
         yoy_mean <- NA
       }
       
-      dt_output$YOY_Score[i] <- yoy_mean
+      dt_output$YOY_Score[i] <- round(yoy_mean)
       
       #outliers[is.nan(as.numeric(perc_miles)), perc_miles := as.character(0)]
       #adjacency[is.nan(as.numeric(perc_miles)), perc_miles := as.character(0)]

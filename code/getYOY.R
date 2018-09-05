@@ -13,8 +13,6 @@
 
 getYOY <- function(data, year, yearcomparison, variable, yoy_change){
   
-  # if ( variable == 'FAULTING') browser()
-  
   #data <- data[!(F_SYTEMorig == 7 & NHS != 1), ]
   
   var.1    <- data[year_record == year & data_item==variable,
@@ -24,7 +22,7 @@ getYOY <- function(data, year, yearcomparison, variable, yoy_change){
   var.2    <- data[year_record == yearcomparison & data_item==variable,
                    list(route_id, begin_point, end_point, value_numeric)]
   
-  var.yoy = var.1[var.2,on=.(route_id,begin_point,end_point)]
+  var.yoy = var.1[var.2, on = .(route_id, begin_point, end_point)]
   
   # # Check result of join.  
   # # How many miles are in the joined data vs. each dataset separately?

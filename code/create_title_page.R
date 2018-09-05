@@ -323,7 +323,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
   
   cat("\nCalculating quality score for each item. This may take some time to complete.\n")
   
-  dt_quality <- calcQualityAll(data, year, year_compare)#;browser()
+  dt_quality <- calcQualityAll(data, year, year_compare)
   dt_cross <- calc_cross_validation(data, year)
   
   colWidth <- 0.152

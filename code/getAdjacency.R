@@ -13,7 +13,7 @@
 
 getAdjacency <- function(data, year, variable, adjacency_change){
   
-  # if ( variable == 'FAULTING' ) browser()
+  #if ( variable == 'RUTTING' ) browser()
   
   # Retain only one row per section_id
   data <- unique(data[data_item == variable & year_record == year,

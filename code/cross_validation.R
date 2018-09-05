@@ -3,7 +3,7 @@
 calc_cross_validation = function(data, year){
   
   # filter ramps (facility type == 4) 
-  data = data[year_record == year&FACILITY_TYPE%in%c(1,2)]
+  data = data[year_record == year & FACILITY_TYPE %in% c(1,2)]
   
   # Tests commented out are evaluated as outliers
   results = list()
@@ -56,8 +56,8 @@ calc_cross_validation = function(data, year){
   results[["51"]] = summarize_validation(cross_validation_51(data))
   results[["9"]]  = summarize_validation(cross_validation_9(data))
   results[["2"]]  = summarize_validation(cross_validation_2(data))
-  results = rbindlist(results,idcol=TRUE)
-  results = rbindlist(list(gCrossLabels[results,on=.(.id)], measurement_checks(data)))
+  results = rbindlist(results, idcol=TRUE)
+  results = rbindlist(list(gCrossLabels[results, on=.(.id)], measurement_checks(data)))
   
   return(results)
 }
@@ -1548,7 +1548,7 @@ measurement_checks = function(data){
   results = results[passes==TRUE]
   results[,.id:='129']
   results[,c("num_sections","mileage","passes"):=NULL]
-  results[,data_item:=paste0(data_item, ": Mileage measurement (<0.11 miles) (129)")]
+  results[,data_item:=paste0(data_item, ": Mileage measurement (<0.11 miles)")]
   setnames(results,"data_item","Description")
   
   setcolorder(results,c(".id","Description","section_total","mileage_total","sections_pass","mileage_pass" ))
