@@ -455,7 +455,7 @@ FormatDataSet <- function(dat, state_abbr, year) {
     sp[,stateyearkey:=NULL]
     sp[,state_code:=NULL]
     
-    if ( typeof(sp$route_id) != typeof(data_noFT6) ){
+    if ( typeof(sp$route_id) != typeof(data_noFT6$route_id) ){
       sp$route_id <- as.character(sp$route_id)
     }
     

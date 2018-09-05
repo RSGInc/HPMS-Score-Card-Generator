@@ -14,6 +14,13 @@
 library('stringr')
 options(warn=1)
 
+# Read args from the command line ---------------------------------------------
+args <- commandArgs(trailingOnly = TRUE)
+
+if ( length(args) < 1 ){
+  stop('Please supply a comma-delimited list of states\nFor example: Rscript RunBatch.R PA,NY,NH,VT', call.=FALSE)
+}
+
 year_selection <- 2016
 year_compare <- 2015
 
@@ -28,13 +35,6 @@ sink(file=file_con, append=FALSE, type='message')
 
 message('RunBatch.R started at ', Sys.time())
 
-
-# Read args from the command line ---------------------------------------------
-args <- commandArgs(trailingOnly = TRUE)
-
-if ( length(args) < 1 ){
-  stop('Please supply a comma-delimited list of states\nFor example: Rscript RunBatch.R PA,NY,NH,VT', call.=FALSE)
-}
 
 if ( length(args) == 1){
   state_abbrev <- str_split(args, ',')[[1]]
