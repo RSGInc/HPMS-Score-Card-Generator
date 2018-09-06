@@ -32,6 +32,9 @@ calcQualityAll <- function(data, year, year_compare){
     
     variable <- dt_output$Name[i]
 
+    # if ( variable %in% c('SIGNAL_TYPE', 'TURN_LANES_L', 'HOV_TYPE',
+    #                      'HOV_LANES', 'CURVES_A', 'GRADES_A')) browser()
+    
     cat('\t', variable, '\n')
     
     if (nrow(data[year_record == year & data_item == variable]) == 0){
@@ -59,7 +62,8 @@ calcQualityAll <- function(data, year, year_compare){
       
       if ( adjacency_change %in% c('Y', 'N')){
         adjacency <- getAdjacency(data, year, variable, adjacency_change)
-        adj_mean <- sum(as.numeric(adjacency$perc_miles) * weights) / sum(weights)
+        adj_mean <- sum(as.numeric(adjacency$perc_miles) * weights, na.rm=TRUE) / 
+          sum(weights[!(is.na(adjacency$perc_miles) | is.nan(adjacency$perc_miles))])
       } else {
         adj_mean <- NA
       }
@@ -71,7 +75,8 @@ calcQualityAll <- function(data, year, year_compare){
       
       if (yoy_change %in% c('Y', 'N')){
         yoy <- getYOY(data, year, year_compare, variable, yoy_change)
-        yoy_mean <- sum(as.numeric(yoy$perc_miles) * weights) / sum(weights)
+        yoy_mean <- sum(as.numeric(yoy$perc_miles) * weights, na.rm=TRUE) /
+          sum(weights[!(is.na(yoy$perc_miles) | is.nan(yoy$perc_miles))])
       } else {
         yoy_mean <- NA
       }

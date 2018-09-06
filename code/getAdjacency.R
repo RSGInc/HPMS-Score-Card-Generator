@@ -61,7 +61,7 @@ getAdjacency <- function(data, year, variable, adjacency_change){
     report.1[,perc_miles:=ifelse(is.na(miles),0,
                                  as.character(round(miles/totalmiles,2)*100))]
     
-    report.1[,totalmiles:=NULL]
+    # report.1[,totalmiles:=NULL]
     
     report.1 <- report.1[!is.na(F_SYSTEM),]
     
@@ -102,7 +102,7 @@ getAdjacency <- function(data, year, variable, adjacency_change){
     
     report.2[, perc_miles := ifelse(is.na(miles), 0, as.character(round(miles/totalmiles, 2)*100))]
     
-    report.2[, totalmiles := NULL]
+    # report.2[, totalmiles := NULL]
     
     report.2[, groupCat := 1]
   }
@@ -140,7 +140,7 @@ getAdjacency <- function(data, year, variable, adjacency_change){
     
     report.3[, perc_miles := ifelse(is.na(miles), 0, as.character(round(miles / totalmiles, 2) * 100))]
     
-    report.3[, totalmiles := NULL]
+    # report.3[, totalmiles := NULL]
     
     report.3[, groupCat := 2]
   }
@@ -151,7 +151,7 @@ getAdjacency <- function(data, year, variable, adjacency_change){
   
   report <- merge(data.table(groupCat = 1:4), report, by="groupCat", all.x=T)
   
-  report[is.na(perc_miles), perc_miles := as.character(0)]
+  #report[is.na(perc_miles), perc_miles := as.character(0)]
   
   return(report)
   

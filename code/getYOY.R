@@ -88,7 +88,7 @@ getYOY <- function(data, year, yearcomparison, variable, yoy_change){
                                     0,
                                     as.character(round(miles/totalmiles,2)*100))]
     
-    report.1[, totalmiles:=NULL]
+    # report.1[, totalmiles:=NULL]
     
     report.1 <- report.1[!is.na(F_SYSTEM),]
     
@@ -101,13 +101,13 @@ getYOY <- function(data, year, yearcomparison, variable, yoy_change){
     
     if ( yoy_change == 'N' ){
       result <- var.yoy[value_numeric == i.value_numeric & Interstate==1,
-                        .(miles=round(sum(end_point-begin_point), 2), 
+                        .(miles=round(sum(end_point - begin_point), 2), 
                           N=round(sum(num_sections))),]
     }
     
     if ( yoy_change == 'Y' ){
       result <- var.yoy[value_numeric != i.value_numeric & Interstate==1,
-                        .(miles=round(sum(end_point-begin_point), 2), 
+                        .(miles=round(sum(end_point - begin_point), 2), 
                           N=round(sum(num_sections))),]
     }
     
@@ -125,13 +125,14 @@ getYOY <- function(data, year, yearcomparison, variable, yoy_change){
     
     report.2 <- data.table(result, total)
     
-    report.2[is.na(miles), miles := 0] # setting values to 0 where there are no merges. this mean that the state had no lane miles outside the thresholds set
+    # setting values to 0 where there are no merges. this mean that the state
+    # had no lane miles outside the thresholds set
+    report.2[is.na(miles), miles := 0] 
     
-    report.2[, perc_miles := ifelse(is.na(miles),
-                                    0,
-                                    as.character(round(miles/totalmiles, 2) * 100))]
+    report.2[, perc_miles := ifelse(is.na(miles), 0,
+                      as.character(round(miles/totalmiles, 2) * 100))]
     
-    report.2[, totalmiles := NULL]
+    # report.2[, totalmiles := NULL]
     
     report.2[, groupCat := 1]
     
@@ -170,12 +171,11 @@ getYOY <- function(data, year, yearcomparison, variable, yoy_change){
                                     0,
                                     as.character(round(miles/totalmiles, 2) * 100))]
     
-    report.3[, totalmiles := NULL]
+    # report.3[, totalmiles := NULL]
     
     report.3[, groupCat := 2]
     
     # Combine report.1, report.2, report.3 into a single data.table.
-    #browser()
     
     report <- rbind(report.2, report.3, report.1)
     
@@ -183,7 +183,7 @@ getYOY <- function(data, year, yearcomparison, variable, yoy_change){
     
     report <- merge(data.table(groupCat=1:4), report, by="groupCat", all.x=T)
     
-    report[is.na(perc_miles), perc_miles := as.character(0)]
+    #report[is.na(perc_miles), perc_miles := as.character(0)]
   }
   return(report)
 }

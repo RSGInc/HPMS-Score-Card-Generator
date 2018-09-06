@@ -24,7 +24,8 @@ getOutliers <- function(data, year, variable){
   
   if (nrow(d.l) == 0){
     
-    report.1 <- data.table(groupCat = c(3, 4), N = NA, miles = NA, perc_miles = NA)
+    report.1 <- data.table(groupCat = c(3, 4), N = NA, totalmiles = NA,
+                           miles = NA, perc_miles = NA)
     
   } else {
     
@@ -44,7 +45,7 @@ getOutliers <- function(data, year, variable){
     
     report.1[, perc_miles := as.character(round(miles / totalmiles, 2) * 100)]
     
-    report.1[, totalmiles:=NULL]
+    # report.1[, totalmiles:=NULL]
     
     report.1 <- report.1[!is.na(F_SYSTEM),]
     
@@ -56,7 +57,7 @@ getOutliers <- function(data, year, variable){
   d.l <- data[Interstate == 1,,]    
   
   if ( nrow(d.l) == 0 ){
-    report.2 <- data.table(miles = NA, N = NA, perc_miles = NA)  
+    report.2 <- data.table(totalmiles = NA, miles = NA, N = NA, perc_miles = NA)  
   } else {
     
     result.2 <- d.l[(value_numeric > outlier_threshold_high |
@@ -75,7 +76,7 @@ getOutliers <- function(data, year, variable){
     
     report.2[, perc_miles:=as.character(round(miles/totalmiles,2)*100)]
     
-    report.2[, totalmiles:=NULL]
+    # report.2[, totalmiles:=NULL]
   }
   
   report.2[, groupCat:=1]
@@ -85,7 +86,7 @@ getOutliers <- function(data, year, variable){
   d.l <- data[NHS == 1,,]    
   
   if ( nrow(d.l) == 0 ){
-    report.3 <- data.table(miles = NA, N = NA, perc_miles = NA)    
+    report.3 <- data.table(totalmiles = NA, miles = NA, N = NA, perc_miles = NA)    
   } else {
     
     result.3 <- d.l[(value_numeric > outlier_threshold_high |
@@ -103,7 +104,7 @@ getOutliers <- function(data, year, variable){
     
     report.3[, perc_miles:=as.character(round(miles/totalmiles,2)*100)]
     
-    report.3[, totalmiles:=NULL]
+    # report.3[, totalmiles:=NULL]
   }
   
   report.3[, groupCat:=2]
