@@ -18,11 +18,11 @@ options(warn=1)
 args <- commandArgs(trailingOnly = TRUE)
 
 if ( length(args) < 1 ){
-  stop('Please supply a comma-delimited list of states\nFor example: Rscript RunBatch.R PA,NY,NH,VT', call.=FALSE)
+  stop('Please supply a comma-delimited list of states or specify "ALL"\nFor example: Rscript RunBatch.R PA,NY,NH,VT', call.=FALSE)
 }
 
-year_selection <- 2016
-year_compare <- 2015
+year_selection <- 2017
+year_compare <- 2016
 
 setwd('..')
 msg_file <- file.path('output', paste0('_RunBatch_messages_',
@@ -35,18 +35,6 @@ sink(file=file_con, append=FALSE, type='message')
 
 message('RunBatch.R started at ', Sys.time())
 
-
-if ( length(args) == 1){
-  state_abbrev <- str_split(args, ',')[[1]]
-}
-
-if ( length(args) > 1){
-  state_abbrev <- str_replace(args, ',', '')
-  state_abbrev <- str_trim(state_abbrev, side='both')
-}
-
-cat('Running states:', state_abbrev, '\n\n')
-
 # Load Code -------------------------------------------------------------------
 invisible(sapply(X = list.files(path = "code", pattern = "*.R$",
                                 full.names = TRUE)[-1], FUN = source))
@@ -54,11 +42,7 @@ invisible(sapply(X = list.files(path = "code", pattern = "*.R$",
 # Increase the memory limit.  If above physical ram it will use virtual memory
 invisible(memory.limit(32768))
 
-# Check to make sure all states are available
-
-state_codes <- getStateNumFromCode(state_abbrev)
-
-cat('Checking availability of states\n')
+cat('Checking availability of states for', year_selection, '\n')
 
 con <- odbcConnect("HPMS")
 
@@ -71,17 +55,42 @@ odbcClose(con)
 
 avail_states <- st_yr_table[year_record == year_selection]$state_code
 
-which_na <- state_codes[!state_codes %in% avail_states] %>% getStateAbbrFromNum()
 
-if ( length(which_na) > 0 ){
-  warning('States not available in the database: ', paste(which_na, collapse=', '), '\n',
-          call. = FALSE, immediate. = FALSE)
+if ( length(args) == 1 && str_detect(tolower(args), 'all')){
+  
+  if ( length(avail_states) == 0 ) warning('No states available for ', year_selection, '\n')
+  state_codes <- avail_states
+  state_abbrev <- getStateAbbrFromNum(state_codes)
+  
+} else {
+  
+  if ( length(args) == 1 ){
+    
+    state_abbrev <- str_split(args, ',')[[1]]  
+  }
+  
+  if ( length(args) > 1){
+    state_abbrev <- str_replace(args, ',', '')
+    state_abbrev <- str_trim(state_abbrev, side='both')
+  }
+  
+  # Check to make sure all states are available
+  
+  state_codes <- getStateNumFromCode(state_abbrev)
+  
+  
+  which_na <- state_codes[!state_codes %in% avail_states] %>% getStateAbbrFromNum()
+  
+  if ( length(which_na) > 0 ){
+    warning('States not available in the database: ', paste(which_na, collapse=', '), '\n',
+            call. = FALSE, immediate. = FALSE)
+  }
+  
+  state_codes <- state_codes[state_codes %in% avail_states]
+  state_abbrev <- getStateAbbrFromNum(state_codes)
 }
 
-state_codes <- state_codes[state_codes %in% avail_states]
-state_abbrev <- getStateAbbrFromNum(state_codes)
-
-
+cat('Running states:', state_abbrev, '\n\n')
 
 # Create PDF ----------------------------------------------------------------
 savepath <- "output/"
@@ -137,4 +146,5 @@ for(state in state_abbrev){
 sink(type='message')
 close(file_con)
 
+cat('RunBatch finished.  Check log file for warnings and errors at\n', msg_file, '\n')
 
