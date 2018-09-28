@@ -19,7 +19,7 @@ plotCompleteness <- function(data, year, variable, x, y){
   
   type <- 1
   
-  return(type) # for the time being until we can implement the 1 spatial stuff 
+  # return(type) # for the time being until we can implement the 1 spatial stuff 
   
   if(nrow(data[data_item==variable&year_record==year,])>0){
     type <- 2
