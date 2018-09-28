@@ -373,19 +373,19 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
         gp = gpar(col = "slategray", fontsize = 7)
       ))
       
-      # CompleteType <- 
-      #   plotCompleteness(data, year, variable,
-      #                   x = startx + (C - 1) * colWidth + space1,
-      #                   y = starty - (R - 1) * rowWidth)
-      # 
-      # CompletedScore <-
-      #   CompletedScore + c(0, CompleteMed, CompleteHigh)[CompleteType] * group_vars$Completeness_Weight[i]
-      # 
-      # CompletedScoreMax <-
-      #   CompletedScoreMax + CompleteHigh * group_vars$Completeness_Weight[i]
-      # 
-      # submittedN <- submittedN + 1 * (CompleteType >= 2)
-      
+      CompleteType <-
+        plotCompleteness(data, year, variable,
+                        x = startx + (C - 1) * colWidth + space1,
+                        y = starty - (R - 1) * rowWidth)
+
+      CompletedScore <-
+        CompletedScore + c(0, CompleteMed, CompleteHigh)[CompleteType] * group_vars$Completeness_Weight[i]
+
+      CompletedScoreMax <-
+        CompletedScoreMax + CompleteHigh * group_vars$Completeness_Weight[i]
+
+      submittedN <- submittedN + 1 * (CompleteType >= 2)
+
       thisQuality <- group_vars$Quality_Score[i] 
       
       plotQuality(thisQuality,
@@ -400,9 +400,6 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
       }
     }
   }
-  
-  CompletedScore <- 1
-  CompletedScoreMax <- 1
   
   QualityScore    <- sum(dt_quality$Quality_Score * dt_quality$Quality_Weight, na.rm=TRUE)
   QualityScoreMax <- sum(!is.na(dt_quality$Quality_Score) * dt_quality$Quality_Weight) * 100
