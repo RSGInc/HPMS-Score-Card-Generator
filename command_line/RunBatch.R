@@ -30,6 +30,10 @@ format(Sys.time(), '%Y%m%d_%H%M%S.txt')))
 
 cat('Saving messages to', msg_file, '\n')
 
+if ( !dir.exists('output') ){
+  dir.create('output')
+}
+
 file_con <- file(msg_file, open='wt')
 sink(file=file_con, append=FALSE, type='message')
 
