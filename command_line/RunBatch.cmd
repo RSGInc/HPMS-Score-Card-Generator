@@ -30,12 +30,13 @@ Rscript getStates.R %states% >> %log% 2>&1
 
 REM Call the RunState script
 FOR /f %%a IN (do_states.csv) DO (
-  ECHO Running runState.R for %%a
+  CALL :tee Running runState.R for %%a.  This will take some time.
   Rscript runState.R %%a >> %log% 2>&1
 )
 
 ECHO -----------------------------------
-ECHO Finished!  Check log file at %log%
+ECHO Finished!
+ECHO Check log file at %log%
 rem :END
 
 ENDLOCAL

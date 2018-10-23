@@ -20,13 +20,12 @@ if ( length(args) < 1 ){
 
 year_selection <- 2016
 year_compare <- 2015
+cat(scriptname, 'started\n')
 
 setwd('..')
 args <- str_split(args, ',', simplify=TRUE)
 args <- str_trim(as.vector(args), side='both')
 args <- str_replace(args, '"', '')
-
-cat(scriptname, 'Args =', args, '\n')
 
 # Load Code -------------------------------------------------------------------
 invisible(sapply(X = list.files(path = "code", pattern = "*.R$",
