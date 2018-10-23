@@ -18,15 +18,14 @@ if ( length(args) < 1 ){
   stop('Please supply a comma-delimited list of states or specify "ALL"\nFor example: Rscript RunBatch.R PA,NY,NH,VT', call.=FALSE)
 }
 
-year_selection <- 2016
-year_compare <- 2015
+year_selection <- 2017
+year_compare <- 2016
+cat(scriptname, 'started\n')
 
 setwd('..')
 args <- str_split(args, ',', simplify=TRUE)
 args <- str_trim(as.vector(args), side='both')
 args <- str_replace(args, '"', '')
-
-cat(scriptname, 'Args =', args, '\n')
 
 # Load Code -------------------------------------------------------------------
 invisible(sapply(X = list.files(path = "code", pattern = "*.R$",

@@ -24,15 +24,22 @@ if ( length(args) != 1 ){
        paste(args, collapse=', '), call.=FALSE)
 }
 
+
 state <- args
-year_selection <- 2016
-year_compare <- 2015
+year_selection <- 2017
+year_compare <- 2016
+
+msg <- paste0('\n\n=========================================================\n\n',
+             scriptname,
+             ' Started scorecard for ', state, ' at ', format(Sys.time(), '%H:%M:%S'))
+message(msg)
 
 setwd('..')
 
 if ( !dir.exists('output') ){
   dir.create('output')
 }
+
 
 # Load Code -------------------------------------------------------------------
 invisible(sapply(X = list.files(path = "code", pattern = "*.R$",
@@ -45,10 +52,6 @@ invisible(memory.limit(32768))
 savepath <- "output/"
 national <- NULL
 
-msg <- paste0('=========================================================\n',
-             scriptname,
-             ' Started scorecard for ', state, ' at ', format(Sys.time(), '%H:%M:%S'))
-message(msg)
 
 tryCatch(
   expr = {
