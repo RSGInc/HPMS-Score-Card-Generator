@@ -14,6 +14,8 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
   TS <- Sys.time()
 
   cat("Creating score card...\n\n")
+  cat('\tMemory used: ', round(mem_used() / 1e9, 3), 'GB \n')
+  
   cat(paste(getStateLabelFromNum(state), "-", year, "vs.", year_compare, 
             "\n\n"))
   
@@ -41,7 +43,8 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
   scores_list <- create_title_page(data, state, year, year_compare)
   cat(paste0(" completed in: ",
              round(difftime(Sys.time(), ts, units = "secs"), 2), " seconds!\n"))
-
+  cat('\tMemory used: ', round(mem_used() / 1e9, 3), 'GB \n')
+  
   # Show the results of the cross-validations
   cat('Cross-validations...')
   ts <- Sys.time()
@@ -49,6 +52,7 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
   
   cat(paste0(' completed in: ',
              round(difftime(Sys.time(), ts, units='secs'), 2), ' seconds!\n'))
+  cat('\tMemory used: ', round(mem_used() / 1e9, 3), 'GB \n')
   
   # subset data
   # data <- data[year_record %in% c(year, year_compare), ]
@@ -58,21 +62,24 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
   create_info_page(state, year)
   cat(paste0(" completed in: ",
              round(difftime(Sys.time(), ts, units = "secs"), 2), " seconds!\n"))
-
+  cat('\tMemory used: ', round(mem_used() / 1e9, 3), 'GB \n')
+  
   # Pavement: Detailed Review
   cat("Pavement review...")
   ts <- Sys.time()
   create_pavement_detailed_review(data, state, year, year_compare)#, population = population)
   cat(paste0(" completed in: ",
              round(difftime(Sys.time(), ts, units = "secs"), 2), " seconds!\n"))
-
+  cat('\tMemory used: ', round(mem_used() / 1e9, 3), 'GB \n')
+  
   # Traffic: Detailed Review
   cat("Traffic review...")
   ts <- Sys.time()
   create_traffic_detailed_review(data, state, year, year_compare)
   cat(paste0(" completed in: ",
              round(difftime(Sys.time(), ts, units = "secs"), 2), " seconds!\n"))
-
+  cat('\tMemory used: ', round(mem_used() / 1e9, 3), 'GB \n')
+  
   # Ramps: Detailed Review
   cat("Ramps review...")
   ts <- Sys.time()
@@ -101,7 +108,8 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
                       page = gPageNumber, ramps = TRUE)
   cat(paste0(" completed in: ",
              round(difftime(Sys.time(), ts, units = "secs"), 2), " seconds!\n"))
-
+  cat('\tMemory used: ', round(mem_used() / 1e9, 3), 'GB \n')
+  
 
   # data summary pages inventory
   cat("Inventory data items...")
@@ -124,7 +132,8 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
   }
   cat(paste0(" completed in: ", round(difftime(Sys.time(), ts, units = "secs"),
                                       2), " seconds!\n"))
-
+  cat('\tMemory used: ', round(mem_used() / 1e9, 3), 'GB \n')
+  
   # Pavement
   cat("Pavement data items...")
   ts <- Sys.time()
@@ -149,7 +158,8 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
                       page = gPageNumber)
   cat(paste0(" completed in: ",
              round(difftime(Sys.time(), ts, units = "secs"), 2), " seconds!\n"))
-
+  cat('\tMemory used: ', round(mem_used() / 1e9, 3), 'GB \n')
+  
   # Traffic
   cat("Traffic data items...")
   ts <- Sys.time()
@@ -176,6 +186,7 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
                       title = "traffic", icontext = "t", page = gPageNumber)
   cat(paste0(" completed in: ", round(difftime(Sys.time(), ts, units = "secs"), 
                                       2), " seconds!\n"))
+  cat('\tMemory used: ', round(mem_used() / 1e9, 3), 'GB \n')
   
   # Geometric
   cat("Geometric data items...")
@@ -220,6 +231,7 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
   }
   cat(paste0(" completed in: ",
              round(difftime(Sys.time(), ts, units = "secs"), 2), " seconds!\n"))
+  cat('\tMemory used: ', round(mem_used() / 1e9, 3), 'GB \n')
   
   # Special network
   cat("Special network data items...")
@@ -246,9 +258,13 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
                       page = gPageNumber)
   cat(paste0(" completed in: ",
              round(difftime(Sys.time(), ts, units = "secs"), 2), " seconds!\n"))
+  cat('\tMemory used: ', round(mem_used() / 1e9, 3), 'GB \n')
   
   # showtext.end()
   dev.off()
   gPageNumber <<- 1
+  cat('\tMemory used: ', round(mem_used() / 1e9, 3), 'GB \n')
+  cat('Exiting create_pdf -----------------------------------')
   whitespace(4)
+  
 }
