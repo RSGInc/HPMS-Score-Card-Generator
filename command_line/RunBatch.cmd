@@ -16,8 +16,9 @@ SET parent=%~dp0
 
 REM create a log file named [script].YYYYMMDDHHMMSS.txt
 IF NOT EXIST "%parent%..\output\" mkdir %parent%..\output\
-SET log=%parent%..\output\_%me%_log_%DATE:~10,4%%DATE:~4,2%%DATE:~7,2%_%TIME:~0,2%%TIME:~3,2%%TIME:~6,2%.txt
-SET log=%log: =0%
+SET log_base=_%me%_log_%DATE:~10,4%%DATE:~4,2%%DATE:~7,2%_%TIME:~0,2%%TIME:~3,2%%TIME:~6,2%.txt
+SET log_base=%log_base: =0%
+SET log=%parent%..\output\%log_base%
 
 ECHO -----------------------------
 ECHO Writing to log file at %log%
