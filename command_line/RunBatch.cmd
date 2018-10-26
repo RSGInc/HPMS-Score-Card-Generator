@@ -15,6 +15,7 @@ REM Get the parent directory of this file
 SET parent=%~dp0
 
 REM create a log file named [script].YYYYMMDDHHMMSS.txt
+IF NOT EXIST "%parent%..\output\" mkdir %parent%..\output\
 SET log=%parent%..\output\_%me%_log_%DATE:~10,4%%DATE:~4,2%%DATE:~7,2%_%TIME:~0,2%%TIME:~3,2%%TIME:~6,2%.txt
 SET log=%log: =0%
 
@@ -25,7 +26,7 @@ REM Get the arguments
 SET states=%*
 
 REM Call the GetStates script to write do_states.csv
-CALL :tee Getting available states
+CALL :tee Getting available states with GetStates.R
 Rscript getStates.R %states% >> %log% 2>&1
 
 REM Call the RunState script
