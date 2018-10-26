@@ -1,14 +1,10 @@
-#! Rscript
-# RunBatch.R  
+# RunState.R  
 # Author: Matt Landis
-# Date: July 2017
+# Date: Oct 2018
 # Description: 
 
-# This is a command line tool designed to import data from the HPMS database and
-# create scorecards for a comma-delimited list of states.  The command should
-# automatically overwrite existing data files and scorecards, and should not
-# stop if an error for one state is encountered.
-
+# Creates a scorecard for a single state.  Designed to be called from 
+# RunBatch.cmd
 
 # Setup ---------------------------------------------------------------
 library('stringr')
@@ -55,24 +51,24 @@ national <- NULL
 
 tryCatch(
   expr = {
-    
+
     # Import data ---------------------------------------------------------------
-    
+
     # Overwrite current year data every time, but not comparison year data.
     # goverwrite <- 'ALL N'  # For testing - makes it go quicker.
     goverwrite <- 'ALL Y'
-    
+
     success <- ImportData(state_selection=state,
                           year_selection=year_selection)
-    
+
     goverwrite <- 'ALL N'
     success <- ImportData(state_selection=state,
                           year_selection=year_compare)
     cat('complete!\n')
     message('Finished importing ', state, ' at ', format(Sys.time(), '%H:%M:%S\n'))
-    
+
     data.list <- getStateDataSets(state, year_selection, year_compare)
-    
+
     create_pdf(data = data.list[["dat"]],
                state = data.list[["state_code"]],
                year = data.list[["year_selection"]],
@@ -80,12 +76,12 @@ tryCatch(
                # population = population,
                national = national,
                path = savepath)
-    
+
   }, error = function(cond){
     message('Error! ', conditionMessage(cond), '\n\nScorecard for ', state, ' not completed\n')
     if ( !is.null(dev.list()) ) dev.off()
   } # end error
-  
+
 )  # end tryCatch
 
 msg <- paste(scriptname, 'Finished scorecard for', state, 'at',  format(Sys.time(), '%H:%M:%S\n'))
