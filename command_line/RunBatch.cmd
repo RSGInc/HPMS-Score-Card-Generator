@@ -27,12 +27,13 @@ REM Get the arguments
 SET states=%*
 
 REM Call the GetStates script to write do_states.csv
-CALL :tee Getting available states with GetStates.R
-Rscript getStates.R %states% >> %log% 2>&1
+REM CALL :tee Getting available states with getStates.R
+REM Rscript getStates.R %states% >> %log% 2>&1
 
 REM Call the RunState script
-FOR /f %%a IN (do_states.csv) DO (
+FOR %%a IN (%states%) DO (
   CALL :tee Running runState.R for %%a.  This will take some time.
+  REM Rscript runState.R %%a >> %log% 2>&1
   Rscript runState.R %%a >> %log% 2>&1
 )
 
@@ -40,7 +41,7 @@ ECHO -----------------------------------
 ECHO Finished!
 ECHO Check log file at %log%
 
-del do_states.csv
+REM del do_states.csv
 
 :END
 

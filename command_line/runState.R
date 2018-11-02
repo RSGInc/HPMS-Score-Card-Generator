@@ -12,6 +12,8 @@ options(warn=1)
 
 scriptname <- 'runState.R:'
 
+message(paste0(scriptname, ' started\n'))
+
 # Read args from the command line ---------------------------------------------
 args <- commandArgs(trailingOnly = TRUE)
 
