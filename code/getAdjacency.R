@@ -13,7 +13,7 @@
 
 getAdjacency <- function(data, year, variable, adjacency_change){
   
-  #if ( variable == 'RUTTING' ) browser()
+  # if ( variable == 'FAULTING' ) browser()
   
   # Retain only one row per section_id
   data <- unique(data[data_item == variable & year_record == year,
@@ -145,7 +145,7 @@ getAdjacency <- function(data, year, variable, adjacency_change){
     report.3[, groupCat := 2]
   }
   
-  report <- rbind(report.2, report.3, report.1)
+  report <- rbind(report.2, report.3, report.1, fill=TRUE)
   
   report <- data.table(Name = report$groupCat, report)
   

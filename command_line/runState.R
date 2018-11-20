@@ -44,7 +44,7 @@ invisible(sapply(X = list.files(path = "code", pattern = "*.R$",
                                 full.names = TRUE)[-1], FUN = source))
 
 # Increase the memory limit.  If above physical ram it will use virtual memory
-invisible(memory.limit(32768))
+invisible(memory.limit(64000))
 
 # Create PDF ----------------------------------------------------------------
 savepath <- "output/"
