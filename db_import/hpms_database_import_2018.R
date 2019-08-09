@@ -58,17 +58,13 @@ connect_to_db <- function(server,
   return(con)
 }
 
-#q_drive <- '//i-rsg.com/rsgshares/Projects/_Federal/FHWA/15__ HPMS_DataVisualizationSupport'
 
 d_dir <- file.path('C:/Users/matt.landis/shared_data/HPMS_download_201908')
 
-# local_con = 'Driver={SQL Server Native Client 11.0}; server=burmdlppw01;database=HPMS_2018;trusted_connection=yes;'
-
-
-
 # Work ======================================================================
 
-# Load 2018 Sections data
+# Load 2018 Sections data ---------------------------------------------------
+
 raw_dir <- d_dir
 # infile <- file.path(raw_dir, 'HPMS_Sections_w_o_geometry.csv')
 infile = file.path(raw_dir, 'HPMS_Review_Sections.csv')
@@ -76,18 +72,10 @@ tbl_name <- 'Review_Sections'
 
 # Write file in chunks of 500k lines
 
-# max_rows = 117458382  # for no_geom
-
-max_rows = 235380099
 inc_rows = 5e5
-start_rows = seq(0, max_rows, by = inc_rows)
 
-#con <- odbcDriverConnect(connection=local_con)
-
-# header = names(fread(infile, nrows=1))
-# test = fread(infile, nrows=50)
-
-test = read_csv(file = infile, n_max = 100)
+# Get column types
+# read_csv(file = infile, n_max = 100)
 
 col_types = cols(
   Year_Record = col_character(),
@@ -108,36 +96,143 @@ col_types = cols(
   WKT = col_skip(),
   WKB = col_skip()
 )
-chunk_callback = function(x, pos){
-  dbWriteTable(con, name=tbl_name, value=x, overwrite=FALSE, append=TRUE)
-}
 
-
-con = connect_to_db('burmdlppw01', 'HPMS_2018', intsecurity = TRUE)
-read_csv_chunked(infile, callback=chunk_callback, chunk_size=inc_rows,
-                 col_types = col_types, progress=show_progress())
-dbDisconnect(con)
-
-# for ( start in start_rows ){
-#   message('Reading row ', start)
-#   # tbl = fread(infile, nrows=inc_rows, skip=start, showProgress=TRUE, 
-#   #             col.names = header, colClasses='character')
-# 
-#   tbl = read_csv_chunked(file )
-#   message('\tWriting')
-#   DBI::dbWriteTable(con, name=tbl_name, value=tbl,
-#                     overwrite = (start == 0), append=(start > 0)) 
+# # Pick up where it failed
+# last_good = 209500000
+# # Define callback function that runs after each chunk is read
+# chunk_callback = function(x, pos){
+#   if (pos < last_good){
+#     message('Skipping from row ', pos)
+#     return()
+#   } else {
+#     message('Writing from row ', pos)
+#     dbWriteTable(con, name=tbl_name, value=x,
+#                  overwrite=(pos == 1), append=(pos > 1))
+#   }
 # }
-#   
-# dbDisconnect(con)
-
-
-# # Load 2018 samples data
-# infile = file.path(raw_dir, 'HPMS_Review_Sample_Sections.csv')
-# tbl_name = 'Review_Sample_Sections'
-# tbl = fread(infile)
-# message('\tWriting')
+# 
 # con = connect_to_db('burmdlppw01', 'HPMS_2018', intsecurity = TRUE)
-# dbWriteTable(con, name=tbl_name, value=tbl) 
+# read_csv_chunked(infile, callback=chunk_callback, chunk_size=inc_rows,
+#                  col_types = col_types, progress=show_progress())
 # dbDisconnect(con)
 
+# Check the data
+con = connect_to_db('burmdlppw01', 'HPMS_2018', intsecurity = TRUE)
+
+rs = tbl(con, from='Review_Sections')
+
+rs %>% 
+  count(Year_Record)
+
+
+# Convert Year_Record to integer
+
+# dbExecute(con, 'alter table Review_Sample_Sections drop column Year_Record2;')
+dbExecute(con, 'alter table Review_Sections add Year_Record2 INT')
+dbExecute(con, "update Review_Sections
+  set Year_Record2 = CONVERT(INT, REPLACE(Year_Record, ',', ''));")
+
+rs %>% 
+  count(Year_Record, Year_Record2)
+
+# Replace Year_Record with Year_Record2
+dbExecute(con, "alter table Review_Sections
+                    drop column Year_Record;")
+dbExecute(con, 'alter table Review_Sections add Year_Record INT')
+dbExecute(con, "update Review_Sections
+                    set Year_Record = Year_Record2")
+dbExecute(con, 'alter table Review_Sections drop column year_Record2;')
+
+rs %>%
+  count(Year_Record)
+
+# # Load 2018 samples data ----------------------------------------------------
+
+infile = file.path(raw_dir, 'HPMS_Review_Sample_Sections.csv')
+tbl_name = 'Review_Sample_Sections'
+tbl = fread(infile)
+message('\tWriting')
+con = connect_to_db('burmdlppw01', 'HPMS_2018', intsecurity = TRUE)
+dbWriteTable(con, name=tbl_name, value=tbl, overwrite=TRUE)
+
+rss = tbl(con, from='Review_Sample_Sections')
+
+# Convert Year_Record to integer ------------------------------
+
+rss %>% 
+  count(Year_Record)
+
+# dbExecute(con, 'alter table Review_Sample_Sections drop column Year_Record2;')
+dbExecute(con, 'alter table Review_Sample_Sections add Year_Record2 INT')
+dbExecute(con, "update Review_Sample_Sections
+  set Year_Record2 = CONVERT(INT, REPLACE(Year_Record, ',', ''));")
+
+rss %>% 
+  count(Year_Record, Year_Record2)
+
+# Replace Year_Record with Year_Record2
+dbExecute(con, "alter table Review_Sample_Sections
+                    drop column Year_Record;")
+dbExecute(con, 'alter table Review_Sample_Sections add Year_Record INT')
+dbExecute(con, "update Review_Sample_Sections
+                    set Year_Record = Year_Record2")
+dbExecute(con, 'alter table Review_Sample_Sections drop column year_Record2;')
+
+rss %>%
+  count(Year_Record)
+
+# Convert StateYearKey to integer, dropping commas --------------------------
+
+rss %>%
+  count(StateYearKey)
+
+dbExecute(con, "alter table Review_Sample_Sections add StateYearKey2 INT")
+dbExecute(con, "update Review_Sample_Sections set StateYearKey2 = convert(int, replace(StateYearKey, ',', ''));")
+
+rss %>%
+  count(StateYearKey, StateYearKey2)
+
+# Replace StateYearKey with StateYearKey2
+dbExecute(con, "alter table Review_Sample_Sections
+                    drop column StateYearKey;")
+dbExecute(con, 'alter table Review_Sample_Sections add StateYearKey INT')
+dbExecute(con, "update Review_Sample_Sections
+                    set StateYearKey = StateYearKey2")
+dbExecute(con, 'alter table Review_Sample_Sections drop column StateYearKey2;')
+
+rss %>%
+  count(StateYearKey) %>%
+  arrange(StateYearKey) %>%
+  print(n = Inf)
+
+
+# Convert Expansion_Factor to double ----------------------------------------
+
+ef = rss %>%
+  pull(Expansion_Factor)
+
+test = data.frame(ef, ef2 = as.numeric(ef))
+filter(test, is.na(ef2))
+
+dbExecute(con, "alter table Review_Sample_Sections add Expansion_Factor2 float(53)")
+dbExecute(con, "update Review_Sample_Sections set Expansion_Factor2 = convert(float(53), replace(Expansion_Factor, ',', ''));")
+
+rss = tbl(con, 'Review_Sample_Sections')
+test = rss %>%
+  select(Expansion_Factor, Expansion_Factor2) %>%
+  collect() 
+
+with(test, all.equal(parse_number(Expansion_Factor), Expansion_Factor2))
+
+# Replace Expansion_Factor with Expansion_Factor2
+dbExecute(con, "alter table Review_Sample_Sections
+                    drop column Expansion_Factor;")
+dbExecute(con, 'alter table Review_Sample_Sections add Expansion_Factor float(53)')
+dbExecute(con, "update Review_Sample_Sections
+                    set Expansion_Factor = Expansion_Factor2")
+dbExecute(con, 'alter table Review_Sample_Sections drop column Expansion_Factor2;')
+
+rss = tbl(con, 'Review_Sample_Sections')
+
+rss
+dbDisconnect(con)
