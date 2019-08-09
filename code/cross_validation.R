@@ -58,8 +58,8 @@ summarize_validation = function(results){
 # -----------------------------------------------------------------------
 
 ###################################################################
+# Through_Lanes>1 when Facility_Type = 2
 cross_validation_53 = function(data){
-  # Through_Lanes>1 when Facility_Type = 2
   
   through_lanes = data[Data_Item=="THROUGH_LANES",.(Route_ID,Begin_Point,End_Point,THROUGH_LANES=Value_Numeric)]
   facility_type = data[Data_Item=="FACILITY_TYPE",.(Route_ID,Begin_Point,End_Point,FACILITY_TYPE=Value_Numeric)]
@@ -91,10 +91,10 @@ cross_validation_53 = function(data){
 }
 
 ###################################################################
+# Counter_Peak_Lanes + Peak_Lanes Must Be >= Through Lanes
+# need to confirm when this should apply
 
 cross_validation_x = function(data){
-  # Counter_Peak_Lanes + Peak_Lanes Must Be >= Through Lanes
-  # need to confirm when this should apply
   
   through_lanes = data[Data_Item=="THROUGH_LANES",.(Route_ID,Begin_Point,End_Point,THROUGH_LANES=Value_Numeric)]
   counter_peak_lanes = data[Data_Item=="COUNTER_PEAK_LANES",.(Route_ID,Begin_Point,End_Point,COUNTER_PEAK_LANES=Value_Numeric)]
@@ -137,9 +137,9 @@ cross_validation_x = function(data){
 }
 
 ###################################################################
+# Counter_Peak_Lanes is NULL if FACILITY_TYPE is 1
 
 cross_validation_16 = function(data){
-  # Counter_Peak_Lanes is NULL if FACILITY_TYPE is 1
   
   facility_type = data[Data_Item=="FACILITY_TYPE",.(Route_ID,Begin_Point,End_Point,FACILITY_TYPE=Value_Numeric)]
   counter_peak_lanes = data[Data_Item=="COUNTER_PEAK_LANES",.(Route_ID,Begin_Point,End_Point,COUNTER_PEAK_LANES=Value_Numeric)]
@@ -174,9 +174,9 @@ cross_validation_16 = function(data){
 }
 
 ###################################################################
+# SPEED_LIMIT should be divisible by 5, and < 90 OR = 999
+# should it include a check of 0?
 cross_validation_15 = function(data){
-  # SPEED_LIMIT should be divisible by 5, and < 90 OR = 999
-  # should it include a check of 0?
   
   #browser()
   speed_limit = data[Data_Item=="SPEED_LIMIT",.(Route_ID,Begin_Point,End_Point,SPEED_LIMIT=Value_Numeric)]
@@ -204,9 +204,9 @@ cross_validation_15 = function(data){
 }
 
 ###################################################################
+# AADT_Single_Unit < AADT/2.5
 
 cross_validation_45 = function(data){
-  # AADT_Single_Unit < AADT/2.5
   
   #browser()
   aadt_single_unit = data[Data_Item=="AADT_SINGLE_UNIT",.(Route_ID,Begin_Point,End_Point,AADT_SINGLE_UNIT=Value_Numeric)]
@@ -234,16 +234,16 @@ cross_validation_45 = function(data){
                mileage      = sum(End_Point-Begin_Point)
               ),
              .(Applies = !is.na(AADT_SINGLE_UNIT), 
-               Passes  = AADT_SINGLE_UNIT < (AADT * 0.4))][order(Applies,Passes)]
+               Passes  = AADT_SINGLE_UNIT < AADT/2.5)][order(Applies,Passes)]
   
   return(list(results=results,comparison=comparison))
 
 }
 
 ###################################################################
+# AADT_Single_Unit Shoud be > 0
 
 cross_validation_55 = function(data){
-  # AADT_Single_Unit Shoud be > 0
   
   #browser()
   aadt_single_unit = data[Data_Item=="AADT_SINGLE_UNIT",.(Route_ID,Begin_Point,End_Point,AADT_SINGLE_UNIT=Value_Numeric)]
@@ -271,10 +271,10 @@ cross_validation_55 = function(data){
 }
 
 ###################################################################
+# SU AADT + CU AADT < (0.8*AADT)
+# need to confirm when this should apply
 
 cross_validation_17 = function(data){
-  # SU AADT + CU AADT < (0.8*AADT)
-  # need to confirm when this should apply
   
   #browser()
   aadt_single_unit = data[Data_Item=="AADT_SINGLE_UNIT",.(Route_ID,Begin_Point,End_Point,AADT_SINGLE_UNIT=Value_Numeric)]
@@ -317,13 +317,12 @@ cross_validation_17 = function(data){
 }
 
 ###################################################################
+# AADT*PCT_Peak_Single/100 < =AADT_Single_Unit 
+# is the division by 100 necessary?
 
 cross_validation_42 = function(data){
-
-  # (SU AADT x 0.04) < (AADT x Percent Peak SU) < (SU AADT x 0.4) 
-  # AADT * PCT_PEAK_SINGLE > (AADT_SINGLE_UNIT * 0.04) &
-  #  AADT * PCT_PEAK_SINGLE < (AADT_SINGLE_UNIT * 0.4)
-
+  
+  #browser()
   pct_peak_single = data[Data_Item=="PCT_PEAK_SINGLE",.(Route_ID,Begin_Point,End_Point,PCT_PEAK_SINGLE=Value_Numeric)]
   aadt_single_unit = data[Data_Item=="AADT_SINGLE_UNIT",.(Route_ID,Begin_Point,End_Point,AADT_SINGLE_UNIT=Value_Numeric)]
   aadt = data[Data_Item=="AADT",.(Route_ID,Begin_Point,End_Point,AADT=Value_Numeric)]
@@ -357,19 +356,18 @@ cross_validation_42 = function(data){
                mileage      = sum(End_Point-Begin_Point)
               ),
              .(Applies = !is.na(PCT_PEAK_SINGLE), 
-               Passes  = AADT * PCT_PEAK_SINGLE > (AADT_SINGLE_UNIT * 0.04) &
-                 AADT * PCT_PEAK_SINGLE < (AADT_SINGLE_UNIT * 0.4)
-             )][order(Applies,Passes)]
+               Passes  = AADT * PCT_PEAK_SINGLE / 100 <= AADT_SINGLE_UNIT)][order(Applies,Passes)]
   
   return(list(results=results,comparison=comparison))
 
 }
 
 ###################################################################
+# PCT_Peak_Single >0 and < 20%
+# should it be greater than 0 or equal to 0?
 
 cross_validation_57 = function(data){
-  # PCT_Peak_Single >0 and < 25%
-
+  
   #browser()
   pct_peak_single = data[Data_Item=="PCT_PEAK_SINGLE",.(Route_ID,Begin_Point,End_Point,PCT_PEAK_SINGLE=Value_Numeric)]
 
@@ -391,17 +389,18 @@ cross_validation_57 = function(data){
                mileage      = sum(End_Point-Begin_Point)
               ),
              .(Applies = !is.na(PCT_PEAK_SINGLE), 
-               Passes  = PCT_PEAK_SINGLE > 0 & PCT_PEAK_SINGLE < 25)][order(Applies,Passes)]
+               Passes  = PCT_PEAK_SINGLE > 0 & PCT_PEAK_SINGLE < 20)][order(Applies,Passes)]
   
   return(list(results=results,comparison=comparison))
 
 }
 
 ###################################################################
+# AADT_Combination < AADT/2.5
+# need to confirm when this should apply
 
 cross_validation_44 = function(data){
-  # AADT_Combination < AADT * 0.4
-
+  
   #browser()
   aadt_combination = data[Data_Item=="AADT_COMBINATION",.(Route_ID,Begin_Point,End_Point,AADT_COMBINATION=Value_Numeric)]
   aadt = data[Data_Item=="AADT",.(Route_ID,Begin_Point,End_Point,AADT=Value_Numeric)]
@@ -429,16 +428,17 @@ cross_validation_44 = function(data){
                mileage      = sum(End_Point-Begin_Point)
               ),
              .(Applies = !is.na(AADT_COMBINATION), # always applies if through_lanes exists
-               Passes  = AADT_COMBINATION < (AADT * 0.4) )][order(Applies,Passes)]
+               Passes  = AADT_COMBINATION < (AADT/2.5) )][order(Applies,Passes)]
   
   return(list(results=results,comparison=comparison))
 
 }
 
 ###################################################################
+# AADT_Combination Should be > 0 
+# need to confirm when this should apply
 
 cross_validation_54 = function(data){
-  # AADT_Combination Should be > 0 
   
   #browser()
   aadt_combination = data[Data_Item=="AADT_COMBINATION",.(Route_ID,Begin_Point,End_Point,AADT_COMBINATION=Value_Numeric)]
@@ -469,11 +469,11 @@ cross_validation_54 = function(data){
 }
 
 ###################################################################
+# AADT*PCT_Peak_Single/100 < =AADT_Single_Unit 
+# is the division by 100 necessary?
 
 cross_validation_43 = function(data){
-  #(CU AADT x 0.04) < (AADT x Percent Peak CU) < (CU AADT x 0.4)
-  # (AADT * PCT_PEAK_COMBINATION) > (AADT_COMBINATION * 0.04) &
-  #   (AADT * PCT_PEAK_COMBINATION) < (AADT_COMBINATION * 0.4)
+  
   #browser()
   pct_combination = data[Data_Item=="PCT_PEAK_COMBINATION",.(Route_ID,Begin_Point,End_Point,PCT_PEAK_COMBINATION=Value_Numeric)]
   aadt_combination = data[Data_Item=="AADT_COMBINATION",.(Route_ID,Begin_Point,End_Point,AADT_COMBINATION=Value_Numeric)]
@@ -508,18 +508,17 @@ cross_validation_43 = function(data){
                mileage      = sum(End_Point-Begin_Point)
               ),
              .(Applies = !is.na(PCT_PEAK_COMBINATION), 
-               Passes  = (AADT * PCT_PEAK_COMBINATION) > (AADT_COMBINATION * 0.04) &
-                 (AADT * PCT_PEAK_COMBINATION) < (AADT_COMBINATION * 0.4)
-             )][order(Applies,Passes)]
+               Passes  = AADT * PCT_PEAK_COMBINATION / 100 <= AADT_COMBINATION)][order(Applies,Passes)]
   
   return(list(results=results,comparison=comparison))
 
 }
 
 ###################################################################
+# PCT_Peak_Combination >0 and < 20%
+# should it be greater than 0 or equal to 0?
 
 cross_validation_56 = function(data){
-  # PCT_Peak_Combination >0 and < 25%
   
   #browser()
   pct_peak_combination = data[Data_Item=="PCT_PEAK_COMBINATION",.(Route_ID,Begin_Point,End_Point,PCT_PEAK_COMBINATION=Value_Numeric)]
@@ -542,16 +541,16 @@ cross_validation_56 = function(data){
                mileage      = sum(End_Point-Begin_Point)
               ),
              .(Applies = !is.na(PCT_PEAK_COMBINATION), 
-               Passes  = PCT_PEAK_COMBINATION > 0 & PCT_PEAK_COMBINATION < 25)][order(Applies,Passes)]
+               Passes  = PCT_PEAK_COMBINATION > 0 & PCT_PEAK_COMBINATION < 20)][order(Applies,Passes)]
   
   return(list(results=results,comparison=comparison))
 
 }
 
 ###################################################################
+# K_Factor must be > 4 and <20 
 
 cross_validation_49 = function(data){
-  # K_Factor must be > 4 and <20 
   
   #browser()
   k_factor = data[Data_Item=="K_FACTOR",.(Route_ID,Begin_Point,End_Point,K_FACTOR=Value_Numeric)]
@@ -581,9 +580,9 @@ cross_validation_49 = function(data){
 }
 
 ###################################################################
+# DIR_Factor must be 100 where Facility_Type = 1
 
 cross_validation_39 = function(data){
-  # DIR_Factor must be 100 where Facility_Type = 1
   
   #browser()
   facility_type = data[Data_Item=="FACILITY_TYPE",.(Route_ID,Begin_Point,End_Point,FACILITY_TYPE=Value_Numeric)]
@@ -618,9 +617,9 @@ cross_validation_39 = function(data){
 }
 
 ###################################################################
+# DIR_Factor must be 50=< and <=70 where Facility_Type = 2
 
 cross_validation_40 = function(data){
-  # DIR_Factor must be 50=< and <=70 where Facility_Type = 2
   
   #browser()
   facility_type = data[Data_Item=="FACILITY_TYPE",.(Route_ID,Begin_Point,End_Point,FACILITY_TYPE=Value_Numeric)]
@@ -655,10 +654,10 @@ cross_validation_40 = function(data){
 }
 
 ###################################################################
+# AADT < FAADT < 3*AADT
+# this is done elsewhere in the scorecard
 
 cross_validation_41 = function(data){
-  # AADT < FAADT < 4*AADT
-  # this is done elsewhere in the scorecard
   
   #browser()
   future_aadt = data[Data_Item=="FUTURE_AADT",.(Route_ID,Begin_Point,End_Point,FUTURE_AADT=Value_Numeric)]
@@ -686,17 +685,18 @@ cross_validation_41 = function(data){
                mileage      = sum(End_Point-Begin_Point)
               ),
              .(Applies = !is.na(FUTURE_AADT), 
-               Passes  = FUTURE_AADT > AADT  & FUTURE_AADT < 4 * AADT)][order(Applies,Passes)]
+               Passes  = FUTURE_AADT > AADT  & FUTURE_AADT < 3 * AADT)][order(Applies,Passes)]
   
   return(list(results=results,comparison=comparison))
 
 }
 
 ###################################################################
+# Where F_System = 1 and Urban Code <> 99999, Signal_Type should = 5 or Null
+# need to confirm when this should apply
 
 cross_validation_y = function(data){
-  # Where F_System = 1 and Urban Code <> 99999, Signal_Type should = 5
-
+  
   signal_type = data[Data_Item=="SIGNAL_TYPE",.(Route_ID,Begin_Point,End_Point,SIGNAL_TYPE=Value_Numeric)]
   f_system = data[Data_Item=="F_SYSTEM",.(Route_ID,Begin_Point,End_Point,F_SYSTEM=Value_Numeric)]
   urban_code = data[Data_Item=="URBAN_CODE",.(Route_ID,Begin_Point,End_Point,URBAN_CODE=Value_Numeric)]
@@ -726,16 +726,16 @@ cross_validation_y = function(data){
                mileage      = sum(End_Point-Begin_Point)
               ),
              .(Applies = F_SYSTEM == 1 & URBAN_CODE != 99999 , 
-               Passes  = SIGNAL_TYPE == 5 )][order(Applies,Passes)]
+               Passes  = SIGNAL_TYPE==5 | is.na(SIGNAL_TYPE) )][order(Applies,Passes)]
   
   return(list(results=results,comparison=comparison))
 
 }
 
 ###################################################################
+# Lande width must be > 5 and <19 
 
 cross_validation_14 = function(data){
-  # Lane width must be > 5 and < 19 
   
   #browser()
   lane_width = data[Data_Item=="LANE_WIDTH",.(Route_ID,Begin_Point,End_Point,LANE_WIDTH=Value_Numeric)]
@@ -765,9 +765,9 @@ cross_validation_14 = function(data){
 }
 
 ###################################################################
+# Median Type in (2,3,4,5,6,7)	Median Width > 0
 
 cross_validation_22 = function(data){
-  # Median Type in (2,3,4,5,6,7)	Median Width > 0
   
   #browser()
   median_width = data[Data_Item=="MEDIAN_TYPE",.(Route_ID,Begin_Point,End_Point,MEDIAN_TYPE=Value_Numeric)]
@@ -802,10 +802,10 @@ cross_validation_22 = function(data){
 }
 
 ###################################################################
+# Median Width Null if (FACILITY_TYPE is 1 or 4) or Median_Type Code <2
+# what does NULL mean? 0 or not reported or reported but NULL?
 
 cross_validation_20 = function(data){
-  # Median Width Null if (FACILITY_TYPE is 1 or 4) or Median_Type Code <2
-  # what does NULL mean? 0 or not reported or reported but NULL?
   
   #browser()
   median_width = data[Data_Item=="MEDIAN_TYPE",  .(Route_ID,Begin_Point,End_Point,MEDIAN_TYPE=Value_Numeric)]
@@ -844,9 +844,9 @@ cross_validation_20 = function(data){
 }
 
 ###################################################################
+# Shoulder_Width_L Should be < Median_Width
 
 cross_validation_60 = function(data){
-  # Shoulder_Width_L Should be < Median_Width
   
   #browser()
   left_shoulder_width = data[Data_Item=="SHOULDER_WIDTH_L",.(Route_ID,Begin_Point,End_Point,SHOULDER_WIDTH_L=Value_Numeric)]
@@ -881,9 +881,9 @@ cross_validation_60 = function(data){
 }
 
 ###################################################################
+# Widening_Obstacle must contain A-G where Widening_Potential <9
 
 cross_validation_23 = function(data){
-  # Widening_Obstacle must contain A-G where Widening_Potential <9
   
   #browser()
   widening_obstacle = data[Data_Item=="WIDENING_OBSTACLE", .(Route_ID,Begin_Point,End_Point,WIDENING_OBSTACLE=Value_Text)]
@@ -919,38 +919,9 @@ cross_validation_23 = function(data){
 }
 
 ###################################################################
+# IRI >= 30 and <= 400
 
-cross_validation_46 = function(data){
-  # Value_Date Must Must >= Year_Record - 1 Where Sample OR Value_Text is Null AND F_System >1 and NHS in (1,2,3,4,5,6,7,8,9)
-}
-
-###################################################################
-
-cross_validation_61 = function(data){
-  # Value_Date Must = Year Record  Where Value_Text is Null AND F_System =1 
-}
-
-###################################################################
-
-cross_validation_64 = function(data){
-  # Value_Text Must Be In (A,B,C,D,E) Where Value_Date <> Year Record and F_Sytem = 1 OR if Value_Date < Year Record -1 on NHS
-}
-
-###################################################################
-
-cross_validation_65 = function(data){
-  # Value_Date Must Must >= Year_Record - 1 Where Sample OR F_System >1 and NHS in (1,2,3,4,5,6,7,8,9)
-}
-
-###################################################################
-cross_validation_66 = function(data){
-  # Value_Date Must = Year Record  Where Value_Text is "A" AND F_System =1 
-
-}
-
-###################################################################
 cross_validation_1 = function(data){
-  # IRI >= 30 and <= 400
   
   #browser()
   iri = data[Data_Item=="IRI", .(Route_ID,Begin_Point,End_Point,IRI=Value_Numeric)]
@@ -981,15 +952,9 @@ cross_validation_1 = function(data){
 }
 
 ###################################################################
-cross_validation_62 = function(data){
-  # Where F_System =1, and IRI is Null, PSR Value_Numeric Must be >0 and PSR Value_Text must = A
-
-}
-
-###################################################################
+# Rutting should be < 1
 
 cross_validation_52 = function(data){
-  # Rutting should be < 1
   
   #browser()
   rutting = data[Data_Item=="RUTTING", .(Route_ID,Begin_Point,End_Point,RUTTING=Value_Numeric)]
@@ -1020,9 +985,9 @@ cross_validation_52 = function(data){
 }
 
 ###################################################################
+# Faulting should be <= 1
 
 cross_validation_47 = function(data){
-  # Faulting should be <= 1
   
   #browser()
   faulting = data[Data_Item=="FAULTING", .(Route_ID,Begin_Point,End_Point,FAULTING=Value_Numeric)]
@@ -1053,10 +1018,10 @@ cross_validation_47 = function(data){
 }
 
 ###################################################################
+# Where Surface Type is in (2,6,7,8) Cracking Percent should not exceed: 
+# X based on Lane Width. See table on AC Cracking Validation Tab.
 
 cross_validation_63 = function(data){
-  # Where Surface Type is in (2,6,7,8) Cracking Percent should not exceed: 
-  # X based on Lane Width. See table on AC Cracking Validation Tab.
   
   #browser()
   cracking_percent = data[Data_Item=="CRACKING_PERCENT", .(Route_ID,Begin_Point,End_Point,CRACKING_PERCENT=Value_Numeric)]
@@ -1095,9 +1060,9 @@ cross_validation_63 = function(data){
 }
 
 ###################################################################
+# Where Surface Type is in (3,4,5,9,10) Cracking Percent should be < 75
 
 cross_validation_51 = function(data){
-  # Where Surface Type is in (3,4,5,9,10) Cracking Percent should be < 75
   
   #browser()
   cracking_percent = data[Data_Item=="CRACKING_PERCENT", .(Route_ID,Begin_Point,End_Point,CRACKING_PERCENT=Value_Numeric)]
@@ -1132,9 +1097,9 @@ cross_validation_51 = function(data){
 }
 
 ###################################################################
+# Year_Last_Construction	<= Year_Record or NULL
 
 cross_validation_9 = function(data){
-  # Year_Last_Construction	<= Year_Record or NULL
   
   #browser()
   year_last_construction = data[Data_Item=="YEAR_LAST_CONSTRUCTION", .(Route_ID,Begin_Point,End_Point,YEAR_LAST_CONSTRUCTION=Value_Date,Year_Record)]
