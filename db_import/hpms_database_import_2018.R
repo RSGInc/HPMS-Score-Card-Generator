@@ -108,7 +108,7 @@ col_types = cols(
   WKT = col_skip(),
   WKB = col_skip()
 )
-chunk_callback = function(x){
+chunk_callback = function(x, pos){
   dbWriteTable(con, name=tbl_name, value=x, overwrite=FALSE, append=TRUE)
 }
 
