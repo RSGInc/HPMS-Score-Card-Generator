@@ -100,8 +100,8 @@ summarize_validation = function(results){
 
 
 ###################################################################
-# Through_Lanes>1 when Facility_Type = 2
 cross_validation_53 = function(data){
+  # Through_Lanes>1 when Facility_Type = 2
   
   through_lanes = data[data_item=="THROUGH_LANES",.(route_id,begin_point,end_point,THROUGH_LANES=value_numeric,num_sections)]
   facility_type = data[data_item=="FACILITY_TYPE",.(route_id,begin_point,end_point,FACILITY_TYPE=value_numeric)]
@@ -135,13 +135,12 @@ cross_validation_53 = function(data){
 }
 
 ###################################################################
-# Counter_Peak_Lanes + Peak_Lanes Must Be >= Through Lanes
-# need to confirm when this should apply
-
-# Counter_Peak_Lanes and Peak_Lanes are SP
 
 cross_validation_x = function(data){
+  # Counter_Peak_Lanes + Peak_Lanes Must Be >= Through Lanes
+  # need to confirm when this should apply
   
+  # Counter_Peak_Lanes and Peak_Lanes are SP
   through_lanes      = data[data_item=="THROUGH_LANES",
                             .(route_id,begin_point,end_point,THROUGH_LANES=value_numeric,num_sections)]
   counter_peak_lanes = data[data_item=="COUNTER_PEAK_LANES",
@@ -186,10 +185,10 @@ cross_validation_x = function(data){
 }
 
 ###################################################################
-# Counter_Peak_Lanes is NULL if FACILITY_TYPE is 1
 
 # Counter Peak Lanes is SP
 cross_validation_16 = function(data){
+  # Counter_Peak_Lanes is NULL if FACILITY_TYPE is 1
   
   facility_type      = data[data_item=="FACILITY_TYPE",
                             .(route_id,begin_point,end_point,FACILITY_TYPE=value_numeric,num_sections)]
@@ -225,9 +224,9 @@ cross_validation_16 = function(data){
 }
 
 ###################################################################
-# SPEED_LIMIT should be divisible by 5, and < 90 OR = 999
-# should it include a check of 0?
 cross_validation_15 = function(data){
+  # SPEED_LIMIT should be divisible by 5, and < 90 OR = 999
+  # should it include a check of 0?
   
   #browser()
   speed_limit = data[data_item=="SPEED_LIMIT",.(route_id,begin_point,end_point,SPEED_LIMIT=value_numeric, num_sections)]
@@ -260,9 +259,9 @@ cross_validation_15 = function(data){
 }
 
 ###################################################################
-# AADT_Single_Unit < AADT/2.5
 
 cross_validation_45 = function(data){
+  # AADT_Single_Unit < AADT * 0.4
   
   #browser()
   aadt_single_unit = data[data_item=="AADT_SINGLE_UNIT",.(route_id,begin_point,end_point,AADT_SINGLE_UNIT=value_numeric, num_sections)]
@@ -284,7 +283,7 @@ cross_validation_45 = function(data){
                mileage      = sum(end_point-begin_point)
               ),
              .(applies = !is.na(AADT_SINGLE_UNIT), 
-               passes  = AADT_SINGLE_UNIT < AADT/2.5)][order(applies,passes)]
+               passes  = AADT_SINGLE_UNIT < AADT * 0.4)][order(applies,passes)]
   
   if(nrow(results[applies == TRUE])==0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -297,9 +296,9 @@ cross_validation_45 = function(data){
 }
 
 ###################################################################
-# AADT_Single_Unit Shoud be > 0
 
 cross_validation_55 = function(data){
+  # AADT_Single_Unit Shoud be > 0
   
   #browser()
   aadt_single_unit = data[data_item=="AADT_SINGLE_UNIT",
@@ -333,10 +332,10 @@ cross_validation_55 = function(data){
 }
 
 ###################################################################
-# SU AADT + CU AADT < (0.8*AADT)
-# need to confirm when this should apply
 
 cross_validation_17 = function(data){
+  # SU AADT + CU AADT < (0.8*AADT)
+  # need to confirm when this should apply
   
   #browser()
   aadt_single_unit = data[data_item=="AADT_SINGLE_UNIT",
@@ -380,11 +379,11 @@ cross_validation_17 = function(data){
 }
 
 ###################################################################
-# AADT*PCT_Peak_Single/100 < =AADT_Single_Unit 
-# is the division by 100 necessary?
 
 cross_validation_42 = function(data){
-  
+  # (SU AADT x 0.04) < (AADT x Percent Peak SU) < (SU AADT x 0.4) 
+  # AADT * PCT_PEAK_SINGLE > (AADT_SINGLE_UNIT * 0.04) &
+  #  AADT * PCT_PEAK_SINGLE < (AADT_SINGLE_UNIT * 0.4)
   #browser()
   pct_peak_single = data[data_item=="PCT_PEAK_SINGLE",
                          .(route_id,begin_point,end_point,PCT_PEAK_SINGLE=value_numeric, num_sections)]
@@ -414,7 +413,9 @@ cross_validation_42 = function(data){
                mileage      = sum(end_point-begin_point)
               ),
              .(applies = !is.na(PCT_PEAK_SINGLE), 
-               passes  = AADT * PCT_PEAK_SINGLE / 100 <= AADT_SINGLE_UNIT)][order(applies,passes)]
+               passes  = AADT * PCT_PEAK_SINGLE > (AADT_SINGLE_UNIT * 0.04) &
+                 AADT * PCT_PEAK_SINGLE < (AADT_SINGLE_UNIT * 0.4))][order(applies,passes)]
+  
   
   if(nrow(results[applies == TRUE])==0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -427,11 +428,10 @@ cross_validation_42 = function(data){
 }
 
 ###################################################################
-# PCT_Peak_Single >0 and < 20%
-# should it be greater than 0 or equal to 0?
 
 cross_validation_57 = function(data){
-  
+  # PCT_Peak_Single >0 and < 25%
+
   #browser()
   pct_peak_single = data[data_item=="PCT_PEAK_SINGLE",
                          .(route_id,begin_point,end_point,PCT_PEAK_SINGLE=value_numeric, num_sections)]
@@ -451,7 +451,7 @@ cross_validation_57 = function(data){
                mileage      = sum(end_point-begin_point)
               ),
              .(applies = !is.na(PCT_PEAK_SINGLE), 
-               passes  = PCT_PEAK_SINGLE > 0 & PCT_PEAK_SINGLE < 20)][order(applies,passes)]
+               passes  = PCT_PEAK_SINGLE > 0 & PCT_PEAK_SINGLE < 25)][order(applies,passes)]
   
   if(nrow(results[applies == TRUE])==0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -464,11 +464,10 @@ cross_validation_57 = function(data){
 }
 
 ###################################################################
-# AADT_Combination < AADT/2.5
-# need to confirm when this should apply
 
 cross_validation_44 = function(data){
-  
+  # AADT_Combination < AADT * 0.4
+
   #browser()
   aadt_combination = data[data_item=="AADT_COMBINATION",
                           .(route_id,begin_point,end_point,AADT_COMBINATION=value_numeric, num_sections)]
@@ -491,7 +490,7 @@ cross_validation_44 = function(data){
                mileage      = sum(end_point-begin_point)
               ),
              .(applies = !is.na(AADT_COMBINATION), # always applies if through_lanes exists
-               passes  = AADT_COMBINATION < (AADT/2.5) )][order(applies,passes)]
+               passes  = AADT_COMBINATION < (AADT * 0.4) )][order(applies,passes)]
   
   if(nrow(results[applies == TRUE])==0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -504,10 +503,9 @@ cross_validation_44 = function(data){
 }
 
 ###################################################################
-# AADT_Combination Should be > 0 
-# need to confirm when this should apply
 
 cross_validation_54 = function(data){
+  # AADT_Combination Should be > 0 
   
   #browser()
   aadt_combination = data[data_item=="AADT_COMBINATION",
@@ -541,11 +539,11 @@ cross_validation_54 = function(data){
 }
 
 ###################################################################
-# AADT*PCT_Peak_Single/100 < =AADT_Single_Unit 
-# is the division by 100 necessary?
 
 cross_validation_43 = function(data){
-  
+  #(CU AADT x 0.04) < (AADT x Percent Peak CU) < (CU AADT x 0.4)
+  # (AADT * PCT_PEAK_COMBINATION) > (AADT_COMBINATION * 0.04) &
+  #   (AADT * PCT_PEAK_COMBINATION) < (AADT_COMBINATION * 0.4)
   #browser()
   pct_combination = data[data_item=="PCT_PEAK_COMBINATION",
                          .(route_id,begin_point,end_point,PCT_PEAK_COMBINATION=value_numeric, num_sections)]
@@ -571,7 +569,10 @@ cross_validation_43 = function(data){
                mileage      = sum(end_point-begin_point)
               ),
              .(applies = !is.na(PCT_PEAK_COMBINATION), 
-               passes  = AADT * PCT_PEAK_COMBINATION / 100 <= AADT_COMBINATION)][order(applies,passes)]
+               passes  = (AADT * PCT_PEAK_COMBINATION) > (AADT_COMBINATION * 0.04) &
+                 (AADT * PCT_PEAK_COMBINATION) < (AADT_COMBINATION * 0.4)
+             )][order(applies,passes)]
+  
   
   if(nrow(results[applies == TRUE])==0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -584,10 +585,9 @@ cross_validation_43 = function(data){
 }
 
 ###################################################################
-# PCT_Peak_Combination >0 and < 20%
-# should it be greater than 0 or equal to 0?
 
 cross_validation_56 = function(data){
+  # PCT_Peak_Combination >0 and < 25%
   
   #browser()
   pct_peak_combination = data[data_item=="PCT_PEAK_COMBINATION",
@@ -608,8 +608,8 @@ cross_validation_56 = function(data){
                mileage      = sum(end_point-begin_point)
               ),
              .(applies = !is.na(PCT_PEAK_COMBINATION), 
-               passes  = PCT_PEAK_COMBINATION > 0 & PCT_PEAK_COMBINATION < 20)][order(applies,passes)]
-  
+               passes  = PCT_PEAK_COMBINATION > 0 & PCT_PEAK_COMBINATION < 25)][order(applies,passes)]
+ 
   if(nrow(results[applies == TRUE])==0){
     warning("Not applicable - Sufficient data from the state are not available")
     return(list(results=NULL,comparison=NULL))  
@@ -621,9 +621,9 @@ cross_validation_56 = function(data){
 }
 
 ###################################################################
-# K_Factor must be > 4 and <20 
 
 cross_validation_49 = function(data){
+  # K_Factor must be > 4 and <20 
   
   #browser()
   k_factor = data[data_item=="K_FACTOR",
@@ -657,9 +657,9 @@ cross_validation_49 = function(data){
 }
 
 ###################################################################
-# DIR_Factor must be 100 where Facility_Type = 1
 
 cross_validation_39 = function(data){
+  # DIR_Factor must be 100 where Facility_Type = 1
   
   #browser()
   facility_type = data[data_item=="FACILITY_TYPE",
@@ -696,9 +696,9 @@ cross_validation_39 = function(data){
 }
 
 ###################################################################
-# DIR_Factor must be 50=< and <=70 where Facility_Type = 2
 
 cross_validation_40 = function(data){
+  # DIR_Factor must be 50=< and <=70 where Facility_Type = 2
   
   #browser()
   facility_type = data[data_item=="FACILITY_TYPE",
@@ -735,10 +735,10 @@ cross_validation_40 = function(data){
 }
 
 ###################################################################
-# AADT < FAADT < 3*AADT
-# this is done elsewhere in the scorecard
 
 cross_validation_41 = function(data){
+  # AADT < FAADT < 4*AADT
+  # this is done elsewhere in the scorecard
   
   #browser()
   future_aadt = data[data_item=="FUTURE_AADT",
@@ -762,8 +762,7 @@ cross_validation_41 = function(data){
                mileage      = sum(end_point-begin_point)
               ),
              .(applies = !is.na(FUTURE_AADT), 
-               passes  = FUTURE_AADT > AADT  & FUTURE_AADT < 3 * AADT)][order(applies,passes)]
-  
+               passes  = FUTURE_AADT > AADT  & FUTURE_AADT < 4 * AADT)][order(applies,passes)] 
   if(nrow(results[applies == TRUE])==0){
     warning("Not applicable - Sufficient data from the state are not available")
     return(list(results=NULL,comparison=NULL))  
@@ -775,8 +774,7 @@ cross_validation_41 = function(data){
 }
 
 ###################################################################
-# Where F_System = 1 and Urban Code <> 99999, Signal_Type should = 5 or Null
-# need to confirm when this should apply
+# Where F_System = 1 and Urban Code <> 99999, Signal_Type should = 5
 
 cross_validation_y = function(data){
   
@@ -804,8 +802,8 @@ cross_validation_y = function(data){
                mileage      = sum(end_point-begin_point)
               ),
              .(applies = F_SYSTEM == 1 & URBAN_CODE != 99999 , 
-               passes  = SIGNAL_TYPE==5 | is.na(SIGNAL_TYPE) )][order(applies,passes)]
-  
+               passes  = SIGNAL_TYPE == 5 )][order(applies,passes)]
+
   if(nrow(results[applies == TRUE])==0){
     warning("Not applicable - Sufficient data from the state are not available")
     return(list(results=NULL,comparison=NULL))  
@@ -817,9 +815,9 @@ cross_validation_y = function(data){
 }
 
 ###################################################################
-# Lande width must be > 5 and <19 
 
 cross_validation_14 = function(data){
+  # Lane width must be > 5 and < 19 
   
   #browser()
   lane_width = data[data_item=="LANE_WIDTH",
@@ -853,9 +851,9 @@ cross_validation_14 = function(data){
 }
 
 ###################################################################
-# Median Type in (2,3,4,5,6,7)	Median Width > 0
 
 cross_validation_22 = function(data){
+  # Median Type in (2,3,4,5,6,7)	Median Width > 0
   
   #browser()
   median_width = data[data_item=="MEDIAN_TYPE",
@@ -892,10 +890,10 @@ cross_validation_22 = function(data){
 }
 
 ###################################################################
-# Median Width Null if (FACILITY_TYPE is 1 or 4) or Median_Type Code <2
-# what does NULL mean? 0 or not reported or reported but NULL?
 
 cross_validation_20 = function(data){
+  # Median Width Null if (FACILITY_TYPE is 1 or 4) or Median_Type Code <2
+  # what does NULL mean? 0 or not reported or reported but NULL?
   
   #browser()
   median_width = data[data_item=="MEDIAN_TYPE",
@@ -935,9 +933,9 @@ cross_validation_20 = function(data){
 }
 
 ###################################################################
-# Shoulder_Width_L Should be < Median_Width
 
 cross_validation_60 = function(data){
+  # Shoulder_Width_L Should be < Median_Width
   
   #browser()
   left_shoulder_width = data[data_item=="SHOULDER_WIDTH_L",
@@ -974,9 +972,9 @@ cross_validation_60 = function(data){
 }
 
 ###################################################################
-# Widening_Obstacle must contain A-G where Widening_Potential <9
 
 cross_validation_23 = function(data){
+  # Widening_Obstacle must contain A-G where Widening_Potential <9
   
   #browser()
   widening_obstacle = data[data_item=="WIDENING_OBSTACLE", 
@@ -1013,10 +1011,12 @@ cross_validation_23 = function(data){
 }
 
 ###################################################################
-# Value_Date must >= Year_Record - 2 where (sample | (Value_text is NULL and F_System > 1 and
-# NHS in (1,2,3,4,5,6,7,8,9)) 
 
 cross_validation_46 = function(data, variable){
+
+  # Value_Date must >= Year_Record - 1 where (sample | (Value_Text is NULL and F_System > 1 and
+  # NHS in (1,2,3,4,5,6,7,8,9))
+
   # variable %in% c('IRI', 'RUTTING', 'FAULTING', 'CRACKING_PERCENT')
   
   #browser()
@@ -1039,7 +1039,7 @@ cross_validation_46 = function(data, variable){
                          mileage      = sum(end_point-begin_point)
                        ),
                        .(applies = sample | (is.na(value_text) & F_SYTEMorig > 1 & NHS %in% 1:9), 
-                         passes  = value_date >= year_record - 2)][order(applies,passes)]
+                         passes  = value_date >= year_record - 1)][order(applies,passes)]
   
   if(nrow(results[applies == TRUE])==0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -1088,10 +1088,12 @@ cross_validation_61 = function(data, variable){
 }
 
 ###################################################################
-# Value_Text Must Be In (A,B,C,D) Where Value_Date <> Year Record and
-# F_Sytem = 1 OR if Value_Date < Year Record -2 on NHS
 
 cross_validation_64 = function(data, variable){
+
+  # Value_Text Must Be In (A,B,C,D,E) Where Value_Date <> Year Record and
+  # F_Sytem = 1 OR if Value_Date < Year Record -1 on NHS
+
   # variable %in% c('IRI', 'RUTTING', 'FAULTING', 'CRACKING_PERCENT')
   
   comparison = data[data_item == variable,
@@ -1111,8 +1113,8 @@ cross_validation_64 = function(data, variable){
                          num_sections = sum(num_sections,na.rm=TRUE),
                          mileage      = sum(end_point-begin_point)
                        ),
-                       .(applies = (value_date != year_record & F_SYTEMorig == 1) | (value_date < year_record - 2 & NHS > 1), 
-                         passes  = value_text %in% c('A', 'B', 'C', 'D'))][order(applies,passes)]
+                       .(applies = (value_date != year_record & F_SYTEMorig == 1) | (value_date < year_record - 1 & NHS > 1), 
+                         passes  = value_text %in% c('A', 'B', 'C', 'D', 'E'))][order(applies,passes)]
   
   if(nrow(results[applies == TRUE])==0){
     warning("Not applicable - no sections meet application criteria")
@@ -1127,10 +1129,11 @@ cross_validation_64 = function(data, variable){
 
 
 ###################################################################
-# Value_Date Must Must >= Year_Record – 2 Where Sample OR F_System >1 and 
-# NHS in (1,2,3,4,5,6,7,8,9)
 
 cross_validation_65 = function(data){
+    # Value_Date Must Must >= Year_Record - 1 Where Sample OR F_System >1 and 
+    # NHS in (1,2,3,4,5,6,7,8,9)
+
   comparison = data[data_item == "PSR",
                     .(route_id, begin_point, end_point, year_record,
                       F_SYTEMorig, NHS,
@@ -1150,7 +1153,7 @@ cross_validation_65 = function(data){
                          mileage      = sum(end_point-begin_point)
                        ),
                        .(applies = sample | (F_SYTEMorig > 1 & NHS %in% 1:9), 
-                         passes  = value_date >= year_record - 2)][order(applies,passes)]
+                         passes  = value_date >= year_record - 1)][order(applies,passes)]
   
   if(nrow(results[applies == TRUE])==0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -1163,10 +1166,11 @@ cross_validation_65 = function(data){
 }
 
 ###################################################################
-# Value_Date Must = Year Record  Where Value_Text is "A" AND F_System =1 
-
 cross_validation_66 = function(data){
-  
+
+  # Value_Date Must = Year Record  Where Value_Text is "A" AND F_System =1 
+
+
   comparison = data[data_item == "PSR",
                     .(route_id, begin_point, end_point, year_record,
                       F_SYTEMorig, value_text, value_date, num_sections)]
@@ -1201,10 +1205,9 @@ cross_validation_66 = function(data){
 
 
 ###################################################################
-# IRI >= 30 and <= 400
-
 cross_validation_1 = function(data){
   
+  # IRI >= 30 and <= 400
   #browser()
   iri = data[data_item=="IRI",
              .(route_id, begin_point, end_point, IRI=value_numeric, num_sections)]
@@ -1238,10 +1241,12 @@ cross_validation_1 = function(data){
 }
 
 ###################################################################
-# Where F_System =1, and IRI is Null, 
-# PSR Value_Numeric Must be >0 and PSR Value_Text must = A
 
 cross_validation_62 = function(data){
+
+  # Where F_System =1, and IRI is Null, 
+  # PSR Value_Numeric Must be >0 and PSR Value_Text must = A
+
   psr = data[data_item == "PSR",
                     .(route_id, begin_point, end_point,
                       F_SYTEMorig, value_text, value_numeric, num_sections)]
@@ -1278,9 +1283,9 @@ cross_validation_62 = function(data){
 }
 
 ###################################################################
-# Rutting should be < 1
 
 cross_validation_52 = function(data){
+  # Rutting should be < 1
   
   #browser()
   rutting = data[data_item=="RUTTING",
@@ -1315,9 +1320,9 @@ cross_validation_52 = function(data){
 }
 
 ###################################################################
-# Faulting should be <= 1
 
 cross_validation_47 = function(data){
+  # Faulting should be <= 1
   
   #browser()
   faulting = data[data_item=="FAULTING",
@@ -1357,10 +1362,10 @@ cross_validation_47 = function(data){
 }
 
 ###################################################################
-# Where Surface Type is in (2,6,7,8) Cracking Percent should not exceed: 
-# X based on Lane Width. See table on AC Cracking Validation Tab.
 
 cross_validation_63 = function(data){
+  # Where Surface Type is in (2,6,7,8) Cracking Percent should not exceed: 
+  # X based on Lane Width. See table on AC Cracking Validation Tab.
   
   #browser()
   cracking_percent = data[data_item=="CRACKING_PERCENT", 
@@ -1406,9 +1411,9 @@ cross_validation_63 = function(data){
 }
 
 ###################################################################
-# Where Surface Type is in (3,4,5,9,10) Cracking Percent should be < 75
 
 cross_validation_51 = function(data){
+  # Where Surface Type is in (3,4,5,9,10) Cracking Percent should be < 75
   
   #browser()
   cracking_percent = data[data_item=="CRACKING_PERCENT", 
@@ -1445,9 +1450,9 @@ cross_validation_51 = function(data){
 }
 
 ###################################################################
-# Year_Last_Construction	<= year_record or NULL
 
 cross_validation_9 = function(data){
+  # Year_Last_Construction	<= Year_Record or NULL
   
   #browser()
   year_last_construction = data[data_item=="YEAR_LAST_CONSTRUCTION",
@@ -1483,10 +1488,11 @@ cross_validation_9 = function(data){
 
 
 ###################################################################
-# only allow Sample where Facility_Type IN 1,2 and 
-# (F_System = 1-5 or F_System = 6 and Urban Code <99999)
 
 cross_validation_2 = function(data){
+
+  # only allow Sample where Facility_Type IN 1,2 and 
+  # (F_System = 1-5 or F_System = 6 and Urban Code <99999)
   
   #browser()
   
