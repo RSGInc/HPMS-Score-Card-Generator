@@ -240,40 +240,36 @@ ImportData <- function(state_selection, year_selection) {
         # Format data sets
         cat("\nFormatting...")
         
-        data <- FormatDataSet(dat=data, state_abbr=state, year=year)
-        cat(" complete!\n")
-        
-        #for (i in 1:length(data)){
-        
-        #data[[i]][["data"]] <- FormatDataSet(data[[i]][["data"]],state,year)
-        
-        #}
-        
-        
-        # Save data sets ------------------
-        
-        cat("Saving to", fullpath, '...')
-        
-        # Create new directory if needed
-        if (!dir.exists(path)) dir.create(path)
-        
-        saveRDS(data, file = fullpath)
-        
-        # for (i in 1:length(data)){
-        #   
-        #   SaveDataSet(year = data[[i]][["year"]],
-        #               state = data[[i]][["state"]],
-        #               dat = data[[i]][["data"]])
-        # }   
+        tryCatch({
+          data <- FormatDataSet(dat=data, state_abbr=state, year=year)
+          },
+          error=function(cond) {
+            message(cond)
+            data <- NULL
+          })
         
         cat(" complete!\n")
         
-        #} # if (length(data) > 0)
-        
-        success <- c(success, TRUE)
+        if ( is.null(data) | nrow(data) == 0 ){
+          success <- c(success, FALSE)
+          
+         } else {
+          
+           # Save data sets ------------------
+          
+          cat("Saving to", fullpath, '...')
+          
+          # Create new directory if needed
+          if (!dir.exists(path)) dir.create(path)
+          
+          saveRDS(data, file = fullpath)
+          
+          cat(" complete!\n")
+          success <- c(success, TRUE)
+          
+        }
         
       }
-      
     } # year
   } # state
   
@@ -369,19 +365,46 @@ transposeItem <- function(dfname, data_item){
   return(sql)  
 }
 
+append_column = function(data,column){
+  
+  data.column = data[data_item==column,.(year_record,route_id,begin_point,end_point,value_numeric)]
+  setnames(data.column,"value_numeric",column)
+  data[data.column,(column):=get(column),on=.(year_record,route_id,begin_point,end_point)]
+  return(data)
+}
+
 # Format a given data set for use in the score card generation process
 FormatDataSet <- function(dat, state_abbr, year) {
 
+  # summary of the sections that are dropped as part of this formatting
+  # 1. Any section where FACILITY_TYPE = 6 or 7. 6 is Non-Inventory Direction and 7 is Planned/Unbuilt. We had previously only been removing where facility_type = 6 so the exclusion of the Planned/Unbuilt is new.
+  #	Should we also exclude 5 "Non Mainline"? The HPMS guide says "Public road mileage is based only on sections coded '1,' or '2'. This includes only those roads that are open to public travel regardless of the ownership or maintenance responsibilities. Ramps are not included in the public road mileage calculation."
+  # Any section that is SP or SP* and does not have a corresponding expansion factor.
+  # Any section that is facility_type = 4 (a ramp) but has an extent that is not "FE + R". We should check with Justin if ramps should be included with SP data items. I don't think they should be.
+  # Any section that has a blank section extent in the extent details spreadsheet.
   
+  # Keep track of the original sections 
+  dat <- dat[order(route_id, data_item, begin_point)]
+  dat[, section_id := 1:.N, by=.(route_id, data_item)]
+  dat[, c('begin_point_og', 'end_point_og') := list(begin_point, end_point)]
+  
+  data.formatted = expand(dat,0.1)
   
   # Merge data on itself to convert rows to columns
-  
-  data.formatted <- data.table( sqldf(transposeItem('dat', 'F_SYSTEM') ))
-  data.formatted <- data.table( sqldf(transposeItem('data.formatted', 'NHS')) )
-  data.formatted <- data.table( sqldf(transposeItem('data.formatted', 'FACILITY_TYPE')))
-  data.formatted <- data.table( sqldf(transposeItem('data.formatted', 'THROUGH_LANES')))
-  data.formatted <- data.table( sqldf(transposeItem('data.formatted', 'URBAN_CODE')))
+  data.formatted = append_column(data.formatted,"F_SYSTEM")
+  data.formatted = append_column(data.formatted,"NHS")
+  data.formatted = append_column(data.formatted,"FACILITY_TYPE")
+  data.formatted = append_column(data.formatted,"THROUGH_LANES")
+  data.formatted = append_column(data.formatted,"URBAN_CODE")
 
+  # THROUGH_LANES needs to be smarter
+  # Lane Miles - 
+  # (Through_Lanes x F_System in (1,2,3,4,5,6-Urban)) plus
+  # (total length for Rural Minor Collectors x 2)
+  
+  data.formatted[F_SYSTEM >= 6 & URBAN_CODE == 99999 & FACILITY_TYPE < 6 &
+                   is.na(THROUGH_LANES), THROUGH_LANES:=2]
+  
   #F_SYSTEM Codes
   # 1 Interstate
   # 2 Principal Arterial - Other Freeways and Expressways
@@ -399,63 +422,97 @@ FormatDataSet <- function(dat, state_abbr, year) {
   data.formatted[, F_SYSTEM := c(NA,1,1,1,2,2,2)[F_SYSTEM]]
   
   # remove non-inventory data but keep for summary
-  data_noFT6 <- data.formatted[FACILITY_TYPE != 6, ]
-  data_FT6 <- data.formatted[FACILITY_TYPE == 6 | is.na(FACILITY_TYPE), ]
+  data_noFT6 <- data.formatted[!FACILITY_TYPE %in% c(5,6,7), ] # keeping 1,2,4. 3 is not a code in the field guide
+  
+  # keeping only ramps for the ramp detail data items
+  # ramp detail data items are "AADT","F_SYSTEM","FACILITY_TYPE","THROUGH_LANES","URBAN_CODE"
+  
+  data_noFT6 = data_noFT6[(FACILITY_TYPE == 4 & 
+                             data_item %in% c("AADT","F_SYSTEM","FACILITY_TYPE","THROUGH_LANES","URBAN_CODE"))|
+                            (FACILITY_TYPE %in% c(1,2))]
   
   # merge in expansion factors ---------------------------------------------
 
-  #sp <- data.table(read.table(spfile,sep="|",header=TRUE,stringsAsFactors=FALSE))
-
   con <- odbcConnect("HPMS")
 
-  # query <- paste0("select YEAR_RECORD as YEAR_RECORD, STATE_CODE as STATE_CODE, ROUTE_ID as ROUTE_ID, BEGIN_POINT as BEGIN_POINT, END_POINT as END_POINT, SAMPLE_ID as SAMPLE_ID, EXPANSION_FACTOR as EXPANSION_FACTOR from samples",year," where state_code = ",getStateNumFromCode(state)," and year_record = ",year)
-  
   query <- paste0('select * from ', samples_table, ' where StateYearKey = ',
                   getStateNumFromCode(state_abbr), as.numeric(year) %% 100)
-  sp <- sqlQuery(con, query)
+  
+  sp <- sqlQuery(con, query,stringsAsFactors=FALSE)
   
   odbcClose(con)
 
-  sp <- cleanUpQuery(sp)
+  if (nrow(sp) > 0){
     
-  # setnames(sp,
-  #         c("YEAR_RECORD", "STATE_CODE", "ROUTE_ID","BEGIN_POINT", "END_POINT", "SAMPLE_ID","EXPANSION_FACTOR"),
-  #         c("year_record", "state_code", "route_id","begin_point", "end_point", "sample_id","expansion_factor"))
+    sp <- cleanUpQuery(sp)
+    
+    sp = expand(sp,0.1)
+    
+    # things we do not need in SP
+    
+    sp[,num_sections:=NULL]
+    sp[,section_length:=NULL]
+    sp[,stateyearkey:=NULL]
+    sp[,state_code:=NULL]
+    
+    if ( typeof(sp$route_id) != typeof(data_noFT6$route_id) ){
+      sp$route_id <- as.character(sp$route_id)
+    }
+    
+    data_exp = sp[data_noFT6, on = .(year_record, route_id, begin_point, end_point)]
+    
+    data_exp[, expansion_factor := as.numeric(expansion_factor)]
+    
+  } else {
+    data_exp <- data_noFT6
+    data_exp[, expansion_factor := as.numeric(NA)]
+    warning('Result of query:"', query, '" had zero rows.')
+  }
   
-  data_exp <- data.table(
-    sqldf("select A.*, B.expansion_factor as expansion_factor
-           from [data_noFT6] A 
-           left join [sp] B on A.route_id = B.route_id and 
-                                           A.year_record = B.year_record and 
-                                           A.state_code = B.state_code and 
-                                           A.begin_point <= B.end_point and 
-                                           A.begin_point >= B.begin_point and 
-                                           A.end_point <= B.end_point and 
-                                           A.end_point >= B.begin_point"))
-  
-  data_exp[, expansion_factor:=as.numeric(expansion_factor)]
   rm(data.formatted)
   
-
+  data_exp[, rural_urban := c("Urban","Rural")[1 + 1 * (URBAN_CODE == 99999)]]
   
-  # Check formatted data against the FHWA summary
-  # Create a dataset to compare (need to bindrows the FT6 data)
-  keep_cols <- c('year_record', 'state_code', 'data_item', 'route_id', 'section_length')
-  for_comp <- rbindlist(
-    list(data_exp[, keep_cols, with=FALSE], data_FT6[, keep_cols, with=FALSE]),
-    use.names=TRUE)
+  data_exp = gExtentDetail[data_exp, on = .(data_item, rural_urban)]
+
+  data_exp[, section_extent := ""]
+  
+  data_exp[NHS == 1, section_extent := nhs]
+  data_exp[section_extent == "" & F_SYTEMorig==1, section_extent := fs1]
+  data_exp[section_extent == "" & F_SYTEMorig==2, section_extent := fs2]
+  data_exp[section_extent == "" & F_SYTEMorig==3, section_extent := fs3]
+  data_exp[section_extent == "" & F_SYTEMorig==4, section_extent := fs4]
+  data_exp[section_extent == "" & F_SYTEMorig==5, section_extent := fs5]
+  data_exp[section_extent == "" & F_SYTEMorig==6, section_extent := fs6]
+  data_exp[section_extent == "" & F_SYTEMorig==7, section_extent := fs7]
+  
+  for(name in c("extent", "rural_urban", "nhs",
+                "fs1", "fs2", "fs3", "fs4", "fs5", "fs6", "fs7")){
+    data_exp[, (name) := NULL]
+  }
+    
+  # Filter out sections that are not needed.  E.g. SP items with no expansion factor or sample_id
+  # E.g. Ramps (FACILITY_TYPE = 4) for non FE+R
+  
+  cat("Mileage removed for SP sections with no expansion factors: ",data_exp[(section_extent %in% c('SP', 'SP*') & is.na(data_exp$expansion_factor)),sum(end_point-begin_point)],"\n")
+  
+  data_exp = data_exp[!(section_extent %in% c('SP', 'SP*') & is.na(data_exp$expansion_factor))]
+  
+  data_exp = data_exp[section_extent!='',]
   
   # Check imported data against summary table -------------------------------
   state_code <- getStateNumFromCode(state_abbr)
   
-  check <- checkSummary(year, state_code, dat)
+  check <- checkSummary(year, state_code, data_exp)
   
   if ( !isTRUE(check) ){
    
     # Save the mismatches
     path <- file.path('data', getStateLabelFromNum(state_code))
-    file <- paste0(year, '_summary_fail_on_formatting.csv')
+    file <- paste0(year, '_summary_formatting_differences.csv')
     fullpath <- file.path(path, file)
+    
+    cat('... saving differences to', fullpath, '\n')
     
     # Create new directory if needed
     if (!dir.exists(path)) dir.create(path)
@@ -463,15 +520,14 @@ FormatDataSet <- function(dat, state_abbr, year) {
     # Write the file
     write.csv(x=check, file=fullpath, na='', row.names=FALSE)
    
-    warntext <- paste(year, getStateAbbrFromNum(state_code),
-                      'failed summary check.  Saving diffs to',
-                      fullpath, '\n')
-    warning(warntext)
+    # warntext <- paste(year, getStateAbbrFromNum(state_code),
+    #                   'Saving differences to',
+    #                   fullpath, '\n')
+    # warning(warntext)
   }
   
-
   # Prepare to write out the data
-  setkeyv(data_exp, c("year_record", "route_id", "data_item"))
+  setkeyv(data_exp, c("state_code","year_record","route_id","data_item","begin_point","end_point"))
 
   rm(data_noFT6)  
   gc()

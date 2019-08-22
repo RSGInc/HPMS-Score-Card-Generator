@@ -22,7 +22,7 @@
 ###########################################################################
 
 # Set memory limit to use virtual memory
-invisible(memory.limit(32768))  # Set memory limit to 32 Gb
+invisible(memory.limit(64000))  # Set memory limit to 32 Gb
 
 # Load Code
 invisible(sapply(X = list.files(path = "code", pattern = "*.R$",

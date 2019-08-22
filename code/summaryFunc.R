@@ -12,13 +12,13 @@
 #
 ###########################################################################
 
-summaryFunc <- function(x){
+summaryFunc <- function(x,weights=rep(1,length(x))){
   # This clause prevents warnings if all(is.na(x))
   # Also need to assign the class of the NA's correctly
   
   if ( all(is.na(x)) ){
     L <- list(
-      count = length(x),
+      count = sum(weights),#length(x),
       count.na = sum(is.na(x)),
       min = NA,
       mean = NA,
@@ -33,11 +33,11 @@ summaryFunc <- function(x){
   } else {
     
     L <-  list(
-      count=length(x),
+      count=sum(weights),#length(x),
       count.na=sum(is.na(x)),
       min=round(min(x,na.rm=T),2),
-      mean=round(mean(x,na.rm=T),2),
-      median=round(median(x,na.rm=T),2),
+      mean=round(weighted.mean(x,weights,na.rm=T),2),
+      median=round(weighted.median(x,weights,na.rm=T),2),
       max=round(max(x,na.rm=T),2)
     )
     

@@ -11,7 +11,7 @@
 #
 ###########################################################################
 
-create_page3 <- function(
+create_traffic_detailed_review <- function(
      data,
      state,
      year,
@@ -19,7 +19,7 @@ create_page3 <- function(
      color="white"
      )
 {
-  
+
       grid.arrange(
           # header
           rectGrob(gp = gpar(fill = color, col = color)), # saves space for the header
@@ -79,13 +79,13 @@ create_page3 <- function(
                rectGrob(gp = gpar(fill = "white", col = "white")),
                rectGrob(gp = gpar(fill = "white", col = "white")),
                create_table(
-                    create_adjacency_report(data,state,year,"AADT")),
+                    create_adjacency_report(data,year,"AADT")),
                create_table(
-                    create_adjacency_report(data,state,year,"FUTURE_AADT")),
+                    create_adjacency_report(data,year,"FUTURE_AADT")),
                create_table(
-                    create_adjacency_report(data,state,year,"AADT_COMBINATION")),
+                    create_adjacency_report(data,year,"AADT_COMBINATION")),
                create_table(
-                    create_adjacency_report(data,state,year,"AADT_SINGLE_UNIT")),
+                    create_adjacency_report(data,year,"AADT_SINGLE_UNIT")),
                rectGrob(gp = gpar(fill = "white", col = "white")),
                nrow = 1,widths=unit(c(0.167,1.5,rep(11.336/4,4),0.33),units="inches")),
           
@@ -93,13 +93,13 @@ create_page3 <- function(
                rectGrob(gp = gpar(fill = "white", col = "white")),
                rectGrob(gp = gpar(fill = "white", col = "white")),
                create_table(
-                    create_yearoveryear_report(data,state,year,"AADT",year_compare)),
+                    create_yearoveryear_report(data,year,"AADT",year_compare)),
                create_table(
-                    create_yearoveryear_report(data,state,year,"FUTURE_AADT",year_compare)),
+                    create_yearoveryear_report(data,year,"FUTURE_AADT",year_compare)),
                create_table(
-                    create_yearoveryear_report(data,state,year,"AADT_COMBINATION",year_compare)),
+                    create_yearoveryear_report(data,year,"AADT_COMBINATION",year_compare)),
                create_table(
-                    create_yearoveryear_report(data,state,year,"AADT_SINGLE_UNIT",year_compare)),
+                    create_yearoveryear_report(data,year,"AADT_SINGLE_UNIT",year_compare)),
                rectGrob(gp = gpar(fill = "white", col = "white")),
                nrow = 1,widths=unit(c(0.167,1.5,rep(11.336/4,4),0.33),units="inches")),
           
@@ -129,6 +129,7 @@ create_page3 <- function(
      grid.text(paste0("% > ",gVariables[Name=="AADT_SINGLE_UNIT",YOYH_Thresh]," are highlighted"),x=0.7975,y=0.135,hjust=0,gp=gpar(fontsize=5.75, fontface="italic",col="slategray"))
 
      
-     add_page_number(3)
+     gPageNumber <<- gPageNumber + 1
+     add_page_number(gPageNumber)
      
 }

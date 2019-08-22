@@ -100,7 +100,9 @@ gF_SYSTEM_levels <- c("Interstate",
 # tables of variables (data items) and labels used in the output
 gVariables       <- data.table(read.table("resources/dat/data_elements.csv",sep=",",header=TRUE,stringsAsFactors=FALSE))
 gVariablesLabels <- data.table(read.table("resources/dat/data_labels.csv",  sep=",",header=TRUE,stringsAsFactors=FALSE))
-
+gCrossLabels     <- data.table(read.table('resources/dat/cross_validation_labels.csv', sep=',', header=TRUE, stringsAsFactors=FALSE))
+gCrossLabels$Description <- str_replace(gCrossLabels$Description, '[(][0-9xy]*[)]$', '')
+gExtentDetail    <- data.table(read.table('resources/dat/extent_detail.csv', sep=',', header=TRUE, stringsAsFactors=FALSE))
 
 # reformatting the labels
 gVariablesLabels[Name=="F_SYSTEM",Code2:="Principal Arterial -\nOther Freeways and Expressways"]
@@ -112,6 +114,9 @@ gVariablesLabels[Name=="F_SYSTEM",Code6:="Minor\nCollector"]
 gVariablesLabels[Name=="ACCESS_CONTROL",Code1:="Full\nAccess\nControl"]
 gVariablesLabels[Name=="ACCESS_CONTROL",Code2:="Partial\nAccess\nControl"]
 gVariablesLabels[Name=="ACCESS_CONTROL",Code3:="No\nAccess\nControl"]
+
+# track page number
+gPageNumber <- 1
 
 # this is the output if there is a problem with any analysis of a data item
 NoDataString <- "Data item may not be required\nfor this State, follow up with\nState DOT and FHWA to confirm."

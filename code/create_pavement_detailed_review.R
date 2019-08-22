@@ -57,13 +57,13 @@ create_pavement_detailed_review <- function(
       rectGrob(gp = gpar(fill = "white", col = "white")),
       rectGrob(gp = gpar(fill = "white", col = "white")),
       create_table(
-        create_outlier_report(data,state,year,"FAULTING")),
+        create_outlier_report(data,year,"FAULTING")),
       create_table(
-        create_outlier_report(data,state,year,"CRACKING_PERCENT")),
+        create_outlier_report(data,year,"CRACKING_PERCENT")),
       create_table(
-        create_outlier_report(data,state,year,"RUTTING")),
+        create_outlier_report(data,year,"RUTTING")),
       create_table(
-        create_outlier_report(data,state,year,"IRI")),
+        create_outlier_report(data,year,"IRI")),
       rectGrob(gp = gpar(fill = "white", col = "white")),
       nrow = 1,widths=unit(c(0.167,1.5,rep(11.336/4,4),0.33),units="inches")),
     
@@ -72,13 +72,13 @@ create_pavement_detailed_review <- function(
       rectGrob(gp = gpar(fill = "white", col = "white")),
       rectGrob(gp = gpar(fill = "white", col = "white")),
       create_table(
-        create_adjacency_report(data,state,year,"FAULTING")),
+        create_adjacency_report(data,year,"FAULTING")),
       create_table(
-        create_adjacency_report(data,state,year,"CRACKING_PERCENT")),
+        create_adjacency_report(data,year,"CRACKING_PERCENT")),
       create_table(
-        create_adjacency_report(data,state,year,"RUTTING")),
+        create_adjacency_report(data,year,"RUTTING")),
       create_table(
-        create_adjacency_report(data,state,year,"IRI")),
+        create_adjacency_report(data,year,"IRI")),
       rectGrob(gp = gpar(fill = "white", col = "white")),
       nrow = 1,widths=unit(c(0.167,1.5,rep(11.336/4,4),0.33),units="inches")),
     
@@ -87,13 +87,13 @@ create_pavement_detailed_review <- function(
       rectGrob(gp = gpar(fill = "white", col = "white")),
       rectGrob(gp = gpar(fill = "white", col = "white")),
       create_table(
-        create_yearoveryear_report(data,state,year,"FAULTING",year_compare)),
+        create_yearoveryear_report(data,year,"FAULTING",year_compare)),
       create_table(
-        create_yearoveryear_report(data,state,year,"CRACKING_PERCENT",year_compare)),
+        create_yearoveryear_report(data,year,"CRACKING_PERCENT",year_compare)),
       create_table(
-        create_yearoveryear_report(data,state,year,"RUTTING",year_compare)),
+        create_yearoveryear_report(data,year,"RUTTING",year_compare)),
       create_table(
-        create_yearoveryear_report(data,state,year,"IRI",year_compare)),
+        create_yearoveryear_report(data,year,"IRI",year_compare)),
       rectGrob(gp = gpar(fill = "white", col = "white")),
       nrow = 1,widths=unit(c(0.167,1.5,rep(11.336/4,4),0.33),units="inches")),
     nrow=9,heights = unit(c(0.6,0.03,1.25,0.03,0.1,0.25,rep(5.24/3,3)),units="inches"))
@@ -128,7 +128,8 @@ create_pavement_detailed_review <- function(
   grid.text(paste0("% > ", gVariables[Name=="RUTTING",YOYH_Thresh]," are highlighted"),         x=0.585,y=0.1,hjust=0,gp=gpar(fontsize=5.75, fontface="italic",col="slategray"))
   grid.text(paste0("% > ", gVariables[Name=="IRI",YOYH_Thresh]," are highlighted"),             x=0.7975,y=0.1,hjust=0,gp=gpar(fontsize=5.75, fontface="italic",col="slategray"))
   
-  add_page_number(2)
+  gPageNumber <<- gPageNumber + 1
+  add_page_number(gPageNumber)
   
   
   

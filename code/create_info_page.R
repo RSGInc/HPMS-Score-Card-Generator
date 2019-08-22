@@ -12,8 +12,7 @@
 ###########################################################################
 
 
-create_info_page <- function(state,year,color="white")
-{
+create_info_page <- function(state, year, color="white"){
     grid.arrange(
           # header
           rectGrob(gp = gpar(fill = color, col = color)), # saves space for the header
@@ -28,6 +27,7 @@ create_info_page <- function(state,year,color="white")
     add_header(state,year,"how to interpret key scorecard charts","?")
 
     grid.raster(image=gLogo3,x = 0, y=0.9,hjust = 0,vjust=1)
-     
-    add_page_number(1)
+    
+    gPageNumber <<- gPageNumber + 1
+    add_page_number(gPageNumber)
 }

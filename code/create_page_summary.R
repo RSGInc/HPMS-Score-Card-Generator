@@ -191,28 +191,30 @@ create_page_summary <- function(
   
   add_header(state,year,title,icontext)
   
-  add_summary_row_labels(year,year_compare)
+  add_summary_row_labels(year,year_compare,ramps=ramps)
+  #browser()
+  quality_results = fread(paste0("data/", gState_Labels[index==state,label],
+                                 "/", gState_Labels[index==state,label],
+                                 "_", year, "_", year_compare, "_quality_summary.csv"))
   
   add_summary_col_labels(
-    paste0(gVariables[x1,Item_Number], " - ",
-           gVariables[x1,Label], " (" ,
-           gVariables[x1,Extent],")"),1
-    )
+    paste0(gVariables[x1,Label],
+           if(ramps){ "" } else { quality_results[Item_Number == gVariables[x1,Item_Number],
+                                                  paste0("\n(o:",Outlier_Score,"/a:",Adjacency_Score,"/y:",YOY_Score,")")]}),1
+  )
   
   if(show2){
     add_summary_col_labels(
-      paste0(gVariables[x2,Item_Number], " - ",
-             gVariables[x2,Label], " (",
-             gVariables[x2,Extent],")"),2
-      )
+    paste0(gVariables[x2,Label],
+           if(ramps){""}else{quality_results[Item_Number==gVariables[x2,Item_Number],paste0("\n(o:",Outlier_Score,"/a:",Adjacency_Score,"/y:",YOY_Score,")")]}),2
+    )
   }
   
   if(show3){
     add_summary_col_labels(
-      paste0(gVariables[x3,Item_Number], " - " ,
-             gVariables[x3,Label], " (",
-             gVariables[x3,Extent],")"),3
-      )
+    paste0(gVariables[x3,Label],
+           if(ramps){""}else{quality_results[Item_Number==gVariables[x3,Item_Number],paste0("\n(o:",Outlier_Score,"/a:",Adjacency_Score,"/y:",YOY_Score,")")]}),3
+    )
   }
   
   add_page_number(page)

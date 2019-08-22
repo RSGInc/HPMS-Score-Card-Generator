@@ -10,10 +10,13 @@
 #
 ###########################################################################
 
-add_summary_row_labels <- function(year,yearcompare)
+add_summary_row_labels <- function(year,yearcompare,ramps=TRUE)
 {
      grid.text(paste0(year," Summary\nStatistics\n"), x = 0.105, y = 0.805, just = "right", gp = gpar(col = "slategray", fontface = "bold", fontsize = 10))
      grid.text("Current year summaries\nby Functional System", x = 0.105, y = 0.77, just = "right", gp = gpar(col = "slategray", fontface = "italic", fontsize = 7))
+     if(!ramps){
+       grid.text("Quality result details in ().\no: Outliers\na: Adjacency\ny: Year-over-year", x = 0.105, y = 0.7, just = "right", gp = gpar(col = "slategray", fontface = "italic", fontsize = 7))
+     }
      grid.text("Distributions", x = 0.105, y = 0.53, just = "right", gp = gpar(col = "slategray", fontface = "bold", fontsize = 10))
      grid.text("Plotting data distributions for\ncurrent year, previous year,\nand national", x = 0.105, y = 0.49, just = "right", gp = gpar(col = "slategray", fontface = "italic", fontsize = 7))
      

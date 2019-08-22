@@ -78,9 +78,9 @@ checkSummary <- function(year, state_code, data){
     
     check <- all.equal(comp$from_r, comp$from_sql)
   }
- 
+
   if(!isTRUE(check)){
-    cat('...FAILED!\n')
+    #cat('... saving differences\n')
     # Save a dataset
     comp[, diff := from_sql - from_r]
     diffs <- comp[abs(diff) >= 1e-3, ]

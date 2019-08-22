@@ -66,9 +66,9 @@ densityPlot <- function(
   # we have something to report (density plots require at least 3 points to draw)
   if((nrow(d1)>2|nrow(d2)>2)&!is.null(minvalue)){
     
-    p1 <- ggplot(data = d1, aes(x = value_numeric))
-    p2 <- ggplot(data = d1, aes(x = value_numeric))
-    p3 <- ggplot(data = d1, aes(x = value_numeric))
+    p1 <- ggplot(data = d1, aes(x = value_numeric,weight=num_sections))
+    p2 <- ggplot(data = d1, aes(x = value_numeric,weight=num_sections))
+    p3 <- ggplot(data = d1, aes(x = value_numeric,weight=num_sections))
     
     if(nrow(d1)>2){
       p1 <- p1 +
