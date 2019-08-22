@@ -59,13 +59,12 @@ connect_to_db <- function(server,
 }
 
 
-d_dir <- file.path('C:/Users/matt.landis/shared_data/HPMS_download_201908')
+raw_dir <- file.path('C:/Users/matt.landis/shared_data/HPMS_download_201908')
 
 # Work ======================================================================
 
 # Load 2018 Sections data ---------------------------------------------------
 
-raw_dir <- d_dir
 # infile <- file.path(raw_dir, 'HPMS_Sections_w_o_geometry.csv')
 infile = file.path(raw_dir, 'HPMS_Review_Sections.csv')
 tbl_name <- 'Review_Sections'
@@ -235,4 +234,27 @@ dbExecute(con, 'alter table Review_Sample_Sections drop column Expansion_Factor2
 rss = tbl(con, 'Review_Sample_Sections')
 
 rss
+dbDisconnect(con)
+
+
+# Add submissions table ===================================================
+
+infile = file.path(raw_dir, 'Highway_Performance_Monitoring_System_Submission_Times.csv')
+tbl_name = 'Timelinesstable'
+tbl = fread(infile)
+tbl = tbl %>%
+  mutate(
+    Submitted_On_0 = Submitted_On,
+    Submitted_On = parse_date_time(Submitted_On, orders = 'mdyHMSOp'))
+
+tbl = select(tbl, -Submitted_On_0)
+con = connect_to_db('burmdlppw01', 'HPMS_2018', intsecurity=TRUE)
+
+dbWriteTable(con, name=tbl_name, value=tbl, overwrite=TRUE)
+tt = tbl(con, from='Timelinesstable')
+glimpse(tt)
+tt %>%
+  count(State_Code) %>%
+  print(n=Inf)
+
 dbDisconnect(con)
