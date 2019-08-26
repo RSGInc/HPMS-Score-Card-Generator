@@ -28,7 +28,7 @@ updateNation <- function(years = getAllStateYears()) {
     # Save the summaries
     for (i in 1:length(summaries)) {
       cat(".")
-      saveRDS(summaries[[i]], file = paste0("data/+National/", names(summaries)[i], ".RDS"))
+      saveRDS(summaries[[i]], file = paste0("data/+National/", names(summaries)[i], ".rds"))
     }
     
     # Save state snapshots

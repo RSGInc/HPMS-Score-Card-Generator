@@ -231,10 +231,10 @@ getStateDataSets <- function(state_selection, year_selection, year_compare) {
   summary_str <- '\nLoading state selections\n\n'
   cat(summary_str)
   
-  dat <- readRDS(paste0("data/", getStateLabel(state_selection), "/", year_selection, ".RDS"))
+  dat <- readRDS(paste0("data/", getStateLabel(state_selection), "/", year_selection, ".rds"))
   dat[, year_record := as.numeric(year_selection)]
   if (!is.null(year_compare)) {
-    dat.compare <- readRDS(paste0("data/", getStateLabel(state_selection), "/", year_compare, ".RDS"))
+    dat.compare <- readRDS(paste0("data/", getStateLabel(state_selection), "/", year_compare, ".rds"))
     dat.compare[, year_record := as.numeric(year_compare)]
     dat <- rbind(dat, dat.compare, fill = TRUE)
   }
@@ -249,7 +249,7 @@ getStateDataSets <- function(state_selection, year_selection, year_compare) {
     # If the comparison year is one of the previous four, we already have it ==> skip
     if (as.numeric(year_selection) - i != as.numeric(year_compare)) {
       
-      suppressWarnings(expr = {tryCatch(expr = {dat.prev[[cc]] <- readRDS(paste0("data/", getStateLabel(state_selection), "/", as.numeric(year_selection) - i, ".RDS")); cc <- cc + 1},
+      suppressWarnings(expr = {tryCatch(expr = {dat.prev[[cc]] <- readRDS(paste0("data/", getStateLabel(state_selection), "/", as.numeric(year_selection) - i, ".rds")); cc <- cc + 1},
                                         error = function(e) {})})
     }
     
@@ -284,7 +284,7 @@ getNationalDataSet <- function() {
   nat_compare <- getUserInput(valid = nat_years, prompt = "What year of NATIONAL data would you like to compare against?\nEnter the associated year (e.g., 2013): ", warning.text = "That is not a valid response. Note that a comparison data set must be older.\n")
   
   # Load the data set
-  nat <- readRDS(paste0("data/+National/", nat_compare, ".RDS"))
+  nat <- readRDS(paste0("data/+National/", nat_compare, ".rds"))
   
   return(nat)
   

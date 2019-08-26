@@ -65,9 +65,11 @@ raw_dir <- file.path('C:/Users/matt.landis/shared_data/HPMS_download_201908')
 
 # Load 2018 Sections data ---------------------------------------------------
 
-# infile <- file.path(raw_dir, 'HPMS_Sections_w_o_geometry.csv')
-infile = file.path(raw_dir, 'HPMS_Review_Sections.csv')
-tbl_name <- 'Review_Sections'
+infile <- file.path(raw_dir, 'HPMS_Sections_w_o_geometry.csv')
+tbl_name <- 'Review_Sections_no_geom'
+
+# infile = file.path(raw_dir, 'HPMS_Review_Sections.csv')
+# tbl_name <- 'Review_Sections'
 
 # Write file in chunks of 500k lines
 
@@ -87,63 +89,85 @@ col_types = cols(
   Value_Numeric = col_double(),
   Value_Text = col_character(),
   Value_Date = col_datetime(),
-  Comments = col_character(),
-  Last_Modified_By = col_skip(),
-  Last_Modified_On = col_skip(),
+  # Comments = col_character(),
+  # Last_Modified_By = col_skip(),
+  # Last_Modified_On = col_skip(),
   Data_Source = col_skip(),
-  StateYearKey = col_integer(),
-  WKT = col_skip(),
-  WKB = col_skip()
+  StateYearKey = col_character()
+  #WKT = col_skip(),
+  #WKB = col_skip()
 )
 
 # # Pick up where it failed
 # last_good = 209500000
-# # Define callback function that runs after each chunk is read
-# chunk_callback = function(x, pos){
-#   if (pos < last_good){
-#     message('Skipping from row ', pos)
-#     return()
-#   } else {
-#     message('Writing from row ', pos)
-#     dbWriteTable(con, name=tbl_name, value=x,
-#                  overwrite=(pos == 1), append=(pos > 1))
-#   }
-# }
-# 
-# con = connect_to_db('burmdlppw01', 'HPMS_2018', intsecurity = TRUE)
-# read_csv_chunked(infile, callback=chunk_callback, chunk_size=inc_rows,
-#                  col_types = col_types, progress=show_progress())
-# dbDisconnect(con)
+
+last_good = 0
+# Define callback function that runs after each chunk is read
+chunk_callback = function(x, pos){
+  if (pos < last_good){
+    message('Skipping from row ', pos)
+    return()
+  } else {
+    message('\nWriting from row ', pos)
+    dbWriteTable(con, name=tbl_name, value=x,
+                 overwrite=(pos == 1), append=(pos > 1))
+  }
+}
+
+con = connect_to_db('burmdlppw01', 'HPMS_2018', intsecurity = TRUE)
+read_csv_chunked(infile, callback=chunk_callback, chunk_size=inc_rows,
+                 col_types = col_types, progress=show_progress())
+dbDisconnect(con)
 
 # Check the data
 con = connect_to_db('burmdlppw01', 'HPMS_2018', intsecurity = TRUE)
 
-rs = tbl(con, from='Review_Sections')
+tbl_name = 'Review_Sections_no_geom'
+rs = tbl(con, from=tbl_name)
 
 rs %>% 
   count(Year_Record)
 
 
-# Convert Year_Record to integer
+# # Convert Year_Record to integer
+# 
+# # dbExecute(con, str_glue('alter table {tbl_name} drop column Year_Record2;'))
+# dbExecute(con, str_glue('alter table {tbl_name} add Year_Record2 INT'))
+# dbExecute(con, str_glue("update {tbl_name} set Year_Record2 = CONVERT(INT, REPLACE(Year_Record, ',', ''));"))
+# 
+# rs %>% 
+#   count(Year_Record, Year_Record2)
+# 
+# # Replace Year_Record with Year_Record2
+# dbExecute(con, str_glue("alter table {tbl_name} drop column Year_Record;"))
+# dbExecute(con, str_glue('alter table {tbl_name} add Year_Record INT'))
+# dbExecute(con, str_glue("update {tbl_name} set Year_Record = Year_Record2"))
+# dbExecute(con, str_glue('alter table {tbl_name} drop column year_Record2;'))
+# 
+# rs %>%
+#   count(Year_Record)
+# 
+# 
+# # Convert StateYearKey to integer
+# rs %>% 
+#   count(StateYearKey)
+# 
+# # dbExecute(con, str_glue('alter table {tbl_name} drop column StateYearKey2;'))
+# dbExecute(con, str_glue('alter table {tbl_name} add StateYearKey2 INT'))
+# dbExecute(con, str_glue("update {tbl_name} set StateYearKey2 = CONVERT(INT, REPLACE(StateYearKey, ',', ''));"))
+# 
+# rs %>% 
+#   count(StateYearKey, StateYearKey2)
+# 
+# # Replace StateYearKey with StateYearKey2
+# dbExecute(con, str_glue("alter table {tbl_name} drop column StateYearKey;"))
+# dbExecute(con, str_glue('alter table {tbl_name} add StateYearKey INT'))
+# dbExecute(con, str_glue("update {tbl_name} set StateYearKey = StateYearKey2"))
+# dbExecute(con, str_glue('alter table {tbl_name} drop column StateYearKey2;'))
+# 
+# rs %>%
+#   count(StateYearKey)
 
-# dbExecute(con, 'alter table Review_Sample_Sections drop column Year_Record2;')
-dbExecute(con, 'alter table Review_Sections add Year_Record2 INT')
-dbExecute(con, "update Review_Sections
-  set Year_Record2 = CONVERT(INT, REPLACE(Year_Record, ',', ''));")
-
-rs %>% 
-  count(Year_Record, Year_Record2)
-
-# Replace Year_Record with Year_Record2
-dbExecute(con, "alter table Review_Sections
-                    drop column Year_Record;")
-dbExecute(con, 'alter table Review_Sections add Year_Record INT')
-dbExecute(con, "update Review_Sections
-                    set Year_Record = Year_Record2")
-dbExecute(con, 'alter table Review_Sections drop column year_Record2;')
-
-rs %>%
-  count(Year_Record)
 
 # # Load 2018 samples data ----------------------------------------------------
 

@@ -14,7 +14,7 @@
 getFileSnapShot <- function(year) {
   
   folders <- paste0("data/", getSavedStates())
-  snapshot <- fileSnapshot(folders, pattern = paste0(year, ".RDS"), md5sum = TRUE, full.names = TRUE)
+  snapshot <- fileSnapshot(folders, pattern = paste0(year, ".rds"), md5sum = TRUE, full.names = TRUE)
   return(snapshot)
   
 }
@@ -26,7 +26,7 @@ detectYearChanges <- function(year) {
   before <- NULL
   
   # Get the previous file snapshot...
-  tryCatch(expr = {before <- suppressWarnings(readRDS(file = paste0("resources/fss/", year, ".RDS")))},
+  tryCatch(expr = {before <- suppressWarnings(readRDS(file = paste0("resources/fss/", year, ".rds")))},
            error = function(e) {}) # If there isn't one, but we're calling this function, we need to create one
   
   # If one is found, compare it to the current snapshot...

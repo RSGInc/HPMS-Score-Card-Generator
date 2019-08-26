@@ -47,7 +47,7 @@ getSavedStates <- function() {
 
 # Get a list of years that a state has data processed for
 getSavedStateYears <- function(state) {
-  file_path_sans_ext(dir(paste0("data/", state), pattern = "*.RDS"))
+  file_path_sans_ext(dir(paste0("data/", state), pattern = "*.rds"))
 }
 
 # Get a list of years across all states has some data
@@ -55,7 +55,7 @@ getAllStateYears <- function() {
   
   years <- c()
   states <- getSavedStates()
-  for (state in states) years <- c(years, file_path_sans_ext(dir(paste0("data/", state), pattern = "*.RDS")))
+  for (state in states) years <- c(years, file_path_sans_ext(dir(paste0("data/", state), pattern = "*.rds")))
   
   return(sort(unique(years)))
 }
@@ -70,7 +70,7 @@ getStatePaths <- function(year) {
   states <- getSavedStates()
   for (state in states) {
     
-    years <- dir(paste0("data/", state), pattern = "*.RDS")
+    years <- dir(paste0("data/", state), pattern = "*.rds")
     if (year %in% file_path_sans_ext(years)) {
       path <- paste0("data/", state, "/", years[year == file_path_sans_ext(years)])
       paths <- c(paths, path)
@@ -117,8 +117,8 @@ progress <- function(current_stage, stages) {
 deleteAllData <- function() {
   
   unlink(paste0("data/", getSavedStates()), recursive = TRUE)
-  unlink(paste0("resources/fss/", dir("resources/fss/", pattern = "*.RDS")))
-  unlink(paste0("data/+National/", dir("data/+National/", pattern = "*.RDS")))
+  unlink(paste0("resources/fss/", dir("resources/fss/", pattern = "*.rds")))
+  unlink(paste0("data/+National/", dir("data/+National/", pattern = "*.rds")))
   unlink(paste0("resources/sc/", dir("resources/sc/", pattern = "*.pdf")))
   unlink(paste0("output/", dir("output/", pattern = "*.pdf")))
   
@@ -131,7 +131,7 @@ getStatesForYear = function(year) {
   states <- getSavedStates()
   for (state in states) 
   {
-    if(year%in%as.numeric(file_path_sans_ext(dir(paste0("data/", state), pattern = "*.RDS"))))
+    if(year%in%as.numeric(file_path_sans_ext(dir(paste0("data/", state), pattern = "*.rds"))))
     {
       statesForYear = c(statesForYear,state)    
     }  

@@ -29,8 +29,7 @@ showAvailableStatesYears <- function(){
   #data3 <- data.table(sqlQuery(con,paste0("select distinct state_code, year_record from sections2013 order by state_code,year_record")))
   
   #data <- rbind(data1,data2)#,data3)
-  
-  # RSG
+
   query <- paste("select distinct state_code, year_record from", sections_table,
                  "order by state_code, year_record")
   
@@ -161,12 +160,12 @@ ImportData <- function(state_selection, year_selection) {
     for(year in years) {
       
       # Create filename to save to
-      
+
       state_name <- getStateLabel(state)
       state_code <- getStateNumFromCode(state)
       
       path <- file.path("data", state_name)
-      file <- paste0(year, ".RDS")
+      file <- paste0(year, ".rds")
       fullpath <- file.path(path, file)
       
       # See if a data set for this year and state already exists
@@ -260,7 +259,7 @@ ImportData <- function(state_selection, year_selection) {
           cat("Saving to", fullpath, '...')
           
           # Create new directory if needed
-          if (!dir.exists(path)) dir.create(path)
+          if (!dir.exists(path)) dir.create(path, recursive = TRUE)
           
           saveRDS(data, file = fullpath)
           
@@ -314,6 +313,9 @@ ReadData <- function(state, year) {
   
   data <- sqlQuery(con, query, stringsAsFactors=FALSE)
   
+  if ( nrow(data) == 0 ){
+    stop('Query returned zero rows')
+  }
   odbcClose(con)
 
   data <- cleanUpQuery(data)
@@ -531,7 +533,7 @@ FormatDataSet <- function(dat, state_abbr, year) {
 
   rm(data_noFT6)  
   gc()
-  
+  # if ( nrow(data_exp) == 0 ){browser()}
   return(data_exp)
   
 }
