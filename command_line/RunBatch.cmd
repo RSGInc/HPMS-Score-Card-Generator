@@ -21,27 +21,26 @@ SET log_base=%log_base: =0%
 SET log=%parent%..\output\%log_base%
 
 ECHO -----------------------------
-ECHO Writing to log file at %log%
+ECHO Writing to log file at "%log%"
 
 REM Get the arguments
 SET states=%*
 
 REM Call the GetStates script to write do_states.csv
-REM CALL :tee Getting available states with getStates.R
-REM Rscript getStates.R %states% >> %log% 2>&1
+CALL :tee Getting available states with getStates.R
+Rscript getStates.R %states% >> "%log%" 2>&1
 
 REM Call the RunState script
-FOR %%a IN (%states%) DO (
-  CALL :tee Running runState.R for %%a.  This will take some time.
-  REM Rscript runState.R %%a >> %log% 2>&1
-  Rscript runState.R %%a >> %log% 2>&1
+FOR /f %%a IN (do_states.csv) DO (
+  ECHO Running runState.R for %%a
+  Rscript runState.R %%a >> "%log%" 2>&1
 )
 
 ECHO -----------------------------------
 ECHO Finished!
 ECHO Check log file at %log%
 
-REM del do_states.csv
+del do_states.csv
 
 :END
 
