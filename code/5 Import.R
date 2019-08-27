@@ -493,6 +493,34 @@ FormatDataSet <- function(dat, state_abbr, year) {
     data_exp[, (name) := NULL]
   }
     
+  # Turn off checks -- data won't match because of expansion and subsetting
+  # # Check imported data against summary table -------------------------------
+  # state_code <- getStateNumFromCode(state_abbr)
+  # 
+  # browser()
+  # check <- checkSummary(year, state_code, data_exp)
+  # 
+  # if ( !isTRUE(check) ){
+  #  
+  #   # Save the mismatches
+  #   path <- file.path('data', getStateLabelFromNum(state_code))
+  #   file <- paste0(year, '_summary_formatting_differences.csv')
+  #   fullpath <- file.path(path, file)
+  #   
+  #   cat('... saving differences to', fullpath, '\n')
+  #   
+  #   # Create new directory if needed
+  #   if (!dir.exists(path)) dir.create(path)
+  #   
+  #   # Write the file
+  #   write.csv(x=check, file=fullpath, na='', row.names=FALSE)
+  #  
+  #   # warntext <- paste(year, getStateAbbrFromNum(state_code),
+  #   #                   'Saving differences to',
+  #   #                   fullpath, '\n')
+  #   # warning(warntext)
+  # }
+  # 
   # Filter out sections that are not needed.  E.g. SP items with no expansion factor or sample_id
   # E.g. Ramps (FACILITY_TYPE = 4) for non FE+R
   
@@ -501,32 +529,6 @@ FormatDataSet <- function(dat, state_abbr, year) {
   data_exp = data_exp[!(section_extent %in% c('SP', 'SP*') & is.na(data_exp$expansion_factor))]
   
   data_exp = data_exp[section_extent!='',]
-  
-  # Check imported data against summary table -------------------------------
-  state_code <- getStateNumFromCode(state_abbr)
-  
-  check <- checkSummary(year, state_code, data_exp)
-  
-  if ( !isTRUE(check) ){
-   
-    # Save the mismatches
-    path <- file.path('data', getStateLabelFromNum(state_code))
-    file <- paste0(year, '_summary_formatting_differences.csv')
-    fullpath <- file.path(path, file)
-    
-    cat('... saving differences to', fullpath, '\n')
-    
-    # Create new directory if needed
-    if (!dir.exists(path)) dir.create(path)
-    
-    # Write the file
-    write.csv(x=check, file=fullpath, na='', row.names=FALSE)
-   
-    # warntext <- paste(year, getStateAbbrFromNum(state_code),
-    #                   'Saving differences to',
-    #                   fullpath, '\n')
-    # warning(warntext)
-  }
   
   # Prepare to write out the data
   setkeyv(data_exp, c("state_code","year_record","route_id","data_item","begin_point","end_point"))
