@@ -74,4 +74,4 @@ URBAN_CODE,2,Urban Code,I,Y,N,1,2,FE + R,0,,,,N,,,,Y,1,1
 WIDENING_OBSTACLE,41,Widening Obstacle,G,Y,Y,1,2,SP,0,,,,N,,,,N,1,1
 WIDENING_POTENTIAL,42,Widening Potential,G,Y,Y,1,2,SP,0,0,9,,N,,,,N,1,1
 YEAR_LAST_CONSTRUCTION,55,Year of Last Construction,P,Y,Y,2,2,SP,0,,,,N,,,,N,1,1
-YEAR_LAST_IMPROV,54,Year of Last Improvement,P,Y,Y,2,2,SP,0,,,,Y,,,,N,1,1
+YEAR_LAST_IMPROV,54,Year of Last Improvement,P,Y,Y,2,2,SP,0,,,,N,,,,N,1,1

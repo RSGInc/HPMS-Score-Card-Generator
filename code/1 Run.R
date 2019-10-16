@@ -29,5 +29,9 @@ invisible(sapply(X = list.files(path = "code", pattern = "*.R$",
                                 full.names = TRUE)[-1], FUN = source))
 
 # Run Tool
-Run()
+# Run()
+
+debugmode = TRUE
+# debug(create_pdf)
+Run(task = 2, state = 'CA', year = 2018, year_compare = 2017)
 

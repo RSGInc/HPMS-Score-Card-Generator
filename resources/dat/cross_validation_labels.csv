@@ -30,10 +30,10 @@ y,Signal_Type: = 5 where F_System = 1 and Urban Code <> 99999(y)
 61.2,Rutting: Value_Date = Year Record where Value_Text is Null AND F_System =1  (61)
 61.3,Faulting: Value_Date = Year Record where Value_Text is Null AND F_System =1  (61)
 61.4,Cracking_Percent: Value_Date = Year Record where Value_Text is Null AND F_System =1  (61)
-64.1,"IRI: Value_Text In (A,B,C,D) where Value_Date <> Year Record and F_Sytem = 1 OR (Value_Date < Year Record -1 on NHS) (64)"
-64.2,"Rutting: Value_Text In (A,B,C,D) where Value_Date <> Year Record and F_Sytem = 1 OR (Value_Date < Year Record -1 on NHS) (64)"
-64.3,"Faulting: Value_Text In (A,B,C,D) where Value_Date <> Year Record and F_Sytem = 1 OR (Value_Date < Year Record -1 on NHS) (64)"
-64.4,"Cracking_Percent: Value_Text In (A,B,C,D) where Value_Date <> Year Record and F_Sytem = 1 OR (Value_Date < Year Record -1 on NHS) (64)"
+64.1,"IRI: Value_Text In (A,B,C,D,E) where Value_Date <> Year Record and F_Sytem = 1 OR (Value_Date < Year Record -1 on NHS) (64)"
+64.2,"Rutting: Value_Text In (A,B,C,D,E) where Value_Date <> Year Record and F_Sytem = 1 OR (Value_Date < Year Record -1 on NHS) (64)"
+64.3,"Faulting: Value_Text In (A,B,C,D,E) where Value_Date <> Year Record and F_Sytem = 1 OR (Value_Date < Year Record -1 on NHS) (64)"
+64.4,"Cracking_Percent: Value_Text In (A,B,C,D,E) where Value_Date <> Year Record and F_Sytem = 1 OR (Value_Date < Year Record -1 on NHS) (64)"
 65,"PSR: Value_Date >= Year_Record – 1 where Sample OR F_System >1 and NHS in (1,2,3,4,5,6,7,8,9) (65)"
 66,"PSR: Value_Date = Year Record  where Value_Text = ""A"" AND F_System =1  (66)"
 1,IRI: >= 30 and <= 400 (1)
