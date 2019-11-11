@@ -117,6 +117,15 @@ chunk_callback = function(x, pos){
 con = connect_to_db('burmdlppw01', 'HPMS_2018', intsecurity = TRUE)
 read_csv_chunked(infile, callback=chunk_callback, chunk_size=inc_rows,
                  col_types = col_types, progress=show_progress())
+
+# Create StateYearKey
+sql = 'alter table Review_Sections add StateYearKey integer;'
+dbExecute(con, sql)
+
+sql = 'update Review_Sections
+       set StateYearKey = concat(State_Code, substring(Year_Record, 3, 2));'
+dbExecute(con, sql)
+
 dbDisconnect(con)
 
 # Check the data

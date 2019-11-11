@@ -20,7 +20,7 @@ theme_update(plot.title=element_text(hjust=0.5))
 # these need to match FHWA's sql database structure
 #timelinesstable  <- "Table_mssql_m_HPMSAnalysis_HPMS_Submissions_log" 
 timelinesstable   <- "Timelinesstable"   # "2015SubmissionDates"
-sections_table    <- 'Review_Sections_no_geom'
+sections_table    <- 'Review_Sections'
 samples_table     <- 'Review_Sample_Sections'
 
 # These don't seem to be used anywhere...
