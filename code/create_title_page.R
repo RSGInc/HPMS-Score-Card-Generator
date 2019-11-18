@@ -605,7 +605,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
   # summary section of the report
   
   # Completeness, quality, and timeliness scores --------------------------------------
-  tscore <- time_weight * getTimelinessScore(state, year)
+  tscore <- time_weight * getTimelinessScore(state, year, submission_deadline)
   cscore <-
     round(complete_weight * CompletedScore / CompletedScoreMax, 1)
   qscore <-

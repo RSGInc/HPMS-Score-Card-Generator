@@ -32,8 +32,11 @@ calcQualityAll <- function(data, year, year_compare){
     
     variable <- dt_output$Name[i]
 
-    # if ( variable %in% c('SIGNAL_TYPE', 'TURN_LANES_L', 'HOV_TYPE',
-    #                      'HOV_LANES', 'CURVES_A', 'GRADES_A')) browser()
+    # if ( variable %in% c('COUNTY_CODE', 'PCT_PASS_SIGHT') ){
+    #   browser()
+    # } else {
+    #   next()
+    # }
     
     cat('\t', variable, '\n')
     

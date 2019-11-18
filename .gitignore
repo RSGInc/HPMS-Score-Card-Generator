@@ -1,3 +1,7 @@
 .Rproj.user
 data
 output
+*.zip
+.Rhistory
+Thumbs.db
+resources/fss/*.RDS

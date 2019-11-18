@@ -36,26 +36,33 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
   }
   
   # showtext.begin() # this controls the issues with the fonts
-  
-  # Create title page
+
+  # Create title page -------------------------------------------------------
+
   cat("Title page...")
   ts <- Sys.time()
   scores_list <- create_title_page(data, state, year, year_compare)
   cat(paste0(" completed in: ",
              round(difftime(Sys.time(), ts, units = "secs"), 2), " seconds!\n"))
   # cat('\tMemory used: ', round(mem_used() / 1e9, 3), 'GB \n')
-  
+
+
+  # Cross-validation -------------------------------------------------------
+
   # Show the results of the cross-validations
   cat('Cross-validations...')
   ts <- Sys.time()
   create_cross_validation_page(scores_list$cross_validation, state, year)
-  
+
   cat(paste0(' completed in: ',
              round(difftime(Sys.time(), ts, units='secs'), 2), ' seconds!\n'))
   # cat('\tMemory used: ', round(mem_used() / 1e9, 3), 'GB \n')
-  
+
   # subset data
   # data <- data[year_record %in% c(year, year_compare), ]
+
+
+  # Information page --------------------------------------------------------
 
   cat("Information page...")
   ts <- Sys.time()
@@ -63,25 +70,31 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
   cat(paste0(" completed in: ",
              round(difftime(Sys.time(), ts, units = "secs"), 2), " seconds!\n"))
   # cat('\tMemory used: ', round(mem_used() / 1e9, 3), 'GB \n')
-  
-  # Pavement: Detailed Review
-  cat("Pavement review...")
+
+
+  # Pavement: Detailed Review ------------------------------------------------
+
+  cat("Pavement Detailed Review...")
   ts <- Sys.time()
   create_pavement_detailed_review(data, state, year, year_compare)#, population = population)
   cat(paste0(" completed in: ",
              round(difftime(Sys.time(), ts, units = "secs"), 2), " seconds!\n"))
   # cat('\tMemory used: ', round(mem_used() / 1e9, 3), 'GB \n')
   
-  # Traffic: Detailed Review
-  cat("Traffic review...")
+  
+  # Traffic: Detailed Review --------------------------------------------------
+  
+  cat("Traffic: Detailed Review...")
   ts <- Sys.time()
   create_traffic_detailed_review(data, state, year, year_compare)
   cat(paste0(" completed in: ",
              round(difftime(Sys.time(), ts, units = "secs"), 2), " seconds!\n"))
   # cat('\tMemory used: ', round(mem_used() / 1e9, 3), 'GB \n')
-  
-  # Ramps: Detailed Review
-  cat("Ramps review...")
+
+
+  # Ramps: Detailed Review ----------------------------------------------------
+
+  cat("Ramps: Detailed Review...")
   ts <- Sys.time()
 
   todo_vec <- (1:nrow(gVariables))[gVariables[, RampAnalysis] == "Y"]
@@ -93,14 +106,14 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
     x3 <- todo[i, 3]
 
     gPageNumber <<- gPageNumber + 1
-    
+
     create_page_summary(data, state, year, year_compare,
                         x1 = x1, x2 = x2, x3 = x3,
                         title = "ramps: detailed review", icontext = "r",
                         page = gPageNumber, ramps = TRUE)
     cat(".")
   }
-  
+
   gPageNumber <<- gPageNumber + 1
   create_page_summary(data, state, year, year_compare,
                       x1 = todo[i + 1, 1], x2 = todo[i + 1, 2],
@@ -109,21 +122,22 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
   cat(paste0(" completed in: ",
              round(difftime(Sys.time(), ts, units = "secs"), 2), " seconds!\n"))
   # cat('\tMemory used: ', round(mem_used() / 1e9, 3), 'GB \n')
-  
 
-  # data summary pages inventory
-  cat("Inventory data items...")
+
+  # Inventory -----------------------------------------------------------------
+
+  cat("Inventory...")
   ts <- Sys.time()
 
   todo_vec <- (1:nrow(gVariables))[gVariables[, Grouping] == "I"]
   todo_vec <- c(todo_vec, rep(NA, 3 - (length(todo_vec) %% 3)))
   todo <- matrix(todo_vec, ncol = 3, byrow = TRUE)
   for (i in 1:6) {
-    
+
     x1 <- todo[i, 1]
     x2 <- todo[i, 2]
     x3 <- todo[i, 3]
-    
+
     gPageNumber <<- gPageNumber + 1
     create_page_summary(data, state, year, year_compare,
                         x1 = x1, x2 = x2, x3 = x3,
@@ -133,11 +147,12 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
   cat(paste0(" completed in: ", round(difftime(Sys.time(), ts, units = "secs"),
                                       2), " seconds!\n"))
   # cat('\tMemory used: ', round(mem_used() / 1e9, 3), 'GB \n')
+
   
-  # Pavement
+  # Pavement -----------------------------------------------------------------
+  
   cat("Pavement data items...")
   ts <- Sys.time()
-
   todo_vec <- (1:nrow(gVariables))[gVariables[, Grouping] == "P"]
   todo_vec <- c(todo_vec, rep(NA, 3 - (length(todo_vec) %% 3)))
   todo <- matrix(todo_vec, ncol = 3, byrow = TRUE)
@@ -145,7 +160,7 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
     x1 <- todo[i, 1]
     x2 <- todo[i, 2]
     x3 <- todo[i, 3]
-    
+
     gPageNumber <<- gPageNumber + 1
     create_page_summary(data, state, year, year_compare,
                         x1 = x1, x2 = x2, x3 = x3, title = "pavement",
@@ -159,36 +174,40 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
   cat(paste0(" completed in: ",
              round(difftime(Sys.time(), ts, units = "secs"), 2), " seconds!\n"))
   # cat('\tMemory used: ', round(mem_used() / 1e9, 3), 'GB \n')
-  
-  # Traffic
+
+
+  # Traffic -------------------------------------------------------------------
+
   cat("Traffic data items...")
   ts <- Sys.time()
   todo_vec <- (1:nrow(gVariables))[gVariables[, Grouping] == "T"]
-  todo_vec <- c(todo_vec, rep(NA, 3 - (length(todo_vec) %% 3))) 
+  todo_vec <- c(todo_vec, rep(NA, 3 - (length(todo_vec) %% 3)))
   todo <- matrix(todo_vec, ncol = 3, byrow = TRUE)
-  
+
   for (i in 1:4) {
     x1 <- todo[i, 1]
     x2 <- todo[i, 2]
     x3 <- todo[i, 3]
-    
+
     gPageNumber <<- gPageNumber + 1
     create_page_summary(data, state, year, year_compare,
                         x1 = x1, x2 = x2,  x3 = x3,
                         title = "traffic", icontext = "t", page = gPageNumber)
     cat(".")
   }
-  
+
   gPageNumber <<- gPageNumber + 1
   create_page_summary(data, state, year, year_compare,
                       x1 = todo[i +  1, 1],
                       x2 = todo[i + 1, 2],
                       title = "traffic", icontext = "t", page = gPageNumber)
-  cat(paste0(" completed in: ", round(difftime(Sys.time(), ts, units = "secs"), 
+  cat(paste0(" completed in: ", round(difftime(Sys.time(), ts, units = "secs"),
                                       2), " seconds!\n"))
   # cat('\tMemory used: ', round(mem_used() / 1e9, 3), 'GB \n')
+
   
-  # Geometric
+  # Geometric -----------------------------------------------------------------
+  
   cat("Geometric data items...")
   ts <- Sys.time()
   todo_vec <- (1:nrow(gVariables))[gVariables[, Grouping] == "G"]
@@ -201,7 +220,8 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
     
     gPageNumber <<- gPageNumber + 1
     create_page_summary(data, state, year, year_compare,
-                        x1 = x1, x2 = x2, x3 = x3, title = "geometric", icontext = "g", page = gPageNumber)
+                        x1 = x1, x2 = x2, x3 = x3, title = "geometric",
+                        icontext = "g", page = gPageNumber)
     cat(".")
   }
   
@@ -212,17 +232,19 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
   cat(paste0(" completed in: ",
              round(difftime(Sys.time(), ts, units = "secs"), 2), " seconds!\n"))
   
-  # Route
+  
+  # Route ---------------------------------------------------------------------
+  
   cat("Route data items...")
   ts <- Sys.time()
   todo_vec <- (1:nrow(gVariables))[gVariables[, Grouping] == "R"]
-  todo_vec <- c(todo_vec, rep(NA, 3 - (length(todo_vec) %% 3))) 
+  todo_vec <- c(todo_vec, rep(NA, 3 - (length(todo_vec) %% 3)))
   todo <- matrix(todo_vec, ncol = 3, byrow = TRUE)
   for (i in 1:1) {
     x1 <- todo[i, 1]
     x2 <- todo[i, 2]
     x3 <- todo[i, 3]
-    
+
     gPageNumber <<- gPageNumber + 1
     create_page_summary(data, state, year, year_compare,
                         x1 = x1, x2 = x2, x3 = x3,
@@ -232,18 +254,20 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
   cat(paste0(" completed in: ",
              round(difftime(Sys.time(), ts, units = "secs"), 2), " seconds!\n"))
   # cat('\tMemory used: ', round(mem_used() / 1e9, 3), 'GB \n')
-  
-  # Special network
+
+
+  # Special network ----------------------------------------------------------
+
   cat("Special network data items...")
   ts <- Sys.time()
   todo_vec <- (1:nrow(gVariables))[gVariables[, Grouping] == "SN"]
-  todo_vec <- c(todo_vec, rep(NA, 3 - (length(todo_vec) %% 3))) 
+  todo_vec <- c(todo_vec, rep(NA, 3 - (length(todo_vec) %% 3)))
   todo <- matrix(todo_vec, ncol = 3, byrow = TRUE)
   for (i in 1:1) {
     x1 <- todo[i, 1]
     x2 <- todo[i, 2]
     x3 <- todo[i, 3]
-    
+
     gPageNumber <<- gPageNumber + 1
     create_page_summary(data, state, year, year_compare,
                         x1 = x1, x2 = x2, x3 = x3,
@@ -251,7 +275,7 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
                         page = gPageNumber)
     cat(".")
   }
-  
+
   gPageNumber <<- gPageNumber + 1
   create_page_summary(data, state, year, year_compare,
                       x1 = todo[i + 1, 1], title = "special network", icontext = "sn",
@@ -259,7 +283,7 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
   cat(paste0(" completed in: ",
              round(difftime(Sys.time(), ts, units = "secs"), 2), " seconds!\n"))
   # cat('\tMemory used: ', round(mem_used() / 1e9, 3), 'GB \n')
-  
+
   # showtext.end()
   dev.off()
   gPageNumber <<- 1

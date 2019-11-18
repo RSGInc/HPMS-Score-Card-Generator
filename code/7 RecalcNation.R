@@ -58,6 +58,7 @@ SummarizeNation <- function(year) {
   cat("Processing national data. This will take a while to complete.\n")
   for(variable in variables){
     for(stateRDS in 1:length(RDSfiles)){
+      message('Variable: ', variable, ', State: ', basename(stateRDS), ', year:', year)
       stateDT <- readRDS(RDSfiles[stateRDS])[data_item == variable, ]
       #if ( !is.null(sumDT) && (ncol(stateDT) != ncol(sumDT))) browser()
       sumDT <- rbind(sumDT, stateDT, fill=TRUE)

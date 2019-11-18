@@ -11,12 +11,16 @@
 #
 ###########################################################################
 
-getTimelinessScore <- function(state,year)
+getTimelinessScore <- function(state, year,
+                               submission_deadline = paste0(year + 1, '-06-16'))
 {
 
+  sub_date = format(as.Date(submission_deadline), '%m/%d/%Y')
   con <- odbcConnect("HPMS")
   
-  score <- sqlQuery(con,paste0("select case when max(submitted_on) > '6/16/",year+1,"' then 0 else 1 end from dbo.[",timelinesstable,"] where State_Code = ",state," and Year_Record = ", year))
+  score <- sqlQuery(con,
+                    paste0("select case when max(submitted_on) > '", sub_date,
+                           "' then 0 else 1 end from dbo.[",timelinesstable,"] where State_Code = ",state," and Year_Record = ", year))
   
   odbcClose(con)
   

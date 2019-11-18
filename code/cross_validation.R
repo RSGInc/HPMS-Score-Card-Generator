@@ -413,8 +413,8 @@ cross_validation_42 = function(data){
                mileage      = sum(end_point-begin_point)
               ),
              .(applies = !is.na(PCT_PEAK_SINGLE), 
-               passes  = AADT * PCT_PEAK_SINGLE > (AADT_SINGLE_UNIT * 0.04) &
-                 AADT * PCT_PEAK_SINGLE < (AADT_SINGLE_UNIT * 0.4))
+               passes  = AADT * PCT_PEAK_SINGLE / 100 > (AADT_SINGLE_UNIT * 0.04) &
+                 AADT * PCT_PEAK_SINGLE / 100 < (AADT_SINGLE_UNIT * 0.4))
              ][order(applies,passes)]
   
   
@@ -570,8 +570,8 @@ cross_validation_43 = function(data){
                mileage      = sum(end_point-begin_point)
               ),
              .(applies = !is.na(PCT_PEAK_COMBINATION), 
-               passes  = (AADT * PCT_PEAK_COMBINATION) > (AADT_COMBINATION * 0.04) &
-                 (AADT * PCT_PEAK_COMBINATION) < (AADT_COMBINATION * 0.4)
+               passes  = (AADT * PCT_PEAK_COMBINATION / 100) > (AADT_COMBINATION * 0.04) &
+                 (AADT * PCT_PEAK_COMBINATION / 100) < (AADT_COMBINATION * 0.4)
              )][order(applies,passes)]
   
   
