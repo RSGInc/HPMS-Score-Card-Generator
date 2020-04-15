@@ -13,8 +13,8 @@
 # Get max and min x values, max y across all three datasets
 
 getLimits <- function(dt){
-
-    
+  
+  
   # Get max and min x values, max y
   
   if(nrow(dt[!is.na(value_numeric), ]) > 2){
@@ -39,6 +39,19 @@ getLimits <- function(dt){
   list(minvalue=minvalue, maxvalue=maxvalue, ymax=ymax)
 } # getLimits
 
+theme_adjust <- theme(
+  axis.text.y=element_blank(),
+  strip.text.x = element_text(size = 8, angle = 0),
+  strip.text.y = element_text(size = 8, angle = 0),
+  axis.ticks=element_blank(),
+  axis.title.x=element_blank(),
+  panel.grid.major = element_blank(),
+  panel.grid.minor = element_blank(),
+  panel.border = element_blank(),
+  panel.background = element_blank(),
+  axis.line = element_line(colour = "white"),
+  plot.margin = unit(c(topMargin=0,leftMargin=0,bottomMargin=0,rightMargin=0), "cm")
+)
 
 densityPlot <- function(
   d1,         # Current year data.table
@@ -47,149 +60,138 @@ densityPlot <- function(
   title="",
   year1,
   year2,
-  topMargin=0,leftMargin=0,bottomMargin=0,rightMargin=0,
+  topMargin=0, leftMargin=0, bottomMargin=0, rightMargin=0,
   showLabel=FALSE,
   showXaxis=FALSE){
-     
+  
+  col_year1 = 'slategray'
+  col_year2 = 'gray75'
+  col_national = 'black'
+  col_noplot = 'white'
+  
   # Get x axis limits and y-axis maximum
   lims1 <- getLimits(d1)
   lims2 <- getLimits(d2)
   lims3 <- getLimits(d3)
   
-  minvalue <- min(lims1$minvalue, lims2$minvalue) #, lims3$minvalue)
-  maxvalue <- max(lims1$maxvalue, lims2$maxvalue) #, lims3$maxvalue)
-  ymax     <- max(lims1$ymax, lims2$ymax, lims3$ymax3)*1.20
-
-  ymax <- max(2.5*ymax,ymax + 0.05)
-  adjustment <- 1#c(1,1)[densitytype]
+  minvalue <- min(lims1$minvalue, lims2$minvalue, lims3$minvalue)
+  maxvalue <- max(lims1$maxvalue, lims2$maxvalue, lims3$maxvalue)
+  # ymax     <- max(lims1$ymax, lims2$ymax, lims3$ymax3) * 1.20
+  # 
+  # ymax <- max(2.5 * ymax, ymax + 0.05)
   
-  # we have something to report (density plots require at least 3 points to draw)
-  if((nrow(d1)>2|nrow(d2)>2)&!is.null(minvalue)){
+  
+  unique_vals = unique(c(d1$value_numeric, d2$value_numeric, d3$value_numeric))
+  nvalues <- length(unique_vals)
+  
+  if(nvalues <= 10){
+    plotfcn <- geom_bar
+    scalefcn <- scale_x_binned
+    minvalue <- minvalue - 0.5
+    maxvalue <- maxvalue + 0.5
+    adjustment <- NA  # adjust is not used for geom_bar
+  } else {
+    plotfcn <- geom_density
+    scalefcn <- scale_x_continuous
+    adjustment <- 1 #c(1,1)[densitytype]
+  }
+  
+  if((nrow(d1)>2 | nrow(d2)>2) & !is.null(minvalue)){
+    # we have something to report (density plots require at least 3 points to draw)
     
-    p1 <- ggplot(data = d1, aes(x = value_numeric,weight=num_sections))
-    p2 <- ggplot(data = d1, aes(x = value_numeric,weight=num_sections))
-    p3 <- ggplot(data = d1, aes(x = value_numeric,weight=num_sections))
+    p1 <- ggplot(data = d1, aes(x = value_numeric,
+                                weight=(end_point - begin_point) / sum(end_point - begin_point)))
+    p2 <- ggplot(data = d1, aes(x = value_numeric,
+                                weight=(end_point - begin_point) / sum(end_point - begin_point)))
+    p3 <- ggplot(data = d1, aes(x = value_numeric,
+                                weight=(end_point - begin_point) / sum(end_point - begin_point)))
     
     if(nrow(d1)>2){
       p1 <- p1 +
-        geom_density(data = d1, color="slategray", linetype="solid",
-                     size=0.25,fill="slategray",
-                     adjust=adjustment,
-                     aes(weight=(end_point-begin_point)/sum(end_point-begin_point)))
+        plotfcn(data = d1,
+                color=col_year1,
+                linetype="solid",
+                size=0.25,
+                fill=col_year1,
+                adjust=adjustment)
       
     } else {
-      p1 <- p1 +
-        geom_density(data = d3, color ="white", linetype="solid",
-                     size=0.25,fill="white",adjust=adjustment,
-                     aes(weight=(end_point-begin_point)/sum(end_point-begin_point)))    
       
-    }
-    
-    if(showLabel){
-      p1 <- p1 + ylab(year1)
-    } else {
-      p1 <- p1 + ylab("") 
+      p1 <- p1 + plotfcn(data = d3,
+                color =col_noplot,
+                linetype="solid",
+                size=0.25,
+                fill=col_noplot,
+                adjust=adjustment)    
+      
     }
     
     if(nrow(d2)>2) {
-      p2 <- p2 + geom_density(data = d2, color ="gray75", linetype="solid", size=0.25,fill="gray75",adjust=adjustment,aes(weight=(end_point-begin_point)/sum(end_point-begin_point)))
+      p2 <- p2 + plotfcn(data = d2,
+                         color =col_year2,
+                         linetype="solid",
+                         size=0.25,
+                         fill=col_year2,
+                         adjust=adjustment)
       
     } else {
-      p2 <- p2 + geom_density(data = d3, color ="white", linetype="solid", size=0.25,fill="white",adjust=adjustment,aes(weight=(end_point-begin_point)/sum(end_point-begin_point)))  
-    }
-    
-    if(showLabel){
-      p2 <- p2 + ylab(year2)
-    } else {
-      p2 <- p2 + ylab("") 
+      p2 <- p2 + plotfcn(data = d3,
+                         color =col_noplot,
+                         linetype="solid",
+                         size=0.25,
+                         fill=col_noplot,
+                         adjust=adjustment)  
     }
     
     if(!is.null(d3)) {
-      p3 <- p3 + geom_density(data = d3, color ="black", linetype="solid", size=0.25,fill="black",adjust=adjustment,aes(weight=(end_point-begin_point)/sum(end_point-begin_point)))
+      p3 <- p3 + plotfcn(data = d3,
+                         color =col_national,
+                         linetype="solid",
+                         size=0.25,
+                         fill=col_national,
+                         adjust=adjustment)
     }
     
-    if(showLabel){
-      p3 <- p3 + ylab("National")
-    } else {
-      p3 <- p3 + ylab("") 
-    }
-    
-    
-    p1 <- p1 +     
+    label_cfg = ifelse(all(unique_vals %% 1 == 0), 
+                       label_number(accuracy = 1),
+                       label_number())
+    p1 <- p1 +   
+      ggtitle(title) +
       theme_minimal() + 
-      scale_y_continuous()+
-      scale_x_continuous(labels = comma, limits=c(minvalue, maxvalue)) +
-      
-      theme(
-        axis.text.x=element_text(size=4.5, angle=30, hjust = 1,colour="white"),
-        axis.text.y=element_blank(),
-        strip.text.x = element_text(size = 8, angle = 0),
-        strip.text.y = element_text(size = 8, angle = 0),
-        axis.ticks=element_blank(),
-        axis.title.x=element_blank(),
-        axis.title.y=element_text(size=5, face="bold", angle = 90, hjust = 0.5,colour="slategray"),
-        plot.title = element_text(size=6.1, face="bold",colour = "slategray", hjust=0.5),
-        panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        panel.border = element_blank(),
-        panel.background = element_blank(),
-        axis.line = element_line(colour = "white"),
-        plot.margin = unit(c(topMargin=0,leftMargin=0,bottomMargin=0,rightMargin=0), "cm")
-      )
-    
-    mp <- (maxvalue+minvalue)/2
-    yp <- ymax*0.98
-    
-    if(is.na(mp)){
-      mp <- 0.5
-    }
-    
-    p1 <- p1 + ggtitle(title)
-    p2 <- p2 + ggtitle(title)
-    p3 <- p3 + ggtitle(title)
+      scalefcn(labels = label_cfg, limits=c(minvalue, maxvalue)) +
+      ylab(label = ifelse(showLabel, year1, '')) +
+      theme_adjust +
+      theme(axis.text.x=element_text(size=4.5, angle=30, hjust = 1,colour=col_noplot),
+            plot.title = element_text(size=6.1, face="bold",colour = col_year1, hjust=0.5),
+            axis.title.y=element_text(size=5, face="bold", angle = 90, hjust = 0.5, colour=col_year1))
     
     p2 <- p2 +     
+      ggtitle(title) +
       theme_minimal() + 
       scale_y_continuous()+
-      scale_x_continuous(labels = comma,limits=c(minvalue,maxvalue)) +
-      theme(
-        axis.text.x=element_text(size=4.5, angle=30, hjust = 1,colour="white"),
-        axis.text.y=element_blank(),
-        strip.text.x = element_text(size = 8, angle = 0),
-        strip.text.y = element_text(size = 8, angle = 0),
-        axis.ticks=element_blank(),
-        axis.title.x=element_blank(),
-        axis.title.y=element_text(size=5, face="bold", angle = 90, hjust = 0.5,colour="gray75"),
-        plot.title = element_text(size=6.1, face="bold",colour = "white", hjust=0.5),
-        panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        panel.border = element_blank(),
-        panel.background = element_blank(),
-        axis.line = element_line(colour = "white"),
-        plot.margin = unit(c(topMargin=0,leftMargin=0,bottomMargin=0,rightMargin=0), "cm")
+      scalefcn(labels = label_cfg, limits=c(minvalue, maxvalue)) +
+      ylab(label = ifelse(showLabel, year2, '')) +
+      theme_adjust +
+      theme(plot.title = element_text(size=6.1, face="bold",colour = col_noplot, hjust=0.5),
+            axis.title.y=element_text(size=5, face="bold", angle = 90, hjust = 0.5, colour=col_year2),
+            axis.text.x=element_text(size=4.5, angle=30, hjust = 1, colour=col_noplot))
+    
+    
+    p3 <- p3 + 
+      ggtitle(title) +
+      theme_minimal() + 
+      scale_y_continuous()+
+      scalefcn(labels = label_cfg, limits=c(minvalue, maxvalue))  +
+      ylab(label = ifelse(showLabel, "National", '')) +
+      theme_adjust +
+      theme(axis.text.x=element_text(size=4.5, angle=30, hjust = 1,colour=col_year1),
+            plot.title = element_text(size=6.1, face="bold",colour = "white", hjust=0.5),
+            axis.title.y=element_text(size=5, face="bold", angle = 90, hjust = 0.5, colour=col_national),
       )
     
-    p3 <- p3 +     
-      theme_minimal() + 
-      scale_y_continuous()+
-      scale_x_continuous(labels = comma,limits=c(minvalue,maxvalue))  +
-      theme(
-        axis.text.x=element_text(size=4.5, angle=30, hjust = 1,colour="slategray"),
-        axis.text.y=element_blank(),
-        strip.text.x = element_text(size = 8, angle = 0),
-        strip.text.y = element_text(size = 8, angle = 0),
-        axis.ticks=element_blank(),
-        axis.title.x=element_blank(),
-        axis.title.y=element_text(size=5, face="bold", angle = 90, hjust = 0.5,colour="black"),
-        plot.title = element_text(size=6.1, face="bold",colour = "white", hjust=0.5),
-        panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        panel.border = element_blank(),
-        panel.background = element_blank(),
-        axis.line = element_line(colour = "white"),
-        plot.margin = unit(
-          c(topMargin + 0, rightMargin + 0, bottomMargin + 0, leftMargin + 0), "cm")
-      )
+    # if (nvalues <= 10){
+    #   browser()
+    # }
     
     p <- arrangeGrob(
       p1, p2, p3, 
@@ -199,8 +201,10 @@ densityPlot <- function(
     return(p)
   } else {
     return(
-      arrangeGrob(textGrob(paste0(title,"\ndata are not available or not applicable"),just="top",gp=gpar(fontsize=5,col = "red")),
-                  heights=unit(1,units="npc"))
+      arrangeGrob(
+        textGrob(paste0(title,"\ndata are not available or not applicable"),
+                 just="top", gp=gpar(fontsize=5, col = "red")),
+        heights=unit(1, units="npc"))
     )
   }
   
