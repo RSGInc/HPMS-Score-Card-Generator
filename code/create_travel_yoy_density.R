@@ -23,37 +23,69 @@ create_travel_yoy_density <- function(
   
   type <- gVariables[Name==variable,Type]
   
-  if(type==1){
-
-    if(ramps){   
-      var.1    <- data[state_code==state&year_record==year          &data_item==variable&FACILITY_TYPE==4&!is.na(value_numeric),list(route_id,begin_point,end_point,value_numeric,F_SYSTEM,Interstate,NHS,num_sections)]
-      var.2    <- data[state_code==state&year_record==yearcomparison&data_item==variable&FACILITY_TYPE==4&!is.na(value_numeric),list(route_id,begin_point,end_point,value_numeric,F_SYSTEM,Interstate,NHS,num_sections)]
-    } else {   
-      var.1    <- data[state_code==state&year_record==year          &data_item==variable&FACILITY_TYPE!=4&!is.na(value_numeric),list(route_id,begin_point,end_point,value_numeric,F_SYSTEM,Interstate,NHS,num_sections)]
-      var.2    <- data[state_code==state&year_record==yearcomparison&data_item==variable&FACILITY_TYPE!=4&!is.na(value_numeric),list(route_id,begin_point,end_point,value_numeric,F_SYSTEM,Interstate,NHS,num_sections)]
-    }
+  # Which columns to keep from data?
+  keep_cols = c('route_id', 'begin_point', 'end_point', 'value_numeric',
+                'F_SYSTEM', 'Interstate', 'NHS', 'num_sections')
+  
+  # get common indices to increase readability
+  idx_var1 <- data[, state_code == state &
+                      year_record == year &
+                      data_item == variable ] 
+  
+  idx_var2 <- data[, state_code == state &
+                      year_record == yearcomparison &
+                      data_item == variable ]
+  
+  if ( ramps ){
+    
+    idx.var1 = idx_var1 & data[, FACILITY_TYPE == 4]
+    idx.var2 = idx_var2 & data[, FACILITY_TYPE == 4]
+    
+  } else {
+    
+    idx.var1 = idx_var1 & data[, FACILITY_TYPE != 4]
+    idx.var2 = idx_var2 & data[, FACILITY_TYPE != 4]
+  
   }
   
-  if(type==2){
+  if(type == 1){ # Numeric
+
+    idx_var1 = idx_var1 & data[, !is.na(value_numeric)]
+    idx_var2 = idx_var2 & data[, !is.na(value_numeric)]
     
-    if(ramps){   
-      var.1    <- data[state_code==state & year_record==year           & data_item==variable & FACILITY_TYPE==4 & !is.na(value_date), list(route_id, begin_point, end_point, value_numeric=year(value_date), F_SYSTEM, Interstate, NHS,num_sections)]
-      var.2    <- data[state_code==state & year_record==yearcomparison & data_item==variable & FACILITY_TYPE==4 & !is.na(value_date), list(route_id, begin_point, end_point, value_numeric=year(value_date), F_SYSTEM, Interstate, NHS,num_sections)]
-    } else {   
-      var.1    <- data[state_code==state & year_record==year           & data_item==variable & FACILITY_TYPE !=4 & !is.na(value_date), list(route_id, begin_point, end_point, value_numeric=year(value_date), F_SYSTEM, Interstate, NHS,num_sections)]
-      var.2    <- data[state_code==state & year_record==yearcomparison & data_item==variable & FACILITY_TYPE !=4 & !is.na(value_date), list(route_id, begin_point, end_point, value_numeric=year(value_date), F_SYSTEM, Interstate, NHS,num_sections)]
-    }
+    var1 <- data[idx_var1, keep_cols, with=FALSE]
+    var2 <- data[idx_var2, keep_cols, with=FALSE]
+    
   }
+  
+  if ( type == 2 ){ # DATE
+
+    browser()
+    
+    idx_var1 = idx_var1 & data[, !is.na(value_date)]
+    idx_var2 = idx_var2 & data[, !is.na(value_date)]
+
+    var1 <- data[idx_var1]
+    var2 <- data[idx_var2]
+    
+    var1[, value_numeric := year(value_date)]
+    var2[, value_numeric := year(value_date)]
+
+    var1 <- var1[, keep_cols, with=FALSE]
+    var2 <- var2[, keep_cols, with=FALSE]
+  }
+  
   
   # we have something to report (density plots require at least 3 points to draw)
-  if(nrow(var.1)>2|nrow(var.2)>2) {
+  if( nrow(var1) > 2 | nrow(var2) > 2 ) {
     
-    national  <- readRDS(paste0("data\\+National\\",yearcomparison,"\\",variable,".rds"))
+    national  <- readRDS(paste0("data\\+National\\", yearcomparison, "\\",
+                                variable, ".rds"))
     
     if(ramps){
-      national <- national[FACILITY_TYPE==4,]
+      national <- national[FACILITY_TYPE == 4,]
     } else {
-      national <- national[FACILITY_TYPE!=4,]
+      national <- national[FACILITY_TYPE != 4,]
     }
     
     if(gVariablesLabels[Name==variable, NumLevels]==0){ 
@@ -61,61 +93,61 @@ create_travel_yoy_density <- function(
       
       if(is.null(national)){
         # Interstate
-        p1 <- densityPlot(d1=var.1[Interstate==1],
-                          d2=var.2[Interstate==1],
+        p1 <- densityPlot(d1=var1[Interstate==1],
+                          d2=var2[Interstate==1],
                           d3=national[Interstate==1],
                           title=gF_SYSTEM_levels[1],
                           year1=year,
                           year2=yearcomparison)
 
         # National Highway System
-        p2 <- densityPlot(d1=var.1[NHS==1],
-                          d2=var.2[NHS==1],
+        p2 <- densityPlot(d1=var1[NHS==1],
+                          d2=var2[NHS==1],
                           d3=national[NHS==1],
                           title=gF_SYSTEM_levels[2],
                           year1=year,
                           year2=yearcomparison)
         
         # Other / Minor Arterials
-        p3 <- densityPlot(d1=var.1[F_SYSTEM==1],
-                          d2=var.2[F_SYSTEM==1],
+        p3 <- densityPlot(d1=var1[F_SYSTEM==1],
+                          d2=var2[F_SYSTEM==1],
                           d3=national[F_SYSTEM==1],
                           title=gF_SYSTEM_levels[3],
                           year1=year,
                           year2=yearcomparison)
         
         # Collectors and Locals
-        p4 <- densityPlot(d1=var.1[F_SYSTEM==2],
-                          d2=var.2[F_SYSTEM==2],
+        p4 <- densityPlot(d1=var1[F_SYSTEM==2],
+                          d2=var2[F_SYSTEM==2],
                           d3=national[F_SYSTEM==2],
                           title=gF_SYSTEM_levels[4],
                           year1=year,
                           year2=yearcomparison)
       } else {
-        p1 <- densityPlot(d1=var.1[Interstate==1],
-                          d2=var.2[Interstate==1],
+        p1 <- densityPlot(d1=var1[Interstate==1],
+                          d2=var2[Interstate==1],
                           d3=national[Interstate==1],
                           title=gF_SYSTEM_levels[1],
                           year1=year,
                           year2=yearcomparison,
                           showLabel=TRUE)
         
-        p2 <- densityPlot(d1=var.1[NHS==1],
-                          d2=var.2[NHS==1],
+        p2 <- densityPlot(d1=var1[NHS==1],
+                          d2=var2[NHS==1],
                           d3=national[NHS==1],
                           title=gF_SYSTEM_levels[2],
                           year1=year,year2=yearcomparison)
         
-        p3 <- densityPlot(d1=var.1[F_SYSTEM==1],
-                          d2=var.2[F_SYSTEM==1],
+        p3 <- densityPlot(d1=var1[F_SYSTEM==1],
+                          d2=var2[F_SYSTEM==1],
                           d3=national[F_SYSTEM==1],
                           title=gF_SYSTEM_levels[3],
                           year1=year,
                           year2=yearcomparison,
                           showLabel=TRUE)
         
-        p4 <- densityPlot(d1=var.1[F_SYSTEM==2,],
-                          d2=var.2[F_SYSTEM==2,],
+        p4 <- densityPlot(d1=var1[F_SYSTEM==2,],
+                          d2=var2[F_SYSTEM==2,],
                           d3=national[F_SYSTEM==2,],
                           title=gF_SYSTEM_levels[4],
                           year1=year,
@@ -131,37 +163,53 @@ create_travel_yoy_density <- function(
         ncol=2, nrow=3, 
         widths=unit(rep(3.77776666666667/2,2), units="inches"),
         heights=unit(c((1 - spacer_height)/2, spacer_height, (1-spacer_height)/2), units='npc'))
-    } else {
-      
-      labels <- 1:7
 
-      scale <- max(c(var.1[, sum(end_point-begin_point),
+    } else {  # Make bar plots
+      
+      browser()
+      
+      # get labels for bars
+      
+      # gVariablesLabels[Name==variable, NumLevels]
+      # labels <- 1:7
+      
+      labels <- sort(
+        unique(
+          c(var1[, value_numeric],
+            var2[, value_numeric],
+            national[, value_numeric])
+          )
+      )
+      
+      scale <- max(c(var1[, sum(end_point - begin_point),
                            by=list(F_SYSTEM, NHS, value_numeric)][, max(V1)],
-                     var.1[NHS == 1, sum(end_point - begin_point),
+                     var1[NHS == 1, sum(end_point - begin_point),
                            by = list(value_numeric)][, max(V1)],
-                     var.2[,sum(end_point-begin_point),
+                     var2[, sum(end_point - begin_point),
                            by=list(F_SYSTEM, NHS, value_numeric)][, max(V1)],
-                     var.2[NHS == 1, sum(end_point - begin_point),
+                     var2[NHS == 1, sum(end_point - begin_point),
                            by = list(value_numeric)][, max(V1)]
       ))
       
-      natWeight <- scale/national[,sum(end_point-begin_point),by=list(F_SYSTEM,Interstate,NHS,value_numeric)][,max(V1)]
+      natWeight <- scale / national[
+        , sum(end_point-begin_point),
+        by=list(F_SYSTEM,Interstate,NHS,value_numeric)][,max(V1)]
       
-      national[,end_point  :=natWeight*end_point]
-      national[,begin_point:=natWeight*begin_point]
+      national[, end_point := natWeight * end_point]
+      national[, begin_point := natWeight * begin_point]
       
       # Pad scale slightly so we don't have problems with the bar plots
       scale <- scale * 1.001
       
-      p11 <- barPlot(var.1[Interstate==1],labels,title=gF_SYSTEM_levels[1],barcolor="slategray",bottomMargin=-0.5,scale=scale,showLabel=TRUE)
-      p12 <- barPlot(var.1[NHS==1]       ,labels,title=gF_SYSTEM_levels[2],barcolor="slategray",bottomMargin=-0.5,scale=scale)
-      p13 <- barPlot(var.1[F_SYSTEM==1]  ,labels,title=gF_SYSTEM_levels[3],barcolor="slategray",bottomMargin=-0.5,scale=scale)
-      p14 <- barPlot(var.1[F_SYSTEM==2]  ,labels,title=gF_SYSTEM_levels[4],barcolor="slategray",bottomMargin=-0.5,scale=scale)
+      p11 <- barPlot(var1[Interstate==1],labels,title=gF_SYSTEM_levels[1],barcolor="slategray",bottomMargin=-0.5,scale=scale,showLabel=TRUE)
+      p12 <- barPlot(var1[NHS==1]       ,labels,title=gF_SYSTEM_levels[2],barcolor="slategray",bottomMargin=-0.5,scale=scale)
+      p13 <- barPlot(var1[F_SYSTEM==1]  ,labels,title=gF_SYSTEM_levels[3],barcolor="slategray",bottomMargin=-0.5,scale=scale)
+      p14 <- barPlot(var1[F_SYSTEM==2]  ,labels,title=gF_SYSTEM_levels[4],barcolor="slategray",bottomMargin=-0.5,scale=scale)
       
-      p21 <- barPlot(var.2[Interstate==1],labels,title="",barcolor="gray",scale=scale,showLabel=TRUE)
-      p22 <- barPlot(var.2[NHS==1]       ,labels,title="",barcolor="gray",scale=scale)
-      p23 <- barPlot(var.2[F_SYSTEM==1]  ,labels,title="",barcolor="gray",scale=scale)
-      p24 <- barPlot(var.2[F_SYSTEM==2]  ,labels,title="",barcolor="gray",scale=scale)
+      p21 <- barPlot(var2[Interstate==1],labels,title="",barcolor="gray",scale=scale,showLabel=TRUE)
+      p22 <- barPlot(var2[NHS==1]       ,labels,title="",barcolor="gray",scale=scale)
+      p23 <- barPlot(var2[F_SYSTEM==1]  ,labels,title="",barcolor="gray",scale=scale)
+      p24 <- barPlot(var2[F_SYSTEM==2]  ,labels,title="",barcolor="gray",scale=scale)
       
       if(is.null(national))
       {

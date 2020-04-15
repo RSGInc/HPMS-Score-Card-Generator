@@ -23,10 +23,8 @@ barPlot <- function(
       showLabel=FALSE,
       showAxis=FALSE,
       scale
-)
-{
-      if(is.null(d1))
-      {
+){
+      if(is.null(d1)){
         return(textGrob(""))
       }
         
@@ -71,19 +69,15 @@ barPlot <- function(
                         c(topMargin + 0.15, rightMargin + 0.15, bottomMargin + 0.15, leftMargin+0.15), "cm")
                  )
         
-      if(showAxis)
-      {
+      if(showAxis) {
         p <- p + theme(axis.text.x=element_text(size=4.5, angle=90,hjust = 0.5,colour="slategray"))  
-      } else
-      {
+      } else {
         p <- p + theme(axis.text.x=element_blank())
       }
         
-      if(showLabel)
-      {
+      if(showLabel) {
         p <- p + theme(axis.text.y=element_text(size=5, hjust = 1,colour="slategray"))
-      } else
-      {
+      } else {
         p <- p + theme(axis.text.y=element_blank())
       }
       

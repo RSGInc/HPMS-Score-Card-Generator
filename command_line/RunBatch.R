@@ -21,8 +21,9 @@ if ( length(args) < 1 ){
   stop('Please supply a comma-delimited list of states or specify "ALL"\nFor example: Rscript RunBatch.R PA,NY,NH,VT', call.=FALSE)
 }
 
-year_selection <- 2017
-year_compare <- 2016
+year_selection <- 2018
+year_compare <- 2017
+submission_deadline <- '2019-06-17'
 
 setwd('..')
 msg_file <- file.path('output', paste0('_RunBatch_messages_',
@@ -38,6 +39,7 @@ file_con <- file(msg_file, open='wt')
 sink(file=file_con, append=FALSE, type='message')
 
 message('RunBatch.R started at ', Sys.time())
+message('submission_deadline: ', submission_deadline)
 
 # Load Code -------------------------------------------------------------------
 invisible(sapply(X = list.files(path = "code", pattern = "*.R$",
@@ -114,7 +116,7 @@ for(state in state_abbrev){
       
       # Overwrite 2016 data every time, but not 2015 data.
       # goverwrite <- 'ALL N'  # For testing - makes it go quicker.
-      goverwrite <- 'ALL Y'
+      goverwrite <- 'ALL N'
       
       success <- ImportData(state_selection=state,
                             year_selection=year_selection)

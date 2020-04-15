@@ -15,7 +15,7 @@ getTimelinessScore <- function(state, year,
                                submission_deadline = paste0(year + 1, '-06-16'))
 {
 
-  sub_date = format(as.Date(submission_deadline), '%m/%d/%Y')
+  sub_date = format(ymd(submission_deadline), '%m/%d/%Y 23:59:00')
   con <- odbcConnect("HPMS")
   
   score <- sqlQuery(con,

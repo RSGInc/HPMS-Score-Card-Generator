@@ -27,11 +27,13 @@ if ( length(args) != 1 ){
 state <- args
 year_selection <- 2018
 year_compare <- 2017
+submission_deadline <- '2019-06-17'
 
 msg <- paste0('\n\n=========================================================\n\n',
               scriptname,
               ' Started scorecard for ', state, ' at ', format(Sys.time(), '%H:%M:%S'))
 message(msg)
+message('submission_deadline: ', submission_deadline)
 
 setwd('..')
 
