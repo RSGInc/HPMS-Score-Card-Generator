@@ -62,7 +62,10 @@ densityPlot <- function(
   year2,
   topMargin=0, leftMargin=0, bottomMargin=0, rightMargin=0,
   showLabel=FALSE,
-  showXaxis=FALSE){
+  showXaxis=FALSE,
+  plotType = 'density'){
+  
+  plotfun = get(paste0('geom_', plotType))
   
   col_year1 = 'slategray'
   col_year2 = 'gray75'
@@ -80,20 +83,29 @@ densityPlot <- function(
   # 
   # ymax <- max(2.5 * ymax, ymax + 0.05)
   
-  
-  unique_vals = unique(c(d1$value_numeric, d2$value_numeric, d3$value_numeric))
-  nvalues <- length(unique_vals)
-  
-  if(nvalues <= 10){
-    plotfcn <- geom_bar
-    scalefcn <- scale_x_binned
-    minvalue <- minvalue - 0.5
-    maxvalue <- maxvalue + 0.5
+  if(plotType == 'bar'){
+    minvalue <- minvalue - 1
+    maxvalue <- maxvalue + 1
     adjustment <- NA  # adjust is not used for geom_bar
-  } else {
-    plotfcn <- geom_density
-    scalefcn <- scale_x_continuous
+    
+    if ( all(unique_vals %% 1 == 0) ){
+      breaks = minvalue:maxvalue
+      width=0.8
+      label_cfg = label_number(accuracy=1)
+    } else {
+      label_cfg = label_number()
+      breaks=waiver()
+      width=min(diff(unique_vals))
+    }
+    
+  } 
+  
+  if ( plotType == 'density' ) {
+    breaks = waiver()
+    width = NA  # width is not used for geom_density
     adjustment <- 1 #c(1,1)[densitytype]
+    label_cfg = label_number()
+    
   }
   
   if((nrow(d1)>2 | nrow(d2)>2) & !is.null(minvalue)){
@@ -108,57 +120,61 @@ densityPlot <- function(
     
     if(nrow(d1)>2){
       p1 <- p1 +
-        plotfcn(data = d1,
+        plotfun(data = d1,
                 color=col_year1,
                 linetype="solid",
                 size=0.25,
                 fill=col_year1,
+                width=width,
                 adjust=adjustment)
       
     } else {
       
-      p1 <- p1 + plotfcn(data = d3,
+      p1 <- p1 + plotfun(data = d3,
                 color =col_noplot,
                 linetype="solid",
                 size=0.25,
                 fill=col_noplot,
+                width=width,
                 adjust=adjustment)    
       
     }
     
     if(nrow(d2)>2) {
-      p2 <- p2 + plotfcn(data = d2,
+      p2 <- p2 + plotfun(data = d2,
                          color =col_year2,
                          linetype="solid",
                          size=0.25,
                          fill=col_year2,
+                         width=width,
                          adjust=adjustment)
       
     } else {
-      p2 <- p2 + plotfcn(data = d3,
+      p2 <- p2 + plotfun(data = d3,
                          color =col_noplot,
                          linetype="solid",
                          size=0.25,
                          fill=col_noplot,
+                         width=width,
                          adjust=adjustment)  
     }
     
     if(!is.null(d3)) {
-      p3 <- p3 + plotfcn(data = d3,
+      p3 <- p3 + plotfun(data = d3,
                          color =col_national,
                          linetype="solid",
                          size=0.25,
                          fill=col_national,
+                         width=width,
                          adjust=adjustment)
     }
     
-    label_cfg = ifelse(all(unique_vals %% 1 == 0), 
-                       label_number(accuracy = 1),
-                       label_number())
     p1 <- p1 +   
       ggtitle(title) +
       theme_minimal() + 
-      scalefcn(labels = label_cfg, limits=c(minvalue, maxvalue)) +
+      scale_x_continuous(labels = label_cfg,
+                         limits=c(minvalue, maxvalue),
+                         breaks=breaks) +
       ylab(label = ifelse(showLabel, year1, '')) +
       theme_adjust +
       theme(axis.text.x=element_text(size=4.5, angle=30, hjust = 1,colour=col_noplot),
@@ -169,7 +185,9 @@ densityPlot <- function(
       ggtitle(title) +
       theme_minimal() + 
       scale_y_continuous()+
-      scalefcn(labels = label_cfg, limits=c(minvalue, maxvalue)) +
+      scale_x_continuous(labels = label_cfg,
+                         limits=c(minvalue, maxvalue),
+                         breaks=breaks) +
       ylab(label = ifelse(showLabel, year2, '')) +
       theme_adjust +
       theme(plot.title = element_text(size=6.1, face="bold",colour = col_noplot, hjust=0.5),
@@ -181,13 +199,17 @@ densityPlot <- function(
       ggtitle(title) +
       theme_minimal() + 
       scale_y_continuous()+
-      scalefcn(labels = label_cfg, limits=c(minvalue, maxvalue))  +
+      scale_x_continuous(labels = label_cfg,
+                         limits=c(minvalue, maxvalue),
+                         breaks=breaks)  +
       ylab(label = ifelse(showLabel, "National", '')) +
       theme_adjust +
       theme(axis.text.x=element_text(size=4.5, angle=30, hjust = 1,colour=col_year1),
             plot.title = element_text(size=6.1, face="bold",colour = "white", hjust=0.5),
             axis.title.y=element_text(size=5, face="bold", angle = 90, hjust = 0.5, colour=col_national),
       )
+    
+    # browser()
     
     # if (nvalues <= 10){
     #   browser()

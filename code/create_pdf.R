@@ -80,10 +80,10 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
   cat(paste0(" completed in: ",
              round(difftime(Sys.time(), ts, units = "secs"), 2), " seconds!\n"))
   # cat('\tMemory used: ', round(mem_used() / 1e9, 3), 'GB \n')
-  
-  
+
+
   # Traffic: Detailed Review --------------------------------------------------
-  
+
   cat("Traffic: Detailed Review...")
   ts <- Sys.time()
   create_traffic_detailed_review(data, state, year, year_compare)
@@ -148,9 +148,9 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
                                       2), " seconds!\n"))
   # cat('\tMemory used: ', round(mem_used() / 1e9, 3), 'GB \n')
 
-  
+
   # Pavement -----------------------------------------------------------------
-  
+
   cat("Pavement data items...")
   ts <- Sys.time()
   todo_vec <- (1:nrow(gVariables))[gVariables[, Grouping] == "P"]
@@ -205,36 +205,37 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
                                       2), " seconds!\n"))
   # cat('\tMemory used: ', round(mem_used() / 1e9, 3), 'GB \n')
 
-  
+
   # Geometric -----------------------------------------------------------------
-  
+
   cat("Geometric data items...")
+
   ts <- Sys.time()
   todo_vec <- (1:nrow(gVariables))[gVariables[, Grouping] == "G"]
-  todo_vec <- c(todo_vec, rep(NA, 3 - (length(todo_vec) %% 3))) 
+  todo_vec <- c(todo_vec, rep(NA, 3 - (length(todo_vec) %% 3)))
   todo <- matrix(todo_vec, ncol = 3, byrow = TRUE)
   for (i in 1:7) {
     x1 <- todo[i, 1]
     x2 <- todo[i, 2]
     x3 <- todo[i, 3]
-    
+
     gPageNumber <<- gPageNumber + 1
     create_page_summary(data, state, year, year_compare,
                         x1 = x1, x2 = x2, x3 = x3, title = "geometric",
                         icontext = "g", page = gPageNumber)
     cat(".")
   }
-  
+
   gPageNumber <<- gPageNumber + 1
   create_page_summary(data, state, year, year_compare,
                       x1 = todo[i + 1, 1], x2 = todo[i + 1, 2],
                       title = "geometric", icontext = "g", page = gPageNumber)
   cat(paste0(" completed in: ",
              round(difftime(Sys.time(), ts, units = "secs"), 2), " seconds!\n"))
-  
-  
+
+
   # Route ---------------------------------------------------------------------
-  
+
   cat("Route data items...")
   ts <- Sys.time()
   todo_vec <- (1:nrow(gVariables))[gVariables[, Grouping] == "R"]
@@ -285,7 +286,11 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
   # cat('\tMemory used: ', round(mem_used() / 1e9, 3), 'GB \n')
 
   # showtext.end()
-  dev.off()
+
+  if ( !debugmode ){
+    dev.off()
+  }
+  
   gPageNumber <<- 1
   # cat('\tMemory used: ', round(mem_used() / 1e9, 3), 'GB \n')
   cat('Exiting create_pdf -----------------------------------')

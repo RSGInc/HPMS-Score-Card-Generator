@@ -21,7 +21,7 @@ create_travel_yoy_density <- function(
   ramps
 ){
   
-  if ( variable %in% c('SURFACE_TYPE', 'WIDENING_OBSTACLE', 'YEAR_LAST_IMPROV') ) browser()
+  #if ( variable %in% c('SURFACE_TYPE', 'WIDENING_OBSTACLE', 'YEAR_LAST_IMPROV') ) browser()
   
   type <- gVariables[Name==variable,Type]
   
@@ -97,6 +97,9 @@ create_travel_yoy_density <- function(
     if(gVariablesLabels[Name==variable, NumLevels]==0){ 
       # make density plots
       
+      unique_vals = sort(unique(c(var1$value_numeric, var2$value_numeric, national$value_numeric)))
+      nvalues <- length(unique_vals)
+      
       # Interstate
       p1 <- densityPlot(d1=var1[Interstate==1],
                         d2=var2[Interstate==1],
@@ -104,7 +107,8 @@ create_travel_yoy_density <- function(
                         title=gF_SYSTEM_levels[1],
                         year1=year,
                         year2=yearcomparison,
-                        showLabel = !is.null(national))
+                        showLabel = !is.null(national),
+                        plotType = ifelse(nvalues <= 10, 'bar', 'density'))
       
       # National Highway System
       p2 <- densityPlot(d1=var1[NHS==1],
@@ -112,7 +116,8 @@ create_travel_yoy_density <- function(
                         d3=national[NHS==1],
                         title=gF_SYSTEM_levels[2],
                         year1=year,
-                        year2=yearcomparison)
+                        year2=yearcomparison,
+                        plotType = ifelse(nvalues <= 10, 'bar', 'density'))
       
       # Other / Minor Arterials
       p3 <- densityPlot(d1=var1[F_SYSTEM==1],
@@ -121,7 +126,8 @@ create_travel_yoy_density <- function(
                         title=gF_SYSTEM_levels[3],
                         year1=year,
                         year2=yearcomparison,
-                        showLabel = !is.null(national))
+                        showLabel = !is.null(national),
+                        plotType = ifelse(nvalues <= 10, 'bar', 'density'))
       
       # Collectors and Locals
       p4 <- densityPlot(d1=var1[F_SYSTEM==2],
@@ -129,7 +135,8 @@ create_travel_yoy_density <- function(
                         d3=national[F_SYSTEM==2],
                         title=gF_SYSTEM_levels[4],
                         year1=year,
-                        year2=yearcomparison)
+                        year2=yearcomparison,
+                        plotType = ifelse(nvalues <= 10, 'bar', 'density'))
       
       spacer_height <- 0.07
       fill_rect <- rectGrob(gp = gpar(fill='white', col='white'))
