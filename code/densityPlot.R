@@ -88,6 +88,10 @@ densityPlot <- function(
     maxvalue <- maxvalue + 1
     adjustment <- NA  # adjust is not used for geom_bar
     
+    unique_vals <- sort(c(unique(d1$value_numeric),
+                        unique(d2$value_numeric),
+                        unique(d3$value_numeric)))
+    
     if ( all(unique_vals %% 1 == 0) ){
       breaks = minvalue:maxvalue
       width=0.8
@@ -95,9 +99,9 @@ densityPlot <- function(
     } else {
       label_cfg = label_number()
       breaks=waiver()
-      width=min(diff(unique_vals))
+      width=min(diff(unique_vals)[diff(unique_vals) > 0])
+      if ( width == 0 ) width <- NULL
     }
-    
   } 
   
   if ( plotType == 'density' ) {
@@ -172,6 +176,7 @@ densityPlot <- function(
     p1 <- p1 +   
       ggtitle(title) +
       theme_minimal() + 
+      scale_y_continuous(expand = c(0, 0)) +
       scale_x_continuous(labels = label_cfg,
                          limits=c(minvalue, maxvalue),
                          breaks=breaks) +
@@ -179,26 +184,28 @@ densityPlot <- function(
       theme_adjust +
       theme(axis.text.x=element_text(size=4.5, angle=30, hjust = 1,colour=col_noplot),
             plot.title = element_text(size=6.1, face="bold",colour = col_year1, hjust=0.5),
-            axis.title.y=element_text(size=5, face="bold", angle = 90, hjust = 0.5, colour=col_year1))
+            axis.title.y=element_text(size=5, face="bold", angle = 90, hjust = 0.5, colour=col_year1),
+            axis.line.x.bottom= element_line(color=ifelse(plotType == 'bar', col_year1, 'white')))
     
     p2 <- p2 +     
       ggtitle(title) +
       theme_minimal() + 
-      scale_y_continuous()+
+      scale_y_continuous(expand = c(0, 0))+
       scale_x_continuous(labels = label_cfg,
                          limits=c(minvalue, maxvalue),
                          breaks=breaks) +
       ylab(label = ifelse(showLabel, year2, '')) +
       theme_adjust +
-      theme(plot.title = element_text(size=6.1, face="bold",colour = col_noplot, hjust=0.5),
+      theme(axis.text.x=element_text(size=4.5, angle=30, hjust = 1, colour=col_noplot),
+            plot.title = element_text(size=6.1, face="bold",colour = col_noplot, hjust=0.5),
             axis.title.y=element_text(size=5, face="bold", angle = 90, hjust = 0.5, colour=col_year2),
-            axis.text.x=element_text(size=4.5, angle=30, hjust = 1, colour=col_noplot))
+            axis.line.x.bottom= element_line(color=ifelse(plotType == 'bar', col_year2, 'white')))
     
     
     p3 <- p3 + 
       ggtitle(title) +
       theme_minimal() + 
-      scale_y_continuous()+
+      scale_y_continuous(expand = c(0, 0)) +
       scale_x_continuous(labels = label_cfg,
                          limits=c(minvalue, maxvalue),
                          breaks=breaks)  +
@@ -207,7 +214,7 @@ densityPlot <- function(
       theme(axis.text.x=element_text(size=4.5, angle=30, hjust = 1,colour=col_year1),
             plot.title = element_text(size=6.1, face="bold",colour = "white", hjust=0.5),
             axis.title.y=element_text(size=5, face="bold", angle = 90, hjust = 0.5, colour=col_national),
-      )
+            axis.line.x.bottom= element_line(color=ifelse(plotType == 'bar', col_national, 'white')))
     
     # browser()
     

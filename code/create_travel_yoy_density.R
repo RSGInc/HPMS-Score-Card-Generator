@@ -18,7 +18,8 @@ create_travel_yoy_density <- function(
   yearcomparison,
   variable,
   includeNational,
-  ramps
+  ramps,
+  nvalues_bar = 11
 ){
   
   #if ( variable %in% c('SURFACE_TYPE', 'WIDENING_OBSTACLE', 'YEAR_LAST_IMPROV') ) browser()
@@ -97,8 +98,23 @@ create_travel_yoy_density <- function(
     if(gVariablesLabels[Name==variable, NumLevels]==0){ 
       # make density plots
       
-      unique_vals = sort(unique(c(var1$value_numeric, var2$value_numeric, national$value_numeric)))
-      nvalues <- length(unique_vals)
+      # What is the maximum number of unique values in a plot?
+      
+      vals_p1 = sort(unique(c(var1[Interstate == 1, value_numeric],
+                         var2[Interstate == 1, value_numeric])))
+      
+      vals_p2 = sort(unique(c(var1[NHS == 1, value_numeric],
+                         var2[NHS == 1, value_numeric])))
+      
+      vals_p3 = sort(unique(c(var1[F_SYSTEM == 1, value_numeric],
+                         var2[F_SYSTEM == 1, value_numeric])))
+      
+      vals_p4 = sort(unique(c(var1[F_SYSTEM == 2, value_numeric],
+                         var2[F_SYSTEM == 2, value_numeric])))
+      
+      
+      unique_vals = sort(unique(c(var1$value_numeric, var2$value_numeric)))
+      nvalues <- max(c(length(vals_p1), length(vals_p2), length(vals_p3), length(vals_p4)))
       
       # Interstate
       p1 <- densityPlot(d1=var1[Interstate==1],
@@ -108,7 +124,7 @@ create_travel_yoy_density <- function(
                         year1=year,
                         year2=yearcomparison,
                         showLabel = !is.null(national),
-                        plotType = ifelse(nvalues <= 10, 'bar', 'density'))
+                        plotType = ifelse(nvalues <= nvalues_bar, 'bar', 'density'))
       
       # National Highway System
       p2 <- densityPlot(d1=var1[NHS==1],
@@ -117,7 +133,7 @@ create_travel_yoy_density <- function(
                         title=gF_SYSTEM_levels[2],
                         year1=year,
                         year2=yearcomparison,
-                        plotType = ifelse(nvalues <= 10, 'bar', 'density'))
+                        plotType = ifelse(nvalues <= nvalues_bar, 'bar', 'density'))
       
       # Other / Minor Arterials
       p3 <- densityPlot(d1=var1[F_SYSTEM==1],
@@ -127,7 +143,7 @@ create_travel_yoy_density <- function(
                         year1=year,
                         year2=yearcomparison,
                         showLabel = !is.null(national),
-                        plotType = ifelse(nvalues <= 10, 'bar', 'density'))
+                        plotType = ifelse(nvalues <= nvalues_bar, 'bar', 'density'))
       
       # Collectors and Locals
       p4 <- densityPlot(d1=var1[F_SYSTEM==2],
@@ -136,7 +152,7 @@ create_travel_yoy_density <- function(
                         title=gF_SYSTEM_levels[4],
                         year1=year,
                         year2=yearcomparison,
-                        plotType = ifelse(nvalues <= 10, 'bar', 'density'))
+                        plotType = ifelse(nvalues <= nvalues_bar, 'bar', 'density'))
       
       spacer_height <- 0.07
       fill_rect <- rectGrob(gp = gpar(fill='white', col='white'))
@@ -170,25 +186,48 @@ create_travel_yoy_density <- function(
         )
       )
       
-      scale <- max(c(var1[, sum(end_point - begin_point),
-                          by=list(F_SYSTEM, NHS, value_numeric)][, max(V1)],
-                     var1[NHS == 1, sum(end_point - begin_point),
-                          by = list(value_numeric)][, max(V1)],
-                     var2[, sum(end_point - begin_point),
-                          by=list(F_SYSTEM, NHS, value_numeric)][, max(V1)],
-                     var2[NHS == 1, sum(end_point - begin_point),
-                          by = list(value_numeric)][, max(V1)]
-      ))
       
-      natWeight <- scale / national[
-        , sum(end_point-begin_point),
-        by=list(F_SYSTEM,Interstate,NHS,value_numeric)][,max(V1)]
+      # Scale the national data to the state data
+      scale <- max(
+        c(
+          var1[F_SYSTEM == 1, sum(end_point - begin_point),
+               by=list(value_numeric)][, max(V1)],
+          var1[F_SYSTEM == 2, sum(end_point - begin_point),
+               by = list(value_numeric)][, max(V1)],
+          var1[Interstate == 1, sum(end_point - begin_point),
+               by=list(value_numeric)][, max(V1)],
+          var1[NHS == 2, sum(end_point - begin_point),
+               by = list(value_numeric)][, max(V1)],
+          var2[F_SYSTEM == 1, sum(end_point - begin_point),
+               by=list(value_numeric)][, max(V1)],
+          var2[F_SYSTEM == 2, sum(end_point - begin_point),
+               by = list(value_numeric)][, max(V1)],
+          var2[Interstate == 1, sum(end_point - begin_point),
+               by=list(value_numeric)][, max(V1)],
+          var2[NHS == 2, sum(end_point - begin_point),
+               by = list(value_numeric)][, max(V1)]
+        ))
       
+      natscale <- max(
+        c(
+          national[F_SYSTEM == 1, sum(end_point - begin_point),
+               by=list(value_numeric)][, max(V1)],
+          national[F_SYSTEM == 2, sum(end_point - begin_point),
+               by = list(value_numeric)][, max(V1)],
+          national[Interstate == 1, sum(end_point - begin_point),
+               by=list(value_numeric)][, max(V1)],
+          national[NHS == 2, sum(end_point - begin_point),
+               by = list(value_numeric)][, max(V1)]
+        )
+      )
+      
+      natWeight <- scale / natscale
+
       national[, end_point := natWeight * end_point]
       national[, begin_point := natWeight * begin_point]
       
       # Pad scale slightly so we don't have problems with the bar plots
-      scale <- scale * 1.001
+      scale <- scale * 1.01
       
       p11 <- barPlot(var1[Interstate==1],
                      labels,
@@ -244,7 +283,13 @@ create_travel_yoy_density <- function(
                      barcolor=col_year2,
                      scale=scale)
       
-      p31 <- barPlot(ifelse(is.null(national), national, national[Interstate==1]),
+      if ( is.null(national) ){
+        dnat <- national
+      } else {
+        dnat <- national[Interstate == 1]
+      }
+      
+      p31 <- barPlot(dnat,
                      labels,
                      title="",
                      barcolor=col_national,
@@ -252,8 +297,14 @@ create_travel_yoy_density <- function(
                      scale=scale,
                      showLabel=TRUE,
                      showAxis=TRUE)
+
+      if ( is.null(national) ){
+        dnat <- national
+      } else {
+        dnat <- national[NHS == 1]
+      }
       
-      p32 <- barPlot(ifelse(is.null(national), national, national[NHS == 1]),
+      p32 <- barPlot(dnat,
                      labels,
                      title="",
                      barcolor=col_national,
@@ -261,22 +312,34 @@ create_travel_yoy_density <- function(
                      scale=scale,
                      showAxis=!is.null(national))
       
-      p33 <- barPlot(ifelse(is.null(national), national, national[F_SYSTEM == 1]),
+      if ( is.null(national) ){
+        dnat <- national
+      } else {
+        dnat <- national[F_SYSTEM == 1]
+      }
+      
+      p33 <- barPlot(dnat,
                      labels,
                      title="",
                      barcolor=col_national,
                      topMargin=-0.5,
                      scale=scale,
                      showAxis=!is.null(national))
+
+      if ( is.null(national) ){
+        dnat <- national
+      } else {
+        dnat <- national[F_SYSTEM == 2]
+      }
       
-      p34 <- barPlot(ifelse(is.null(national), national, national[F_SYSTEM == 2]),
+      p34 <- barPlot(dnat, 
                      labels,
                      title="",
                      barcolor=col_national,
                      topMargin=-0.5,
                      scale=scale,
                      showAxis=!is.null(national))
-      
+
       obj <- arrangeGrob(p11, p12, p13, p14, textGrob(""),
                          p21, p22, p23, p24, textGrob(""),
                          p31, p32, p33, p34, textGrob(""),

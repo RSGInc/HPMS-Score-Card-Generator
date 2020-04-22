@@ -47,8 +47,10 @@ barPlot <- function(
   }
   
   # Define the dataset
-  dt <- d1[, value_numeric := factor(value_numeric, levels=levels)]
-  dt <- dt[, value_numeric := factor(value_numeric, levels=rev(levels(value_numeric)))]
+
+  dt <- copy(d1)
+  dt[, value_numeric := factor(value_numeric, levels=levels)]
+  dt[, value_numeric := factor(value_numeric, levels=rev(levels(value_numeric)))]
   
   dt <- dt[, sum(end_point - begin_point), by=list(value_numeric)]
   
