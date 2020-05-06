@@ -63,9 +63,9 @@ densityPlot <- function(
   topMargin=0, leftMargin=0, bottomMargin=0, rightMargin=0,
   showLabel=FALSE,
   showXaxis=FALSE,
-  plotType = 'density'){
+  density_type = 'density'){
   
-  plotfun = get(paste0('geom_', plotType))
+  plotfun = get(paste0('geom_', density_type))
   
   col_year1 = 'slategray'
   col_year2 = 'gray75'
@@ -83,7 +83,7 @@ densityPlot <- function(
   # 
   # ymax <- max(2.5 * ymax, ymax + 0.05)
   
-  if(plotType == 'bar'){
+  if(density_type == 'bar'){
     minvalue <- minvalue - 1
     maxvalue <- maxvalue + 1
     adjustment <- NA  # adjust is not used for geom_bar
@@ -104,7 +104,7 @@ densityPlot <- function(
     }
   } 
   
-  if ( plotType == 'density' ) {
+  if ( density_type == 'density' ) {
     breaks = waiver()
     width = NA  # width is not used for geom_density
     adjustment <- 1 #c(1,1)[densitytype]
@@ -185,7 +185,7 @@ densityPlot <- function(
       theme(axis.text.x=element_text(size=4.5, angle=30, hjust = 1,colour=col_noplot),
             plot.title = element_text(size=6.1, face="bold",colour = col_year1, hjust=0.5),
             axis.title.y=element_text(size=5, face="bold", angle = 90, hjust = 0.5, colour=col_year1),
-            axis.line.x.bottom= element_line(color=ifelse(plotType == 'bar', col_year1, 'white')))
+            axis.line.x.bottom= element_line(color=ifelse(density_type == 'bar', col_year1, 'white')))
     
     p2 <- p2 +     
       ggtitle(title) +
@@ -199,7 +199,7 @@ densityPlot <- function(
       theme(axis.text.x=element_text(size=4.5, angle=30, hjust = 1, colour=col_noplot),
             plot.title = element_text(size=6.1, face="bold",colour = col_noplot, hjust=0.5),
             axis.title.y=element_text(size=5, face="bold", angle = 90, hjust = 0.5, colour=col_year2),
-            axis.line.x.bottom= element_line(color=ifelse(plotType == 'bar', col_year2, 'white')))
+            axis.line.x.bottom= element_line(color=ifelse(density_type == 'bar', col_year2, 'white')))
     
     
     p3 <- p3 + 
@@ -214,7 +214,7 @@ densityPlot <- function(
       theme(axis.text.x=element_text(size=4.5, angle=30, hjust = 1,colour=col_year1),
             plot.title = element_text(size=6.1, face="bold",colour = "white", hjust=0.5),
             axis.title.y=element_text(size=5, face="bold", angle = 90, hjust = 0.5, colour=col_national),
-            axis.line.x.bottom= element_line(color=ifelse(plotType == 'bar', col_national, 'white')))
+            axis.line.x.bottom= element_line(color=ifelse(density_type == 'bar', col_national, 'white')))
     
     # browser()
     

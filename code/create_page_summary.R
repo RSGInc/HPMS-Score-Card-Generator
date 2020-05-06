@@ -79,11 +79,11 @@ create_page_summary <- function(
   
   # Row of three tables (row 5)
   tab51 <- create_summary_report(data, state, year, gVariables[x1,Name],
-                                 gVariables[x1,Type], gVariables[x1,Extent],
+                                 gVariables[x1, Data_Type], gVariables[x1,Extent],
                                  gVariables[x1,Extent_FS], ramps=ramps)
   if(show2){
     tab52 <- create_summary_report(data, state, year, gVariables[x2,Name],
-                          gVariables[x2,Type], gVariables[x2,Extent],
+                          gVariables[x2, Data_Type], gVariables[x2,Extent],
                           gVariables[x2,Extent_FS],ramps=ramps)
   } else {
     tab52 <- rectGrob(gp=gpar(fill="white", col = "white"))
@@ -91,7 +91,7 @@ create_page_summary <- function(
   
   if(show3){
     tab53 <- create_summary_report(data, state, year, gVariables[x3,Name],
-                                        gVariables[x3,Type], gVariables[x3,Extent],
+                                        gVariables[x3, Data_Type], gVariables[x3,Extent],
                                         gVariables[x3,Extent_FS], ramps=ramps)
   } else {
     tab53 <- rectGrob(gp=gpar(fill="white", col = "white"))
@@ -150,12 +150,12 @@ create_page_summary <- function(
   # Row of three horizontal stacked bar graphs (Row 7)
   
   plt71 <- create_travel_data_yoy(data, state, year, year_compare,
-                                  gVariables[x1,Name], gVariables[x1,HistType],
+                                  gVariables[x1,Name], gVariables[x1, YOY_Hist_Type],
                                   ramps=ramps)
   
   if ( show2 ){
     plt72 <-  create_travel_data_yoy(data, state, year, year_compare,
-                                     gVariables[x2,Name], gVariables[x2,HistType],
+                                     gVariables[x2,Name], gVariables[x2, YOY_Hist_Type],
                                      ramps=ramps)
   } else {
     plt72 <- rectGrob(gp=gpar(fill="white", col = "white"))
@@ -163,7 +163,7 @@ create_page_summary <- function(
   
   if ( show3 ){
     plt73 <- create_travel_data_yoy(data, state, year, year_compare,
-                                    gVariables[x3,Name], gVariables[x3,HistType],
+                                    gVariables[x3,Name], gVariables[x3, YOY_Hist_Type],
                                     ramps=ramps)
   } else {
     plt73 <- rectGrob(gp=gpar(fill="white", col = "white"))

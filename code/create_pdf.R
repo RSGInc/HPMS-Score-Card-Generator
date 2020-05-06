@@ -38,30 +38,30 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
   # showtext.begin() # this controls the issues with the fonts
 
   # Create title page -------------------------------------------------------
-
-  cat("Title page...")
-  ts <- Sys.time()
-  scores_list <- create_title_page(data, state, year, year_compare)
-  cat(paste0(" completed in: ",
-             round(difftime(Sys.time(), ts, units = "secs"), 2), " seconds!\n"))
-  # cat('\tMemory used: ', round(mem_used() / 1e9, 3), 'GB \n')
-
-
+  #
+  # cat("Title page...")
+  # ts <- Sys.time()
+  # scores_list <- create_title_page(data, state, year, year_compare)
+  # cat(paste0(" completed in: ",
+  #            round(difftime(Sys.time(), ts, units = "secs"), 2), " seconds!\n"))
+  # # cat('\tMemory used: ', round(mem_used() / 1e9, 3), 'GB \n')
+  # 
+  #
   # Cross-validation -------------------------------------------------------
-
-  # Show the results of the cross-validations
-  cat('Cross-validations...')
-  ts <- Sys.time()
-  create_cross_validation_page(scores_list$cross_validation, state, year)
-
-  cat(paste0(' completed in: ',
-             round(difftime(Sys.time(), ts, units='secs'), 2), ' seconds!\n'))
-  # cat('\tMemory used: ', round(mem_used() / 1e9, 3), 'GB \n')
-
-  # subset data
-  # data <- data[year_record %in% c(year, year_compare), ]
-
-
+  #
+  # # Show the results of the cross-validations
+  # cat('Cross-validations...')
+  # ts <- Sys.time()
+  # create_cross_validation_page(scores_list$cross_validation, state, year)
+  # 
+  # cat(paste0(' completed in: ',
+  #            round(difftime(Sys.time(), ts, units='secs'), 2), ' seconds!\n'))
+  # # cat('\tMemory used: ', round(mem_used() / 1e9, 3), 'GB \n')
+  # 
+  # # subset data
+  # # data <- data[year_record %in% c(year, year_compare), ]
+  # 
+  
   # Information page --------------------------------------------------------
 
   cat("Information page...")
@@ -72,24 +72,24 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
   # cat('\tMemory used: ', round(mem_used() / 1e9, 3), 'GB \n')
 
 
-  # Pavement: Detailed Review ------------------------------------------------
-
-  cat("Pavement Detailed Review...")
-  ts <- Sys.time()
-  create_pavement_detailed_review(data, state, year, year_compare)#, population = population)
-  cat(paste0(" completed in: ",
-             round(difftime(Sys.time(), ts, units = "secs"), 2), " seconds!\n"))
-  # cat('\tMemory used: ', round(mem_used() / 1e9, 3), 'GB \n')
-
-
-  # Traffic: Detailed Review --------------------------------------------------
-
-  cat("Traffic: Detailed Review...")
-  ts <- Sys.time()
-  create_traffic_detailed_review(data, state, year, year_compare)
-  cat(paste0(" completed in: ",
-             round(difftime(Sys.time(), ts, units = "secs"), 2), " seconds!\n"))
-  # cat('\tMemory used: ', round(mem_used() / 1e9, 3), 'GB \n')
+  # # Pavement: Detailed Review ------------------------------------------------
+  # 
+  # cat("Pavement: Detailed Review...")
+  # ts <- Sys.time()
+  # create_pavement_detailed_review(data, state, year, year_compare)#, population = population)
+  # cat(paste0(" completed in: ",
+  #            round(difftime(Sys.time(), ts, units = "secs"), 2), " seconds!\n"))
+  # # cat('\tMemory used: ', round(mem_used() / 1e9, 3), 'GB \n')
+  # 
+  # 
+  # # Traffic: Detailed Review --------------------------------------------------
+  # 
+  # cat("Traffic: Detailed Review...")
+  # ts <- Sys.time()
+  # create_traffic_detailed_review(data, state, year, year_compare)
+  # cat(paste0(" completed in: ",
+  #            round(difftime(Sys.time(), ts, units = "secs"), 2), " seconds!\n"))
+  # # cat('\tMemory used: ', round(mem_used() / 1e9, 3), 'GB \n')
 
 
   # Ramps: Detailed Review ----------------------------------------------------
@@ -106,14 +106,15 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
     x3 <- todo[i, 3]
 
     gPageNumber <<- gPageNumber + 1
-
+    
     create_page_summary(data, state, year, year_compare,
                         x1 = x1, x2 = x2, x3 = x3,
                         title = "ramps: detailed review", icontext = "r",
                         page = gPageNumber, ramps = TRUE)
+    
     cat(".")
   }
-
+  
   gPageNumber <<- gPageNumber + 1
   create_page_summary(data, state, year, year_compare,
                       x1 = todo[i + 1, 1], x2 = todo[i + 1, 2],

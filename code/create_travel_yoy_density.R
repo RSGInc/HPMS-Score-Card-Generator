@@ -1,7 +1,7 @@
 ###########################################################################
 #  Title: FHWA HPMS Score Card Generator
 #   Date: July 2016
-# Author: Jeff Dumont
+# Author: RSG, Inc
 #
 #
 # Description:
@@ -24,7 +24,14 @@ create_travel_yoy_density <- function(
   
   #if ( variable %in% c('SURFACE_TYPE', 'WIDENING_OBSTACLE', 'YEAR_LAST_IMPROV') ) browser()
   
-  type <- gVariables[Name==variable,Type]
+  # What data type?
+  type <- gVariables[Name == variable, Data_Type]
+  
+  # Is this a categorical (labeled) variable?
+  cont_variable = gVariablesLabels[Name == variable, NumLevels] == 0
+  
+  # For non-categorical, should we use a density plot or bar plot?
+  density_type = gVariables[Name == variable, Density_Type]
   
   # Which columns to keep from data?
   keep_cols = c('route_id', 'begin_point', 'end_point', 'value_numeric',
@@ -51,7 +58,7 @@ create_travel_yoy_density <- function(
     
   }
   
-  if(type == 1){ # Numeric
+  if(type == 'numeric'){ # Numeric
     
     idx_var1 = idx_var1 & data[, !is.na(value_numeric)]
     idx_var2 = idx_var2 & data[, !is.na(value_numeric)]
@@ -61,7 +68,7 @@ create_travel_yoy_density <- function(
     
   }
   
-  if ( type == 2 ){ # DATE
+  if ( type == 'date' ){ # DATE
     
     idx_var1 = idx_var1 & data[, !is.na(value_date)]
     idx_var2 = idx_var2 & data[, !is.na(value_date)]
@@ -80,6 +87,7 @@ create_travel_yoy_density <- function(
   # we have something to report (density plots require at least 3 points to draw)
   if( nrow(var1) > 2 | nrow(var2) > 2 ) {
     
+    message('Loading national data for ', variable)
     national  <- readRDS(paste0("data\\+National\\", yearcomparison, "\\",
                                 variable, ".rds"))
     if ( type == 2 ){
@@ -95,26 +103,48 @@ create_travel_yoy_density <- function(
     national <- national[!is.na(value_numeric)]
     national <- national[, keep_cols, with=FALSE]
     
-    if(gVariablesLabels[Name==variable, NumLevels]==0){ 
+    if(cont_variable){ 
       # make density plots
       
       # What is the maximum number of unique values in a plot?
-      
-      vals_p1 = sort(unique(c(var1[Interstate == 1, value_numeric],
-                         var2[Interstate == 1, value_numeric])))
-      
-      vals_p2 = sort(unique(c(var1[NHS == 1, value_numeric],
-                         var2[NHS == 1, value_numeric])))
-      
-      vals_p3 = sort(unique(c(var1[F_SYSTEM == 1, value_numeric],
-                         var2[F_SYSTEM == 1, value_numeric])))
-      
-      vals_p4 = sort(unique(c(var1[F_SYSTEM == 2, value_numeric],
-                         var2[F_SYSTEM == 2, value_numeric])))
-      
-      
-      unique_vals = sort(unique(c(var1$value_numeric, var2$value_numeric)))
-      nvalues <- max(c(length(vals_p1), length(vals_p2), length(vals_p3), length(vals_p4)))
+      if ( density_type == '' | is.na(density_type) ){
+        
+        
+        vals_p1 = sort(
+          unique(c(var1[Interstate == 1, value_numeric],
+                   var2[Interstate == 1, value_numeric],
+                   national[Interstate == 1, value_numeric]))
+        )
+        
+        vals_p2 = sort(
+          unique(
+            c(var1[NHS == 1, value_numeric],
+              var2[NHS == 1, value_numeric],
+              national[NHS == 1, value_numeric])
+          )
+        )
+        
+        vals_p3 = sort(
+          unique(
+            c(var1[F_SYSTEM == 1, value_numeric],
+              var2[F_SYSTEM == 1, value_numeric],
+              national[F_SYSTEM == 1, value_numeric])
+          )
+        )
+        
+        vals_p4 = sort(
+          unique(
+            c(var1[F_SYSTEM == 2, value_numeric],
+              var2[F_SYSTEM == 2, value_numeric],
+              national[F_SYSTEM == 1, value_numeric])
+          )
+        )
+        
+        unique_vals = sort(unique(c(var1$value_numeric, var2$value_numeric)))
+        nvalues <- max(c(length(vals_p1), length(vals_p2), length(vals_p3), length(vals_p4)))
+        
+        density_type = ifelse(nvalues <= nvalues_bar, 'bar', 'density')
+      }
       
       # Interstate
       p1 <- densityPlot(d1=var1[Interstate==1],
@@ -124,7 +154,7 @@ create_travel_yoy_density <- function(
                         year1=year,
                         year2=yearcomparison,
                         showLabel = !is.null(national),
-                        plotType = ifelse(nvalues <= nvalues_bar, 'bar', 'density'))
+                        density_type = density_type)
       
       # National Highway System
       p2 <- densityPlot(d1=var1[NHS==1],
@@ -133,7 +163,7 @@ create_travel_yoy_density <- function(
                         title=gF_SYSTEM_levels[2],
                         year1=year,
                         year2=yearcomparison,
-                        plotType = ifelse(nvalues <= nvalues_bar, 'bar', 'density'))
+                        density_type = density_type)
       
       # Other / Minor Arterials
       p3 <- densityPlot(d1=var1[F_SYSTEM==1],
@@ -143,7 +173,7 @@ create_travel_yoy_density <- function(
                         year1=year,
                         year2=yearcomparison,
                         showLabel = !is.null(national),
-                        plotType = ifelse(nvalues <= nvalues_bar, 'bar', 'density'))
+                        density_type = density_type)
       
       # Collectors and Locals
       p4 <- densityPlot(d1=var1[F_SYSTEM==2],
@@ -152,7 +182,7 @@ create_travel_yoy_density <- function(
                         title=gF_SYSTEM_levels[4],
                         year1=year,
                         year2=yearcomparison,
-                        plotType = ifelse(nvalues <= nvalues_bar, 'bar', 'density'))
+                        density_type = density_type)
       
       spacer_height <- 0.07
       fill_rect <- rectGrob(gp = gpar(fill='white', col='white'))

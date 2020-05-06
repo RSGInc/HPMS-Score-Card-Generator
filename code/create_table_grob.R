@@ -11,7 +11,7 @@
 #
 ###########################################################################
 
-create_table_grob <- function(result,variable_type)
+create_table_grob <- function(result, variable_type)
 {
   
   result[,groupCat:=gF_SYSTEM_levels[as.numeric(result[,groupCat])]]
@@ -31,7 +31,7 @@ create_table_grob <- function(result,variable_type)
   setnames(result,"lanemiles","Total \nLane Mi")
   setnames(result,"expandedlanemiles","Tot. Expanded\nLane Mi")
 
-  if(variable_type < 3)
+  if(variable_type %in% c('numeric', 'date'))
   {
     
     setnames(result,"min","Min")

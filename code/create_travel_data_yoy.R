@@ -26,9 +26,9 @@ create_travel_data_yoy <- function(
   ramps
 ){
   
-  type <- gVariables[Name == variable,Type]
+  type <- gVariables[Name == variable, Data_Type]
   
-  if(type == 1){
+  if(type == 'numeric'){
     if(ramps){
       var.1 = data[state_code == state & year_record == year &
                      data_item == variable & FACILITY_TYPE == 4,
@@ -48,7 +48,7 @@ create_travel_data_yoy <- function(
     }   
   }
   
-  if(type == 2){
+  if(type == 'date'){
     if(ramps){
       var.1 = data[state_code == state&year_record == year &
                      data_item == variable & FACILITY_TYPE == 4 & !is.na(value_date),
