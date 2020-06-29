@@ -14,6 +14,7 @@ library('data.table')
 library('stringr')
 library('lubridate')
 library('RSocrata')
+source('db_import/socrata_functions.R')
 
 email = 'matt.landis@rsginc.com'
 password = 'tX522b7Dz4xS'
@@ -139,7 +140,7 @@ col_type_chk = c(
 coltype_chk_dt = data.table(field = names(col_type_chk), chk = col_type_chk)
 
 urls = c(
-  #new_england = 'https://datahub.transportation.gov/resource/yed4-dz8a.csv',
+  new_england = 'https://datahub.transportation.gov/resource/yed4-dz8a.csv',
   heartland = 'https://datahub.transportation.gov/resource/pu8w-cqik.csv',
   gulf = 'https://datahub.transportation.gov/resource/rf6n-m9pz.csv',
   appalachia = 'https://datahub.transportation.gov/resource/j6bh-426b.csv',
@@ -157,6 +158,10 @@ for ( i in seq_along(urls) ){
   dt = read.socrata(url=urls[i], email=email, password=password)
   setDT(dt)
   
+  if ( names(urls)[i] == 'mid_atlantic' ){
+    dt[, value_date := ymd_hms(value_date)]
+  }
+  
   col_type_obs = sapply(dt, function(x) class(x)[1])
   coltype_obs_dt = data.table(field = names(col_type_obs), obs = col_type_obs)
   
@@ -164,8 +169,8 @@ for ( i in seq_along(urls) ){
   
   if ( coltype_dt[chk != obs, .N] > 0 ){
     message('col type mismatch - writing to file')
-    filename = file.path(raw_dir, paste0(names(urls)[i], '.csv'))
-    fwrite(dt, filename)
+    filename = file.path(raw_dir, paste0(names(urls)[i], '.rds'))
+    saveRDS(dt, filename)
   } else {
     message('writing to database')
     dbWriteTable(con, tbl_name, dt, append=TRUE)
@@ -176,5 +181,24 @@ for ( i in seq_along(urls) ){
 dt = tbl(con, from=tbl_name)
 glimpse(dt)
 
-dt %>%
-  count(year_record, state_code)
+counts_local = dt %>%
+  count(state_code) %>%
+  collect() %>%
+  rename(n_local = n)
+
+
+# Check that we have the right number of rows for each state.
+
+counts_remote_list = list()
+for ( i in seq_along(urls) ){
+  message('Fetching counts for ', names(urls)[i])
+  url = URLencode(paste0(urls[i], '?$select=state_code,data_item'))
+  url = paste0(urls[i], '?$query=SELECT state_code, count(state_code) GROUP BY state_code ORDER BY state_code')
+  counts_remote_list[[names(urls)[i] ]] = read.socrata2(url, email=email, password=password)
+}
+
+counts_remote = rbindlist(counts_remote_list, idcol = 'region')
+setnames(counts_remote, 'count_state_code', 'n_remote')
+
+counts_check = merge(counts_remote, counts_local, by = 'state_code', all=TRUE)
+counts_check[n_local != n_remote, .N]
