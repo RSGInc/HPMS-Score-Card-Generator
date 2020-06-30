@@ -68,7 +68,7 @@ raw_dir <- file.path('C:/Users/matt.landis/shared_data/HPMS_download_20200626')
 
 # Work ======================================================================
 
-con = connect_to_db('burmdlppw01', 'HPMS_stage', intsecurity = TRUE)
+con = connect_to_db('burmdlppw01', 'HPMS', intsecurity = TRUE)
 
 
 # Timeliness table ------------------------------------------------------
@@ -87,11 +87,11 @@ tbl[, year_record := as.integer(year_record)]
 tbl[, state_code := as.integer(state_code)]
 tbl[, submitted_on := mdy_hm(submitted_on)]
 
-tbl_name = 'Timelinesstable'
+tbl_name = 'tt_stage'
 dbWriteTable(con, name=tbl_name, value=tbl, overwrite=TRUE)
 
 # Check
-tt = tbl(con, from='Timelinesstable')
+tt = tbl(con, from=tbl_name)
 glimpse(tt)
 tt %>%
   count(State_Code) %>%
@@ -110,7 +110,7 @@ ss = read.socrata(url=url, email=email, password=password)
 setDT(ss)
 str(ss)
 
-tbl_name = 'Review_Sample_Sections'
+tbl_name = 'rss_stage'
 dbWriteTable(con, name=tbl_name, value=ss, overwrite=TRUE)
 
 # Check
@@ -120,7 +120,7 @@ glimpse(ss)
 
 # Load Sections data ---------------------------------------------------
 
-tbl_name <- 'Review_Sections'
+tbl_name <- 'rs_stage'
 
 
 # For checking column types
@@ -201,4 +201,170 @@ counts_remote = rbindlist(counts_remote_list, idcol = 'region')
 setnames(counts_remote, 'count_state_code', 'n_remote')
 
 counts_check = merge(counts_remote, counts_local, by = 'state_code', all=TRUE)
-counts_check[n_local != n_remote, .N]
+
+stopifnot(counts_check[n_local != n_remote, .N] == 0)
+
+
+# Move data from stage table to production table =======================
+
+con = connect_to_db('burmdlppw01', 'HPMS', intsecurity = TRUE)
+current_yr = 2019
+
+
+# Timelinesstable --------------------------------------------------------------
+
+# Check for existing current year
+
+tt = tbl(con, from='Timelinesstable')
+
+yr_count = tt %>%
+  filter(year_record == current_yr) %>%
+  count() %>%
+  pull(n)
+
+if ( yr_count > 0 ){
+  dbExecute(con, paste0('DELETE FROM Timelinesstable WHERE year_record = ',
+                        current_yr))
+}
+
+yr_count = tt %>%
+  filter(year_record == current_yr) %>%
+  count() %>%
+  pull(n)
+
+stopifnot(yr_count== 0)
+
+old_fields = dbListFields(con, 'Timelinesstable')
+new_fields = dbListFields(con, 'tt_stage')
+
+setdiff(new_fields, tolower(old_fields))
+setdiff(tolower(old_fields), new_fields)
+
+# Copy current year into full table.
+sql = paste0('insert into Timelinesstable(', paste(new_fields, collapse=', '),
+             ') select ', paste(new_fields, collapse=', '), ' from tt_stage')
+dbExecute(con, sql)
+          
+
+stopifnot(
+  con %>%
+    tbl('Timelinesstable') %>%
+    filter(year_record == current_yr) %>%
+    count() %>%
+    pull(n) ==
+    con %>%
+    tbl('tt_stage') %>%
+    count() %>%
+    pull(n)
+)
+
+
+
+# Sample Sections --------------------------------------------------------------
+
+
+ss = tbl(con, from='Review_Sample_Sections')
+
+yr_count = ss %>%
+  filter(year_record == current_yr) %>%
+  count() %>%
+  pull(n)
+
+if ( yr_count > 0 ){
+  dbExecute(con, paste0('DELETE FROM Review_Sample_Sections WHERE year_record = ',
+                             current_yr))
+}
+
+yr_count = ss %>%
+  filter(year_record == 2019) %>%
+  count() %>%
+  pull(n)
+
+stopifnot(yr_count== 0)
+
+old_fields = dbListFields(con, 'Review_Sample_Sections')
+new_fields = dbListFields(con, 'rss_stage')
+
+setdiff(new_fields, tolower(old_fields))
+
+# Create StateYearKey
+dbExecute(con, 'alter table rss_stage add StateYearKey as (state_code * 100 + year_record % 1000)')
+
+# Copy current year into full table.
+dbExecute(con,
+          'insert into Review_Sample_Sections(year_record, state_code, route_id, begin_point, end_point, section_length, sample_id, expansion_factor, stateyearkey) 
+           select year_record, state_code, route_id, begin_point, end_point,
+           section_length, sample_id, expansion_factor, stateyearkey from rss_stage')
+
+stopifnot(
+  con %>%
+      tbl('Review_Sample_Sections') %>%
+      filter(year_record == current_yr) %>%
+      count() %>%
+      pull(n) ==
+    con %>%
+      tbl('rss_stage') %>%
+      count() %>%
+      pull(n)
+)
+
+
+
+# Review Sections --------------------------------------------------------------
+
+prod_table = 'Review_Sections'
+stage_table = 'rs_stage'
+
+prod = tbl(con, from=prod_table)
+
+yr_count = prod %>%
+  filter(year_record == current_yr) %>%
+  count() %>%
+  pull(n)
+
+if ( yr_count > 0 ){
+  sql = paste0('DELETE FROM ', prod_table, ' WHERE year_record = ',
+               current_yr)
+  dbExecute(con, sql)
+}
+
+yr_count = prod %>%
+  filter(year_record == current_yr) %>%
+  count() %>%
+  pull(n)
+
+stopifnot(yr_count== 0)
+
+old_fields = dbListFields(con, prod_table)
+new_fields = dbListFields(con, stage_table)
+
+setdiff(new_fields, tolower(old_fields))
+new_fields = new_fields[!new_fields %in% 'natroute_id']
+
+setdiff(tolower(old_fields), new_fields)
+
+# Create StateYearKey
+sql = paste0('alter table ', stage_table,
+             ' add StateYearKey as (state_code * 100 + year_record % 1000)')
+dbExecute(con, sql)
+
+
+# Copy current year into full table.
+sql = paste0('insert into ', prod_table, '(', paste(new_fields, collapse=', '),
+             ') select ', paste(new_fields, collapse=', '), ' from ', stage_table)
+dbExecute(con, sql)
+
+
+stopifnot(
+  con %>%
+    tbl(prod_table) %>%
+    filter(year_record == current_yr) %>%
+    count() %>%
+    pull(n) ==
+    con %>%
+    tbl(stage_table) %>%
+    count() %>%
+    pull(n)
+)
+
+dbDisconnect(con)
