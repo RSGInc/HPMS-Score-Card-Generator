@@ -414,11 +414,23 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
   #  (nrow(dt_cross) + nrow(dt_quality))
   
   
+  # Summary scores ------------------------------------------------------------
+  # Completeness, quality, and timeliness scores ------------------------------
+  tscore <- time_weight * getTimelinessScore(state, year, submission_deadline)[1, 1]
+  cscore <-
+    round(complete_weight * CompletedScore / CompletedScoreMax, 1)
+  qscore <-
+    round(quality_weight * QualityCross, 1)
+  
+
+  # Write scores ---------------------------------------------------
   # Write out the quality scores ----------------
   
-  path <- file.path('data', getStateLabelFromNum(data$state_code[1]))
-  file <- paste0(getStateLabelFromNum(data$state_code[1]), '_', year, '_', year_compare,
-                 '_quality_summary.csv')
+  state_num = data$state_code[1]
+  state_name = getStateLabelFromNum(state_num)
+  state_abb = getStateAbbrFromNum(state_num)
+  path <- file.path('data', state_name)
+  file <- paste0(state_name, '_', year, '_', year_compare, '_quality_summary.csv')
   fullpath <- file.path(path, file)
   
   if (!dir.exists(path)) dir.create(path)
@@ -426,8 +438,8 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
   write.csv(x=dt_quality, file=fullpath, na='', row.names=FALSE)
 
   # Write out the cross-validation scores ----------------
-  path <- file.path('data', getStateLabelFromNum(data$state_code[1]))
-  file <- paste0(getStateLabelFromNum(data$state_code[1]), '_', year,
+  path <- file.path('data', state_name)
+  file <- paste0(state_name, '_', year,
                  '_cross_validation_summary.csv')
   fullpath <- file.path(path, file)
   
@@ -435,6 +447,35 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
   
   write.csv(x=dt_cross, file=fullpath, na='', row.names=FALSE)
   
+  # Write out high level scores ---------------------------
+  
+  scores <- data.table(
+    state_num = state_num,
+    state = state_abb,
+    timely = tscore,
+    complete = cscore,
+    quality = qscore,
+    quality_sub = qMean,
+    cross_sub = cvMean,
+    total = tscore + qscore + cscore,
+    datetime = as.character(now())
+  )
+  
+  fullpath = file.path('output/_score_summary.csv')
+  
+  if ( file.exists(fullpath) ){
+    
+    all_scores = fread(file=fullpath)
+    all_scores = all_scores[state != state_abb]
+    all_scores = rbind(all_scores, scores)
+    fwrite(all_scores, fullpath)
+    
+  } else {
+    
+    fwrite(scores, fullpath)
+  
+  }
+
   
   # legend ----------------------------------------------------------------
   
@@ -602,19 +643,6 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
   
   # Summary ============================================================================
   
-  # summary section of the report
-  
-  # Completeness, quality, and timeliness scores --------------------------------------
-  tscore <- time_weight * getTimelinessScore(state, year, submission_deadline)
-  cscore <-
-    round(complete_weight * CompletedScore / CompletedScoreMax, 1)
-  qscore <-
-    round(quality_weight * QualityCross, 1)
-  
-  scores <- data.table(
-    type = c("Timeliness", "Completeness", "Quality"),
-    score = c(tscore, cscore, qscore)
-  )
   
   if (tscore > 0)
   {

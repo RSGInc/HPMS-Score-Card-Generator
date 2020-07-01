@@ -111,7 +111,7 @@ askYears <- function(data){
   
   while(!(year %in% validyears)){
     
-    year  <- getUserInput(prompt="\nWhat year(s) would you like to import?\nEnter a single year or a range as in 2012-2014.\nFor all years, type ALL.")
+    year  <- getUserInput(prompt="\nWhat year(s) would you like to import?\nEnter a single year or a range as in 2017-2019.\nFor all years, type ALL.")
     
     if(!(year %in% validyears))
     {

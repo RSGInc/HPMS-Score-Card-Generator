@@ -21,20 +21,19 @@
 #
 ###########################################################################
 
-submission_deadline = '2019-06-17'   # Deadline for 2018 data
+submission_deadline = '2019-06-15'   # Deadline for 2019 data
 # submission_deadline = '2019-06-16' # Usual deadline
-
-# Set memory limit to use virtual memory
-invisible(memory.limit(64000))  # Set memory limit to 64 Gb
 
 # Load Code
 invisible(sapply(X = list.files(path = "code", pattern = "*.R$",
                                 full.names = TRUE)[-1], FUN = source))
 
 # Run Tool
-# Run()
+# Run()  # Import all states
+# updateNation()
+# Run scorecards via command line tool.
 
 debugmode = TRUE
-# debug(create_pdf)
-Run(task = 2, state = 'WA', year = 2018, year_compare = 2017)
+  
+Run(task = 2, state = 'IL', year = 2019, year_compare = 2018)
 # Run(task = 1, state = 'CO', year = 2017)
