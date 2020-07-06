@@ -1,0 +1,51 @@
+---
+title: "Untitled"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(ggplot2)
+```
+
+## Column {data-width=650}
+
+
+### Chart A
+
+```{r}
+
+```
+
+## Column {data-width=350, .tabset}
+
+### Chart B
+
+```{r}
+
+```
+
+
+### Chart C and D
+
+#### Chart C
+
+```{r}
+p1 = ggplot(cars, aes(speed)) +
+  geom_dotplot()
+p1
+```
+
+
+#### Chart D
+
+```{r}
+
+p2 = ggplot(cars, aes(dist)) +
+  geom_dotplot()
+p2
+```
+
