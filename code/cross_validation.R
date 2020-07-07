@@ -8,6 +8,7 @@ calc_cross_validation = function(data, year){
   # Tests commented out are evaluated as outliers
   results = list()
   results[["53"]] = summarize_validation(cross_validation_53(data))
+  
   results[["x"]]  = summarize_validation(cross_validation_x(data))
   results[["16"]] = summarize_validation(cross_validation_16(data))
   results[["15"]] = summarize_validation(cross_validation_15(data))
@@ -35,7 +36,7 @@ calc_cross_validation = function(data, year){
   results[["46.2"]] = summarize_validation(cross_validation_46(data, 'RUTTING'))
   results[["46.3"]] = summarize_validation(cross_validation_46(data, 'FAULTING'))
   results[["46.4"]] = summarize_validation(cross_validation_46(data, 'CRACKING_PERCENT'))
-
+  
   results[["61.1"]] = summarize_validation(cross_validation_61(data, 'IRI'))
   results[["61.2"]] = summarize_validation(cross_validation_61(data, 'RUTTING'))
   results[["61.3"]] = summarize_validation(cross_validation_61(data, 'FAULTING'))
@@ -1075,7 +1076,7 @@ cross_validation_61 = function(data, variable){
                          num_sections = sum(num_sections,na.rm=TRUE),
                          mileage      = sum(end_point-begin_point)
                        ),
-                       .(applies = is.na(value_text) & F_SYTEMorig == 1, 
+                       .(applies = (is.na(value_text) | value_text == '') & F_SYTEMorig == 1, 
                          passes  = year(value_date) >= year_record - 2)][order(applies,passes)]
   
   if(nrow(results[applies == TRUE])==0){
