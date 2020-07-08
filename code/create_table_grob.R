@@ -11,9 +11,19 @@
 #
 ###########################################################################
 
-create_table_grob <- function(result, variable_type)
-{
+create_table_grob <- function(result, variable_type){
+
+  # Set the table theme
+  thm <- ttheme_default(
+    core    = list(fg_params=list(col='black', fontsize=4.5, hjust=1, x=0.95),
+                   bg_params=list(fill='grey95'),
+                   padding=unit(c(0.1, 0.1), 'inches')),
+    colhead = list(fg_params=list(col='black', fontsize=4.0,
+                                  fontface='bold', hjust=1, x=0.95),
+                   bg_params=list(fill='grey90'),
+                   padding=unit(c(0.1, 0.1), 'inches')))
   
+  # Rename groupCat levels
   result[,groupCat:=gF_SYSTEM_levels[as.numeric(result[,groupCat])]]
   
   # no longer printed these to save space
@@ -23,6 +33,15 @@ create_table_grob <- function(result, variable_type)
   #result[,min:=NULL]
   #result[,max:=NULL]
 
+  # Convert NAs to zeros -- if miles are NA, means that no sections were found
+  # in that Funct System
+  
+  result[is.na(miles), miles := 0]
+  result[is.na(expandedmiles), expandedmiles := 0]
+  result[is.na(lanemiles), lanemiles := 0]
+  result[is.na(expandedlanemiles), expandedlanemiles := 0]
+  
+  
   setnames(result,"groupCat","Functional\nSystem")
   #setnames(result,"count","N")
   #setnames(result,"count.na","N (NA)")
@@ -31,8 +50,7 @@ create_table_grob <- function(result, variable_type)
   setnames(result,"lanemiles","Total \nLane Mi")
   setnames(result,"expandedlanemiles","Tot. Expanded\nLane Mi")
 
-  if(variable_type %in% c('numeric', 'date'))
-  {
+  if(variable_type %in% c('numeric', 'date')){
     
     setnames(result,"min","Min")
     #setnames(result,"mean","Mean")
@@ -40,18 +58,9 @@ create_table_grob <- function(result, variable_type)
     setnames(result,"max","Max")
   }
 
-  thm <- ttheme_default(
-    core    = list(fg_params=list(col='black', fontsize=4.5, hjust=1, x=0.95),
-                   bg_params=list(fill='grey95'),
-                   padding=unit(c(0.1, 0.1), 'inches')),
-    colhead = list(fg_params=list(col='black', fontsize=4.0,
-                                  fontface='bold', hjust=1, x=0.95),
-                   bg_params=list(fill='grey90'),
-                   padding=unit(c(0.1, 0.1), 'inches')))
-
-    ob <- tableGrob(result, rows=NULL, theme=thm )
-    
-    ob <- vertically_align(ob)
-    
-    return(ob)
-  }
+  ob <- tableGrob(result, rows=NULL, theme=thm )
+  
+  ob <- vertically_align(ob)
+  
+  return(ob)
+}

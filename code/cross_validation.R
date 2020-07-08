@@ -1492,12 +1492,14 @@ cross_validation_9 = function(data){
 
 ###################################################################
 
-cross_validation_2 = function(data){
-
+cross_validation_2 = function(data){  
   # only allow Sample where Facility_Type IN 1,2 and 
   # (F_System = 1-5 or F_System = 6 and Urban Code <99999)
   
   #browser()
+  
+  # Note - this test is not restricted to a particular data_item so the 
+  # mileage and number of sections are much higher than the total mileage
   
   comparison = data[, 
                     .(route_id, begin_point, end_point, num_sections,

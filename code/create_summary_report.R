@@ -30,10 +30,10 @@ create_summary_report <- function(
   
   
   if(variable_extent %in% c("SP", "SP*", "FE*")){
-    result1[, expandedmiles := sum((end_point-begin_point) * expansion_factor,
+    result1[, expandedmiles := sum((end_point - begin_point) * expansion_factor,
                                    na.rm=TRUE), by=list(F_SYSTEM)]
 
-    result1[, expandedlanemiles := sum((end_point-begin_point) * THROUGH_LANES * expansion_factor,
+    result1[, expandedlanemiles := sum((end_point - begin_point) * THROUGH_LANES * expansion_factor,
                                        na.rm=TRUE), by=list(F_SYSTEM)]
 
     if(variable_extent_fs == 4){ # F_SYSTEM 1 is unexpanded
@@ -158,6 +158,7 @@ create_summary_report <- function(
     result <- merge(data.table(groupCat=1:length(gF_SYSTEM_levels)),
                     result, by="groupCat", all.x=T)
   }
+
   
   if(variable_type %in% c('numeric', 'date') &
      !variable %in% c('YEAR_LAST_CONSTRUCTION', 'YEAR_LAST_IMPROV') ){
