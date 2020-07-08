@@ -38,7 +38,7 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
   # showtext.begin() # this controls the issues with the fonts
 
   # Create title page -------------------------------------------------------
-  #
+
   cat("Title page...")
   ts <- Sys.time()
   scores_list <- create_title_page(data, state, year, year_compare)
@@ -61,7 +61,7 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
   # subset data
   # data <- data[year_record %in% c(year, year_compare), ]
   #
-  
+
   # Information page --------------------------------------------------------
 
   cat("Information page...")
@@ -106,15 +106,15 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
     x3 <- todo[i, 3]
 
     gPageNumber <<- gPageNumber + 1
-    
+
     create_page_summary(data, state, year, year_compare,
                         x1 = x1, x2 = x2, x3 = x3,
                         title = "ramps: detailed review", icontext = "r",
                         page = gPageNumber, ramps = TRUE)
-    
+
     cat(".")
   }
-  
+
   gPageNumber <<- gPageNumber + 1
   create_page_summary(data, state, year, year_compare,
                       x1 = todo[i + 1, 1], x2 = todo[i + 1, 2],

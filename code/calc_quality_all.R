@@ -84,6 +84,8 @@ calcQualityAll <- function(data, year, year_compare){
         yoy_mean <- NA
       }
       
+      if(yoy_mean > 100 | yoy_mean == 0) browser()
+      
       dt_output$YOY_Score[i] <- round(yoy_mean)
       
       #outliers[is.nan(as.numeric(perc_miles)), perc_miles := as.character(0)]
