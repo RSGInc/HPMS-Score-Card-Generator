@@ -71,7 +71,7 @@ TRUCK,66,National Truck Network,SN,Y,Y,numeric,,2,FE**,0,1,2,,N,,,,N,1,1
 TURN_LANES_L,13,Left Turn Lanes,I,Y,Y,numeric,,1,SP,0,1,6,,N,,,,N,1,1
 TURN_LANES_R,12,Right Turn Lanes,I,Y,Y,numeric,,1,SP,0,1,6,,N,,,,N,1,1
 URBAN_CODE,2,Urban Code,I,Y,N,numeric,density,2,FE + R,0,,,,N,,,,Y,1,1
-WIDENING_OBSTACLE,41,Widening Obstacle,G,Y,Y,numeric,,2,SP,0,,,,N,,,,N,1,1
+WIDENING_OBSTACLE,41,Widening Obstacle,G,Y,Y,text,,2,SP,0,,,,N,,,,N,1,1
 WIDENING_POTENTIAL,42,Widening Potential,G,Y,Y,numeric,bar,2,SP,0,0,9,,N,,,,N,1,1
 YEAR_LAST_CONSTRUCTION,55,Year of Last Construction,P,Y,Y,date,density,2,SP,0,,,,N,,,,N,1,1
 YEAR_LAST_IMPROV,54,Year of Last Improvement,P,Y,Y,date,density,2,SP,0,,,,N,,,,N,1,1

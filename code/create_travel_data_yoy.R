@@ -32,19 +32,19 @@ create_travel_data_yoy <- function(
     if(ramps){
       var.1 = data[state_code == state & year_record == year &
                      data_item == variable & FACILITY_TYPE == 4,
-                   list(route_id,begin_point,end_point,value_numeric,F_SYSTEM)]
+                   list(route_id,begin_point,end_point, value.1 = value_numeric, F_SYSTEM)]
       
       var.2 = data[state_code == state & year_record == yearcomparison &
                      data_item == variable & FACILITY_TYPE == 4,
-                   list(route_id,begin_point,end_point,value_numeric,F_SYSTEM)]
+                   list(route_id,begin_point,end_point, value.2 = value_numeric, F_SYSTEM)]
     } else {
       var.1 = data[state_code == state & year_record == year &
                      data_item == variable & FACILITY_TYPE != 4,
-                   list(route_id,begin_point,end_point,value_numeric,F_SYSTEM)]
+                   list(route_id,begin_point,end_point, value.1 = value_numeric, F_SYSTEM)]
       
       var.2 = data[state_code == state & year_record == yearcomparison &
                      data_item == variable & FACILITY_TYPE != 4,
-                   list(route_id,begin_point,end_point,value_numeric,F_SYSTEM)]       
+                   list(route_id,begin_point,end_point, value.2 = value_numeric, F_SYSTEM)]       
     }   
   }
   
@@ -52,23 +52,43 @@ create_travel_data_yoy <- function(
     if(ramps){
       var.1 = data[state_code == state&year_record == year &
                      data_item == variable & FACILITY_TYPE == 4 & !is.na(value_date),
-                   list(route_id,begin_point,end_point,value_numeric=year(value_date),F_SYSTEM)]
+                   list(route_id,begin_point,end_point,value.1 = year(value_date),F_SYSTEM)]
       
       var.2 = data[state_code == state&year_record == yearcomparison &
                      data_item == variable & FACILITY_TYPE == 4 & !is.na(value_date),
-                   list(route_id,begin_point,end_point,value_numeric=year(value_date),F_SYSTEM)]
+                   list(route_id,begin_point,end_point,value.2 = year(value_date),F_SYSTEM)]
       
     } else {
       var.1 = data[state_code == state & year_record == year &
                      data_item == variable & FACILITY_TYPE != 4 & !is.na(value_date),
-                   list(route_id,begin_point,end_point,value_numeric=year(value_date),F_SYSTEM)]
+                   list(route_id,begin_point,end_point, value.1 = year(value_date),F_SYSTEM)]
       
       var.2 = data[state_code == state & year_record == yearcomparison &
                      data_item == variable & FACILITY_TYPE != 4 & !is.na(value_date),
-                   list(route_id,begin_point,end_point,value_numeric=year(value_date),F_SYSTEM)]       
+                   list(route_id,begin_point,end_point,value.2 = year(value_date),F_SYSTEM)]       
     }
   }
   
+  if(type == 'text'){
+    if(ramps){
+      var.1 = data[state_code == state & year_record == year &
+                     data_item == variable & FACILITY_TYPE == 4 & !is.na(value_text),
+                   list(route_id,begin_point,end_point,value.1 = value_text,F_SYSTEM)]
+      
+      var.2 = data[state_code == state&year_record == yearcomparison &
+                     data_item == variable & FACILITY_TYPE == 4 & !is.na(value_text),
+                   list(route_id,begin_point,end_point,value.2 = value_text,F_SYSTEM)]
+      
+    } else {
+      var.1 = data[state_code == state & year_record == year &
+                     data_item == variable & FACILITY_TYPE != 4 & !is.na(value_text),
+                   list(route_id,begin_point,end_point, value.1 = value_text,F_SYSTEM)]
+      
+      var.2 = data[state_code == state & year_record == yearcomparison &
+                     data_item == variable & FACILITY_TYPE != 4 & !is.na(value_text),
+                   list(route_id,begin_point,end_point,value.2 = value_text,F_SYSTEM)]       
+    }
+  }
   expectedChange <- gVariables[Name == variable, YOY_Change]
   
   if(expectedChange == "Y"){
@@ -81,12 +101,13 @@ create_travel_data_yoy <- function(
   
   # this does the merge at the most disaggregate level
   
-  var.yoy = var.1[ var.2, on = .(route_id, begin_point, end_point)]
+  var.yoy = merge(var.1, var.2, by = c('route_id', 'begin_point', 'end_point'),
+                  all=FALSE)
   
   if(nrow(var.yoy) > 0){ # we have something to report
     
     if(histtype == 1){
-      report = var.yoy[, change := value_numeric / i.value_numeric]
+      report = var.yoy[, change := value.1 / value.2]
       report[, change := (change - 1) * 100]
       
       # need to use geom_bar and construct a custom histogram
@@ -100,7 +121,7 @@ create_travel_data_yoy <- function(
       report[is.na(change), color := factor("No Match")]
       
     } else {
-      report <- var.yoy[, bin2 := factor(1 + 1 * (value_numeric != i.value_numeric), 
+      report <- var.yoy[, bin2 := factor(1 + 1 * (value.1 != value.2), 
                                          levels=c(1,2), 
                                          labels=c("No Change","Changed"))]
       report[as.numeric(bin2) == 1, color := "No"]
