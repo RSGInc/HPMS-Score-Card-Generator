@@ -206,14 +206,16 @@ create_page_summary <- function(
   if(show2){
     add_summary_col_labels(
     paste0(gVariables[x2,Label],
-           if(ramps){""}else{quality_results[Item_Number==gVariables[x2,Item_Number],paste0("\n(o:",Outlier_Score,"/a:",Adjacency_Score,"/y:",YOY_Score,")")]}),2
+           if(ramps){""}else{quality_results[Item_Number==gVariables[x2,Item_Number],
+                                             paste0("\n(o:",Outlier_Score,"/a:",Adjacency_Score,"/y:",YOY_Score,")")]}),2
     )
   }
   
   if(show3){
     add_summary_col_labels(
     paste0(gVariables[x3,Label],
-           if(ramps){""}else{quality_results[Item_Number==gVariables[x3,Item_Number],paste0("\n(o:",Outlier_Score,"/a:",Adjacency_Score,"/y:",YOY_Score,")")]}),3
+           if(ramps){""}else{quality_results[Item_Number==gVariables[x3,Item_Number],
+                                             paste0("\n(o:",Outlier_Score,"/a:",Adjacency_Score,"/y:",YOY_Score,")")]}),3
     )
   }
   

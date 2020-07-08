@@ -497,7 +497,6 @@ FormatDataSet <- function(dat, state_abbr, year) {
   # # Check imported data against summary table -------------------------------
   # state_code <- getStateNumFromCode(state_abbr)
   # 
-  # browser()
   # check <- checkSummary(year, state_code, data_exp)
   # 
   # if ( !isTRUE(check) ){

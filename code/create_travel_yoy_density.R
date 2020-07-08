@@ -22,7 +22,7 @@ create_travel_yoy_density <- function(
   nvalues_bar = 11
 ){
   
-  #if ( variable %in% c('SURFACE_TYPE', 'WIDENING_OBSTACLE', 'YEAR_LAST_IMPROV') ) browser()
+  #if ( variable %in% c('YEAR_LAST_CONSTRUCTION', 'YEAR_LAST_IMPROV') ) browser()
   
   # What data type?
   type <- gVariables[Name == variable, Data_Type]
@@ -57,32 +57,19 @@ create_travel_yoy_density <- function(
     idx_var2 = idx_var2 & data[, FACILITY_TYPE != 4]
     
   }
-  
-  if(type == 'numeric'){ # Numeric
-    
-    idx_var1 = idx_var1 & data[, !is.na(value_numeric)]
-    idx_var2 = idx_var2 & data[, !is.na(value_numeric)]
-    
-    var1 <- data[idx_var1, keep_cols, with=FALSE]
-    var2 <- data[idx_var2, keep_cols, with=FALSE]
-    
-  }
-  
+
   if ( type == 'date' ){ # DATE
     
-    idx_var1 = idx_var1 & data[, !is.na(value_date)]
-    idx_var2 = idx_var2 & data[, !is.na(value_date)]
+    data[(idx_var1 | idx_var2) & (is.na(value_numeric) | value_numeric == 0),
+         value_numeric := year(value_date)]
     
-    var1 <- data[idx_var1]
-    var2 <- data[idx_var2]
-    
-    var1[, value_numeric := year(value_date)]
-    var2[, value_numeric := year(value_date)]
-    
-    var1 <- var1[, keep_cols, with=FALSE]
-    var2 <- var2[, keep_cols, with=FALSE]
   }
   
+  idx_var1 = idx_var1 & data[, !is.na(value_numeric)]
+  idx_var2 = idx_var2 & data[, !is.na(value_numeric)]
+  
+  var1 <- data[idx_var1, keep_cols, with=FALSE]
+  var2 <- data[idx_var2, keep_cols, with=FALSE]
   
   # we have something to report (density plots require at least 3 points to draw)
   if( nrow(var1) > 2 | nrow(var2) > 2 ) {

@@ -83,7 +83,7 @@ densityPlot <- function(
   # 
   # ymax <- max(2.5 * ymax, ymax + 0.05)
   
-  if(density_type == 'bar'){
+  if(density_type == 'bar' ){
     minvalue <- minvalue - 1
     maxvalue <- maxvalue + 1
     adjustment <- NA  # adjust is not used for geom_bar
@@ -102,9 +102,7 @@ densityPlot <- function(
       width=min(diff(unique_vals)[diff(unique_vals) > 0])
       if ( width == 0 ) width <- NULL
     }
-  } 
-  
-  if ( density_type == 'density' ) {
+  } else if ( density_type == 'density' ) {
     breaks = waiver()
     width = NA  # width is not used for geom_density
     adjustment <- 1 #c(1,1)[densitytype]
@@ -113,7 +111,7 @@ densityPlot <- function(
   }
   
   if((nrow(d1)>2 | nrow(d2)>2) & !is.null(minvalue)){
-    # we have something to report (density plots require at least 3 points to draw)
+    # if we have something to report (density plots require at least 3 points to draw)
     
     p1 <- ggplot(data = d1, aes(x = value_numeric,
                                 weight=(end_point - begin_point) / sum(end_point - begin_point)))
@@ -123,6 +121,8 @@ densityPlot <- function(
                                 weight=(end_point - begin_point) / sum(end_point - begin_point)))
     
     if(nrow(d1)>2){
+      nunique = length(unique(d1[, value_numeric]))
+      
       p1 <- p1 +
         plotfun(data = d1,
                 color=col_year1,
@@ -130,7 +130,10 @@ densityPlot <- function(
                 size=0.25,
                 fill=col_year1,
                 width=width,
-                adjust=adjustment)
+                adjust=adjustment,
+                bw = switch(density_type,
+                            'bar' = NA,
+                            'density' = ifelse(nunique == 1, 0.1, 'nrd0')))
       
     } else {
       
@@ -145,13 +148,18 @@ densityPlot <- function(
     }
     
     if(nrow(d2)>2) {
+      nunique = length(unique(d2[, value_numeric]))
+      
       p2 <- p2 + plotfun(data = d2,
                          color =col_year2,
                          linetype="solid",
                          size=0.25,
                          fill=col_year2,
                          width=width,
-                         adjust=adjustment)
+                         adjust=adjustment,
+                         bw = switch(density_type,
+                                     'bar' = NA,
+                                     'density' = ifelse(nunique == 1, 0.1, 'nrd0')))
       
     } else {
       p2 <- p2 + plotfun(data = d3,
@@ -164,13 +172,18 @@ densityPlot <- function(
     }
     
     if(!is.null(d3)) {
+      nunique = length(unique(d3[, value_numeric]))
+      
       p3 <- p3 + plotfun(data = d3,
                          color =col_national,
                          linetype="solid",
                          size=0.25,
                          fill=col_national,
                          width=width,
-                         adjust=adjustment)
+                         adjust=adjustment,
+                         bw = switch(density_type,
+                                     'bar' = NA,
+                                     'density' = ifelse(nunique == 1, 0.1, 'nrd0')))
     }
     
     p1 <- p1 +   

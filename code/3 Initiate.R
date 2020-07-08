@@ -117,7 +117,7 @@ Run <- function(task=NA, ...) {
       whitespace(gSpaces)
       
       year <- getUserInput("Please enter which year you want to run: ") 
-      #browser()
+      
       states <- getStatesForYear(year)
 
       national<-NULL
@@ -254,7 +254,7 @@ getStateDataSets <- function(state_selection, year_selection, year_compare) {
     }
     
   }
-  #browser()
+  
   # Append to analysis and comparison years
   dat.prev <- do.call(rbind, dat.prev)
   dat <- rbind(dat, dat.prev, fill = TRUE)

@@ -51,11 +51,14 @@ create_summary_report <- function(
     result1[, expandedlanemiles := lanemiles,]
   }
 
+  if ( variable_type == 'date' ){
+    result1[is.na(value_numeric) | value_numeric == 0, value_numeric := year(value_date)]
+  }
+  
   result1 <- switch(variable_type,
                     numeric = result1[, summaryFunc(value_numeric, weights=num_sections), 
                             by=list(F_SYSTEM, miles, expandedmiles, lanemiles, expandedlanemiles)],
-                    date = result1[, summaryFunc(lubridate::year(as.Date(as.character(value_date))),
-                                          weights=num_sections),
+                    date = result1[, summaryFunc(value_numeric, weights=num_sections),
                             by=list(F_SYSTEM, miles, expandedmiles, lanemiles, expandedlanemiles)],
                     result1[, summaryFunc(value_numeric, weights=num_sections)[1:2],
                             by=list(F_SYSTEM, miles, expandedmiles, lanemiles, expandedlanemiles)]
@@ -89,12 +92,15 @@ create_summary_report <- function(
   
   }
 
+  if ( variable_type == 'date' ){
+    result2[is.na(value_numeric) | value_numeric == 0, value_numeric := year(value_date)]
+  }
+  
   result2 <- switch(variable_type,
-                    numeric = result2[, summaryFunc(value_numeric, weights=num_sections),
-                            by=list(miles, expandedmiles, lanemiles, expandedlanemiles)],
-                    date = result2[, summaryFunc(lubridate::year(as.Date(as.character(value_date))),
-                                          weights=num_sections),
-                            by=list(miles, expandedmiles, lanemiles, expandedlanemiles)],
+                    numeric = result2[, summaryFunc(value_numeric, weights=num_sections), 
+                                      by=list(miles, expandedmiles, lanemiles, expandedlanemiles)],
+                    date = result2[, summaryFunc(value_numeric, weights=num_sections),
+                                   by=list(miles, expandedmiles, lanemiles, expandedlanemiles)],
                     result2[, summaryFunc(value_numeric, weights=num_sections)[1:2],
                             by=list(miles, expandedmiles, lanemiles, expandedlanemiles)]
   )
@@ -130,12 +136,15 @@ create_summary_report <- function(
   
   }
   
+  if ( variable_type == 'date' ){
+    result3[is.na(value_numeric) | value_numeric == 0, value_numeric := year(value_date)]
+  }
+  
   result3 <- switch(variable_type,
-                    numeric = result3[, summaryFunc(value_numeric, weights=num_sections),
-                            by=list(miles, expandedmiles, lanemiles, expandedlanemiles)],
-                    date = result3[, summaryFunc(lubridate::year(as.Date(as.character(value_date))),
-                                          weights=num_sections),
-                            by=list(miles, expandedmiles, lanemiles, expandedlanemiles)],
+                    numeric = result3[, summaryFunc(value_numeric, weights=num_sections), 
+                                      by=list(miles, expandedmiles, lanemiles, expandedlanemiles)],
+                    date = result3[, summaryFunc(value_numeric, weights=num_sections),
+                                   by=list(miles, expandedmiles, lanemiles, expandedlanemiles)],
                     result3[, summaryFunc(value_numeric, weights=num_sections)[1:2],
                             by=list(miles, expandedmiles, lanemiles, expandedlanemiles)]
   )

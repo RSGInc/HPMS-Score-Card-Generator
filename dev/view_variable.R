@@ -15,23 +15,31 @@ view_variable = function(data.list, variable = NULL, var.label = NULL){
     variable = gVariables[Label %like% var.label, Name]
   }
   
-  grob = create_travel_yoy_density(data = data.list$dat,
-                                   state = data.list$state_code,
-                                   year = data.list$year_selection,
-                                   yearcomparison = data.list$year_compare,
-                                   variable = variable,
-                                   includeNational = TRUE,
-                                   ramps=FALSE)
-  showGrob(grob)
+  x1 = which(gVariables[, Name] == variable)
+  create_page_summary(data = data.list$dat,
+                      state = data.list$state_code,
+                      year = data.list$year_selection,
+                      year_compare = data.list$year_compare,
+                      x1 = x1,
+                      title='Test', 
+                      icontext='p',
+                      page=1,
+                      ramps=FALSE)
 }
 
-year_selection=2018
-year_compare = 2017
+year_selection=2019
+year_compare = 2018
+
+
+state = 'MA'  
+data.list <- getStateDataSets(state, year_selection, year_compare)
+
+view_variable(data.list, variable = 'YEAR_LAST_CONSTRUCTION')
+view_variable(data.list, variable = 'YEAR_LAST_IMPROV')
 
 state = 'WY'  # CO, MN, WY
 
 data.list <- getStateDataSets(state, year_selection, year_compare)
-
 
 view_variable(data.list, variable = 'SURFACE_TYPE')
 view_variable(data.list, variable = 'FUTURE_AADT')
