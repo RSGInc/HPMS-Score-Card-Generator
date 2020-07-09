@@ -1,7 +1,10 @@
 .Rproj.user
+HPMS_Scorecards_20191120
+data_20191118
 data
 output
 *.zip
+*.html
 .Rhistory
 Thumbs.db
 resources/fss/*.RDS
