@@ -37,7 +37,7 @@ for (variable in vars){
   dt = readRDS(path)
   dt_list[[variable]] = 
     dt[, .(nona_pct_numeric = sum(!is.na(value_numeric)) / .N,
-           nona_pct_text = sum(!is.na(value_text)) / .N,
+           nona_pct_text = sum(!is.na(value_text) & value_text != '') / .N,
            nona_pct_date = sum(!is.na(value_date)) / .N), state_code]
 }
 

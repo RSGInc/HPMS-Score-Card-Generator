@@ -30,6 +30,11 @@ view_variable = function(data.list, variable = NULL, var.label = NULL){
 year_selection=2019
 year_compare = 2018
 
+state = 'PA'  
+data.list <- getStateDataSets(state, year_selection, year_compare)
+
+view_variable(data.list, variable = 'WIDENING_OBSTACLE')
+
 
 state = 'MA'  
 data.list <- getStateDataSets(state, year_selection, year_compare)
