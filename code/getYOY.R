@@ -197,9 +197,9 @@ getYOY <- function(data, year, yearcomparison, variable, yoy_change){
     
     report <- merge(data.table(groupCat=1:4), report, by="groupCat", all.x=T)
     
-    if ( any( report[!is.na(perc_miles), as.numeric(perc_miles)] > 100 |
-              report[!is.na(perc_miles), as.numeric(perc_miles)] == 0 )) browser()
-    
+    # if ( any( report[!is.na(perc_miles), as.numeric(perc_miles)] > 100 |
+    #           report[!is.na(perc_miles), as.numeric(perc_miles)] == 0 )) browser()
+    # 
     #report[is.na(perc_miles), perc_miles := as.character(0)]
   }
   return(report)

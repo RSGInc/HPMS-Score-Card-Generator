@@ -32,8 +32,8 @@ invisible(sapply(X = list.files(path = "code", pattern = "*.R$",
 # Run()  # Import all states
 # updateNation()
 # Run scorecards via command line tool.
+# Rscript RunBatch.R ALL
 
 debugmode = TRUE
-  
-Run(task = 2, state = 'IL', year = 2019, year_compare = 2018)
+Run(task = 2, state = 'WI', year = 2019, year_compare = 2018)
 # Run(task = 1, state = 'CO', year = 2017)
