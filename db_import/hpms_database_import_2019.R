@@ -97,6 +97,53 @@ con = connect_to_db('burmdlppw01', 'HPMS', intsecurity = TRUE)
 #   count(Year_Record) %>%
 #   print(n=Inf)
 # 
+# # Update production table ---------------------------------------------
+# 
+# # Check for existing current year
+# 
+# tt = tbl(con, from='Timelinesstable')
+# 
+# yr_count = tt %>%
+#   filter(year_record == current_yr) %>%
+#   count() %>%
+#   pull(n)
+# 
+# if ( yr_count > 0 ){
+#   dbExecute(con, paste0('DELETE FROM Timelinesstable WHERE year_record = ',
+#                         current_yr))
+# }
+# 
+# yr_count = tt %>%
+#   filter(year_record == current_yr) %>%
+#   count() %>%
+#   pull(n)
+# 
+# stopifnot(yr_count== 0)
+# 
+# old_fields = dbListFields(con, 'Timelinesstable')
+# new_fields = dbListFields(con, 'tt_stage')
+# 
+# setdiff(new_fields, tolower(old_fields))
+# setdiff(tolower(old_fields), new_fields)
+# 
+# # Copy current year into full table.
+# sql = paste0('insert into Timelinesstable(', paste(new_fields, collapse=', '),
+#              ') select ', paste(new_fields, collapse=', '), ' from tt_stage')
+# dbExecute(con, sql)
+#           
+# 
+# stopifnot(
+#   con %>%
+#     tbl('Timelinesstable') %>%
+#     filter(year_record == current_yr) %>%
+#     count() %>%
+#     pull(n) ==
+#     con %>%
+#     tbl('tt_stage') %>%
+#     count() %>%
+#     pull(n)
+# )
+#
 # 
 # # Sample sections -------------------------------------------------------
 # 
@@ -114,10 +161,59 @@ con = connect_to_db('burmdlppw01', 'HPMS', intsecurity = TRUE)
 # glimpse(ss)
 # 
 
+# # Move data from stage to production -----------------------------------------
+# 
+# 
+# ss = tbl(con, from='Review_Sample_Sections')
+# 
+# yr_count = ss %>%
+#   filter(year_record == current_yr) %>%
+#   count() %>%
+#   pull(n)
+# 
+# if ( yr_count > 0 ){
+#   dbExecute(con, paste0('DELETE FROM Review_Sample_Sections WHERE year_record = ',
+#                              current_yr))
+# }
+# 
+# yr_count = ss %>%
+#   filter(year_record == 2019) %>%
+#   count() %>%
+#   pull(n)
+# 
+# stopifnot(yr_count== 0)
+# 
+# old_fields = dbListFields(con, 'Review_Sample_Sections')
+# new_fields = dbListFields(con, 'rss_stage')
+# 
+# setdiff(new_fields, tolower(old_fields))
+# 
+# # Create StateYearKey
+# dbExecute(con, 'alter table rss_stage add StateYearKey as (state_code * 100 + year_record % 1000)')
+# 
+# # Copy current year into full table.
+# dbExecute(con,
+#           'insert into Review_Sample_Sections(year_record, state_code, route_id, begin_point, end_point, section_length, sample_id, expansion_factor, stateyearkey) 
+#            select year_record, state_code, route_id, begin_point, end_point,
+#            section_length, sample_id, expansion_factor, stateyearkey from rss_stage')
+# 
+# stopifnot(
+#   con %>%
+#       tbl('Review_Sample_Sections') %>%
+#       filter(year_record == current_yr) %>%
+#       count() %>%
+#       pull(n) ==
+#     con %>%
+#       tbl('rss_stage') %>%
+#       count() %>%
+#       pull(n)
+# )
+# 
+
+
 # Load Sections data ---------------------------------------------------
 
 tbl_name <- 'rs_stage'
-
 
 # For checking column types
 col_type_chk = c(
@@ -207,108 +303,9 @@ counts_check = merge(counts_remote, counts_local,
 stopifnot(counts_check[n_local != n_remote, .N] == 0)
 
 
-# Move data from stage table to production table =======================
 
-# con = connect_to_db('burmdlppw01', 'HPMS', intsecurity = TRUE)
-
-# # Timelinesstable --------------------------------------------------------------
-# 
-# # Check for existing current year
-# 
-# tt = tbl(con, from='Timelinesstable')
-# 
-# yr_count = tt %>%
-#   filter(year_record == current_yr) %>%
-#   count() %>%
-#   pull(n)
-# 
-# if ( yr_count > 0 ){
-#   dbExecute(con, paste0('DELETE FROM Timelinesstable WHERE year_record = ',
-#                         current_yr))
-# }
-# 
-# yr_count = tt %>%
-#   filter(year_record == current_yr) %>%
-#   count() %>%
-#   pull(n)
-# 
-# stopifnot(yr_count== 0)
-# 
-# old_fields = dbListFields(con, 'Timelinesstable')
-# new_fields = dbListFields(con, 'tt_stage')
-# 
-# setdiff(new_fields, tolower(old_fields))
-# setdiff(tolower(old_fields), new_fields)
-# 
-# # Copy current year into full table.
-# sql = paste0('insert into Timelinesstable(', paste(new_fields, collapse=', '),
-#              ') select ', paste(new_fields, collapse=', '), ' from tt_stage')
-# dbExecute(con, sql)
-#           
-# 
-# stopifnot(
-#   con %>%
-#     tbl('Timelinesstable') %>%
-#     filter(year_record == current_yr) %>%
-#     count() %>%
-#     pull(n) ==
-#     con %>%
-#     tbl('tt_stage') %>%
-#     count() %>%
-#     pull(n)
-# )
-# 
-# 
-# 
-# # Sample Sections --------------------------------------------------------------
-# 
-# 
-# ss = tbl(con, from='Review_Sample_Sections')
-# 
-# yr_count = ss %>%
-#   filter(year_record == current_yr) %>%
-#   count() %>%
-#   pull(n)
-# 
-# if ( yr_count > 0 ){
-#   dbExecute(con, paste0('DELETE FROM Review_Sample_Sections WHERE year_record = ',
-#                              current_yr))
-# }
-# 
-# yr_count = ss %>%
-#   filter(year_record == 2019) %>%
-#   count() %>%
-#   pull(n)
-# 
-# stopifnot(yr_count== 0)
-# 
-# old_fields = dbListFields(con, 'Review_Sample_Sections')
-# new_fields = dbListFields(con, 'rss_stage')
-# 
-# setdiff(new_fields, tolower(old_fields))
-# 
-# # Create StateYearKey
-# dbExecute(con, 'alter table rss_stage add StateYearKey as (state_code * 100 + year_record % 1000)')
-# 
-# # Copy current year into full table.
-# dbExecute(con,
-#           'insert into Review_Sample_Sections(year_record, state_code, route_id, begin_point, end_point, section_length, sample_id, expansion_factor, stateyearkey) 
-#            select year_record, state_code, route_id, begin_point, end_point,
-#            section_length, sample_id, expansion_factor, stateyearkey from rss_stage')
-# 
-# stopifnot(
-#   con %>%
-#       tbl('Review_Sample_Sections') %>%
-#       filter(year_record == current_yr) %>%
-#       count() %>%
-#       pull(n) ==
-#     con %>%
-#       tbl('rss_stage') %>%
-#       count() %>%
-#       pull(n)
-# )
-# 
-
+# Move data from stage to production ------------------------------------------
+ 
 
 # Review Sections --------------------------------------------------------------
 
@@ -329,16 +326,18 @@ dbExecute(con, sql)
 old_fields = dbListFields(con, prod_table)
 new_fields = dbListFields(con, stage_table)
 
-setdiff(new_fields, tolower(old_fields))
+setdiff(tolower(new_fields), tolower(old_fields))
 new_fields = new_fields[!new_fields %in% 'natroute_id']
 
-setdiff(tolower(old_fields), new_fields)
+setdiff(tolower(old_fields), tolower(new_fields))
 
 # Create StateYearKey
-sql = paste0('alter table ', stage_table,
-             ' add StateYearKey as (state_code * 100 + year_record % 1000)')
-dbExecute(con, sql)
-
+if ( !'StateYearKey' %in% new_fields ){
+  sql = paste0('alter table ', stage_table,
+               ' add StateYearKey as (state_code * 100 + year_record % 1000)')
+  dbExecute(con, sql)
+  new_fields = c(new_fields, 'StateYearKey')
+}
 
 # Copy current year into full table.
 sql = paste0('insert into ', prod_table, '(', paste(new_fields, collapse=', '),
@@ -353,7 +352,8 @@ counts_prod = prod %>%
   collect() %>%
   rename(n_prod = n)
 
-counts_check = merge(counts_check, counts_prod, by = c('state_code', 'year_record'))
+counts_check = merge(counts_local, counts_prod, by = c('state_code', 'year_record'))
+setDT(counts_check)
 
 stopifnot(counts_check[n_local != n_prod, .N] == 0)
 

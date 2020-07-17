@@ -24,6 +24,8 @@ if ( length(args) < 1 ){
 year_selection <- 2019
 year_compare <- 2018
 submission_deadline <- '2020-06-15'
+reimport = TRUE
+
 
 setwd('..')
 msg_file <- file.path('output', paste0('_RunBatch_messages_',
@@ -114,13 +116,18 @@ for(state in state_abbrev){
 
       # Import data ---------------------------------------------------------------
       
-      # Overwrite 2016 data every time, but not 2015 data.
+      # Overwrite current year data but not comparison data.
       # goverwrite <- 'ALL N'  # For testing - makes it go quicker.
-      goverwrite <- 'ALL N'
+      if ( reimport ){
+        goverwrite = 'ALL Y'
+      } else {
+        goverwrite = 'ALL N'
+      }
+      
       success <- ImportData(state_selection=state,
                             year_selection=year_selection)
       
-      goverwrite <- 'ALL N'
+      goverwrite = 'ALL N'
       success <- ImportData(state_selection=state,
                             year_selection=year_compare)
       cat('complete!\n')
