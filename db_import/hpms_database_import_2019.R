@@ -145,70 +145,92 @@ con = connect_to_db('burmdlppw01', 'HPMS', intsecurity = TRUE)
 # )
 #
 # 
-# # Sample sections -------------------------------------------------------
-# 
-# url = 'https://datahub.transportation.gov/resource/w6jm-vtp5.csv'
-# 
-# ss = read.socrata(url=url, email=email, password=password)
-# setDT(ss)
-# str(ss)
-# 
-# tbl_name = 'rss_stage'
-# dbWriteTable(con, name=tbl_name, value=ss, overwrite=TRUE)
-# 
-# # Check
-# ss = tbl(con, from=tbl_name)
-# glimpse(ss)
-# 
+# Sample sections -------------------------------------------------------
 
-# # Move data from stage to production -----------------------------------------
-# 
-# 
-# ss = tbl(con, from='Review_Sample_Sections')
-# 
-# yr_count = ss %>%
-#   filter(year_record == current_yr) %>%
-#   count() %>%
-#   pull(n)
-# 
-# if ( yr_count > 0 ){
-#   dbExecute(con, paste0('DELETE FROM Review_Sample_Sections WHERE year_record = ',
-#                              current_yr))
-# }
-# 
-# yr_count = ss %>%
-#   filter(year_record == 2019) %>%
-#   count() %>%
-#   pull(n)
-# 
-# stopifnot(yr_count== 0)
-# 
-# old_fields = dbListFields(con, 'Review_Sample_Sections')
-# new_fields = dbListFields(con, 'rss_stage')
-# 
-# setdiff(new_fields, tolower(old_fields))
-# 
-# # Create StateYearKey
-# dbExecute(con, 'alter table rss_stage add StateYearKey as (state_code * 100 + year_record % 1000)')
-# 
-# # Copy current year into full table.
-# dbExecute(con,
-#           'insert into Review_Sample_Sections(year_record, state_code, route_id, begin_point, end_point, section_length, sample_id, expansion_factor, stateyearkey) 
-#            select year_record, state_code, route_id, begin_point, end_point,
-#            section_length, sample_id, expansion_factor, stateyearkey from rss_stage')
-# 
-# stopifnot(
-#   con %>%
-#       tbl('Review_Sample_Sections') %>%
-#       filter(year_record == current_yr) %>%
-#       count() %>%
-#       pull(n) ==
-#     con %>%
-#       tbl('rss_stage') %>%
-#       count() %>%
-#       pull(n)
-# )
-# 
+# Original data
+# url = 'https://datahub.transportation.gov/resource/w6jm-vtp5.csv'
+
+# Resubmission
+url = 'https://datahub.transportation.gov/resource/b37r-yiaq.csv'
+
+ss = read.socrata(url=url, email=email, password=password)
+setDT(ss)
+str(ss)
+
+tbl_name = 'rss_stage'
+dbWriteTable(con, name=tbl_name, value=ss, overwrite=TRUE)
+
+# Check
+stage = tbl(con, from=tbl_name)
+glimpse(stage)
+
+counts_local = stage %>%
+  count(state_code, year_record) %>%
+  collect() %>%
+  rename(n_local = n)
+
+
+# Check that we have the right number of rows for each state.
+
+query = paste0(url, '?$query=SELECT state_code,year_record,count(state_code) GROUP BY state_code, year_record ORDER BY state_code, year_record')
+counts_remote = read.socrata2(query, email=email, password=password)
+setnames(counts_remote, 'count_state_code', 'n_remote')
+counts_check = merge(counts_remote, counts_local,
+                     by = c('state_code', 'year_record'), all=TRUE)
+setDT(counts_check)
+stopifnot(counts_check[n_local != n_remote, .N] == 0)
+
+
+# Move data from stage to production -----------------------------------------
+
+prod_table = 'Review_Sample_Sections'
+stage_table = 'rss_stage'
+
+years = unique(counts_local$year_record)
+states = unique(counts_local$state_code)
+
+prod = tbl(con, from=prod_table)
+n_prod = prod %>% 
+  filter(State_Code %in% states, 
+         Year_Record %in% years) %>%
+  count(State_Code, Year_Record) %>%
+  collect()
+
+sql = paste0(
+  'DELETE FROM ', prod_table,
+  ' WHERE state_code in (', paste(states, collapse=', '), ')',
+  ' AND year_record in (', paste(years, collapse=', '), ')')
+dbExecute(con, sql)
+
+old_fields = dbListFields(con, prod_table)
+new_fields = dbListFields(con, stage_table)
+
+setdiff(tolower(new_fields), tolower(old_fields))
+new_fields = new_fields[!new_fields %in% 'natroute_id']
+
+setdiff(tolower(old_fields), tolower(new_fields))
+
+
+# Create StateYearKey
+dbExecute(con, 'alter table rss_stage add StateYearKey as (state_code * 100 + year_record % 1000)')
+
+# Copy current year into full table.
+dbExecute(con,
+          'insert into Review_Sample_Sections(year_record, state_code, route_id, begin_point, end_point, section_length, sample_id, expansion_factor, stateyearkey)
+           select year_record, state_code, route_id, begin_point, end_point,
+           section_length, sample_id, expansion_factor, stateyearkey from rss_stage')
+
+counts_prod = prod %>% 
+  filter(state_code %in% states,
+         year_record %in% years) %>%
+  count(state_code, year_record) %>%
+  collect()
+setnames(counts_prod, 'n', 'n_prod')
+
+counts_check = merge(counts_check, counts_prod,
+                     by = c('state_code', 'year_record'), all=TRUE)
+
+stopifnot(all(counts_check[, n_prod] == counts_check[, n_local]))
 
 
 # Load Sections data ---------------------------------------------------
@@ -289,7 +311,6 @@ counts_local = dt %>%
 counts_remote_list = list()
 for ( i in seq_along(urls) ){
   message('Fetching counts for ', names(urls)[i])
-  url = URLencode(paste0(urls[i], '?$select=state_code,data_item'))
   url = paste0(urls[i], '?$query=SELECT state_code,year_record,count(state_code) GROUP BY state_code, year_record ORDER BY state_code, year_record')
   counts_remote_list[[names(urls)[i] ]] = read.socrata2(url, email=email, password=password)
 }
