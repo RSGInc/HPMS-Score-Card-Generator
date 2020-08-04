@@ -10,6 +10,7 @@
 # stop if an error for one state is encountered.
 
 
+
 # Setup ---------------------------------------------------------------
 library('stringr')
 options(warn=1)
@@ -43,7 +44,9 @@ sink(file=file_con, append=FALSE, type='message')
 message('RunBatch.R started at ', Sys.time())
 message('submission_deadline: ', submission_deadline)
 
+
 # Load Code -------------------------------------------------------------------
+
 invisible(sapply(X = list.files(path = "code", pattern = "*.R$",
                                 full.names = TRUE)[-1], FUN = source))
 

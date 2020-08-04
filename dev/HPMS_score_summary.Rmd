@@ -15,8 +15,9 @@ library(DT)
 library(dplyr)
 library(readr)
 
+output_folder = 'output'
 # Load the data
-tbl = read_csv(file.path('..', 'output', '_score_summary.csv')) %>%
+tbl = read_csv(file.path('..', output_folder, '_score_summary.csv')) %>%
   mutate(quality_sub = 100 * quality_sub,
          cross_sub = 100 * cross_sub)
 ```

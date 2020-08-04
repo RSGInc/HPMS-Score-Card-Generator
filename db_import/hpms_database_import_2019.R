@@ -8,60 +8,20 @@
 
 # Initialize ===============================================================
 library('DBI')
-library('odbc')
 library('tidyverse')
 library('data.table')
 library('stringr')
 library('lubridate')
 library('RSocrata')
 source('db_import/socrata_functions.R')
+source('code/connect_to_db.R')
 
 email = 'matt.landis@rsginc.com'
 password = 'tX522b7Dz4xS'
 
-
-#' Connect to a database
-#'
-#' @param server The server to connect to.
-#' @param database The name of the database
-#' @param intsecurity Logical.  Should the connection use integrated security
-#'  (Windows authentication).  Defaults to \code{FALSE}. 
-#' @param uid Character.  The username.  If missing and \code{intsecurity} is
-#'  \code{FALSE} the user will be prompted.
-#' @param pwd Character.  The password.  If missing and \code{intsecurity} is
-#'  \code{FALSE} the user will be prompted
-#' @param dsn Character.  A dsn defined in the ODBC Data Sources app (on Windows)
-#'
-#' @return a connection to the specified database.
-#' @export
-#'
-#' @examples
-connect_to_db <- function(server,
-                          database,
-                          intsecurity=FALSE, uid=NULL, pwd=NULL,
-                          dsn=NULL){
-  
-  # Build the connection string
-  constring <- paste0('driver={SQL Server};',
-                      'server=', server, ';',
-                      'database=', database, ';',
-                      'port=1433;')
-  
-  if ( intsecurity ){
-    constring <- paste0(constring, 'integrated security=SSPI;')
-  } else {
-    if ( missing(uid) | is.null(uid) ) uid <- getPass::getPass(msg='Username: ')
-    if ( missing(pwd) | is.null(pwd) ) pwd <- getPass::getPass(msg='Password: ')
-    
-    constring <- paste0(constring, 'uid=', uid, ';', 'pwd=', pwd, ';')  
-  }
-  
-  # See https://db.rstudio.com/dplyr/
-  con <- odbc::dbConnect(drv=odbc::odbc(),
-                         .connection_string=constring,
-                         bigint='numeric')
-  return(con)
-}
+# NB!! Specify URLs as JSON, not CSV.  JSON reads all fields as character
+# and then converts to the appropriate type whereas CSV guesses datatypes 
+# (as in read.csv) and convert later which can result in mistakes
 
 # Work ======================================================================
 
@@ -148,10 +108,10 @@ con = connect_to_db('burmdlppw01', 'HPMS', intsecurity = TRUE)
 # Sample sections -------------------------------------------------------
 
 # Original data
-# url = 'https://datahub.transportation.gov/resource/w6jm-vtp5.csv'
+# url = 'https://datahub.transportation.gov/resource/w6jm-vtp5.json'
 
 # Resubmission
-url = 'https://datahub.transportation.gov/resource/b37r-yiaq.csv'
+url = 'https://datahub.transportation.gov/resource/b37r-yiaq.json'
 
 ss = read.socrata(url=url, email=email, password=password)
 setDT(ss)
@@ -254,21 +214,21 @@ col_type_chk = c(
 coltype_chk_dt = data.table(field = names(col_type_chk), chk = col_type_chk)
 
 # urls = c(
-#   new_england = 'https://datahub.transportation.gov/resource/yed4-dz8a.csv',
-#   heartland = 'https://datahub.transportation.gov/resource/pu8w-cqik.csv',
-#   gulf = 'https://datahub.transportation.gov/resource/rf6n-m9pz.csv',
-#   appalachia = 'https://datahub.transportation.gov/resource/j6bh-426b.csv',
-#   mid_atlantic = 'https://datahub.transportation.gov/resource/f674-dyn6.csv',
-#   lakes = 'https://datahub.transportation.gov/resource/xq7x-rndy.csv',
-#   desert = 'https://datahub.transportation.gov/resource/gwx5-yka7.csv',
-#   islands = 'https://datahub.transportation.gov/resource/imwx-p856.csv',
-#   west = 'https://datahub.transportation.gov/resource/pdrm-udaf.csv',
-#   badlands = 'https://datahub.transportation.gov/resource/gve6-cr9a.csv'
+#   new_england = 'https://datahub.transportation.gov/resource/yed4-dz8a.json',
+#   heartland = 'https://datahub.transportation.gov/resource/pu8w-cqik.json',
+#   gulf = 'https://datahub.transportation.gov/resource/rf6n-m9pz.json',
+#   appalachia = 'https://datahub.transportation.gov/resource/j6bh-426b.json',
+#   mid_atlantic = 'https://datahub.transportation.gov/resource/f674-dyn6.json',
+#   lakes = 'https://datahub.transportation.gov/resource/xq7x-rndy.json',
+#   desert = 'https://datahub.transportation.gov/resource/gwx5-yka7.json',
+#   islands = 'https://datahub.transportation.gov/resource/imwx-p856.json',
+#   west = 'https://datahub.transportation.gov/resource/pdrm-udaf.json',
+#   badlands = 'https://datahub.transportation.gov/resource/gve6-cr9a.json'
 # )
 
 # Set url to resubmissions
 urls = c(
-  resub = 'https://datahub.transportation.gov/resource/yq8j-yqf2.csv'
+  resub = 'https://datahub.transportation.gov/resource/yq8j-yqf2.json'
 )
 
 for ( i in seq_along(urls) ){

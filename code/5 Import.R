@@ -439,14 +439,17 @@ FormatDataSet <- function(dat, state_abbr, year) {
 
   query <- paste0('select * from ', samples_table, ' where StateYearKey = ',
                   getStateNumFromCode(state_abbr), as.numeric(year) %% 100)
-  
+ 
   sp <- sqlQuery(con, query,stringsAsFactors=FALSE)
   
   odbcClose(con)
-
+  
   if (nrow(sp) > 0){
     
     sp <- cleanUpQuery(sp)
+    
+    stopifnot(sp[str_detect(route_id, 'e[+-][0-9]'), .N] == 0,
+              data_noFT6[str_detect(route_id, 'e[+-][0-9]'), .N] == 0)
     
     sp = expand(sp,0.1)
     
@@ -457,11 +460,12 @@ FormatDataSet <- function(dat, state_abbr, year) {
     sp[,stateyearkey:=NULL]
     sp[,state_code:=NULL]
     
-    if ( typeof(sp$route_id) != typeof(data_noFT6$route_id) ){
-      sp$route_id <- as.character(sp$route_id)
-    }
+    data_noFT6[, route_id := as.character(route_id)]
+    sp[, route_id := as.character(route_id)]
     
-    data_exp = sp[data_noFT6, on = .(year_record, route_id, begin_point, end_point)]
+    data_exp = merge(data_noFT6, sp,
+                     by = c('year_record', 'route_id', 'begin_point', 'end_point'),
+                     all.x=TRUE)
     
     data_exp[, expansion_factor := as.numeric(expansion_factor)]
     

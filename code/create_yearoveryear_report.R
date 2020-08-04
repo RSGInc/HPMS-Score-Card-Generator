@@ -21,7 +21,10 @@ create_yearoveryear_report <- function(data, year, variable, yearcomparison){
 
   report <- getYOY(data[FACILITY_TYPE != 4],
                    year, yearcomparison, variable, yoy_change='N')
-  report[, totalmiles := NULL]
+  
+  if ( 'totalmiles' %in% names(report)){
+    report[, totalmiles := NULL]
+  }
   
   output <- format_report(report, highlight_threshold)
   
