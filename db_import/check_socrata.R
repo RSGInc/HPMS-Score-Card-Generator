@@ -11,6 +11,10 @@ source('db_import/socrata_functions.R')
 email = 'matt.landis@rsginc.com'
 password = 'tX522b7Dz4xS'
 
+year = 2019
+this_abbrev = 'DC'
+
+
 
 # 2019 URLS
 urls = c(
@@ -40,34 +44,27 @@ urls = c(
 
 # State Labels & Codes
 gState_Labels <- fread('resources/dat/state_labels.csv')
+state_code = gState_Labels[abbr == this_abbrev, index]
 
 # Sample Sections
 rss = read.socrata(url=urls['rss'], email=email, password=password)
 setDT(rss)
-rss = rss[state_code == 18 & year_record == 2019]
+rss = rss[state_code == state_code & year_record == year]
 rss[, .N]
 
 # Load Review Sections
 
-which_url = 'lakes'
+which_url = 'mid_atlantic'
 
 message('Downloading ', which_url)
-dt = read.socrata(url=paste0(urls[which_url], '?state_code=18'), email=email, password=password)
+dt = read.socrata(url=paste0(urls[which_url], '?state_code=', state_code), email=email, password=password)
 setDT(dt)
 
-if ( names(urls)[i] == 'mid_atlantic' ){
+if ( which_url == 'mid_atlantic' ){
   dt[, value_date := ymd_hms(value_date)]
 }
 
 # Queries below --------------------------------------------------------
-dt[state_code == 18 & year_record == 2019, .N, data_item]
-curvesA = dt[state_code == 18 & year_record == 2019 & data_item == 'CURVES_A']
-curvesA[, .N]
 
-setdiff(curvesA[, route_id], rss[, route_id])
-length(setdiff(rss[, route_id], curvesA[, route_id]))
-length(intersect(curvesA[, route_id], rss[, route_id]))
-length(unique(curvesA[, route_id]))
-
-curvesA[order(route_id)][1:30]
-rss[order(route_id)][1:30]
+this_item = 'CAPACITY'
+dt[data_item == this_item, .N]
