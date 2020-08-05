@@ -463,6 +463,20 @@ FormatDataSet <- function(dat, state_abbr, year) {
     data_noFT6[, route_id := as.character(route_id)]
     sp[, route_id := as.character(route_id)]
     
+    
+    # # Checks ----------------------------------------------
+    # rid_sec = data_noFT6[, route_id] %>% unique() %>% sort()
+    # rid_sp = sp[, route_id] %>% unique() %>% sort()
+    # 
+    # # route_ID in samples but not in sections? (should be zero)
+    # length(setdiff(rid_sp, rid_sec))
+    # length(intersect(rid_sp, rid_sec)) == length(rid_sp)
+    # 
+    # # Check for data in sp that don't match anything in data_noFT6
+    # join_vars = c('year_record', 'route_id', 'begin_point', 'end_point')
+    # problems1 = dplyr::anti_join(sp, data_noFT6, by = join_vars)
+    
+    
     data_exp = merge(data_noFT6, sp,
                      by = c('year_record', 'route_id', 'begin_point', 'end_point'),
                      all.x=TRUE)
@@ -531,7 +545,7 @@ FormatDataSet <- function(dat, state_abbr, year) {
   
   data_exp = data_exp[!(section_extent %in% c('SP', 'SP*') & is.na(data_exp$expansion_factor))]
   
-  data_exp = data_exp[section_extent!='',]
+  data_exp = data_exp[section_extent != '',]
   
   # Prepare to write out the data
   setkeyv(data_exp, c("state_code","year_record","route_id","data_item","begin_point","end_point"))

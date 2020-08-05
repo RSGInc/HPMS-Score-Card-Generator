@@ -107,15 +107,16 @@ create_travel_data_yoy <- function(
   if(nrow(var.yoy) > 0){ # we have something to report
     
     if(histtype == 1){
-      report = var.yoy[, change := value.1 / value.2]
-      report[, change := (change - 1) * 100]
+      report = var.yoy[, change := 0]
+      report[value.2 != 0, change := (value.1 - value.2) / value.2]
+      report[, change := change * 100]
       
       # need to use geom_bar and construct a custom histogram
       report[, bin2 := cut_custom(change)] # using custom function to have more control
       totalmiles <- report[, sum(end_point - begin_point)]
       report <- report[, end_point := end_point / totalmiles]
       report <- report[, begin_point := begin_point / totalmiles]
-      report[change <-1e-3, color := factor("Reduction")]
+      report[change < -1e-3, color := factor("Reduction")]
       report[change >= -1e-3 & change <= 1e3, color := factor("Same")]
       report[change > 1e-3, color := factor("Increase")]
       report[is.na(change), color := factor("No Match")]
@@ -145,7 +146,7 @@ create_travel_data_yoy <- function(
       p <- ggplot(report, aes(x=bin2,fill=color,weight=end_point-begin_point)) + geom_bar(width=0.75)
       p <- p + scale_x_discrete("", breaks=factor(c(1:17,18),levels=c(1:17,18),labels=c("< -100%","-100%","-75%","-50%","-25%","-15%","-5%","-1%","0%","1%","5%","15%","25%","50%","75%","100%","> 100%","No Match"),exclude=NULL), drop=FALSE)
       p <- p + scale_fill_manual("",values=c("Same"="slategray","Reduction"="gray50","Increase"="gray50","No Match"="black"))
-      p <- p + scale_y_continuous(labels=percent,limits=c(0,1)) 
+      p <- p + scale_y_continuous(labels=percent,limits=c(-0.01, 1.05)) 
       
     } else {
       p <- ggplot(report, aes(x=1,y=V1,fill=color)) + geom_bar(stat="identity",width=0.75) 
