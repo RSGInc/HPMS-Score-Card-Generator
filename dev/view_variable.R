@@ -13,7 +13,13 @@ view_variable = function(data.list, variable = NULL, var.label = NULL){
   
   if ( is.null(variable) ){
     variable = gVariables[Label %like% var.label, Name]
+    if ( length(variable) > 1 ){
+      stop('Multiple variables found with that label: ', 
+           paste(variable, collapse=', '))
+    }
+    
   }
+  
   
   x1 = which(gVariables[, Name] == variable)
   create_page_summary(data = data.list$dat,
@@ -29,6 +35,15 @@ view_variable = function(data.list, variable = NULL, var.label = NULL){
 
 year_selection=2019
 year_compare = 2018
+
+state = 'NM'
+data.list = getStateDataSets(state, year_selection, year_compare)
+view_variable(data.list, var.label='Through Lanes')
+
+state = 'DC'
+data.list = getStateDataSets(state, year_selection, year_compare)
+view_variable(data.list, var.label='Faulting')
+view_variable(data.list, variable='CAPACITY')
 
 state = 'MT'
 data.list = getStateDataSets(state, year_selection, year_compare)

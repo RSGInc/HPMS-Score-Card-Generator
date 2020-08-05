@@ -12,14 +12,21 @@
 
 # Get max and min x values, max y across all three datasets
 
-getLimits <- function(dt){
+getLimits <- function(dt, trim=TRUE){
   
   
   # Get max and min x values, max y
   
   if(nrow(dt[!is.na(value_numeric), ]) > 2){
-    minvalue <- quantile(dt[, value_numeric], probs=0.05, na.rm=TRUE)
-    maxvalue <- quantile(dt[, value_numeric], probs=0.95, na.rm=TRUE)
+    
+    if ( trim ){
+      minvalue <- quantile(dt[, value_numeric], probs=0.05, na.rm=TRUE)
+      maxvalue <- quantile(dt[, value_numeric], probs=0.95, na.rm=TRUE)
+    } else {
+      minvalue = min(dt[, value_numeric], na.rm=TRUE)
+      maxvalue = max(dt[, value_numeric], na.rm=TRUE)
+    }
+    
     if(minvalue == maxvalue){
       maxvalue <- 1 + minvalue
     }
@@ -73,12 +80,17 @@ densityPlot <- function(
   col_noplot = 'white'
   
   # Get x axis limits and y-axis maximum
-  lims1 <- getLimits(d1)
-  lims2 <- getLimits(d2)
-  lims3 <- getLimits(d3)
+  lims1 <- getLimits(d1, trim=density_type != 'bar')
+  lims2 <- getLimits(d2, trim=density_type != 'bar')
+  lims3 <- getLimits(d3, trim=density_type != 'bar')
   
-  minvalue <- min(lims1$minvalue, lims2$minvalue, lims3$minvalue)
-  maxvalue <- max(lims1$maxvalue, lims2$maxvalue, lims3$maxvalue)
+  if ( density_type == 'bar' ){
+    minvalue = min(lims1$minvalue, lims2$minvalue)
+    maxvalue = max(lims1$maxvalue, lims2$maxvalue)
+  } else {
+    minvalue <- min(lims1$minvalue, lims2$minvalue, lims3$minvalue)
+    maxvalue <- max(lims1$maxvalue, lims2$maxvalue, lims3$maxvalue)
+  }
   # ymax     <- max(lims1$ymax, lims2$ymax, lims3$ymax3) * 1.20
   # 
   # ymax <- max(2.5 * ymax, ymax + 0.05)
