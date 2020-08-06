@@ -79,25 +79,22 @@ densityPlot <- function(
   col_national = 'black'
   col_noplot = 'white'
   
-  # Get x axis limits and y-axis maximum
-  lims1 <- getLimits(d1, trim=density_type != 'bar')
-  lims2 <- getLimits(d2, trim=density_type != 'bar')
-  lims3 <- getLimits(d3, trim=density_type != 'bar')
-  
-  if ( density_type == 'bar' ){
-    minvalue = min(lims1$minvalue, lims2$minvalue)
-    maxvalue = max(lims1$maxvalue, lims2$maxvalue)
-  } else {
-    minvalue <- min(lims1$minvalue, lims2$minvalue, lims3$minvalue)
-    maxvalue <- max(lims1$maxvalue, lims2$maxvalue, lims3$maxvalue)
-  }
-  # ymax     <- max(lims1$ymax, lims2$ymax, lims3$ymax3) * 1.20
-  # 
-  # ymax <- max(2.5 * ymax, ymax + 0.05)
   
   if(density_type == 'bar' ){
+    lims1 <- getLimits(d1, trim=TRUE)
+    lims2 <- getLimits(d2, trim=TRUE)
+    lims3 <- getLimits(d3, trim=TRUE)
+    
+    minvalue = min(lims1$minvalue, lims2$minvalue, lims3$minvalue)
+    maxvalue = max(lims1$maxvalue, lims2$maxvalue, lims3$maxvalue)
+    
     minvalue <- minvalue - 1
     maxvalue <- maxvalue + 1
+    
+    if ( abs(minvalue) == Inf | abs(maxvalue) == Inf ){
+      browser()
+    }
+    
     adjustment <- NA  # adjust is not used for geom_bar
     
     unique_vals <- sort(c(unique(d1$value_numeric),
@@ -115,6 +112,19 @@ densityPlot <- function(
       if ( width == 0 ) width <- NULL
     }
   } else if ( density_type == 'density' ) {
+    
+    # Get x axis limits and y-axis maximum
+    # ymax     <- max(lims1$ymax, lims2$ymax, lims3$ymax3) * 1.20
+    # 
+    # ymax <- max(2.5 * ymax, ymax + 0.05)
+    
+    lims1 <- getLimits(d1, trim=TRUE)
+    lims2 <- getLimits(d2, trim=TRUE)
+    lims3 <- getLimits(d3, trim=TRUE)
+    
+    minvalue <- min(lims1$minvalue, lims2$minvalue, lims3$minvalue)
+    maxvalue <- max(lims1$maxvalue, lims2$maxvalue, lims3$maxvalue)
+    
     breaks = waiver()
     width = NA  # width is not used for geom_density
     adjustment <- 1 #c(1,1)[densitytype]
@@ -122,7 +132,7 @@ densityPlot <- function(
     
   }
   
-  if((nrow(d1)>2 | nrow(d2)>2) & !is.null(minvalue)){
+  if((nrow(d1) > 2 | nrow(d2) > 2) & !is.null(minvalue)){
     # if we have something to report (density plots require at least 3 points to draw)
     
     p1 <- ggplot(data = d1, aes(x = value_numeric,
@@ -132,7 +142,7 @@ densityPlot <- function(
     p3 <- ggplot(data = d1, aes(x = value_numeric,
                                 weight=(end_point - begin_point) / sum(end_point - begin_point)))
     
-    if(nrow(d1)>2){
+    if(nrow(d1) > 2){
       nunique = length(unique(d1[, value_numeric]))
       
       p1 <- p1 +
@@ -159,7 +169,7 @@ densityPlot <- function(
       
     }
     
-    if(nrow(d2)>2) {
+    if(nrow(d2) > 2) {
       nunique = length(unique(d2[, value_numeric]))
       
       p2 <- p2 + plotfun(data = d2,

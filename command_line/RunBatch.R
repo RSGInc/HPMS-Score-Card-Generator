@@ -14,6 +14,7 @@
 # Setup ---------------------------------------------------------------
 library('stringr')
 options(warn=1)
+options(scipen=9999)
 
 # Read args from the command line ---------------------------------------------
 args <- commandArgs(trailingOnly = TRUE)
