@@ -32,7 +32,7 @@ format_report <- function(report, highlight_threshold){
     
     # Determine which rows to highlight
     report[, highlight := 0]
-    report[variable == 'perc_miles' && as.numeric(str_replace_all(value, ',', '')) > highlight_threshold,
+    report[variable == 'perc_miles' & as.numeric(str_replace_all(value, ',', '')) > highlight_threshold,
            highlight := 1]
     
     report[variable == "perc_miles" & !is.na(value), value := paste0(value,"%")]

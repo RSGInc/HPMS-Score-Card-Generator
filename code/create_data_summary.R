@@ -105,13 +105,13 @@ create_data_summary <- function(data, state, year, year_compare){
   # Clean up table
   result = result[-c(5, 6)]
   
-  result[Label %in% c('Number of Data Items', 'Number of Routes', 'Pct. Unmatched Routes'),
-         `:=`(Val.1 = str_replace(Val.1, '[.][0-9]', ''),
-              Val.2 = str_replace(Val.2, '[.][0-9]', ''))]
-  
   result[Label == 'Pct. Unmatched Routes',
-         `:=`(Val.1 = ifelse(as.numeric(Val.1) < 1, '< 1', Val.1),
-              Val.2 = ifelse(as.numeric(Val.2) < 1, '< 1', Val.2))]
+         `:=`(Val.1 = ifelse(as.numeric(Val.1) < 1 & as.numeric(Val.1) > 0, '< 1', Val.1),
+              Val.2 = ifelse(as.numeric(Val.2) < 1 & as.numeric(Val.2) > 0, '< 1', Val.2))]
+  
+  result[Label %in% c('Number of Data Items', 'Number of Routes', 'Pct. Unmatched Routes'),
+         `:=`(Val.1 = str_replace(Val.1, '[.][0-9]+', ''),
+              Val.2 = str_replace(Val.2, '[.][0-9]+', ''))]
   
   result[Label == 'Pct. Unmatched Routes', 
          `:=`(Val.1 = paste0(Val.1, '%'),

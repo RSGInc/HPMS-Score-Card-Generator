@@ -74,7 +74,7 @@ create_travel_yoy_density <- function(
   # we have something to report (density plots require at least 3 points to draw)
   if( nrow(var1) > 2 | nrow(var2) > 2 ) {
     
-    message('Loading national data for ', variable)
+    # message('Loading national data for ', variable)
     
     national  <- readRDS(paste0("data\\+National\\", yearcomparison, "\\",
                                 variable, ".rds"))
