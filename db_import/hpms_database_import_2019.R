@@ -41,12 +41,19 @@ download_socrata = function(url, con, stage_table){
   counts_remote = read.socrata2(query, email=email, password=password)
   setnames(counts_remote, 'count_state_code', 'n_remote')
   
-  message('Downloading ', sum(counts_remote[n_remote]), ' rows from ', names(url))
+  # if (!str_detect(url, 'json$|csv$')){
+  #   url = str_c(url, '.json')
+  # }
+  
+  message('Downloading ', sum(counts_remote[, 'n_remote']), ' rows from ', names(url))
   
   dt = read.socrata(url=url, email=email, password=password)
   setDT(dt)
   
-  if ( names(urls)[i] == 'mid_atlantic' ){
+  message('Downloaded...')
+  
+  #if ( names(url) %in% c('mid_atlantic', 'SC', 'AZ', 'TN') ){
+  if (class(dt$value_date) == 'character'){
     dt[, value_date := ymd_hms(value_date)]
   }
   
@@ -56,22 +63,38 @@ download_socrata = function(url, con, stage_table){
   coltype_dt = merge(coltype_chk_dt, coltype_obs_dt, by='field')
   
   if ( coltype_dt[chk != obs, .N] > 0 ){
-    message('col type mismatch - writing to file')
-    filename = file.path(raw_dir, paste0(names(urls)[i], '.rds'))
-    saveRDS(dt, filename)
-  } else {
-    message('writing to database')
-    dbWriteTable(con, stage_table, dt, append=TRUE)
+    
+    message('Column type mismatch')
+    print(coltype_dt)
+    browser()
+
   }
+    
+  message('writing to database')
+  
+  states = unique(dt[, 'state_code'])
+  years = unique(dt[, 'year_record'])
+  
+  if (stage_table %in% dbListTables(conn = con) ){
+    sql = paste0(
+      'DELETE FROM ', stage_table,
+      ' WHERE state_code in (', paste(states, collapse=', '), ')',
+      ' AND year_record in (', paste(years, collapse=', '), ')')
+    dbExecute(con, sql)
+  }
+  
+  dbWriteTable(con, stage_table, dt, append=TRUE)
+  message('Done!')
+
   
   # Check
   
-  dt = tbl(con, from=stage_table)
+  dt_stage = tbl(con, from=stage_table)
   # glimpse(dt)
   
   # Check that we have the right number of rows for each state.
   
-  counts_local = stage %>%
+  counts_local = dt_stage %>%
     count(state_code, year_record) %>%
     collect() %>%
     rename(n_local = n)
@@ -92,20 +115,9 @@ copy_rows = function(con, prod_table, stage_table, counts_local){
   
   prod = tbl(con, from=prod_table)
   
-  sql = paste0(
-    'DELETE FROM ', prod_table,
-    ' WHERE state_code in (', paste(states, collapse=', '), ')',
-    ' AND year_record in (', paste(years, collapse=', '), ')')
-  dbExecute(con, sql)
-  
   old_fields = dbListFields(con, prod_table)
   new_fields = dbListFields(con, stage_table)
-  
-  setdiff(tolower(new_fields), tolower(old_fields))
-  new_fields = new_fields[!new_fields %in% 'natroute_id']
-  
-  setdiff(tolower(old_fields), tolower(new_fields))
-  
+
   # Create StateYearKey
   if ( !'StateYearKey' %in% new_fields ){
     sql = paste0('alter table ', stage_table,
@@ -114,10 +126,27 @@ copy_rows = function(con, prod_table, stage_table, counts_local){
     new_fields = c(new_fields, 'StateYearKey')
   }
   
+  # setdiff(tolower(new_fields), tolower(old_fields))
+  new_fields = new_fields[!new_fields %in% 'natroute_id']
+  
+  # stopifnot(
+  #   length(setdiff(tolower(new_fields), tolower(old_fields))) == 0,
+  #   length(setdiff(tolower(old_fields), tolower(new_fields))) == 0
+  # )
+  
   # Copy rows into production table.
+  
+  sql = paste0(
+    'DELETE FROM ', prod_table,
+    ' WHERE state_code in (', paste(states, collapse=', '), ')',
+    ' AND year_record in (', paste(years, collapse=', '), ')')
+  dbExecute(con, sql)
+  
+  message('Copying from stage to production')
   sql = paste0('insert into ', prod_table, '(', paste(new_fields, collapse=', '),
                ') select ', paste(new_fields, collapse=', '), ' from ', stage_table)
   dbExecute(con, sql)
+  message('Done')
   
   # Get counts in production table
   counts_prod = prod %>%
@@ -144,9 +173,6 @@ password = 'tX522b7Dz4xS'
 # Work ======================================================================
 
 con = connect_to_db('burmdlppw01', 'HPMS', intsecurity = TRUE)
-
-
-
 
 # Sample sections -------------------------------------------------------
 
@@ -176,7 +202,9 @@ sample_urls = c(
 )
 
 
-for ( url in sample_urls ){
+for ( i in seq_along(sample_urls) ){
+  url = sample_urls[i]
+  message('Working on ', names(url))
   counts_local = download_socrata(url, con, stage_table)
   copy_rows(con, prod_table, stage_table, counts_local)
 }
@@ -209,21 +237,21 @@ stage_table = 'rs_stage'
 # Resubmissions on 20 Aug 2020
 
 sections_urls = c(
-  MN = 'https://datahub.transportation.gov/Roadways-and-Bridges/MinnesotaSections2019/3uf9-qbi2',
-  MD = 'https://datahub.transportation.gov/Roadways-and-Bridges/MarylandSections2019/ddzr-fkg3',
-  NM = 'https://datahub.transportation.gov/dataset/HPMSNewMexicoSections2019/9tf9-8qq4',
-  SC = 'https://datahub.transportation.gov/dataset/HPMSSouthCarolinaSections2019/axzv-af4r',
-  AZ = 'https://datahub.transportation.gov/dataset/HPMSArizonaSections2019/undi-6wdr',
-  TN = 'https://datahub.transportation.gov/dataset/HPMSTennesseeSections2019/djic-ekmg',
-  PR = 'https://datahub.transportation.gov/dataset/HPMSPuertoRicoSections2019/yrrm-p8fu',
+  # MN = 'https://datahub.transportation.gov/Roadways-and-Bridges/MinnesotaSections2019/3uf9-qbi2',
+  # MD = 'https://datahub.transportation.gov/Roadways-and-Bridges/MarylandSections2019/ddzr-fkg3',
+  # NM = 'https://datahub.transportation.gov/dataset/HPMSNewMexicoSections2019/9tf9-8qq4',
+  # SC = 'https://datahub.transportation.gov/dataset/HPMSSouthCarolinaSections2019/axzv-af4r',
+  # AZ = 'https://datahub.transportation.gov/dataset/HPMSArizonaSections2019/undi-6wdr',
+  # TN = 'https://datahub.transportation.gov/dataset/HPMSTennesseeSections2019/djic-ekmg',
+  # PR = 'https://datahub.transportation.gov/dataset/HPMSPuertoRicoSections2019/yrrm-p8fu',
   ND = 'https://datahub.transportation.gov/dataset/HPMSNorthDakotaSections2019/7v4t-66uv',
   LA = 'https://datahub.transportation.gov/dataset/HPMSLouisianaSections2019/6h5i-ej6p',
   HI = 'https://datahub.transportation.gov/dataset/HPMSHawaiiSections2019/tuf3-6qxe',
   CA = 'https://datahub.transportation.gov/dataset/HPMSCaliforniaSections2019/mydz-ydth'
 )
 
-for ( i in seq_along(urls) ){
-  
+for ( i in seq_along(sections_urls) ){
+  url = sections_urls[i]
   counts_local = download_socrata(url, con, stage_table)
   copy_rows(con, prod_table, stage_table, counts_local)
   
