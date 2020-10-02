@@ -15,7 +15,11 @@ create_summary_report <- function(
   data, state, year,
   variable, variable_type, variable_extent, variable_extent_fs, ramps){
 
-  # functional system aggregation
+  
+  # functional system aggregation (groupCat = 3, 4, NA) ------------------------
+  # groupCat 3,4, NA = Other/Minor Arterials, Collectors + Locals, ?
+  # F_SYSTEM = 1, 2?
+  
   if( ramps ){
     result1 <- data[state_code == state & year_record == year &
                       data_item == variable & FACILITY_TYPE == 4, , ] 
@@ -68,7 +72,9 @@ create_summary_report <- function(
   result1[, F_SYSTEM := NULL]
   result1 <- result1[!is.na(miles),]
   
-  # interstate aggregation
+  
+  # interstate aggregation (Interstate == 1, groupCat = 1) ---------------------
+  
   if(ramps){
     result2 <- data[Interstate == 1 & state_code == state & year_record == year &
                       data_item == variable & FACILITY_TYPE == 4, , ]
@@ -107,7 +113,10 @@ create_summary_report <- function(
   
   result2[, groupCat := 1]
   
-  # NHS aggregation
+  
+  # NHS aggregation (NHS == 1, groupCat = 2) -----------------------------------
+  # aka Non-Interstate NHS
+  
   if(ramps){
     
     result3 <- data[NHS == 1 & state_code == state & year_record == year &
@@ -150,7 +159,7 @@ create_summary_report <- function(
   )
   
   result3[, groupCat:=2]
-  
+  # Bind three parts together --------------------------------------------------
   result <- rbind(result2, result3, result1)
   
   result[, count := string_format(count)]

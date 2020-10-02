@@ -100,9 +100,9 @@ create_travel_data_yoy <- function(
   }
   
   # this does the merge at the most disaggregate level
-  
+  # keep mismatches of yr1 but not yr2
   var.yoy = merge(var.1, var.2, by = c('route_id', 'begin_point', 'end_point'),
-                  all=FALSE)
+                  all.x=TRUE, all.y=FALSE)
   
   if(nrow(var.yoy) > 0){ # we have something to report
     
@@ -129,7 +129,7 @@ create_travel_data_yoy <- function(
       report[as.numeric(bin2) == 2, color := "Yes"]
       report[is.na(bin2), color := "NA"]
       report$color <- factor(report$color, levels=c('NA', 'Yes', 'No'))
-      report <- report[, sum(end_point - begin_point), by=.(color)]
+      report <- report[, .(V1 = sum(end_point - begin_point)), by=.(color)]
       totalmiles <- report[, sum(V1)]
       report <- report[, V1 := V1 / totalmiles]
       report[, color2 := color]

@@ -187,18 +187,25 @@ stage_table = 'rss_stage'
 
 # Resubmissions 20 Aug 2020
 
+# sample_urls = c(
+#   MN = 'https://datahub.transportation.gov/Roadways-and-Bridges/MinnesotaSample2019/83bz-5v5q',
+#   MD = 'https://datahub.transportation.gov/Roadways-and-Bridges/MarylandSample2019/kmgx-n6xj',
+#   NM = 'https://datahub.transportation.gov/dataset/HPMSNewMexicoSample2019/x6js-ep8c',
+#   SC = 'https://datahub.transportation.gov/dataset/HPMSSouthCarolinaSample2019/w5m2-vgxi',
+#   AZ = 'https://datahub.transportation.gov/dataset/HPMSArizonaSample2019/rv3n-ux6r',
+#   TN = 'https://datahub.transportation.gov/dataset/HPMSTennesseeSample2019/yr8t-q9gm',
+#   PR = 'https://datahub.transportation.gov/dataset/HPMSPuertoRicoSample2019/2smy-8bva',
+#   ND = 'https://datahub.transportation.gov/dataset/HPMSNorthDakotaSample2018/6ss7-4v5q',
+#   LA = 'https://datahub.transportation.gov/dataset/HPMSLouisianaSample2019/c274-he8g',
+#   HI = 'https://datahub.transportation.gov/dataset/HPMSHawaiiSample2019/fhtn-3aua',
+#   CA = 'https://datahub.transportation.gov/dataset/HPMSCaliforniaSample2019/wev8-4s59'  
+# )
+
+# Resubmissions 21 Sep 2020
+
 sample_urls = c(
-  MN = 'https://datahub.transportation.gov/Roadways-and-Bridges/MinnesotaSample2019/83bz-5v5q',
-  MD = 'https://datahub.transportation.gov/Roadways-and-Bridges/MarylandSample2019/kmgx-n6xj',
-  NM = 'https://datahub.transportation.gov/dataset/HPMSNewMexicoSample2019/x6js-ep8c',
-  SC = 'https://datahub.transportation.gov/dataset/HPMSSouthCarolinaSample2019/w5m2-vgxi',
-  AZ = 'https://datahub.transportation.gov/dataset/HPMSArizonaSample2019/rv3n-ux6r',
-  TN = 'https://datahub.transportation.gov/dataset/HPMSTennesseeSample2019/yr8t-q9gm',
-  PR = 'https://datahub.transportation.gov/dataset/HPMSPuertoRicoSample2019/2smy-8bva',
-  ND = 'https://datahub.transportation.gov/dataset/HPMSNorthDakotaSample2018/6ss7-4v5q',
-  LA = 'https://datahub.transportation.gov/dataset/HPMSLouisianaSample2019/c274-he8g',
-  HI = 'https://datahub.transportation.gov/dataset/HPMSHawaiiSample2019/fhtn-3aua',
-  CA = 'https://datahub.transportation.gov/dataset/HPMSCaliforniaSample2019/wev8-4s59'  
+  WA = 'https://datahub.transportation.gov/Roadways-and-Bridges/WashingtonSample/abr7-b6qb',
+  CA = 'https://datahub.transportation.gov/dataset/CaliforniaSample/uh86-bwdf'
 )
 
 
@@ -236,18 +243,24 @@ stage_table = 'rs_stage'
 
 # Resubmissions on 20 Aug 2020
 
+# sections_urls = c(
+#   # MN = 'https://datahub.transportation.gov/Roadways-and-Bridges/MinnesotaSections2019/3uf9-qbi2',
+#   # MD = 'https://datahub.transportation.gov/Roadways-and-Bridges/MarylandSections2019/ddzr-fkg3',
+#   # NM = 'https://datahub.transportation.gov/dataset/HPMSNewMexicoSections2019/9tf9-8qq4',
+#   # SC = 'https://datahub.transportation.gov/dataset/HPMSSouthCarolinaSections2019/axzv-af4r',
+#   # AZ = 'https://datahub.transportation.gov/dataset/HPMSArizonaSections2019/undi-6wdr',
+#   # TN = 'https://datahub.transportation.gov/dataset/HPMSTennesseeSections2019/djic-ekmg',
+#   # PR = 'https://datahub.transportation.gov/dataset/HPMSPuertoRicoSections2019/yrrm-p8fu',
+#   ND = 'https://datahub.transportation.gov/dataset/HPMSNorthDakotaSections2019/7v4t-66uv',
+#   LA = 'https://datahub.transportation.gov/dataset/HPMSLouisianaSections2019/6h5i-ej6p',
+#   HI = 'https://datahub.transportation.gov/dataset/HPMSHawaiiSections2019/tuf3-6qxe',
+#   CA = 'https://datahub.transportation.gov/dataset/HPMSCaliforniaSections2019/mydz-ydth'
+# )
+
+# Resubmissions on 21 Sep 2020
 sections_urls = c(
-  # MN = 'https://datahub.transportation.gov/Roadways-and-Bridges/MinnesotaSections2019/3uf9-qbi2',
-  # MD = 'https://datahub.transportation.gov/Roadways-and-Bridges/MarylandSections2019/ddzr-fkg3',
-  # NM = 'https://datahub.transportation.gov/dataset/HPMSNewMexicoSections2019/9tf9-8qq4',
-  # SC = 'https://datahub.transportation.gov/dataset/HPMSSouthCarolinaSections2019/axzv-af4r',
-  # AZ = 'https://datahub.transportation.gov/dataset/HPMSArizonaSections2019/undi-6wdr',
-  # TN = 'https://datahub.transportation.gov/dataset/HPMSTennesseeSections2019/djic-ekmg',
-  # PR = 'https://datahub.transportation.gov/dataset/HPMSPuertoRicoSections2019/yrrm-p8fu',
-  ND = 'https://datahub.transportation.gov/dataset/HPMSNorthDakotaSections2019/7v4t-66uv',
-  LA = 'https://datahub.transportation.gov/dataset/HPMSLouisianaSections2019/6h5i-ej6p',
-  HI = 'https://datahub.transportation.gov/dataset/HPMSHawaiiSections2019/tuf3-6qxe',
-  CA = 'https://datahub.transportation.gov/dataset/HPMSCaliforniaSections2019/mydz-ydth'
+  WA = 'https://datahub.transportation.gov/Roadways-and-Bridges/ScoreCardWashingtonSections/ydyu-q73e',
+  CA = 'https://datahub.transportation.gov/dataset/ScorecardCaliforniaSections/pcvt-4zpt'
 )
 
 for ( i in seq_along(sections_urls) ){
