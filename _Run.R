@@ -28,7 +28,7 @@ submission_deadline = '2019-06-15'   # Deadline for 2019 data
 # submission_deadline = '2019-06-16' # Usual deadline
 
 # Load Code
-codefiles = list.files(path = "code", pattern = "*.R$", full.names = TRUE)[-1]
+codefiles = c(Sys.glob('app/*.R'), Sys.glob('functions/*.R'))
 invisible(sapply(X =codefiles , FUN = source))
 
 # Run Tool

@@ -5,6 +5,7 @@ data_20191118
 data
 output
 output_20200701
+renv/
 *.zip
 *.html
 *.pdf

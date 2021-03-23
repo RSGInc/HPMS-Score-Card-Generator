@@ -41,8 +41,8 @@ LoadPackages <- function(packages) {
 }
 
 # Load necessary packages (alphabetically, please)
-packages <- c("data.table", "doBy", "ggplot2", "gmodels",  "gridExtra",
-              "hexbin", "jsonlite", "png", "reshape", "reshape2",
+packages <- c("data.table", "doBy", "getPass", "ggplot2", "gmodels",  "gridExtra",
+              "hexbin", "jsonlite", "odbc", "png", "reshape", "reshape2",
               "RODBC","scales", "showtext", "sqldf", 'stringr',"spatstat","reldist",
               "lubridate") #"grid","tcltk", "tools"
 LoadPackages(packages)
