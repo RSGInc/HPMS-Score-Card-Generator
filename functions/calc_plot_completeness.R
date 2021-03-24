@@ -15,37 +15,48 @@ calc_plot_completeness <- function(data, year, variable, x, y){
   
   ts <- Sys.time()
   
-  data <- data[!(F_SYTEMorig==7 & NHS!=1),]
+  data <- data[!(F_SYTEMorig == 7 & NHS != 1)]
   
   type <- 1
   
   # return(type) # for the time being until we can implement the 1 spatial stuff 
   
-  if(nrow(data[data_item==variable&year_record==year,])>0){
+  if(data[data_item == variable & year_record == year, .N] > 0 ){
     type <- 2
   }
   #
-  if(nrow(data[data_item==variable&year_record==year,])>0){
+  if( data[data_item == variable & year_record == year, .N] > 0){
     
-    # this is where the coverage validation check goes
+    
+    # complete if present ------------------------------------------------------
     # these variables just need to have something to be complete
-    if((variable%in%c("STRUCTURE_TYPE","STRAHNET_TYPE","TRUCK","FUTURE_FACILITY","CAPACITY"))){
+    
+    if( (variable %in% c(
+      "STRUCTURE_TYPE", "STRAHNET_TYPE", "TRUCK", "FUTURE_FACILITY", "CAPACITY"))){
       type <- 3
     }
+    
+    
+    # sample variables --------------------------------------------------------
     
     # these are strictly sample variables
     # interpreted as reported sample variables need to have an expansion factor.
     # if no expansion factor, than the coverage is invalidated
     
-    #####################################
-    if(variable%in%c("PEAK_LANES","SPEED_LIMIT","PCT_PEAK_SINGLE","PCT_PEAK_COMBINATION","K_FACTOR","DIR_FACTOR","FUTURE_AADT","STOP_SIGNS","AT_GRADE_OTHER","LANE_WIDTH","MEDIAN_TYPE","SHOULDER_TYPE","WIDENING_OBSTACLE","WIDENING_POTENTIAL","SURFACE_TYPE")){
+    if( variable %in% c(
+      "PEAK_LANES", "SPEED_LIMIT", "PCT_PEAK_SINGLE", "PCT_PEAK_COMBINATION",
+      "K_FACTOR", "DIR_FACTOR", "FUTURE_AADT", "STOP_SIGNS", "AT_GRADE_OTHER",
+      "LANE_WIDTH", "MEDIAN_TYPE", "SHOULDER_TYPE", "WIDENING_OBSTACLE",
+      "WIDENING_POTENTIAL", "SURFACE_TYPE")){
   
       if(nrow(data[data_item==variable&year_record==year&is.na(expansion_factor),])==0&nrow(data[data_item==variable&year_record==year,])>0){
         type <- 3
       }
     }  
     
-    #####################################
+    
+    # route_signing route_qualifier --------------------------------------------
+    
     if(variable%in%c("ROUTE_SIGNING","ROUTE_QUALIFIER")){
      
       dat.variable      <- data[data_item==variable       &year_record==year,]
@@ -90,7 +101,10 @@ calc_plot_completeness <- function(data, year, variable, x, y){
       }
       
     }
-    #####################################
+    
+    
+    # urban_code ---------------------------------------------------------------
+    
     if(variable=="URBAN_CODE"){
      
       dat.variable      <- data[data_item==variable       &year_record==year,]
@@ -136,7 +150,9 @@ calc_plot_completeness <- function(data, year, variable, x, y){
       
     }
     
-    #####################################
+    
+    # median_width -------------------------------------------------------------
+    
     if(variable=="MEDIAN_WIDTH"){
       
       dat.variable    <- data[data_item==variable     &year_record==year,]
@@ -160,7 +176,9 @@ calc_plot_completeness <- function(data, year, variable, x, y){
       
     }
     
-    #####################################
+    
+    # shoulder_width_r ---------------------------------------------------------
+    
     if(variable=="SHOULDER_WIDTH_R"){
       
       dat.variable    <- data[data_item==variable     &year_record==year,]
@@ -184,7 +202,8 @@ calc_plot_completeness <- function(data, year, variable, x, y){
       
     }
     
-    #####################################
+    # shoulder_width_l --------------------------------------------------------
+    
     if(variable=="SHOULDER_WIDTH_L"){
       
       dat.variable      <- data[data_item==variable       &year_record==year,]
@@ -220,31 +239,9 @@ calc_plot_completeness <- function(data, year, variable, x, y){
       
     }
     
-    #####################################
-    if(variable=="SHOULDER_WIDTH_R"){
-      
-      dat.variable    <- data[data_item==variable     &year_record==year,]
-      dat.SHOULDER_TYPE <- data[data_item=="SHOULDER_TYPE"&year_record==year,]
-      
-      coverage <- sqldf("select 
-                            A.route_id,A.begin_point,A.end_point,A.data_item,A.value_numeric as SHOULDERTYPE, 
-                            B.value_numeric as variable,B.expansion_factor   
-                            from [dat.SHOULDER_TYPE] A 
-                            left join [dat.variable] B on 
-                              A.route_id = B.route_id and (
-                              ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
-                              ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
-                            )")
-      
-      coverage$required <- with(coverage,SHOULDERTYPE %in% 2:6&(!is.na(expansion_factor)))
-  
-      if(sum(is.na(coverage$variable[coverage$required]))==0&nrow(coverage)>0){
-        type <- 3 
-      }
-      
-    }
     
-    #####################################
+    # peak_parking -------------------------------------------------------------
+    
     if(variable=="PEAK_PARKING"){
       
       dat.variable    <- data[data_item==variable     &year_record==year,]
@@ -268,7 +265,9 @@ calc_plot_completeness <- function(data, year, variable, x, y){
       
     }
     
-    #####################################
+    
+    # turn_lanes_r, turn_lanes_l ----------------------------------------------
+    
     if(variable%in%c("TURN_LANES_R","TURN_LANES_L")){
       
       dat.variable       <- data[data_item==variable    &year_record==year,]
@@ -304,7 +303,9 @@ calc_plot_completeness <- function(data, year, variable, x, y){
       
     }
     
-    #####################################
+    
+    # f_system ----------------------------------------------------------------
+    
     if(variable=="F_SYSTEM"){
       
       dat.F_SYSTEM      <- data[data_item=="F_SYSTEM"&year_record==year,]
@@ -327,7 +328,9 @@ calc_plot_completeness <- function(data, year, variable, x, y){
       
     }# end Fsystem
     
-    #####################################
+    
+    # hov_type ----------------------------------------------------------------
+    
     if(variable=="HOV_TYPE"){
       
       dat.HOV_TYPE  <- data[data_item=="HOV_TYPE"&year_record==year,]
@@ -349,7 +352,8 @@ calc_plot_completeness <- function(data, year, variable, x, y){
       
     } # end HOV_TYPE
     
-    #####################################
+    # hov_lanes ---------------------------------------------------------------
+    
     if(variable=="HOV_LANES"){
       
       dat.HOV_LANES <- data[data_item=="HOV_LANES"&year_record==year,]
@@ -370,7 +374,9 @@ calc_plot_completeness <- function(data, year, variable, x, y){
       }
     } # end HOV_LANES
     
-    #####################################
+    
+    # toll_charged ------------------------------------------------------------
+    
     if(variable=="TOLL_CHARGED"){
       
       dat.TOLL_CHARGED <- data[data_item=="TOLL_CHARGED"&year_record==year,]
@@ -391,7 +397,9 @@ calc_plot_completeness <- function(data, year, variable, x, y){
       }
     } # end TOLL_CHARGED
     
-    #####################################
+    
+    # toll_type ---------------------------------------------------------------
+    
     if(variable=="TOLL_TYPE"){
       
       dat.TOLL_TYPE    <- data[data_item=="TOLL_TYPE"&year_record==year,]
@@ -412,7 +420,9 @@ calc_plot_completeness <- function(data, year, variable, x, y){
       }
     } # end TOLL_TYPE
     
-    #####################################
+    
+    # county_code -------------------------------------------------------------
+    
     if(variable=="COUNTY_CODE"){
       
       dat.COUNTY_CODE   <- data[data_item=="COUNTY_CODE"  &year_record==year,]
@@ -469,7 +479,9 @@ calc_plot_completeness <- function(data, year, variable, x, y){
       }
     } # end COUNTY_CODE
     
-    #####################################
+    
+    # facility_type ------------------------------------------------------------
+    
     if(variable=="FACILITY_TYPE"){
       
       dat.variable      <- data[data_item==variable  &year_record==year,]
@@ -514,7 +526,9 @@ calc_plot_completeness <- function(data, year, variable, x, y){
       }
     } 
     
-    #####################################
+    
+    # access_control -----------------------------------------------------------
+    
     if(variable=="ACCESS_CONTROL"){
       
       dat.variable      <- data[data_item==variable       &year_record==year,]
@@ -559,7 +573,9 @@ calc_plot_completeness <- function(data, year, variable, x, y){
       }
     } 
     
-    #####################################
+
+    # ownership ----------------------------------------------------------------
+    
     if(variable=="OWNERSHIP"){
       
       dat.variable      <- data[data_item==variable       &year_record==year,]
@@ -616,7 +632,9 @@ calc_plot_completeness <- function(data, year, variable, x, y){
       }
     } 
     
-    #####################################
+    
+    # through_lanes, aadt -----------------------------------------------------
+    
     if(variable%in%c("THROUGH_LANES","AADT")){
       
       dat.variable      <- data[data_item==variable       &year_record==year,]
@@ -673,7 +691,9 @@ calc_plot_completeness <- function(data, year, variable, x, y){
       }
     } 
     
-    #####################################
+    
+    # counter_peak_lanes ------------------------------------------------------
+    
     if(variable=="COUNTER_PEAK_LANES"){
       
       dat.variable      <- data[data_item==variable       &year_record==year,]
@@ -720,7 +740,9 @@ calc_plot_completeness <- function(data, year, variable, x, y){
       }
     } 
     
-    #####################################
+    
+    # aadt_single_unit, aadt_combination --------------------------------------
+    
     if(variable%in%c("AADT_SINGLE_UNIT","AADT_COMBINATION")){
       
       dat.variable      <- data[data_item==variable       &year_record==year,]
@@ -765,7 +787,9 @@ calc_plot_completeness <- function(data, year, variable, x, y){
       }
     } 
     
-    #####################################
+    
+    # nhs ---------------------------------------------------------------------
+    
     if(variable%in%c("NHS")){
       
       dat.variable      <- data[data_item==variable       &year_record==year,]
@@ -799,7 +823,9 @@ calc_plot_completeness <- function(data, year, variable, x, y){
       }
     } 
     
-    #####################################
+    
+    # signal_type -------------------------------------------------------------
+    
     if(variable%in%c("SIGNAL_TYPE")){
       
       dat.variable       <- data[data_item==variable        &year_record==year,]
@@ -833,7 +859,9 @@ calc_plot_completeness <- function(data, year, variable, x, y){
       }
     } 
     
-    #####################################
+    
+    # pct_green_time ----------------------------------------------------------
+    
     if(variable%in%c("PCT_GREEN_TIME")){
       
       dat.variable       <- data[data_item==variable        &year_record==year,]
@@ -867,7 +895,8 @@ calc_plot_completeness <- function(data, year, variable, x, y){
       }
     } 
     
-    #####################################
+    # number_signals -----------------------------------------------------------
+    
     if(variable%in%c("NUMBER_SIGNALS")){
       
       dat.variable       <- data[data_item==variable        &year_record==year,]
@@ -902,7 +931,9 @@ calc_plot_completeness <- function(data, year, variable, x, y){
       }
     } 
     
-    #####################################
+    
+    # pct_pass_sight -----------------------------------------------------------
+    
     if(variable%in%c("PCT_PASS_SIGHT")){
       
       dat.variable       <- data[data_item==variable        &year_record==year,]
@@ -947,10 +978,10 @@ calc_plot_completeness <- function(data, year, variable, x, y){
       }
     } 
    
-   #####################################
-   # this has been updated
-   ##################################### 
-   if(variable%in%c("IRI")){
+    
+    # iri ---------------------------------------------------------------------
+    
+    if(variable%in%c("IRI")){
       
       dat.variable      <- data[data_item==variable       &year_record==year,]
       dat.FACILITY_TYPE <- data[data_item=="FACILITY_TYPE"&year_record==year,]
@@ -1008,7 +1039,9 @@ calc_plot_completeness <- function(data, year, variable, x, y){
       }
    }   
   
-    #####################################
+    
+    # psr ----------------------------------------------------------------------
+    
     if(variable %in% c("PSR")){
       
       keep_cols <- c('route_id', 'begin_point', 'end_point', 'section_length', 'expansion_factor', 'data_item', 'value_numeric')
@@ -1081,7 +1114,9 @@ calc_plot_completeness <- function(data, year, variable, x, y){
       }
     }  
     
-    #####################################
+    
+    # rutting -----------------------------------------------------------------
+    
     if(variable%in%c("RUTTING")){
       
       dat.variable      <- data[data_item==variable       &year_record==year,]
@@ -1104,7 +1139,9 @@ calc_plot_completeness <- function(data, year, variable, x, y){
       }
     }  
     
-    #####################################
+    
+    # faulting ----------------------------------------------------------------
+    
     if(variable%in%c("FAULTING")){
       
       dat.variable      <- data[data_item==variable       &year_record==year,]
@@ -1127,7 +1164,9 @@ calc_plot_completeness <- function(data, year, variable, x, y){
       }
     }  
     
-    #####################################
+    
+    # cracking_percent or year_last_construction -------------------------------
+    
     if(variable%in%c("CRACKING_PERCENT","YEAR_LAST_CONSTRUCTION")){
       
       dat.variable      <- data[data_item==variable       &year_record==year,]
@@ -1150,7 +1189,9 @@ calc_plot_completeness <- function(data, year, variable, x, y){
       }
     }  
     
-    #####################################
+    
+    # thickness_rigid ---------------------------------------------------------
+    
     if(variable%in%c("THICKNESS_RIGID")){
       
       dat.variable      <- data[data_item==variable       &year_record==year,]
@@ -1173,7 +1214,9 @@ calc_plot_completeness <- function(data, year, variable, x, y){
       }
     } 
     
-    #####################################
+    
+    # thickness_flexible ------------------------------------------------------
+    
     if(variable%in%c("THICKNESS_FLEXIBLE")){
       
       dat.variable      <- data[data_item==variable       &year_record==year,]
@@ -1196,7 +1239,9 @@ calc_plot_completeness <- function(data, year, variable, x, y){
       }
     } 
     
-    #####################################
+    
+    # base_type ---------------------------------------------------------------
+    
     if(variable%in%c("BASE_TYPE")){
       
       dat.variable      <- data[data_item==variable       &year_record==year,]
@@ -1219,7 +1264,9 @@ calc_plot_completeness <- function(data, year, variable, x, y){
       }
     }   
     
-    #####################################
+    
+    # base_thickness -----------------------------------------------------------
+    
     if(variable%in%c("BASE_THICKNESS")){
       
       dat.variable      <- data[data_item==variable       &year_record==year,]
@@ -1253,7 +1300,9 @@ calc_plot_completeness <- function(data, year, variable, x, y){
       }
     }     
     
-    #####################################
+    
+    # terrain_type ------------------------------------------------------------
+    
     if(variable%in%c("TERRAIN_TYPE")){
       
       dat.variable    <- data[data_item==variable       &year_record==year,]
@@ -1276,8 +1325,10 @@ calc_plot_completeness <- function(data, year, variable, x, y){
       }
     } 
     
-    #####################################
-    if(variable%in%c("MAINTENACE_OPERATIONS")){
+    
+    # maintenance_operations ---------------------------------------------------
+    
+    if(variable %in% c("MAINTENANCE_OPERATIONS", "MAINTENACE_OPERATIONS")){
       
       dat.variable      <- data[data_item==variable       &year_record==year,]
       dat.FACILITY_TYPE <- data[data_item=="FACILITY_TYPE"&year_record==year,]
@@ -1344,7 +1395,8 @@ calc_plot_completeness <- function(data, year, variable, x, y){
       }
    }   
   
-   #####################################    
+   # Year_last_improv ---------------------------------------------------------
+    
    if(variable%in%c("YEAR_LAST_IMPROV")){
       
       dat.variable      <- data[data_item==variable       &year_record==year,]
@@ -1378,7 +1430,8 @@ calc_plot_completeness <- function(data, year, variable, x, y){
       }
    }  
   
-    #####################################
+    # Year_last_construction --------------------------------------------------
+    
     if(variable%in%c("YEAR_LAST_CONSTRUCTION")){
       
       dat.variable      <- data[data_item==variable       &year_record==year,]
@@ -1401,7 +1454,9 @@ calc_plot_completeness <- function(data, year, variable, x, y){
       }
    }  
     
-    #####################################
+    
+    # route_number ------------------------------------------------------------
+    
     if(variable%in%c("ROUTE_NUMBER")){
       
       dat.variable      <- data[data_item==variable       &year_record==year,]
@@ -1459,6 +1514,8 @@ calc_plot_completeness <- function(data, year, variable, x, y){
    }   
   
   }
+  
+  # Plot circles --------------------------------------------------------------
   
   # submitted and complete
   if(type==3){
