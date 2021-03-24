@@ -317,11 +317,12 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
   # The following section calculates completeness and quality for each data item
   # Then plots it.
   
-  cat("\nCalculating quality score for each item. This may take some time to complete.\n")
-  
   # quality and cross validation ----------------------------------------------
   
+  message("Calculating quality score for each item.")
   dt_quality <- calcQualityAll(data, year, year_compare)
+  
+  message("Calculating cross-validations.")
   dt_cross <- calc_cross_validation(data, year)
   
   colWidth <- 0.152
@@ -350,8 +351,8 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
   
   # completeness / coverage validation ----------------------------------------
   
-  cat("\nCalculating coverage validation results. This may take some time to complete.")
-    # Print completeness and quality for each data item
+  message("Calculating coverage validation results. This may take some time to complete.")
+  # Print completeness and quality for each data item
   for ( g in 1:nrow(group_params)){
     
     R <- 1
@@ -382,7 +383,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
       # Plot circles ----------------------------------------------------------
       
       # submitted and complete
-      if(type==3){
+      if(CompleteType==3){
         grid.circle(
           x=x,
           y=y,
@@ -391,7 +392,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
         )
       }
       # submitted and incomplete
-      if(type==2){
+      if(CompleteType==2){
         grid.circle(
           x=x,
           y=y,
@@ -399,7 +400,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
           gp=gpar(fill="gray75",col="slategray"))
       }
       # not submitted
-      if(type==1){
+      if(CompleteType==1){
         grid.circle(
           x=x,
           y=y,
