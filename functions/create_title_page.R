@@ -219,7 +219,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
   
   
   
-  # Data summary -----------------------------------------------------------
+  # Data summary ==============================================================
   # Add the data summary table
   
   results <- create_data_summary(data, state, year, year_compare)
@@ -319,6 +319,8 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
   
   cat("\nCalculating quality score for each item. This may take some time to complete.\n")
   
+  # quality and cross validation ----------------------------------------------
+  
   dt_quality <- calcQualityAll(data, year, year_compare)
   dt_cross <- calc_cross_validation(data, year)
   
@@ -346,6 +348,8 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
     starty   = c(0.79, 0.63, 0.5, 0.35, 0.2, 0.105),
     nRow     = c(   4,    3,   4,    5,   1,     1))
   
+  # completeness / coverage validation ----------------------------------------
+  
   cat("\nCalculating coverage validation results. This may take some time to complete.")
     # Print completeness and quality for each data item
   for ( g in 1:nrow(group_params)){
@@ -370,10 +374,39 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
       ))
       
       CompleteType <-
-        plotCompleteness(data, year, variable,
+        calc_completeness(data, year, variable,
                         x = startx + (C - 1) * colWidth + space1,
                         y = starty - (R - 1) * rowWidth)
 
+      
+      # Plot circles ----------------------------------------------------------
+      
+      # submitted and complete
+      if(type==3){
+        grid.circle(
+          x=x,
+          y=y,
+          r=unit(0.007,"npc"),
+          gp=gpar(fill="slategray",col="slategray")
+        )
+      }
+      # submitted and incomplete
+      if(type==2){
+        grid.circle(
+          x=x,
+          y=y,
+          r=unit(0.007,"npc"),
+          gp=gpar(fill="gray75",col="slategray"))
+      }
+      # not submitted
+      if(type==1){
+        grid.circle(
+          x=x,
+          y=y,
+          r=unit(0.007,"npc"),
+          gp=gpar(fill="white",col="slategray"))
+      }
+      
       CompletedScore <-
         CompletedScore + c(0, CompleteMed, CompleteHigh)[CompleteType] * group_vars$Completeness_Weight[i]
 
@@ -411,7 +444,8 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
   
   
   # Summary scores ------------------------------------------------------------
-  # Completeness, quality, and timeliness scores ------------------------------
+  # Completeness, quality, and timeliness scores 
+  
   tscore <- time_weight * getTimelinessScore(state, year, submission_deadline)[1, 1]
   cscore <-
     round(complete_weight * CompletedScore / CompletedScoreMax, 1)
@@ -420,7 +454,8 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
   
 
   # Write scores ---------------------------------------------------
-  # Write out the quality scores ----------------
+  # Write out the quality scores
+  
   
   state_num = data$state_code[1]
   state_name = getStateLabelFromNum(state_num)
@@ -433,7 +468,9 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
   
   write.csv(x=dt_quality, file=fullpath, na='', row.names=FALSE)
 
-  # Write out the cross-validation scores ----------------
+  
+  # Write out the cross-validation scores
+  
   path <- file.path('data', state_name)
   file <- paste0(state_name, '_', year,
                  '_cross_validation_summary.csv')
@@ -443,7 +480,8 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
   
   write.csv(x=dt_cross, file=fullpath, na='', row.names=FALSE)
   
-  # Write out high level scores ---------------------------
+  
+  # Write out high level scores
   
   scores <- data.table(
     state_num = state_num,

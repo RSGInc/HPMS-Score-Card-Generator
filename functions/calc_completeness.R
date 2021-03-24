@@ -11,7 +11,7 @@
 #
 ###########################################################################
 
-calc_plot_completeness <- function(data, year, variable, x, y){
+calc_completeness <- function(data, year, variable, x, y){
   
   ts <- Sys.time()
   
@@ -1515,33 +1515,6 @@ calc_plot_completeness <- function(data, year, variable, x, y){
   
   }
   
-  # Plot circles --------------------------------------------------------------
-  
-  # submitted and complete
-  if(type==3){
-    grid.circle(
-      x=x,
-      y=y,
-      r=unit(0.007,"npc"),
-      gp=gpar(fill="slategray",col="slategray")
-      )
-  }
-  # submitted and incomplete
-  if(type==2){
-    grid.circle(
-      x=x,
-      y=y,
-      r=unit(0.007,"npc"),
-      gp=gpar(fill="gray75",col="slategray"))
-  }
-  # not submitted
-  if(type==1){
-    grid.circle(
-      x=x,
-      y=y,
-      r=unit(0.007,"npc"),
-      gp=gpar(fill="white",col="slategray"))
-  }
   cat(paste0("\n\t",variable,": ",round(difftime(Sys.time(),ts,units="secs"),2)," secs"))
   
   return(type)
