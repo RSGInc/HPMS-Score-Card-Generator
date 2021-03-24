@@ -13,11 +13,9 @@
 create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
   TS <- Sys.time()
 
-  cat("Creating score card...\n\n")
-  # cat('\tMemory used: ', round(mem_used() / 1e9, 3), 'GB \n')
-  
-  cat(paste(getStateLabelFromNum(state), "-", year, "vs.", year_compare, 
-            "\n\n"))
+  message(
+    "Creating score card for ", 
+    paste(getStateLabelFromNum(state), "-", year, "vs.", year_compare, "\n\n"))
   
   # Score card file name and path
   pdfname <- paste0(getStateAbbrFromNum(state), "_A", year, "_C", year_compare, 

@@ -85,22 +85,43 @@ gF_SYSTEM_levels <- c("Interstate",
 )
 
 # tables of variables (data items) and labels used in the output
-gVariables       <- data.table(read.table("resources/dat/data_elements.csv",sep=",",header=TRUE,stringsAsFactors=FALSE))
-gVariablesLabels <- data.table(read.table("resources/dat/data_labels.csv",  sep=",",header=TRUE,stringsAsFactors=FALSE))
-gCrossLabels     <- data.table(read.table('resources/dat/cross_validation_labels.csv', sep=',', header=TRUE, stringsAsFactors=FALSE))
+gVariables       <- fread("resources/dat/data_elements.csv")
+gVariablesLabels <- fread("resources/dat/data_labels.csv")
+gCrossLabels     <- fread('resources/dat/cross_validation_labels.csv')
 gCrossLabels$Description <- str_replace(gCrossLabels$Description, '[(][0-9xy]*[)]$', '')
-gExtentDetail    <- data.table(read.table('resources/dat/extent_detail.csv', sep=',', header=TRUE, stringsAsFactors=FALSE))
+gExtentDetail    <- fread('resources/dat/extent_detail.csv')
+gReqs <- fread("resources/dat/data_items_required_by_state.csv")
+gScoreWeights <- fread("resources/dat/scoringweights.csv")
+
 
 # reformatting the labels
-gVariablesLabels[Name=="F_SYSTEM",Code2:="Principal Arterial -\nOther Freeways and Expressways"]
-gVariablesLabels[Name=="F_SYSTEM",Code3:="Principal Arterial -\nOther"]
-gVariablesLabels[Name=="F_SYSTEM",Code4:="Minor\nArterial"]
-gVariablesLabels[Name=="F_SYSTEM",Code5:="Major\nCollector"]
-gVariablesLabels[Name=="F_SYSTEM",Code6:="Minor\nCollector"]
+gVariablesLabels[
+  Name=="F_SYSTEM", 
+  Code2:="Principal Arterial -\nOther Freeways and Expressways"]
 
-gVariablesLabels[Name=="ACCESS_CONTROL",Code1:="Full\nAccess\nControl"]
-gVariablesLabels[Name=="ACCESS_CONTROL",Code2:="Partial\nAccess\nControl"]
-gVariablesLabels[Name=="ACCESS_CONTROL",Code3:="No\nAccess\nControl"]
+gVariablesLabels[
+  Name=="F_SYSTEM",
+  Code3:="Principal Arterial -\nOther"]
+
+gVariablesLabels[
+  Name=="F_SYSTEM",
+  Code4:="Minor\nArterial"]
+
+gVariablesLabels[
+  Name=="F_SYSTEM",
+  Code5:="Major\nCollector"]
+
+gVariablesLabels[Name=="F_SYSTEM",
+  Code6:="Minor\nCollector"]
+
+gVariablesLabels[Name=="ACCESS_CONTROL",
+  Code1:="Full\nAccess\nControl"]
+
+gVariablesLabels[Name=="ACCESS_CONTROL",
+  Code2:="Partial\nAccess\nControl"]
+
+gVariablesLabels[Name=="ACCESS_CONTROL",
+  Code3:="No\nAccess\nControl"]
 
 # track page number
 gPageNumber <- 1

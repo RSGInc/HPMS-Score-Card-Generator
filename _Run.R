@@ -37,7 +37,7 @@ invisible(sapply(X =codefiles , FUN = source))
 # Run scorecards via command line tool.
 # Rscript RunBatch.R ALL
 
-# debugmode = TRUE
+debugmode = TRUE # Displays output to graphics device instead of PDF
 
 # Run(task = 1, state = 'IN', year = 2019)
 

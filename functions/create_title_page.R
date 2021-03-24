@@ -14,14 +14,10 @@
 
 create_title_page <- function(data, state, year, year_compare = NULL) {
   
-  scorestotals <- read.table("resources/dat/scoringweights.csv",
-                             sep = ",",
-                             header = TRUE)
-  
-  time_weight     <- scorestotals[, "timeliness"]
-  complete_weight <- scorestotals[, "completeness"]
-  quality_weight  <- scorestotals[, "quality"]
-  cvWeight        <- scorestotals[, 'cross_validation']
+  time_weight     <- gScoreWeights[, "timeliness"]
+  complete_weight <- gScoreWeights[, "completeness"]
+  quality_weight  <- gScoreWeights[, "quality"]
+  cvWeight        <- gScoreWeights[, 'cross_validation']
   
   # Page setup ==============================================================
   
