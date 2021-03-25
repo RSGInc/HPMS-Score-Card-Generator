@@ -584,8 +584,6 @@ calc_completeness <- function(data, year, variable, x, y){
       dat.F_SYSTEM <- data[data_item == "F_SYSTEM" & year_record == year,]
       dat.NHS <- data[data_item == "NHS" & year_record == year,]
       
-      browser()
-      
       coverage <- sqldf("select 
  A.route_id,A.begin_point,A.end_point,A.data_item,A.value_numeric as FACILITYTYPE, 
  B.value_numeric as variable,B.expansion_factor 
@@ -615,24 +613,29 @@ calc_completeness <- function(data, year, variable, x, y){
  ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
  ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
  ) ")
+
+      coverage[, required := FACILITYTYPE %in% c(1,2) & (FSYSTEM %in% c(1,2,3,4)|!is.na(NHS))]
       
       coverage_check = data.table(coverage)
       
+      browser()
+      
       coverage = coverage_join(
-        dat.FACILITY_TYPE[, .(route_id, begin_point, end_point, FACILITYTYPE = value.numeric)],
-        dat.variable[, .(route_id, begin_point, end_point, variable = value.numeric)]) %>%
+        dat.FACILITY_TYPE[, .(route_id, begin_point, end_point, FACILITYTYPE = value_numeric)],
+        dat.variable[, .(route_id, begin_point, end_point, variable = value_numeric, expansion_factor)]) %>%
         
-        coverage_join(dat.F_SYSTEM[, .(route_id, begin_point, end_point, FSYSTEM = value.numeric)]) %>%
+        coverage_join(dat.F_SYSTEM[, .(route_id, begin_point, end_point, FSYSTEM = value_numeric)]) %>%
         
-        coverage_join(dat.NHS[, .(route_id, begin_point, end_point, NHS = value.numeric)])
+        coverage_join(dat.NHS[, .(route_id, begin_point, end_point, NHS = value_numeric)])
       
       coverage[, required := FACILITYTYPE %in% c(1,2) & (FSYSTEM %in% c(1,2,3,4)|!is.na(NHS))]
       
-      browser()
       # Compare the two versions
+      setkeyv(coverage_check, key(coverage))
+      setcolorder(coverage_check, neworder=names(coverage))
+      coverage_check[, data_item := NULL]
       
-      
-       coverage[, required := FACILITYTYPE %in% c(1,2) & (FSYSTEM %in% c(1,2,3) |!is.na(NHS) | !is.na(expansion_factor))]
+      all.equal(coverage_check, coverage)
       
       if(sum(is.na(coverage$variable[coverage$required])) == 0 & nrow(coverage)>0){
         type <- 3 
