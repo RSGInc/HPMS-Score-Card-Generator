@@ -37,10 +37,10 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
 
   # Create title page -------------------------------------------------------
 
-  cat("Title page...")
+  message("Title page...")
   ts <- Sys.time()
   scores_list <- create_title_page(data, state, year, year_compare)
-  cat(paste0(" completed in: ",
+  message(paste0(" completed in: ",
              round(difftime(Sys.time(), ts, units = "secs"), 2), " seconds!\n"))
   # cat('\tMemory used: ', round(mem_used() / 1e9, 3), 'GB \n')
   #
@@ -48,11 +48,11 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
   # Cross-validation -------------------------------------------------------
   #
   # Show the results of the cross-validations
-  cat('Cross-validations...')
+  message('Cross-validations...')
   ts <- Sys.time()
   create_cross_validation_page(scores_list$cross_validation, state, year)
 
-  cat(paste0(' completed in: ',
+  message(paste0(' completed in: ',
              round(difftime(Sys.time(), ts, units='secs'), 2), ' seconds!\n'))
   # cat('\tMemory used: ', round(mem_used() / 1e9, 3), 'GB \n')
 
@@ -62,20 +62,20 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
 
   # Information page --------------------------------------------------------
 
-  cat("Information page...")
+  message("Information page...")
   ts <- Sys.time()
   create_info_page(state, year)
-  cat(paste0(" completed in: ",
+  message(paste0(" completed in: ",
              round(difftime(Sys.time(), ts, units = "secs"), 2), " seconds!\n"))
   # cat('\tMemory used: ', round(mem_used() / 1e9, 3), 'GB \n')
 
 
   # Pavement: Detailed Review ------------------------------------------------
 
-  cat("Pavement: Detailed Review...")
+  message("Pavement: Detailed Review...")
   ts <- Sys.time()
   create_pavement_detailed_review(data, state, year, year_compare)#, population = population)
-  cat(paste0(" completed in: ",
+  message(paste0(" completed in: ",
              round(difftime(Sys.time(), ts, units = "secs"), 2), " seconds!\n"))
   # cat('\tMemory used: ', round(mem_used() / 1e9, 3), 'GB \n')
 

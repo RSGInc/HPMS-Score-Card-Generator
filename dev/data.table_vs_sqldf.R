@@ -100,53 +100,6 @@ setkey(coverage3, route_id, begin_point, end_point)
 
 toc()  # 67.5 seconds.
 
-coverage_join = function(a, b){
-  
-  join_cols = c('route_id', 'begin_point', 'end_point')
-  setkeyv(a, cols=join_cols)
-  setkeyv(b, cols=join_cols)
-  
-  ab = foverlaps(
-    a,
-    b,
-    by.x = join_cols,
-    by.y = join_cols,
-    type='within',
-    mult='first',
-    nomatch=NA)
-
-  ab[, (c('begin_point', 'end_point')) := NULL]
-  setnames(ab, c('i.begin_point', 'i.end_point'), c('begin_point', 'end_point'))
-  setkeyv(ab, join_cols)
-  
-  # ba = foverlaps(
-  #   b,
-  #   a,
-  #   by.x=join_cols,
-  #   by.y=join_cols,
-  #   type='within',
-  #   mult='first',
-  #   nomatch=NA)
-  # 
-  # ba[, (c('begin_point', 'end_point')) := NULL]
-  # setnames(ba, c('i.begin_point', 'i.end_point'), c('begin_point', 'end_point'))
-  # setkeyv(ba, join_cols)
-  # 
-  # measure_cols = setdiff(names(ba), join_cols)
-  # setnames(ba, measure_cols, paste0(measure_cols, '_tmp'))
-  # 
-  # abba = merge(
-  #   ab,
-  #   ba,
-  #   by = join_cols,
-  #   all.x=TRUE)
-  # 
-  # abba[variable != variable_tmp]
-  # abba[expansion_factor != expansion_factor_tmp]
-  
-  return(ab)
-  
-}
 
 # data.table
 tic('data.table')

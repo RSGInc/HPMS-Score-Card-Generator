@@ -23,7 +23,6 @@
 
 options(scipen=9999)  # Make sure numbers are not converted to sci notation
 
-
 submission_deadline = '2019-06-15'   # Deadline for 2019 data
 # submission_deadline = '2019-06-16' # Usual deadline
 
@@ -40,5 +39,4 @@ invisible(sapply(X =codefiles , FUN = source))
 debugmode = TRUE # Displays output to graphics device instead of PDF
 
 # Run(task = 1, state = 'IN', year = 2019)
-
-Run(task = 2, state = 'OR', year = 2019, year_compare = 2018)
+Run(task = 2, state = 'PA', year = 2019, year_compare = 2018)

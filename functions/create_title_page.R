@@ -374,47 +374,21 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
         gp = gpar(col = "slategray", fontsize = 7)
       ))
       
-      CompleteType <-
-        calc_completeness(data, year, variable,
-                        x = startx + (C - 1) * colWidth + space1,
-                        y = starty - (R - 1) * rowWidth)
+      thisComplete <-
+        calc_completeness(data, year, variable)
 
-      
-      # Plot circles ----------------------------------------------------------
-      
-      # submitted and complete
-      if(CompleteType==3){
-        grid.circle(
-          x=x,
-          y=y,
-          r=unit(0.007,"npc"),
-          gp=gpar(fill="slategray",col="slategray")
-        )
-      }
-      # submitted and incomplete
-      if(CompleteType==2){
-        grid.circle(
-          x=x,
-          y=y,
-          r=unit(0.007,"npc"),
-          gp=gpar(fill="gray75",col="slategray"))
-      }
-      # not submitted
-      if(CompleteType==1){
-        grid.circle(
-          x=x,
-          y=y,
-          r=unit(0.007,"npc"),
-          gp=gpar(fill="white",col="slategray"))
-      }
-      
+      plotCompleteness(
+        score = thisComplete,
+        x = startx + (C - 1) * colWidth + space1,
+        y = starty - (R - 1) * rowWidth)
+        
       CompletedScore <-
-        CompletedScore + c(0, CompleteMed, CompleteHigh)[CompleteType] * group_vars$Completeness_Weight[i]
+        CompletedScore + c(0, CompleteMed, CompleteHigh)[thisComplete] * group_vars$Completeness_Weight[i]
 
       CompletedScoreMax <-
         CompletedScoreMax + CompleteHigh * group_vars$Completeness_Weight[i]
 
-      submittedN <- submittedN + 1 * (CompleteType >= 2)
+      submittedN <- submittedN + 1 * (thisComplete >= 2)
 
       thisQuality <- group_vars$Quality_Score[i] 
       

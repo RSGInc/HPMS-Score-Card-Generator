@@ -12,7 +12,7 @@
 ###########################################################################
 
 
-coverage_join = function(a, b){
+coverage_join = function(a, b, check=FALSE){
   
   join_cols = c('route_id', 'begin_point', 'end_point')
   setkeyv(a, cols=join_cols)
@@ -26,6 +26,13 @@ coverage_join = function(a, b){
     type='within',
     mult='first',
     nomatch=NA)
+  
+  if ( 'i.expansion_factor' %in% names(ab) ){
+    
+    # coalesce(expansion_factor, i.expansion_factor)
+    ab[is.na(expansion_factor), expansion_factor := i.expansion_factor]
+    ab[, i.expansion_factor := NULL]
+  }
   
   ab[, (c('begin_point', 'end_point')) := NULL]
   setnames(ab, c('i.begin_point', 'i.end_point'), c('begin_point', 'end_point'))
@@ -61,7 +68,7 @@ coverage_join = function(a, b){
 }
 
 
-calc_completeness <- function(data, year, variable, x, y){
+calc_completeness <- function(data, year, variable){
   
   ts <- Sys.time()
   
@@ -74,6 +81,11 @@ calc_completeness <- function(data, year, variable, x, y){
   if( data[data_item == variable & year_record == year, .N] > 0){
     
     type <- 2
+    
+    if ( variable %like% 'GRADES|CURVES' ){
+      type = NA
+    }
+    
     
     # complete if present ------------------------------------------------------
     # these variables just need to have something to be complete
@@ -112,37 +124,15 @@ calc_completeness <- function(data, year, variable, x, y){
       dat.F_SYSTEM <- data[data_item == "F_SYSTEM" & year_record == year,]
       dat.NHS <- data[data_item == "NHS" & year_record == year,]
       
-      coverage <- sqldf("select 
- A.route_id,A.begin_point,A.end_point,A.data_item,A.value_numeric as FACILITYTYPE, 
- B.value_numeric as variable 
- from [dat.FACILITY_TYPE] A 
- left join [dat.variable] B on 
- A.route_id = B.route_id and (
- ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
- ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
- )")
+      coverage = dat.FACILITY_TYPE[, .(route_id, begin_point, end_point, FACILITY_TYPE = value_numeric)] %>%
+        coverage_join(
+          dat.variable[, .(route_id, begin_point, end_point, variable = value_numeric)]) %>%
+        coverage_join(
+          dat.F_SYSTEM[, .(route_id, begin_point, end_point, F_SYSTEM = value_numeric)]) %>%
+        coverage_join(
+          dat.NHS[, .(route_id, begin_point, end_point, NHS = value_numeric)])
       
-      coverage <- sqldf("select 
- A.*, 
- B.value_numeric as FSYSTEM 
- from [coverage] A 
- left join [dat.F_SYSTEM] B on 
- A.route_id = B.route_id and (
- ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
- ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
- ) ")
-      
-      coverage <- sqldf("select 
- A.*, 
- B.value_numeric as NHS 
- from [coverage] A 
- left join [dat.NHS] B on 
- A.route_id = B.route_id and (
- ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
- ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
- ) ")
-      
-      coverage[, required := FACILITYTYPE %in% c(1,2) & (FSYSTEM %in% c(1,2,3,4)|!is.na(NHS))]
+      coverage[, required := FACILITY_TYPE %in% c(1,2) & (F_SYSTEM %in% c(1,2,3,4)|!is.na(NHS))]
       
       if(sum(is.na(coverage$variable[coverage$required])) == 0 & nrow(coverage)>0){
         type <- 3
@@ -160,37 +150,15 @@ calc_completeness <- function(data, year, variable, x, y){
       dat.F_SYSTEM <- data[data_item == "F_SYSTEM" & year_record == year,]
       dat.NHS <- data[data_item == "NHS" & year_record == year,]
       
-      coverage <- sqldf("select 
- A.route_id,A.begin_point,A.end_point,A.data_item,A.value_numeric as FACILITYTYPE, 
- B.value_numeric as variable 
- from [dat.FACILITY_TYPE] A 
- left join [dat.variable] B on 
- A.route_id = B.route_id and (
- ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
- ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
- )")
+      coverage = dat.FACILITY_TYPE[, .(route_id, begin_point, end_point, FACILITY_TYPE = value_numeric)] %>%
+        coverage_join(
+          dat.variable[, .(route_id, begin_point, end_point, variable = value_numeric)]) %>%
+        coverage_join(
+          dat.F_SYSTEM[, .(route_id, begin_point, end_point, F_SYSTEM = value_numeric)]) %>%
+        coverage_join(
+          dat.NHS[, .(route_id, begin_point, end_point, NHS = value_numeric)])
       
-      coverage <- sqldf("select 
- A.*, 
- B.value_numeric as FSYSTEM 
- from [coverage] A 
- left join [dat.F_SYSTEM] B on 
- A.route_id = B.route_id and (
- ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
- ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
- ) ")
-      
-      coverage <- sqldf("select 
- A.*, 
- B.value_numeric as NHS 
- from [coverage] A 
- left join [dat.NHS] B on 
- A.route_id = B.route_id and (
- ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
- ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
- ) ")
-      
-       coverage[, required := FACILITYTYPE %in% c(1,2,4) & (FSYSTEM %in% c(1,2,3,4,5,6)|!is.na(NHS))]
+      coverage[, required := FACILITY_TYPE %in% c(1,2,4) & (F_SYSTEM %in% c(1,2,3,4,5,6)|!is.na(NHS))]
       
       if(sum(is.na(coverage$variable[coverage$required])) == 0 & nrow(coverage)>0){
         type <- 3 
@@ -207,7 +175,7 @@ calc_completeness <- function(data, year, variable, x, y){
       dat.MEDIAN_TYPE <- data[data_item == "MEDIAN_TYPE" & year_record == year,]
       
       coverage <- sqldf("select 
- A.route_id,A.begin_point,A.end_point,A.data_item,A.value_numeric as MEDIANTYPE, 
+ A.route_id,A.begin_point,A.end_point,A.data_item,A.value_numeric as MEDIAN_TYPE, 
  B.value_numeric as variable,B.expansion_factor 
  from [dat.MEDIAN_TYPE] A 
  left join [dat.variable] B on 
@@ -216,7 +184,8 @@ calc_completeness <- function(data, year, variable, x, y){
  ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
  )")
       
-       coverage[, required := MEDIANTYPE %in% 2:7 & (!is.na(expansion_factor))]
+      setDT(coverage)
+      coverage[, required := MEDIAN_TYPE %in% 2:7 & (!is.na(expansion_factor))]
       
       if(sum(is.na(coverage$variable[coverage$required])) == 0 & nrow(coverage)>0){
         type <- 3 
@@ -233,7 +202,7 @@ calc_completeness <- function(data, year, variable, x, y){
       dat.SHOULDER_TYPE <- data[data_item == "SHOULDER_TYPE" & year_record == year,]
       
       coverage <- sqldf("select 
- A.route_id,A.begin_point,A.end_point,A.data_item,A.value_numeric as SHOULDERTYPE, 
+ A.route_id,A.begin_point,A.end_point,A.data_item,A.value_numeric as SHOULDER_TYPE, 
  B.value_numeric as variable,B.expansion_factor 
  from [dat.SHOULDER_TYPE] A 
  left join [dat.variable] B on 
@@ -242,7 +211,8 @@ calc_completeness <- function(data, year, variable, x, y){
  ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
  )")
       
-       coverage[, required := SHOULDERTYPE %in% 2:6 & (!is.na(expansion_factor))]
+      setDT(coverage)
+      coverage[, required := SHOULDER_TYPE %in% 2:6 & (!is.na(expansion_factor))]
       
       if(sum(is.na(coverage$variable[coverage$required])) == 0 & nrow(coverage)>0){
         type <- 3 
@@ -258,28 +228,13 @@ calc_completeness <- function(data, year, variable, x, y){
       dat.SHOULDER_TYPE <- data[data_item == "SHOULDER_TYPE" & year_record == year,]
       dat.MEDIAN_TYPE <- data[data_item == "MEDIAN_TYPE" & year_record == year,]
       
-      coverage <- sqldf("select 
- A.route_id,A.begin_point,A.end_point,A.data_item,A.value_numeric as SHOULDERTYPE, 
- B.value_numeric as variable,B.expansion_factor 
- from [dat.SHOULDER_TYPE] A 
- left join [dat.variable] B on 
- A.route_id = B.route_id and (
- ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
- ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
- )")
+      coverage = coverage_join(
+        dat.SHOULDER_TYPE[, .(route_id, begin_point, end_point, SHOULDER_TYPE = value_numeric)],
+        dat.variable[, .(route_id, begin_point, end_point, variable = value_numeric, expansion_factor)]) %>%
+        coverage_join(
+          dat.MEDIAN_TYPE[, .(route_id, begin_point, end_point, MEDIAN_TYPE = value_numeric)])
       
-      coverage <- sqldf("select 
- A.*, 
- B.value_numeric as MEDIANTYPE 
- from [coverage] A 
- left join [dat.MEDIAN_TYPE] B on 
- A.route_id = B.route_id and (
- ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
- ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
- )")
-      
-      
-       coverage[, required := SHOULDERTYPE %in% 2:6 & MEDIANTYPE %in% 2:7 & (!is.na(expansion_factor))]
+      coverage[, required := SHOULDER_TYPE %in% 2:6 & MEDIAN_TYPE %in% 2:7 & (!is.na(expansion_factor))]
       
       if(sum(is.na(coverage$variable[coverage$required])) == 0 & nrow(coverage)>0){
         type <- 3 
@@ -296,7 +251,7 @@ calc_completeness <- function(data, year, variable, x, y){
       dat.URBAN_CODE <- data[data_item == "URBAN_CODE" & year_record == year,]
       
       coverage <- sqldf("select 
- A.route_id,A.begin_point,A.end_point,A.data_item,A.value_numeric as URBANCODE, 
+ A.route_id,A.begin_point,A.end_point,A.data_item,A.value_numeric as URBAN_CODE, 
  B.value_numeric as variable,B.expansion_factor 
  from [dat.URBAN_CODE] A 
  left join [dat.variable] B on 
@@ -305,7 +260,8 @@ calc_completeness <- function(data, year, variable, x, y){
  ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
  )")
       
-       coverage[, required := URBANCODE<99999 & (!is.na(expansion_factor))]
+      setDT(coverage)
+      coverage[, required := URBAN_CODE<99999 & (!is.na(expansion_factor))]
       
       if(sum(is.na(coverage$variable[coverage$required])) == 0 & nrow(coverage)>0){
         type <- 3 
@@ -323,7 +279,7 @@ calc_completeness <- function(data, year, variable, x, y){
       dat.ACCESS_CONTROL <- data[data_item == "ACCESS_CONTROL" & year_record == year,]
       
       coverage <- sqldf("select 
- A.route_id,A.begin_point,A.end_point,A.data_item,A.value_numeric as URBANCODE, 
+ A.route_id,A.begin_point,A.end_point,A.data_item,A.value_numeric as URBAN_CODE, 
  B.value_numeric as variable,B.expansion_factor 
  from [dat.URBAN_CODE] A 
  left join [dat.variable] B on 
@@ -334,7 +290,7 @@ calc_completeness <- function(data, year, variable, x, y){
       
       coverage <- sqldf("select 
  A.*, 
- B.value_numeric as ACCESSCONTROL 
+ B.value_numeric as ACCESS_CONTROL 
  from [coverage] A 
  left join [dat.ACCESS_CONTROL] B on 
  A.route_id = B.route_id and (
@@ -343,7 +299,8 @@ calc_completeness <- function(data, year, variable, x, y){
  )")
       
       
-       coverage[, required := URBANCODE<99999 & ACCESSCONTROL>1 & (!is.na(expansion_factor))]
+      setDT(coverage)
+      coverage[, required := URBAN_CODE<99999 & ACCESS_CONTROL>1 & (!is.na(expansion_factor))]
       
       if(sum(is.na(coverage$variable[coverage$required])) == 0 & nrow(coverage)>0){
         type <- 3
@@ -360,8 +317,8 @@ calc_completeness <- function(data, year, variable, x, y){
       dat.FACILITY_TYPE <- data[data_item == "FACILITY_TYPE" & year_record == year,]
       
       coverage <- sqldf("select 
- A.route_id,A.begin_point,A.end_point,A.data_item,A.value_numeric as FACILITYTYPE, 
- B.value_numeric as FSYSTEM 
+ A.route_id,A.begin_point,A.end_point,A.data_item,A.value_numeric as FACILITY_TYPE, 
+ B.value_numeric as F_SYSTEM 
  from [dat.FACILITY_TYPE] A 
  left join [dat.F_SYSTEM] B on 
  A.route_id = B.route_id and (
@@ -369,12 +326,14 @@ calc_completeness <- function(data, year, variable, x, y){
  ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
  ) where A.value_numeric in (1,2,4)")
       
-      if(sum(is.na(coverage$FSYSTEM)) == 0 & nrow(coverage)>0){
+      # FIXME: is FACILITY_TYPE supposed to be involved in required here?
+      
+      if(sum(is.na(coverage$F_SYSTEM)) == 0 & nrow(coverage)>0){
         type <- 3 
         
       }
       
-    }# end Fsystem
+    }# end F_SYSTEM
     
     
     # hov_type ----------------------------------------------------------------
@@ -385,16 +344,17 @@ calc_completeness <- function(data, year, variable, x, y){
       dat.HOV_LANES <- data[data_item == "HOV_LANES" & year_record == year,]
       
       coverage <- sqldf("select 
- A.route_id,A.begin_point,A.end_point,A.data_item,A.value_numeric as HOVLANES, 
- B.value_numeric as HOVTYPE 
+ A.route_id,A.begin_point,A.end_point,A.data_item,A.value_numeric as HOV_LANES, 
+ B.value_numeric as HOV_TYPE 
  from [dat.HOV_LANES] A 
  left join [dat.HOV_TYPE] B on 
  A.route_id = B.route_id and (
  ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
  ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
  )")
+      # FIXME: how does HOV_LANES play into requirements?
       
-      if(sum(is.na(coverage$HOVTYPE)) == 0 & nrow(coverage)>0){
+      if(sum(is.na(coverage$HOV_TYPE)) == 0 & nrow(coverage)>0){
         type <- 3 
       }
       
@@ -408,8 +368,8 @@ calc_completeness <- function(data, year, variable, x, y){
       dat.HOV_TYPE <- data[data_item == "HOV_TYPE" & year_record == year,]
       
       coverage <- sqldf("select 
- A.route_id,A.begin_point,A.end_point,A.data_item,A.value_numeric as HOVTYPE, 
- B.value_numeric as HOVLANES 
+ A.route_id,A.begin_point,A.end_point,A.data_item,A.value_numeric as HOV_TYPE, 
+ B.value_numeric as HOV_LANES 
  from [dat.HOV_TYPE] A 
  left join [dat.HOV_LANES] B on 
  A.route_id = B.route_id and (
@@ -417,7 +377,7 @@ calc_completeness <- function(data, year, variable, x, y){
  ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
  )")
       
-      if(sum(is.na(coverage$HOVLANES)) == 0 & nrow(coverage)>0){
+      if(sum(is.na(coverage$HOV_LANES)) == 0 & nrow(coverage)>0){
         type <- 3
       }
     } # end HOV_LANES
@@ -431,8 +391,8 @@ calc_completeness <- function(data, year, variable, x, y){
       dat.TOLL_TYPE <- data[data_item == "TOLL_TYPE" & year_record == year,]
       
       coverage <- sqldf("select 
- A.route_id,A.begin_point,A.end_point,A.data_item,A.value_numeric as TOLLTYPE, 
- B.value_numeric as TOLLCHARGED 
+ A.route_id,A.begin_point,A.end_point,A.data_item,A.value_numeric as TOLL_TYPE, 
+ B.value_numeric as TOLL_CHARGED 
  from [dat.TOLL_TYPE] A 
  left join [dat.TOLL_CHARGED] B on 
  A.route_id = B.route_id and (
@@ -440,7 +400,7 @@ calc_completeness <- function(data, year, variable, x, y){
  ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
  )")
       
-      if(sum(is.na(coverage$TOLLCHARGED)) == 0 & nrow(coverage)>0){
+      if(sum(is.na(coverage$TOLL_CHARGED)) == 0 & nrow(coverage)>0){
         type <- 3
       }
     } # end TOLL_CHARGED
@@ -454,8 +414,8 @@ calc_completeness <- function(data, year, variable, x, y){
       dat.TOLL_CHARGED <- data[data_item == "TOLL_CHARGED" & year_record == year,]
       
       coverage <- sqldf("select 
- A.route_id,A.begin_point,A.end_point,A.data_item,A.value_numeric as TOLLCHARGED, 
- B.value_numeric as TOLLTYPE 
+ A.route_id,A.begin_point,A.end_point,A.data_item,A.value_numeric as TOLL_CHARGED, 
+ B.value_numeric as TOLL_TYPE 
  from [dat.TOLL_CHARGED] A 
  left join [dat.TOLL_TYPE] B on 
  A.route_id = B.route_id and (
@@ -463,7 +423,7 @@ calc_completeness <- function(data, year, variable, x, y){
  ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
  )")
       
-      if(sum(is.na(coverage$TOLLTYPE)) == 0 & nrow(coverage)>0){
+      if(sum(is.na(coverage$TOLL_TYPE)) == 0 & nrow(coverage)>0){
         type <- 3 
       }
     } # end TOLL_TYPE
@@ -479,50 +439,19 @@ calc_completeness <- function(data, year, variable, x, y){
       dat.URBAN_CODE <- data[data_item == "URBAN_CODE" & year_record == year,]
       dat.NHS <- data[data_item == "NHS" & year_record == year,]
       
-      coverage <- sqldf("select 
- A.route_id,A.begin_point,A.end_point,A.data_item,A.value_numeric as FACILITYTYPE, 
- B.value_numeric as COUNTYCODE 
- from [dat.FACILITY_TYPE] A 
- left join [dat.COUNTY_CODE] B on 
- A.route_id = B.route_id and (
- ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
- ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
- )")
+      coverage = coverage_join(
+        dat.FACILITY_TYPE[, .(route_id, begin_point, end_point, FACILITY_TYPE = value_numeric)],
+        dat.COUNTY_CODE[, .(route_id, begin_point, end_point, COUNTY_CODE = value_numeric)]) %>%
+        coverage_join(
+          dat.F_SYSTEM[, .(route_id, begin_point, end_point, F_SYSTEM = value_numeric)]) %>%
+        coverage_join(
+          dat.URBAN_CODE[, .(route_id, begin_point, end_point, URBAN_CODE = value_numeric)]) %>%
+        coverage_join(
+          dat.NHS[, .(route_id, begin_point, end_point, NHS = value_numeric)])
       
-      coverage <- sqldf("select 
- A.*, 
- B.value_numeric as FSYSTEM 
- from [coverage] A 
- left join [dat.F_SYSTEM] B on 
- A.route_id = B.route_id and (
- ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
- ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
- ) ")
+      coverage[, required := FACILITY_TYPE %in% c(1,2) & (F_SYSTEM %in% c(1,2,3,4,5)|(F_SYSTEM == 6 & URBAN_CODE == 99999)|!is.na(NHS))]
       
-      
-      coverage <- sqldf("select 
- A.*, 
- B.value_numeric as URBANCODE 
- from [coverage] A 
- left join [dat.URBAN_CODE] B on 
- A.route_id = B.route_id and (
- ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
- ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
- ) ")
-      
-      coverage <- sqldf("select 
- A.*, 
- B.value_numeric as NHS 
- from [coverage] A 
- left join [dat.NHS] B on 
- A.route_id = B.route_id and (
- ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
- ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
- ) ")
-      
-       coverage[, required := FACILITYTYPE %in% c(1,2) & (FSYSTEM %in% c(1,2,3,4,5)|(FSYSTEM == 6 & URBANCODE == 99999)|!is.na(NHS))]
-      
-      if(sum(is.na(coverage$COUNTYCODE[coverage$required])) == 0 & nrow(coverage)>0){
+      if(sum(is.na(coverage$COUNTY_CODE[coverage$required])) == 0 & nrow(coverage)>0){
         type <- 3 
       }
     } # end COUNTY_CODE
@@ -537,37 +466,15 @@ calc_completeness <- function(data, year, variable, x, y){
       dat.URBAN_CODE <- data[data_item == "URBAN_CODE" & year_record == year,]
       dat.NHS <- data[data_item == "NHS" & year_record == year,]
       
-      coverage <- sqldf("select 
- A.route_id,A.begin_point,A.end_point,A.data_item,A.value_numeric as FSYSTEM, 
- B.value_numeric as variable 
- from [dat.F_SYSTEM] A 
- left join [dat.variable] B on 
- A.route_id = B.route_id and (
- ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
- ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
- )")
+      coverage = coverage_join(
+        dat.variable[, .(route_id, begin_point, end_point, variable = value_numeric)],
+        dat.F_SYSTEM[, .(route_id, begin_point, end_point, F_SYSTEM = value_numeric)]) %>%
+        coverage_join(
+          dat.URBAN_CODE[, .(route_id, begin_point, end_point, URBAN_CODE = value_numeric)]) %>%
+        coverage_join(
+          dat.NHS[, .(route_id, begin_point, end_point, NHS = value_numeric)]) 
       
-      coverage <- sqldf("select 
- A.*, 
- B.value_numeric as URBANCODE 
- from [coverage] A 
- left join [dat.URBAN_CODE] B on 
- A.route_id = B.route_id and (
- ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
- ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
- ) ")
-      
-      coverage <- sqldf("select 
- A.*, 
- B.value_numeric as NHS 
- from [coverage] A 
- left join [dat.NHS] B on 
- A.route_id = B.route_id and (
- ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
- ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
- ) ")
-      
-       coverage[, required := (FSYSTEM %in% c(1,2,3,4,5)|(FSYSTEM == 6 & URBANCODE == 99999)|!is.na(NHS))]
+      coverage[, required := (F_SYSTEM %in% c(1,2,3,4,5)|(F_SYSTEM == 6 & URBAN_CODE == 99999)|!is.na(NHS))]
       
       if(sum(is.na(coverage$variable[coverage$required])) == 0 & nrow(coverage)>0){
         type <- 3 
@@ -584,58 +491,15 @@ calc_completeness <- function(data, year, variable, x, y){
       dat.F_SYSTEM <- data[data_item == "F_SYSTEM" & year_record == year,]
       dat.NHS <- data[data_item == "NHS" & year_record == year,]
       
-      coverage <- sqldf("select 
- A.route_id,A.begin_point,A.end_point,A.data_item,A.value_numeric as FACILITYTYPE, 
- B.value_numeric as variable,B.expansion_factor 
- from [dat.FACILITY_TYPE] A 
- left join [dat.variable] B on 
- A.route_id = B.route_id and (
- ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
- ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
- )")
-      
-      coverage <- sqldf("select 
- A.*, 
- B.value_numeric as FSYSTEM 
- from [coverage] A 
- left join [dat.F_SYSTEM] B on 
- A.route_id = B.route_id and (
- ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
- ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
- ) ")
-      
-      coverage <- sqldf("select 
- A.*, 
- B.value_numeric as NHS 
- from [coverage] A 
- left join [dat.NHS] B on 
- A.route_id = B.route_id and (
- ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
- ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
- ) ")
-
-      coverage[, required := FACILITYTYPE %in% c(1,2) & (FSYSTEM %in% c(1,2,3,4)|!is.na(NHS))]
-      
-      coverage_check = data.table(coverage)
-      
-      browser()
-      
       coverage = coverage_join(
-        dat.FACILITY_TYPE[, .(route_id, begin_point, end_point, FACILITYTYPE = value_numeric)],
+        dat.FACILITY_TYPE[, .(route_id, begin_point, end_point, FACILITY_TYPE = value_numeric)],
         dat.variable[, .(route_id, begin_point, end_point, variable = value_numeric, expansion_factor)]) %>%
-        
-        coverage_join(dat.F_SYSTEM[, .(route_id, begin_point, end_point, FSYSTEM = value_numeric)]) %>%
-        
+        coverage_join(dat.F_SYSTEM[, .(route_id, begin_point, end_point, F_SYSTEM = value_numeric)]) %>%
         coverage_join(dat.NHS[, .(route_id, begin_point, end_point, NHS = value_numeric)])
       
-      coverage[, required := FACILITYTYPE %in% c(1,2) & (FSYSTEM %in% c(1,2,3,4)|!is.na(NHS))]
+      setDT(coverage)
       
-      # Compare the two versions
-      setkeyv(coverage_check, key(coverage))
-      setcolorder(coverage_check, neworder=names(coverage))
-      coverage_check[, data_item := NULL]
-      
-      all.equal(coverage_check, coverage)
+      coverage[, required := FACILITY_TYPE %in% c(1,2) & (F_SYSTEM %in% c(1,2,3,4)|!is.na(NHS))]
       
       if(sum(is.na(coverage$variable[coverage$required])) == 0 & nrow(coverage)>0){
         type <- 3 
@@ -653,48 +517,17 @@ calc_completeness <- function(data, year, variable, x, y){
       dat.URBAN_CODE <- data[data_item == "URBAN_CODE" & year_record == year,]
       dat.NHS <- data[data_item == "NHS" & year_record == year,]
       
-      coverage <- sqldf("select 
- A.route_id,A.begin_point,A.end_point,A.data_item,A.value_numeric as FACILITYTYPE, 
- B.value_numeric as variable,B.expansion_factor 
- from [dat.FACILITY_TYPE] A 
- left join [dat.variable] B on 
- A.route_id = B.route_id and (
- ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
- ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
- )")
+      coverage = dat.FACILITY_TYPE[, .(route_id, begin_point, end_point, FACILITY_TYPE = value_numeric)] %>%
+        coverage_join(
+          dat.variable[, .(route_id, begin_point, end_point, variable = value_numeric)]) %>%
+        coverage_join(
+          dat.F_SYSTEM[, .(route_id, begin_point, end_point, F_SYSTEM = value_numeric)]) %>%
+        coverage_join(
+          dat.URBAN_CODE[, .(route_id, begin_point, end_point, URBAN_CODE = value_numeric)]) %>%
+        coverage_join(
+          dat.NHS[, .(route_id, begin_point, end_point, NHS = value_numeric)]) 
       
-      coverage <- sqldf("select 
- A.*, 
- B.value_numeric as FSYSTEM 
- from [coverage] A 
- left join [dat.F_SYSTEM] B on 
- A.route_id = B.route_id and (
- ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
- ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
- ) ")
-      
-      
-      coverage <- sqldf("select 
- A.*, 
- B.value_numeric as URBANCODE 
- from [coverage] A 
- left join [dat.URBAN_CODE] B on 
- A.route_id = B.route_id and (
- ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
- ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
- ) ")
-      
-      coverage <- sqldf("select 
- A.*, 
- B.value_numeric as NHS 
- from [coverage] A 
- left join [dat.NHS] B on 
- A.route_id = B.route_id and (
- ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
- ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
- ) ")
-      
-       coverage[, required := FACILITYTYPE %in% c(1,2) & (FSYSTEM %in% c(1,2,3,4,5)|((FSYSTEM == 6) & (URBANCODE<99999))|!is.na(NHS))]
+      coverage[, required := FACILITY_TYPE %in% c(1,2) & (F_SYSTEM %in% c(1,2,3,4,5)|((F_SYSTEM == 6) & (URBAN_CODE<99999))|!is.na(NHS))]
       
       if(sum(is.na(coverage$variable[coverage$required])) == 0 & nrow(coverage)>0){
         type <- 3
@@ -712,48 +545,18 @@ calc_completeness <- function(data, year, variable, x, y){
       dat.URBAN_CODE <- data[data_item == "URBAN_CODE" & year_record == year,]
       dat.NHS <- data[data_item == "NHS" & year_record == year,]
       
-      coverage <- sqldf("select 
- A.route_id,A.begin_point,A.end_point,A.data_item,A.value_numeric as FACILITYTYPE, 
- B.value_numeric as variable,B.expansion_factor 
- from [dat.FACILITY_TYPE] A 
- left join [dat.variable] B on 
- A.route_id = B.route_id and (
- ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
- ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
- )")
       
-      coverage <- sqldf("select 
- A.*, 
- B.value_numeric as FSYSTEM 
- from [coverage] A 
- left join [dat.F_SYSTEM] B on 
- A.route_id = B.route_id and (
- ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
- ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
- ) ")
+      coverage = dat.FACILITY_TYPE[, .(route_id, begin_point, end_point, FACILITY_TYPE = value_numeric)] %>%
+        coverage_join(
+          dat.variable[, .(route_id, begin_point, end_point, variable = value_numeric)]) %>%
+        coverage_join(
+          dat.F_SYSTEM[, .(route_id, begin_point, end_point, F_SYSTEM = value_numeric)]) %>%
+        coverage_join(
+          dat.URBAN_CODE[, .(route_id, begin_point, end_point, URBAN_CODE = value_numeric)]) %>%
+        coverage_join(
+          dat.NHS[, .(route_id, begin_point, end_point, NHS = value_numeric)]) 
       
-      
-      coverage <- sqldf("select 
- A.*, 
- B.value_numeric as URBANCODE 
- from [coverage] A 
- left join [dat.URBAN_CODE] B on 
- A.route_id = B.route_id and (
- ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
- ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
- ) ")
-      
-      coverage <- sqldf("select 
- A.*, 
- B.value_numeric as NHS 
- from [coverage] A 
- left join [dat.NHS] B on 
- A.route_id = B.route_id and (
- ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
- ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
- ) ")
-      
-       coverage[, required := FACILITYTYPE %in% c(1,2,4) & (FSYSTEM %in% c(1,2,3,4,5)|((FSYSTEM == 6) & (URBANCODE<99999))|!is.na(NHS))]
+      coverage[, required := FACILITY_TYPE %in% c(1,2,4) & (F_SYSTEM %in% c(1,2,3,4,5)|((F_SYSTEM == 6) & (URBAN_CODE<99999))|!is.na(NHS))]
       
       if(sum(is.na(coverage$variable[coverage$required])) == 0 & nrow(coverage)>0){
         type <- 3 
@@ -770,39 +573,15 @@ calc_completeness <- function(data, year, variable, x, y){
       dat.THROUGH_LANES <- data[data_item == "THROUGH_LANES" & year_record == year,]
       dat.URBAN_CODE <- data[data_item == "URBAN_CODE" & year_record == year,]
       
-      coverage <- sqldf("select 
- A.route_id,A.begin_point,A.end_point,A.data_item,A.value_numeric as FACILITYTYPE, 
- B.value_numeric as variable,B.expansion_factor 
- from [dat.FACILITY_TYPE] A 
- left join [dat.variable] B on 
- A.route_id = B.route_id and (
- ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
- ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
- )")
+      coverage = coverage_join(
+        dat.FACILITY_TYPE[, .(route_id, begin_point, end_point, FACILITY_TYPE = value_numeric)],
+        dat.variable[, .(route_id, begin_point, end_point, variable = value_numeric, expansion_factor)]) %>%
+        coverage_join(
+          dat.THROUGH_LANES[, .(route_id, begin_point, end_point, THROUGH_LANES = value_numeric)]) %>%
+        coverage_join(
+          dat.URBAN_CODE[, .(route_id, begin_point, end_point, URBAN_CODE = value_numeric)])
       
-      coverage <- sqldf("select 
- A.*, 
- B.value_numeric as THROUGHLANES 
- from [coverage] A 
- left join [dat.THROUGH_LANES] B on 
- A.route_id = B.route_id and (
- ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
- ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
- ) ")
-      
-      
-      coverage <- sqldf("select 
- A.*, 
- B.value_numeric as URBANCODE 
- from [coverage] A 
- left join [dat.URBAN_CODE] B on 
- A.route_id = B.route_id and (
- ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
- ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
- ) ")
-      
-      
-       coverage[, required := FACILITYTYPE %in% c(2) & (URBANCODE < 99999 | THROUGHLANES >= 4) &!is.na(expansion_factor)]
+      coverage[, required := FACILITY_TYPE %in% c(2) & (URBAN_CODE < 99999 | THROUGH_LANES >= 4) &!is.na(expansion_factor)]
       
       if(sum(is.na(coverage$variable[coverage$required])) == 0 & nrow(coverage)>0){
         type <- 3 
@@ -819,37 +598,15 @@ calc_completeness <- function(data, year, variable, x, y){
       dat.F_SYSTEM <- data[data_item == "F_SYSTEM" & year_record == year,]
       dat.NHS <- data[data_item == "NHS" & year_record == year,]
       
-      coverage <- sqldf("select 
- A.route_id,A.begin_point,A.end_point,A.data_item,A.value_numeric as FACILITYTYPE, 
- B.value_numeric as variable,B.expansion_factor 
- from [dat.FACILITY_TYPE] A 
- left join [dat.variable] B on 
- A.route_id = B.route_id and (
- ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
- ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
- )")
+      coverage = dat.FACILITY_TYPE[, .(route_id, begin_point, end_point, FACILITY_TYPE = value_numeric)] %>%
+        coverage_join(
+          dat.variable[, .(route_id, begin_point, end_point, expansion_factor, variable = value_numeric)]) %>%
+        coverage_join(
+          dat.F_SYSTEM[, .(route_id, begin_point, end_point, F_SYSTEM = value_numeric)]) %>%
+        coverage_join(
+          dat.NHS[, .(route_id, begin_point, end_point, NHS = value_numeric)]) 
       
-      coverage <- sqldf("select 
- A.*, 
- B.value_numeric as FSYSTEM 
- from [coverage] A 
- left join [dat.F_SYSTEM] B on 
- A.route_id = B.route_id and (
- ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
- ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
- ) ")
-      
-      coverage <- sqldf("select 
- A.*, 
- B.value_numeric as NHS 
- from [coverage] A 
- left join [dat.NHS] B on 
- A.route_id = B.route_id and (
- ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
- ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
- ) ")
-      
-       coverage[, required := (FSYSTEM == 1 | !is.na(NHS)) & FACILITYTYPE %in% c(1,2) |!is.na(expansion_factor)]
+      coverage[, required := (F_SYSTEM == 1 | !is.na(NHS)) & FACILITY_TYPE %in% c(1,2) |!is.na(expansion_factor)]
       
       if(sum(is.na(coverage$variable[coverage$required])) == 0 & nrow(coverage)>0){
         type <- 3 
@@ -865,27 +622,13 @@ calc_completeness <- function(data, year, variable, x, y){
       dat.FACILITY_TYPE <- data[data_item == "FACILITY_TYPE" & year_record == year,]
       dat.F_SYSTEM <- data[data_item == "F_SYSTEM" & year_record == year,]
       
-      coverage <- sqldf("select 
- A.route_id,A.begin_point,A.end_point,A.data_item,A.value_numeric as FACILITYTYPE, 
- B.value_numeric as variable,B.expansion_factor 
- from [dat.FACILITY_TYPE] A 
- left join [dat.variable] B on 
- A.route_id = B.route_id and (
- ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
- ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
- )")
+      coverage = dat.FACILITY_TYPE[, .(route_id, begin_point, end_point, FACILITY_TYPE = value_numeric)] %>%
+        coverage_join(
+          dat.variable[, .(route_id, begin_point, end_point, expansion_factor, variable = value_numeric)]) %>%
+        coverage_join(
+          dat.F_SYSTEM[, .(route_id, begin_point, end_point, F_SYSTEM = value_numeric)]) 
       
-      coverage <- sqldf("select 
- A.*, 
- B.value_numeric as FSYSTEM 
- from [coverage] A 
- left join [dat.F_SYSTEM] B on 
- A.route_id = B.route_id and (
- ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
- ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
- ) ")
-      
-       coverage[, required :=  (FSYSTEM == 1 & FACILITYTYPE < 4)]
+      coverage[, required :=  (F_SYSTEM == 1 & FACILITY_TYPE < 4)]
       
       if(sum(is.na(coverage$variable[coverage$required])) == 0 & nrow(coverage)>0){
         type <- 3 
@@ -902,7 +645,7 @@ calc_completeness <- function(data, year, variable, x, y){
       dat.ACCESS_CONTROL <- data[data_item == "ACCESS_CONTROL" & year_record == year,]
       
       coverage <- sqldf("select 
- A.route_id,A.begin_point,A.end_point,A.data_item,A.value_numeric as URBANCODE, 
+ A.route_id,A.begin_point,A.end_point,A.data_item,A.value_numeric as URBAN_CODE, 
  B.value_numeric as variable,B.expansion_factor 
  from [dat.URBAN_CODE] A 
  left join [dat.variable] B on 
@@ -913,7 +656,7 @@ calc_completeness <- function(data, year, variable, x, y){
       
       coverage <- sqldf("select 
  A.*, 
- B.value_numeric as ACCESSCONTROL 
+ B.value_numeric as ACCESS_CONTROL 
  from [coverage] A 
  left join [dat.ACCESS_CONTROL] B on 
  A.route_id = B.route_id and (
@@ -921,7 +664,9 @@ calc_completeness <- function(data, year, variable, x, y){
  ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
  ) ")
       
-       coverage[, required :=  (URBANCODE != 99999 &ACCESSCONTROL == 1 &!is.na(expansion_factor))]
+      setDT(coverage)
+      
+      coverage[, required :=  (URBAN_CODE != 99999 &ACCESS_CONTROL == 1 &!is.na(expansion_factor))]
       
       if(sum(is.na(coverage$variable[coverage$required])) == 0 & nrow(coverage)>0){
         type <- 3 
@@ -938,7 +683,7 @@ calc_completeness <- function(data, year, variable, x, y){
       dat.NUMBER_SIGNALS <- data[data_item == "NUMBER_SIGNALS" & year_record == year,]
       
       coverage <- sqldf("select 
- A.route_id,A.begin_point,A.end_point,A.data_item,A.value_numeric as URBANCODE, 
+ A.route_id,A.begin_point,A.end_point,A.data_item,A.value_numeric as URBAN_CODE, 
  B.value_numeric as variable,B.expansion_factor 
  from [dat.URBAN_CODE] A 
  left join [dat.variable] B on 
@@ -957,7 +702,9 @@ calc_completeness <- function(data, year, variable, x, y){
  ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
  ) ")
       
-       coverage[, required := (URBANCODE < 99999 &NUMBERSIGNALS >= 1 &!is.na(expansion_factor) )]
+      setDT(coverage)
+      
+      coverage[, required := (URBAN_CODE < 99999 &NUMBERSIGNALS >= 1 &!is.na(expansion_factor) )]
       
       if(sum(is.na(coverage$variable[coverage$required])) == 0 & nrow(coverage)>0){
         type <- 3 
@@ -993,7 +740,9 @@ calc_completeness <- function(data, year, variable, x, y){
  ) ")
       
       
-       coverage[, required :=  (!is.na(expansion_factor) & !is.na(PCTGREENTIME)) |(!is.na(expansion_factor) & SIGNALTYPE %in% c(1,2,3,4) )]
+      setDT(coverage)
+      
+      coverage[, required :=  (!is.na(expansion_factor) & !is.na(PCTGREENTIME)) |(!is.na(expansion_factor) & SIGNALTYPE %in% c(1,2,3,4) )]
       
       if(sum(is.na(coverage$variable[coverage$required])) == 0 & nrow(coverage)>0){
         type <- 3 
@@ -1010,37 +759,15 @@ calc_completeness <- function(data, year, variable, x, y){
       dat.THROUGH_LANES <- data[data_item == "THROUGH_LANES" & year_record == year,]
       dat.MEDIAN_TYPE <- data[data_item == "MEDIAN_TYPE" & year_record == year,]
       
-      coverage <- sqldf("select 
- A.route_id,A.begin_point,A.end_point,A.data_item,A.value_numeric as URBANCODE , 
- B.value_numeric as variable,B.expansion_factor 
- from [dat.URBAN_CODE] A 
- left join [dat.variable] B on 
- A.route_id = B.route_id and (
- ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
- ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
- )")
+      coverage = dat.URBAN_CODE[, .(route_id, begin_point, end_point, URBAN_CODE = value_numeric)] %>%
+        coverage_join(
+          dat.variable[, .(route_id, begin_point, end_point, expansion_factor, variable = value_numeric)]) %>%
+        coverage_join(
+          dat.THROUGH_LANES[, .(route_id, begin_point, end_point, THROUGH_LANES = value_numeric)]) %>%
+        coverage_join(
+          dat.MEDIAN_TYPE[, .(route_id, begin_point, end_point, MEDIAN_TYPE = value_numeric)])
       
-      coverage <- sqldf("select 
- A.*, 
- B.value_numeric as THROUGHLANES 
- from [coverage] A 
- left join [dat.THROUGH_LANES] B on 
- A.route_id = B.route_id and (
- ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
- ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
- ) ")
-      
-      coverage <- sqldf("select 
- A.*, 
- B.value_numeric as MEDIANTYPE 
- from [coverage] A 
- left join [dat.MEDIAN_TYPE] B on 
- A.route_id = B.route_id and (
- ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
- ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
- ) ")
-      
-       coverage[, required := (!is.na(expansion_factor) &URBANCODE == 99999 &THROUGHLANES == 2 &MEDIANTYPE %in% c(1,2))]
+      coverage[, required := (!is.na(expansion_factor) &URBAN_CODE == 99999 &THROUGH_LANES == 2 &MEDIAN_TYPE %in% c(1,2))]
       
       if(sum(is.na(coverage$variable[coverage$required])) == 0 & nrow(coverage)>0){
         type <- 3
@@ -1059,49 +786,35 @@ calc_completeness <- function(data, year, variable, x, y){
       dat.NHS <- data[data_item == "NHS" & year_record == year,]
       dat.SURFACE_TYPE <- data[data_item == "SURFACE_TYPE" & year_record == year,] 
       
-      coverage <- sqldf("select 
- A.route_id,A.begin_point,A.end_point,A.data_item,A.value_numeric as FACILITYTYPE, 
- B.value_numeric as SURFACETYPE, coalesce(A.expansion_factor,B.expansion_factor) as expansion_factor
- from [dat.FACILITY_TYPE] A 
- inner join [dat.SURFACE_TYPE] B on 
- A.route_id = B.route_id and A.begin_point = B.begin_point and A.end_point = B.end_point
- ")
       
-      coverage <- sqldf("select 
- A.route_id, A.begin_point, A.end_point, A.data_item, A.FACILITYTYPE, A.SURFACETYPE, 
- B.value_numeric as URBANCODE, coalesce(A.expansion_factor,B.expansion_factor) as expansion_factor 
- from [coverage] A 
- left join [dat.URBAN_CODE] B on 
- A.route_id = B.route_id and A.begin_point = B.begin_point and A.end_point = B.end_point
- ")
+      coverage <- sqldf(
+        "select 
+            A.route_id, A.begin_point, A.end_point,
+               A.data_item, A.value_numeric as FACILITY_TYPE, 
+            B.value_numeric as SURFACE_TYPE,
+               coalesce(A.expansion_factor,B.expansion_factor) as expansion_factor
+         from [dat.FACILITY_TYPE] A 
+         inner join [dat.SURFACE_TYPE] B on 
+               A.route_id = B.route_id and
+                 A.begin_point = B.begin_point and
+                 A.end_point = B.end_point")
+
+      setDT(coverage)
+      coverage = coverage %>% 
+        coverage_join(
+          dat.URBAN_CODE[, .(route_id, begin_point, end_point, expansion_factor,
+            URBAN_CODE = value_numeric)]) %>%
+        coverage_join(
+          dat.F_SYSTEM[, .(route_id, begin_point, end_point, expansion_factor,
+            F_SYSTEM = value_numeric)]) %>%
+        coverage_join(
+          dat.NHS[, .(route_id, begin_point, end_point, expansion_factor, 
+            NHS = value_numeric)]) %>%
+        coverage_join(
+          dat.variable[, .(route_id, begin_point, end_point, expansion_factor,
+            variable = value_numeric)])
       
-      coverage <- sqldf("select 
- A.route_id, A.begin_point, A.end_point, A.data_item, A.FACILITYTYPE, A.SURFACETYPE, A.URBANCODE,
- B.value_numeric as FSYSTEM , coalesce(A.expansion_factor,B.expansion_factor) as expansion_factor 
- from [coverage] A 
- left join [dat.F_SYSTEM] B on 
- A.route_id = B.route_id and A.begin_point = B.begin_point and A.end_point = B.end_point
- ")
-      
-      coverage <- sqldf("select 
- A.route_id, A.begin_point, A.end_point, A.data_item, A.FACILITYTYPE, A.SURFACETYPE, A.URBANCODE,A.FSYSTEM,
- B.value_numeric as NHS, coalesce(A.expansion_factor,B.expansion_factor) as expansion_factor 
- from [coverage] A 
- left join [dat.NHS] B on 
- A.route_id = B.route_id and A.begin_point = B.begin_point and A.end_point = B.end_point
- ")
-      
-      coverage <- sqldf("select 
- A.route_id, A.begin_point, A.end_point, A.data_item, A.FACILITYTYPE, A.SURFACETYPE, A.URBANCODE,A.FSYSTEM,A.NHS, 
- B.value_numeric as variable, coalesce(A.expansion_factor,B.expansion_factor) as expansion_factor 
- from [coverage] A 
- left join [dat.variable] B on 
- A.route_id = B.route_id and (
- ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
- ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
- )")
-      
-       coverage[, required := FACILITYTYPE %in% c(1,2) &(FSYSTEM %in% c(1,2,3) | !is.na(NHS) |(!is.na(expansion_factor) & FSYSTEM == 4 & URBANCODE == 99999)) &SURFACETYPE > 1]
+      coverage[, required := FACILITY_TYPE %in% c(1,2) &(F_SYSTEM %in% c(1,2,3) | !is.na(NHS) |(!is.na(expansion_factor) & F_SYSTEM == 4 & URBAN_CODE == 99999)) &SURFACE_TYPE > 1]
       
       if(sum(is.na(coverage$variable[coverage$required])) == 0 & nrow(coverage)>0){
         type <- 3 
@@ -1153,7 +866,7 @@ calc_completeness <- function(data, year, variable, x, y){
       
       coverage <- sqldf("select 
  A.*, 
- B.value_numeric as FSYSTEM 
+ B.value_numeric as F_SYSTEM 
  from [coverage] A 
  left join [dat.F_SYSTEM] B on 
  A.route_id = B.route_id and (
@@ -1164,7 +877,7 @@ calc_completeness <- function(data, year, variable, x, y){
       
       coverage <- sqldf("select 
  A.*, 
- B.value_numeric as URBANCODE 
+ B.value_numeric as URBAN_CODE 
  from [coverage] A 
  left join [dat.URBAN_CODE] B on 
  A.route_id = B.route_id and (
@@ -1175,8 +888,8 @@ calc_completeness <- function(data, year, variable, x, y){
       
       coverage <- data.table(coverage)
       coverage[, required := is.na(IRI) & !is.na(expansion_factor) & SURFACE_TYPE > 1 & 
-          ((FSYSTEM %in% c(4, 5, 6) & URBANCODE < 99999 & FACILITY_TYPE %in% c(1, 2)) |
-              (FSYSTEM == 5 & FACILITY_TYPE %in% c(1, 2) & URBANCODE == 99999))]
+          ((F_SYSTEM %in% c(4, 5, 6) & URBAN_CODE < 99999 & FACILITY_TYPE %in% c(1, 2)) |
+              (F_SYSTEM == 5 & FACILITY_TYPE %in% c(1, 2) & URBAN_CODE == 99999))]
       
       if( !any(is.na(coverage$variable[coverage$required])) & nrow(coverage) > 0 ){
         type <- 3 
@@ -1192,7 +905,7 @@ calc_completeness <- function(data, year, variable, x, y){
       dat.SURFACE_TYPE <- data[data_item == "SURFACE_TYPE" & year_record == year,] 
       
       coverage <- sqldf("select 
- A.route_id,A.begin_point,A.end_point,A.data_item,A.value_numeric as SURFACETYPE, 
+ A.route_id,A.begin_point,A.end_point,A.data_item,A.value_numeric as SURFACE_TYPE, 
  B.value_numeric as variable,B.expansion_factor 
  from [dat.SURFACE_TYPE] A 
  left join [dat.variable] B on 
@@ -1201,7 +914,9 @@ calc_completeness <- function(data, year, variable, x, y){
  ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
  )")
       
-       coverage[, required := !is.na(expansion_factor) & SURFACETYPE%in%c(2,6,7,8)]
+      setDT(coverage)
+      
+      coverage[, required := !is.na(expansion_factor) & SURFACE_TYPE%in%c(2,6,7,8)]
       
       if(sum(is.na(coverage$variable[coverage$required])) == 0 & nrow(coverage)>0){
         type <- 3 
@@ -1217,7 +932,7 @@ calc_completeness <- function(data, year, variable, x, y){
       dat.SURFACE_TYPE <- data[data_item == "SURFACE_TYPE" & year_record == year,] 
       
       coverage <- sqldf("select 
- A.route_id,A.begin_point,A.end_point,A.data_item,A.value_numeric as SURFACETYPE, 
+ A.route_id,A.begin_point,A.end_point,A.data_item,A.value_numeric as SURFACE_TYPE, 
  B.value_numeric as variable,B.expansion_factor 
  from [dat.SURFACE_TYPE] A 
  left join [dat.variable] B on 
@@ -1226,7 +941,9 @@ calc_completeness <- function(data, year, variable, x, y){
  ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
  )")
       
-       coverage[, required := !is.na(expansion_factor) & SURFACETYPE %in% c(3,4,9,10)]
+      setDT(coverage)
+      
+      coverage[, required := !is.na(expansion_factor) & SURFACE_TYPE %in% c(3,4,9,10)]
       
       if(sum(is.na(coverage$variable[coverage$required])) == 0 & nrow(coverage)>0){
         type <- 3 
@@ -1236,13 +953,13 @@ calc_completeness <- function(data, year, variable, x, y){
     
     # cracking_percent or year_last_construction -------------------------------
     
-    if(variable %in% c("CRACKING_PERCENT","YEAR_LAST_CONSTRUCTION")){
+    if(variable %in% c("CRACKING_PERCENT", "YEAR_LAST_CONSTRUCTION")){
       
       dat.variable <- data[data_item == variable & year_record == year,]
       dat.SURFACE_TYPE <- data[data_item == "SURFACE_TYPE" & year_record == year,] 
       
       coverage <- sqldf("select 
- A.route_id,A.begin_point,A.end_point,A.data_item,A.value_numeric as SURFACETYPE, 
+ A.route_id,A.begin_point,A.end_point,A.data_item,A.value_numeric as SURFACE_TYPE, 
  B.value_numeric as variable,B.expansion_factor 
  from [dat.SURFACE_TYPE] A 
  left join [dat.variable] B on 
@@ -1251,7 +968,9 @@ calc_completeness <- function(data, year, variable, x, y){
  ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
  )")
       
-       coverage[, required := !is.na(expansion_factor) & SURFACETYPE %in% 2:10]
+      setDT(coverage)
+      
+      coverage[, required := !is.na(expansion_factor) & SURFACE_TYPE %in% 2:10]
       
       if(sum(is.na(coverage$variable[coverage$required])) == 0 & nrow(coverage)>0){
         type <- 3
@@ -1267,7 +986,7 @@ calc_completeness <- function(data, year, variable, x, y){
       dat.SURFACE_TYPE <- data[data_item == "SURFACE_TYPE" & year_record == year,] 
       
       coverage <- sqldf("select 
- A.route_id,A.begin_point,A.end_point,A.data_item,A.value_numeric as SURFACETYPE, 
+ A.route_id,A.begin_point,A.end_point,A.data_item,A.value_numeric as SURFACE_TYPE, 
  B.value_numeric as variable,B.expansion_factor 
  from [dat.SURFACE_TYPE] A 
  left join [dat.variable] B on 
@@ -1276,7 +995,9 @@ calc_completeness <- function(data, year, variable, x, y){
  ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
  )")
       
-       coverage[, required := !is.na(expansion_factor) & SURFACETYPE %in% 3:10]
+      setDT(coverage)
+      
+      coverage[, required := !is.na(expansion_factor) & SURFACE_TYPE %in% 3:10]
       
       if(sum(is.na(coverage$variable[coverage$required])) == 0 & nrow(coverage)>0){
         type <- 3 
@@ -1292,7 +1013,7 @@ calc_completeness <- function(data, year, variable, x, y){
       dat.SURFACE_TYPE <- data[data_item == "SURFACE_TYPE" & year_record == year,] 
       
       coverage <- sqldf("select 
- A.route_id,A.begin_point,A.end_point,A.data_item,A.value_numeric as SURFACETYPE, 
+ A.route_id,A.begin_point,A.end_point,A.data_item,A.value_numeric as SURFACE_TYPE, 
  B.value_numeric as variable,B.expansion_factor 
  from [dat.SURFACE_TYPE] A 
  left join [dat.variable] B on 
@@ -1301,7 +1022,9 @@ calc_completeness <- function(data, year, variable, x, y){
  ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
  )")
       
-       coverage[, required := !is.na(expansion_factor) & SURFACETYPE %in% c(2,6,7,8)]
+      setDT(coverage)
+      
+      coverage[, required := !is.na(expansion_factor) & SURFACE_TYPE %in% c(2,6,7,8)]
       
       if(sum(is.na(coverage$variable[coverage$required])) == 0 & nrow(coverage)>0){
         type <- 3 
@@ -1317,7 +1040,7 @@ calc_completeness <- function(data, year, variable, x, y){
       dat.SURFACE_TYPE <- data[data_item == "SURFACE_TYPE" & year_record == year,] 
       
       coverage <- sqldf("select 
- A.route_id,A.begin_point,A.end_point,A.data_item,A.value_numeric as SURFACETYPE, 
+ A.route_id,A.begin_point,A.end_point,A.data_item,A.value_numeric as SURFACE_TYPE, 
  B.value_numeric as variable,B.expansion_factor 
  from [dat.SURFACE_TYPE] A 
  left join [dat.variable] B on 
@@ -1326,7 +1049,9 @@ calc_completeness <- function(data, year, variable, x, y){
  ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
  )")
       
-       coverage[, required := !is.na(expansion_factor) & SURFACETYPE>1]
+      setDT(coverage)
+      
+      coverage[, required := !is.na(expansion_factor) & SURFACE_TYPE>1]
       
       if(sum(is.na(coverage$variable[coverage$required])) == 0 & nrow(coverage)>0){
         type <- 3 
@@ -1343,7 +1068,7 @@ calc_completeness <- function(data, year, variable, x, y){
       dat.BASE_TYPE <- data[data_item == "BASE_TYPE" & year_record == year,] 
       
       coverage <- sqldf("select 
- A.route_id,A.begin_point,A.end_point,A.data_item,A.value_numeric as SURFACETYPE, 
+ A.route_id,A.begin_point,A.end_point,A.data_item,A.value_numeric as SURFACE_TYPE, 
  B.value_numeric as variable,B.expansion_factor 
  from [dat.SURFACE_TYPE] A 
  left join [dat.variable] B on 
@@ -1362,7 +1087,9 @@ calc_completeness <- function(data, year, variable, x, y){
  ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
  )") 
       
-       coverage[, required := !is.na(expansion_factor) & SURFACETYPE>1 & BASETYPE>1]
+      setDT(coverage)
+      
+      coverage[, required := !is.na(expansion_factor) & SURFACE_TYPE>1 & BASETYPE>1]
       
       if(sum(is.na(coverage$variable[coverage$required])) == 0 & nrow(coverage)>0){
         type <- 3
@@ -1378,7 +1105,7 @@ calc_completeness <- function(data, year, variable, x, y){
       dat.URBAN_CODE <- data[data_item == "URBAN_CODE" & year_record == year,] 
       
       coverage <- sqldf("select 
- A.route_id,A.begin_point,A.end_point,A.data_item,A.value_numeric as URBANCODE, 
+ A.route_id,A.begin_point,A.end_point,A.data_item,A.value_numeric as URBAN_CODE, 
  B.value_numeric as variable,B.expansion_factor 
  from [dat.URBAN_CODE] A 
  left join [dat.variable] B on 
@@ -1387,7 +1114,9 @@ calc_completeness <- function(data, year, variable, x, y){
  ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
  )")
       
-       coverage[, required := !is.na(expansion_factor) & URBANCODE<99999]
+      setDT(coverage)
+      
+      coverage[, required := !is.na(expansion_factor) & URBAN_CODE<99999]
       
       if(sum(is.na(coverage$variable[coverage$required])) == 0 & nrow(coverage)>0){
         type <- 3
@@ -1397,7 +1126,7 @@ calc_completeness <- function(data, year, variable, x, y){
     
     # maintenance_operations ---------------------------------------------------
     
-    if(variable %in% c("MAINTENANCE_OPERATIONS", "MAINTENACE_OPERATIONS")){
+    if(variable %in% c("MAINTENANCE_OPERATIONS")){
       
       dat.variable <- data[data_item == variable & year_record == year,]
       dat.FACILITY_TYPE <- data[data_item == "FACILITY_TYPE" & year_record == year,]
@@ -1406,58 +1135,19 @@ calc_completeness <- function(data, year, variable, x, y){
       dat.NHS <- data[data_item == "NHS" & year_record == year,]
       dat.TOLL_CHARGED <- data[data_item == "TOLL_CHARGED" & year_record == year,] 
       
-      coverage <- sqldf("select 
- A.route_id,A.begin_point,A.end_point,A.data_item,A.value_numeric as FACILITYTYPE, 
- B.value_numeric as variable,B.expansion_factor 
- from [dat.FACILITY_TYPE] A 
- left join [dat.variable] B on 
- A.route_id = B.route_id and (
- ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
- ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
- )")
+      coverage = coverage_join(
+        dat.FACILITY_TYPE[, .(route_id, begin_point, end_point, FACILITY_TYPE = value_numeric)],
+        dat.variable[, .(route_id, begin_point, end_point, variable = value_numeric)]) %>%
+        coverage_join(
+          dat.F_SYSTEM[, .(route_id, begin_point, end_point, F_SYSTEM = value_numeric)]) %>%
+        coverage_join(
+          dat.URBAN_CODE[, .(route_id, begin_point, end_point, URBAN_CODE = value_numeric)]) %>%
+        coverage_join(
+          dat.NHS[, .(route_id, begin_point, end_point, NHS = value_numeric)]) %>%
+        coverage_join(
+          dat.TOLL_CHARGED[, .(route_id, begin_point, end_point, TOLL_CHARGED = value_numeric)])
       
-      coverage <- sqldf("select 
- A.*, 
- B.value_numeric as FSYSTEM 
- from [coverage] A 
- left join [dat.F_SYSTEM] B on 
- A.route_id = B.route_id and (
- ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
- ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
- ) ")
-      
-      
-      coverage <- sqldf("select 
- A.*, 
- B.value_numeric as URBANCODE 
- from [coverage] A 
- left join [dat.URBAN_CODE] B on 
- A.route_id = B.route_id and (
- ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
- ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
- ) ")
-      
-      coverage <- sqldf("select 
- A.*, 
- B.value_numeric as NHS 
- from [coverage] A 
- left join [dat.NHS] B on 
- A.route_id = B.route_id and (
- ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
- ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
- ) ")
-      
-      coverage <- sqldf("select 
- A.*, 
- B.value_numeric as TOLLCHARGED 
- from [coverage] A 
- left join [dat.TOLL_CHARGED] B on 
- A.route_id = B.route_id and (
- ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
- ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
- ) ") 
-      
-       coverage[, required := !is.na(TOLLCHARGE) &FACILITYTYPE %in% c(1,2) &(FSYSTEM %in% 1:5 | !is.na(NHS) | (FSYSTEM == 6 & URBANCODE<99999))]
+      coverage[, required := !is.na(TOLL_CHARGED) &FACILITY_TYPE %in% c(1,2) &(F_SYSTEM %in% 1:5 | !is.na(NHS) | (F_SYSTEM == 6 & URBAN_CODE<99999))]
       
       if(sum(is.na(coverage$variable[coverage$required])) == 0 & nrow(coverage)>0){
         type <- 3 
@@ -1473,7 +1163,7 @@ calc_completeness <- function(data, year, variable, x, y){
       dat.YEAR_LAST_CONSTRUCTION <- data[data_item == "YEAR_LAST_CONSTRUCTION" & year_record == year,]
       
       coverage <- sqldf("select 
- A.route_id,A.begin_point,A.end_point,A.data_item,A.value_numeric as SURFACETYPE, 
+ A.route_id,A.begin_point,A.end_point,A.data_item,A.value_numeric as SURFACE_TYPE, 
  B.value_date as variable,B.expansion_factor 
  from [dat.SURFACE_TYPE] A 
  left join [dat.variable] B on 
@@ -1492,7 +1182,9 @@ calc_completeness <- function(data, year, variable, x, y){
  ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
  ) ")
       
-       coverage[, required := (!is.na(expansion_factor) & SURFACETYPE %in% 2:10)]
+      setDT(coverage)
+      
+      coverage[, required := (!is.na(expansion_factor) & SURFACE_TYPE %in% 2:10)]
       
       if(sum(is.na(coverage$variable[coverage$required])) == 0 & nrow(coverage)>0){
         type <- 3 
@@ -1516,7 +1208,9 @@ calc_completeness <- function(data, year, variable, x, y){
  ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
  )")
       
-       coverage[, required := (!is.na(expansion_factor) & !is.na(YEARLASTCONSTRUCTION))]
+      setDT(coverage)
+      
+      coverage[, required := (!is.na(expansion_factor) & !is.na(YEARLASTCONSTRUCTION))]
       
       if(sum(is.na(coverage$variable[coverage$required])) == 0 & nrow(coverage)>0){
         type <- 3 
@@ -1534,48 +1228,21 @@ calc_completeness <- function(data, year, variable, x, y){
       dat.ROUTE_SIGNING <- data[data_item == "ROUTE_SIGNING" & year_record == year,]
       dat.NHS <- data[data_item == "NHS" & year_record == year,]
       
-      coverage <- sqldf("select 
- A.route_id,B.begin_point,B.end_point,A.data_item,A.value_numeric as FACILITYTYPE, 
- coalesce(B.value_text,B.value_numeric) as variable,B.expansion_factor 
- from [dat.FACILITY_TYPE] A 
- left join [dat.variable] B on 
- A.route_id = B.route_id and (
- ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
- ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
- )")
-      
-      coverage <- sqldf("select 
- A.*, 
- B.value_numeric as FSYSTEM 
- from [coverage] A 
- left join [dat.F_SYSTEM] B on 
- A.route_id = B.route_id and (
- ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
- ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
- ) ")
+      # NOTE: coalesce
       
       
-      coverage <- sqldf("select 
- A.*, 
- B.value_numeric as ROUTESIGNING 
- from [coverage] A 
- left join [dat.ROUTE_SIGNING] B on 
- A.route_id = B.route_id and (
- ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
- ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
- ) ")
+      coverage = dat.FACILITY_TYPE[, .(route_id, begin_point, end_point, expansion_factor, FACILITY_TYPE = value_numeric)] %>%
+        coverage_join(
+          dat.variable[, .(route_id, begin_point, end_point, expansion_factor,
+            variable = fcoalesce(value_text, as.character(value_numeric)))]) %>%
+        coverage_join(
+          dat.F_SYSTEM[, .(route_id, begin_point, end_point, F_SYSTEM = value_numeric)]) %>%
+        coverage_join(
+          dat.ROUTE_SIGNING[, .(route_id, begin_point, end_point, ROUTESIGNING = value_numeric)]) %>%
+        coverage_join(
+          dat.NHS[, .(route_id, begin_point, end_point, NHS = value_numeric)]) 
       
-      coverage <- sqldf("select 
- A.*, 
- B.value_numeric as NHS 
- from [coverage] A 
- left join [dat.NHS] B on 
- A.route_id = B.route_id and (
- ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
- ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
- ) ")
-      
-       coverage[, required := (FSYSTEM %in% c(1,2,3,4) | !is.na(NHS)) & FACILITYTYPE %in% 1:2 & ROUTESIGNING %in% 2:9 ]
+      coverage[, required := (F_SYSTEM %in% c(1,2,3,4) | !is.na(NHS)) & FACILITY_TYPE %in% 1:2 & ROUTESIGNING %in% 2:9 ]
       
       if(sum(is.na(coverage$variable[coverage$required])) == 0 & nrow(coverage)>0){
         type <- 3 
