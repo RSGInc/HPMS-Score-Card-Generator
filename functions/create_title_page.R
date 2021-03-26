@@ -320,10 +320,13 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
   # quality and cross validation ----------------------------------------------
   
   message("Calculating quality score for each item.")
-  dt_quality <- calcQualityAll(data, year, year_compare)
+  dt_quality <- calc_quality_all(data, year, year_compare)
   
   message("Calculating cross-validations.")
   dt_cross <- calc_cross_validation(data, year)
+  
+  message("Calculating coverage validation results. This may take some time to complete.")
+  dt_coverage <- calc_completeness_all(data, year)
   
   colWidth <- 0.152
   rowWidth <- 0.020 
@@ -351,7 +354,6 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
   
   # completeness / coverage validation ----------------------------------------
   
-  message("Calculating coverage validation results. This may take some time to complete.")
   # Print completeness and quality for each data item
   for ( g in 1:nrow(group_params)){
     
@@ -374,9 +376,9 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
         gp = gpar(col = "slategray", fontsize = 7)
       ))
       
-      thisComplete <-
-        calc_completeness(data, year, variable)
-
+      thisComplete <- dt_coverage[Grouping == group_params$abbrev[g]
+        ][i, coverage_type]
+      
       plotCompleteness(
         score = thisComplete,
         x = startx + (C - 1) * colWidth + space1,

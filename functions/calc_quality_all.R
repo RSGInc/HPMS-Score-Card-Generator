@@ -10,7 +10,7 @@
 # It is based on percent miles meeting criteria
 ###########################################################################
 
-calcQualityAll <- function(data, year, year_compare){
+calc_quality_all <- function(data, year, year_compare){
   
   dt_output <- gVariables[, .(Name, Item_Number, Label, Grouping, Extent,
                               Outlier_Min, Outlier_Max,
