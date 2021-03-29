@@ -376,8 +376,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
         gp = gpar(col = "slategray", fontsize = 7)
       ))
       
-      thisComplete <- dt_coverage[Grouping == group_params$abbrev[g]
-        ][i, coverage_type]
+      thisComplete <- dt_coverage[Name == variable, coverage_type]
       
       plotCompleteness(
         score = thisComplete,
@@ -443,7 +442,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
   
   if (!dir.exists(path)) dir.create(path)
   
-  write.csv(x=dt_quality, file=fullpath, na='', row.names=FALSE)
+  fwrite(x=dt_quality, file=fullpath, na = '')
 
   
   # Write out the cross-validation scores
@@ -455,8 +454,14 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
   
   if (!dir.exists(path)) dir.create(path)
   
-  write.csv(x=dt_cross, file=fullpath, na='', row.names=FALSE)
+  fwrite(x=dt_cross, file=fullpath, na='')
   
+  # Write out the coverage scores
+  path = file.path('data', state_name)
+  file = past0(state_name, '_', year, '_coverage_summary.csv')
+  fullpath = file.path(path, file)
+  
+  fwrite(x = dt_coverage, file=fullpath, na='')
   
   # Write out high level scores
   

@@ -37,6 +37,7 @@ invisible(sapply(X =codefiles , FUN = source))
 # Rscript RunBatch.R ALL
 
 debugmode = TRUE # Displays output to graphics device instead of PDF
+# debug(calc_completeness)
 
 # Run(task = 1, state = 'IN', year = 2019)
 Run(task = 2, state = 'PA', year = 2019, year_compare = 2018)

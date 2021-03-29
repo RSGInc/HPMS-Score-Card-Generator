@@ -11,11 +11,12 @@
 
 ###########################################################################
 
-calc_quality_all <- function(data, year){
+calc_completeness_all <- function(data, year){
   
   dt_output <- gVariables[, .(Name)]
   
-  
+  data = data[!(F_SYTEMorig == 7 & NHS != 1)]
+
   for ( i in 1:nrow(dt_output) ){
     
     variable = dt_output[i, Name]
@@ -24,7 +25,6 @@ calc_quality_all <- function(data, year){
     
     dt_output[i, coverage_score := score] 
   }
-  
   
   dt_output[!is.na(coverage_score), coverage_type := 1]
   dt_output[coverage_score > 0, coverage_type := 2]
