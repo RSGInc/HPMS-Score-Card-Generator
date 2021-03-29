@@ -16,8 +16,8 @@ plotCompleteness = function(score, x, y){
   
   if ( is.na(score) ){
     
-    border_col = 'white'
-    fill_col = 'gray90'
+    border_col = 'gray90'
+    fill_col = 'white'
     
   } else {
     border_col = 'slategray'

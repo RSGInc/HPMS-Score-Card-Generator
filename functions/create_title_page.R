@@ -341,8 +341,9 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
   #QualityScoreMax <- 0
   
   # Scores for getting a medium or high quality value
-  CompleteMed  <- 1
-  CompleteHigh <- 1.5
+  CompleteLow = 0
+  CompleteMed = 1
+  CompleteHigh = 1.5
   
   # Set parameters for each section
   
@@ -382,14 +383,6 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
         score = thisComplete,
         x = startx + (C - 1) * colWidth + space1,
         y = starty - (R - 1) * rowWidth)
-        
-      CompletedScore <-
-        CompletedScore + c(0, CompleteMed, CompleteHigh)[thisComplete] * group_vars$Completeness_Weight[i]
-
-      CompletedScoreMax <-
-        CompletedScoreMax + CompleteHigh * group_vars$Completeness_Weight[i]
-
-      submittedN <- submittedN + 1 * (thisComplete >= 2)
 
       thisQuality <- group_vars$Quality_Score[i] 
       
@@ -405,6 +398,14 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
       }
     }
   }
+  
+  dt_coverage[coverage_type == 1, card_score := CompleteLow]
+  dt_coverage[coverage_type == 2, card_score := CompleteMed]
+  dt_coverage[coverage_type == 3, card_score := CompleteHigh]
+  
+  submittedN = dt_coverage[coverage_type >= 2, .N]
+  CompletedScore = sum(dt_coverage$card_score * dt_quality$Completeness_Weight, na.rm=TRUE)
+  CompletedScoreMax = CompleteHigh * dt_coverage[!is.na(card_score), .N] * dt_quality$Completeness_Weight
   
   QualityScore    <- sum(dt_quality$Quality_Score * dt_quality$Quality_Weight, na.rm=TRUE)
   QualityScoreMax <- sum(!is.na(dt_quality$Quality_Score) * dt_quality$Quality_Weight) * 100
@@ -458,7 +459,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
   
   # Write out the coverage scores
   path = file.path('data', state_name)
-  file = past0(state_name, '_', year, '_coverage_summary.csv')
+  file = paste0(state_name, '_', year, '_coverage_summary.csv')
   fullpath = file.path(path, file)
   
   fwrite(x = dt_coverage, file=fullpath, na='')
@@ -503,26 +504,20 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
   
   xshift <- 0.05
   
-  grid.circle(
+  plotCompleteness(
+    score = 3,
     x = 0.37 + xshift + 0.01,
-    y = 0.015,
-    r = unit(0.007, "npc"),
-    gp = gpar(fill = "slategray", col = "slategray")
-  )
+    y = 0.015)
   
-  grid.circle(
+  plotCompleteness(
+    score = 2,
     x = 0.46 + xshift + 0.01,
-    y = 0.015,
-    r = unit(0.007, "npc"),
-    gp = gpar(fill = "gray75", col = "slategray")
-  )
+    y = 0.015)
   
-  grid.circle(
+  plotCompleteness(
+    score = 1,
     x = 0.55 + xshift + 0.01,
-    y = 0.015,
-    r = unit(0.007, "npc"),
-    gp = gpar(fill = "white", col = "slategray")
-  )
+    y = 0.015)
   
   grid.text(
     "Submitted and Complete",
@@ -806,5 +801,5 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
     hjust = 0.5
   )
   
-  return(list(quality = dt_quality, cross_validation = dt_cross))
+  return(list(quality = dt_quality, cross_validation = dt_cross, coverage=dt_coverage))
 }
