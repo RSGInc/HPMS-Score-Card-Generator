@@ -31,6 +31,7 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
     windows(width = 13.333, height = 7.5)
   } else {
     pdf(file = pdfpath, width = 13.333, height = 7.5)
+    on.exit(expr = dev.off())
   }
   
   # showtext.begin() # this controls the issues with the fonts
@@ -82,17 +83,17 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
 
   # Traffic: Detailed Review --------------------------------------------------
 
-  cat("Traffic: Detailed Review...")
+  message("Traffic: Detailed Review...")
   ts <- Sys.time()
   create_traffic_detailed_review(data, state, year, year_compare)
-  cat(paste0(" completed in: ",
+  message(paste0(" completed in: ",
              round(difftime(Sys.time(), ts, units = "secs"), 2), " seconds!\n"))
   # cat('\tMemory used: ', round(mem_used() / 1e9, 3), 'GB \n')
 
 
   # Ramps: Detailed Review ----------------------------------------------------
 
-  cat("Ramps: Detailed Review...")
+  message("Ramps: Detailed Review...")
   ts <- Sys.time()
 
   todo_vec <- (1:nrow(gVariables))[gVariables[, RampAnalysis] == "Y"]
@@ -118,14 +119,14 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
                       x1 = todo[i + 1, 1], x2 = todo[i + 1, 2],
                       title = "ramps: detailed review", icontext = "r",
                       page = gPageNumber, ramps = TRUE)
-  cat(paste0(" completed in: ",
+  message(paste0(" completed in: ",
              round(difftime(Sys.time(), ts, units = "secs"), 2), " seconds!\n"))
   # cat('\tMemory used: ', round(mem_used() / 1e9, 3), 'GB \n')
 
 
   # Inventory -----------------------------------------------------------------
 
-  cat("Inventory...")
+  message("Inventory...")
   ts <- Sys.time()
 
   todo_vec <- (1:nrow(gVariables))[gVariables[, Grouping] == "I"]
@@ -143,14 +144,14 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
                         title = "inventory", icontext = "i", page = gPageNumber)
     cat(".")
   }
-  cat(paste0(" completed in: ", round(difftime(Sys.time(), ts, units = "secs"),
+  message(paste0(" completed in: ", round(difftime(Sys.time(), ts, units = "secs"),
                                       2), " seconds!\n"))
   # cat('\tMemory used: ', round(mem_used() / 1e9, 3), 'GB \n')
 
 
   # Pavement -----------------------------------------------------------------
 
-  cat("Pavement data items...")
+  message("Pavement data items...")
   ts <- Sys.time()
   todo_vec <- (1:nrow(gVariables))[gVariables[, Grouping] == "P"]
   todo_vec <- c(todo_vec, rep(NA, 3 - (length(todo_vec) %% 3)))
@@ -170,14 +171,14 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
   create_page_summary(data, state, year, year_compare,
                       x1 = todo[i + 1, 1], title = "pavement", icontext = "p",
                       page = gPageNumber)
-  cat(paste0(" completed in: ",
+  message(paste0(" completed in: ",
              round(difftime(Sys.time(), ts, units = "secs"), 2), " seconds!\n"))
   # cat('\tMemory used: ', round(mem_used() / 1e9, 3), 'GB \n')
 
 
   # Traffic -------------------------------------------------------------------
 
-  cat("Traffic data items...")
+  message("Traffic data items...")
   ts <- Sys.time()
   todo_vec <- (1:nrow(gVariables))[gVariables[, Grouping] == "T"]
   todo_vec <- c(todo_vec, rep(NA, 3 - (length(todo_vec) %% 3)))
@@ -200,14 +201,14 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
                       x1 = todo[i +  1, 1],
                       x2 = todo[i + 1, 2],
                       title = "traffic", icontext = "t", page = gPageNumber)
-  cat(paste0(" completed in: ", round(difftime(Sys.time(), ts, units = "secs"),
+  message(paste0(" completed in: ", round(difftime(Sys.time(), ts, units = "secs"),
                                       2), " seconds!\n"))
   # cat('\tMemory used: ', round(mem_used() / 1e9, 3), 'GB \n')
 
 
   # Geometric -----------------------------------------------------------------
 
-  cat("Geometric data items...")
+  message("Geometric data items...")
 
   ts <- Sys.time()
   todo_vec <- (1:nrow(gVariables))[gVariables[, Grouping] == "G"]
@@ -229,13 +230,13 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
   create_page_summary(data, state, year, year_compare,
                       x1 = todo[i + 1, 1], x2 = todo[i + 1, 2],
                       title = "geometric", icontext = "g", page = gPageNumber)
-  cat(paste0(" completed in: ",
+  message(paste0(" completed in: ",
              round(difftime(Sys.time(), ts, units = "secs"), 2), " seconds!\n"))
 
 
   # Route ---------------------------------------------------------------------
 
-  cat("Route data items...")
+  message("Route data items...")
   ts <- Sys.time()
   todo_vec <- (1:nrow(gVariables))[gVariables[, Grouping] == "R"]
   todo_vec <- c(todo_vec, rep(NA, 3 - (length(todo_vec) %% 3)))
@@ -251,14 +252,14 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
                         title = "route", icontext = "r", page = gPageNumber)
     cat(".")
   }
-  cat(paste0(" completed in: ",
+  message(paste0(" completed in: ",
              round(difftime(Sys.time(), ts, units = "secs"), 2), " seconds!\n"))
   # cat('\tMemory used: ', round(mem_used() / 1e9, 3), 'GB \n')
 
 
   # Special network ----------------------------------------------------------
 
-  cat("Special network data items...")
+  message("Special network data items...")
   ts <- Sys.time()
   todo_vec <- (1:nrow(gVariables))[gVariables[, Grouping] == "SN"]
   todo_vec <- c(todo_vec, rep(NA, 3 - (length(todo_vec) %% 3)))
@@ -280,19 +281,15 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
   create_page_summary(data, state, year, year_compare,
                       x1 = todo[i + 1, 1], title = "special network", icontext = "sn",
                       page = gPageNumber)
-  cat(paste0(" completed in: ",
+  message(paste0(" completed in: ",
              round(difftime(Sys.time(), ts, units = "secs"), 2), " seconds!\n"))
   # cat('\tMemory used: ', round(mem_used() / 1e9, 3), 'GB \n')
 
   # showtext.end()
 
-  if ( !debugmode ){
-    dev.off()
-  }
-  
   gPageNumber <<- 1
   # cat('\tMemory used: ', round(mem_used() / 1e9, 3), 'GB \n')
-  cat('Exiting create_pdf -----------------------------------')
+  message('Exiting create_pdf -----------------------------------')
   whitespace(4)
   
 }

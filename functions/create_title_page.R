@@ -14,10 +14,17 @@
 
 create_title_page <- function(data, state, year, year_compare = NULL) {
   
-  time_weight     <- gScoreWeights[, "timeliness"]
-  complete_weight <- gScoreWeights[, "completeness"]
-  quality_weight  <- gScoreWeights[, "quality"]
-  cvWeight        <- gScoreWeights[, 'cross_validation']
+  state_num = data$state_code[1]
+  state_name = getStateLabelFromNum(state_num)
+  state_abb = getStateAbbrFromNum(state_num)
+  
+  time_weight     <- gScoreWeights[1, timeliness]
+  complete_weight <- gScoreWeights[1, completeness]
+  quality_weight  <- gScoreWeights[1, quality]
+  cvWeight        <- gScoreWeights[1, cross_validation]
+  
+  reqs = gReqs[, c('Name', state_abb), with=FALSE]
+  setnames(reqs, state_abb, 'required')
   
   # Page setup ==============================================================
   
@@ -317,8 +324,6 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
   # The following section calculates completeness and quality for each data item
   # Then plots it.
   
-  # quality and cross validation ----------------------------------------------
-  
   message("Calculating quality score for each item.")
   dt_quality <- calc_quality_all(data, year, year_compare)
   
@@ -326,7 +331,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
   dt_cross <- calc_cross_validation(data, year)
   
   message("Calculating coverage validation results. This may take some time to complete.")
-  dt_coverage <- calc_completeness_all(data, year)
+  dt_coverage <- calc_completeness_all(data, year, reqs)
   
   colWidth <- 0.152
   rowWidth <- 0.020 
@@ -405,8 +410,8 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
   
   submittedN = dt_coverage[coverage_type >= 2, .N]
   CompletedScore = sum(dt_coverage$card_score * dt_quality$Completeness_Weight, na.rm=TRUE)
-  CompletedScoreMax = CompleteHigh * dt_coverage[!is.na(card_score), .N] * dt_quality$Completeness_Weight
-  
+  CompletedScoreMax = sum(CompleteHigh * dt_coverage[, !is.na(card_score)] * dt_quality$Completeness_Weight)
+
   QualityScore    <- sum(dt_quality$Quality_Score * dt_quality$Quality_Weight, na.rm=TRUE)
   QualityScoreMax <- sum(!is.na(dt_quality$Quality_Score) * dt_quality$Quality_Weight) * 100
   qMean <- QualityScore / QualityScoreMax
@@ -423,7 +428,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
   # Summary scores ------------------------------------------------------------
   # Completeness, quality, and timeliness scores 
   
-  tscore <- time_weight * getTimelinessScore(state, year, submission_deadline)[1, 1]
+  tscore <- time_weight * getTimelinessScore(state, year, submission_deadline)
   cscore <-
     round(complete_weight * CompletedScore / CompletedScoreMax, 1)
   qscore <-
@@ -431,12 +436,10 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
   
 
   # Write scores ---------------------------------------------------
+
+  # FIXME: Merge quality and coverage into a single file
   # Write out the quality scores
   
-  
-  state_num = data$state_code[1]
-  state_name = getStateLabelFromNum(state_num)
-  state_abb = getStateAbbrFromNum(state_num)
   path <- file.path('data', state_name)
   file <- paste0(state_name, '_', year, '_', year_compare, '_quality_summary.csv')
   fullpath <- file.path(path, file)
@@ -445,6 +448,13 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
   
   fwrite(x=dt_quality, file=fullpath, na = '')
 
+  # Write out the coverage scores
+  path = file.path('data', state_name)
+  file = paste0(state_name, '_', year, '_coverage_summary.csv')
+  fullpath = file.path(path, file)
+  
+  fwrite(x = dt_coverage, file=fullpath, na='')
+  
   
   # Write out the cross-validation scores
   
@@ -457,15 +467,9 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
   
   fwrite(x=dt_cross, file=fullpath, na='')
   
-  # Write out the coverage scores
-  path = file.path('data', state_name)
-  file = paste0(state_name, '_', year, '_coverage_summary.csv')
-  fullpath = file.path(path, file)
-  
-  fwrite(x = dt_coverage, file=fullpath, na='')
   
   # Write out high level scores
-  
+
   scores <- data.table(
     state_num = state_num,
     state = state_abb,
@@ -475,13 +479,12 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
     quality_sub = qMean,
     cross_sub = cvMean,
     total = tscore + qscore + cscore,
-    datetime = as.character(now())
+    datetime = now()
   )
   
   fullpath = file.path('output/_score_summary.csv')
   
   if ( file.exists(fullpath) ){
-    
     all_scores = fread(file=fullpath)
     all_scores = all_scores[state != state_abb]
     all_scores = rbind(all_scores, scores)

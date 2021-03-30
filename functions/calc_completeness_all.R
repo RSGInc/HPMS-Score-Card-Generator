@@ -11,9 +11,13 @@
 
 ###########################################################################
 
-calc_completeness_all <- function(data, year){
+calc_completeness_all <- function(data, year, reqs){
   
-  dt_output <- gVariables[, .(Name)]
+  dt_output = merge(
+    gVariables[, .(Name)],
+    reqs,
+    by = 'Name',
+    all=TRUE)
   
   data = data[!(F_SYTEMorig == 7 & NHS != 1)]
 
@@ -26,9 +30,10 @@ calc_completeness_all <- function(data, year){
     dt_output[i, coverage_score := score] 
   }
   
-  dt_output[!is.na(coverage_score), coverage_type := 1]
-  dt_output[coverage_score > 0, coverage_type := 2]
-  dt_output[coverage_score == 1, coverage_type := 3]
+  dt_output[, coverage_type := 1] # Not submitted
+  dt_output[coverage_score > 0, coverage_type := 2]     # Submitted but incomplete
+  dt_output[coverage_score == 1, coverage_type := 3]    # Submitted and complete
+  dt_output[, coverage_type := coverage_type * required] # 0 = not required
   
   return(dt_output)
 }

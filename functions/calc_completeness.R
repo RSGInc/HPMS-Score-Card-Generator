@@ -75,9 +75,9 @@ calc_completeness <- function(data, year, variable){
     cat(paste0("\n\t",variable,": ",round(difftime(Sys.time(),ts,units="secs"),2)," secs"))
     })
   
-  # If item is not present, return NA
+  # If item is not present, return 0
   if ( data[data_item == variable & year_record == year, .N] == 0 ){
-    score = NA
+    score = 0
     return(score)
   } else
   
@@ -114,7 +114,7 @@ calc_completeness <- function(data, year, variable){
   
     # through_lanes, aadt -----------------------------------------------------
   
-  if(variable %in% c("THROUGH_LANES","AADT")){
+  if(variable %in% c("AADT", "THROUGH_LANES")){
     
     dat.variable <- data[data_item == variable & year_record == year,]
     dat.FACILITY_TYPE <- data[data_item == "FACILITY_TYPE" & year_record == year,]
@@ -604,6 +604,7 @@ calc_completeness <- function(data, year, variable){
   # pct_pass_sight -----------------------------------------------------------
   
   if(variable %in% c("PCT_PASS_SIGHT")){
+    browser()
     
     dat.variable <- data[data_item == variable & year_record == year,]
     dat.URBAN_CODE <- data[data_item == "URBAN_CODE" & year_record == year,]

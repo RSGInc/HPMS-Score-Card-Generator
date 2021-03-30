@@ -32,7 +32,8 @@ calc_quality_all <- function(data, year, year_compare){
     
     variable <- dt_output$Name[i]
 
-    # if ( variable %in% c('COUNTY_CODE', 'PCT_PASS_SIGHT') ){
+    # if ( variable %in% c('COUNTER_PEAK_LANES', 'PCT_PASS_SIGHT',
+    #   'YEAR_LAST_CONSTRUCTION', 'WIDENING_OBSTACLE', 'ROUTE_NUMBER') ){
     #   browser()
     # } else {
     #   next()

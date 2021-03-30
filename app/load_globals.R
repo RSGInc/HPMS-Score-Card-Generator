@@ -93,6 +93,11 @@ gExtentDetail    <- fread('resources/dat/extent_detail.csv')
 gReqs <- fread("resources/dat/data_items_required_by_state.csv")
 gScoreWeights <- fread("resources/dat/scoringweights.csv")
 
+timeliness_file = file.path('data/timeliness_table.csv')
+
+if ( file.exists( timeliness_file )){
+  gTimeliness = fread(timeliness_file)
+}
 
 # reformatting the labels
 gVariablesLabels[
