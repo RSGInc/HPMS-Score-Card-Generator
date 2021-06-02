@@ -56,7 +56,7 @@ checkSummary <- function(year, state_code, data){
     
     sql_sum[, record_count := as.numeric(record_count)]
     sql_sum[, route_id_count := as.numeric(route_id_count)]
-    sql_sum1 <- melt(sql_sum, id.vars=keys, variable.name = 'measure',
+    sql_sum1 <- data.table::melt(sql_sum, id.vars=keys, variable.name = 'measure',
                       value.name = 'from_sql')
     
     # Summarize the imported data
@@ -67,7 +67,7 @@ checkSummary <- function(year, state_code, data){
                            route_id_count = as.numeric(length(unique(route_id)))),
                        by=list(year_record, state_code, data_item)]
     
-    r_sum1 <- melt(r_sum, id.vars=keys, variable.name='measure',
+    r_sum1 <- data.table::melt(r_sum, id.vars=keys, variable.name='measure',
                      value.name='from_r')
 
     

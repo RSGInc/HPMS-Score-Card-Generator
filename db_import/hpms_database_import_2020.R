@@ -133,7 +133,12 @@ socrata_to_stage = function(url, con, stage_table){
   coltype_chk_dt = data.table(field = names(col_type_chk), chk = col_type_chk)
   
   
-  query = paste0(url, '?$query=SELECT state_code,year_record,count(state_code) GROUP BY state_code, year_record ORDER BY state_code, year_record')
+  query = paste0(
+    url,
+    '?$query=SELECT state_code,year_record,count(state_code) ',
+    'GROUP BY state_code, year_record ',
+    'ORDER BY state_code, year_record')
+  
   counts_remote = read.socrata2(query, email=email, password=password)
   setnames(counts_remote, 'count_state_code', 'n_remote')
   
@@ -161,7 +166,7 @@ socrata_to_stage = function(url, con, stage_table){
   if ( coltype_dt[chk != obs, .N] > 0 ){
     
     message('Column type mismatch')
-    print(coltype_dt)
+    print(coltype_dt[chk != obs])
     browser()
 
   }
@@ -203,13 +208,17 @@ socrata_to_stage = function(url, con, stage_table){
   return(counts_local)
 }
 
-copy_rows = function(con, prod_table, stage_table, counts_local){
+copy_rows = function(con, prod_table, stage_table){
+
   # Move data from stage to production -----------------------------------------
   
-  years = unique(counts_local$year_record)
-  states = unique(counts_local$state_code)
+  stage = tbl(con, from=stage_table)
   
-  prod = tbl(con, from=prod_table)
+  counts_stage = stage %>%
+    count(year_record, state_code)
+  
+  years = unique(counts_stage$year_record)
+  states = unique(countes_stage$state_code)
   
   old_fields = dbListFields(con, prod_table)
   new_fields = dbListFields(con, stage_table)
@@ -258,6 +267,13 @@ copy_rows = function(con, prod_table, stage_table, counts_local){
   setDT(counts_check)
   
   stopifnot(counts_check[n_local != n_prod, .N] == 0)
+  
+  sql = paste0(
+    'DELETE FROM ', stage_table,
+    ' WHERE state_code in (', paste(states, collapse=', '), ')',
+    ' AND year_record in (', paste(years, collapse=', '), ')')
+  dbExecute(con, sql)
+  
 }
 
 
@@ -289,6 +305,7 @@ for ( i in seq_along(sample_files) ){
   counts_local = csv_to_stage(file, con, stage_table)
   copy_rows(con, prod_table, stage_table, counts_local)
 }
+message('Success!')
 
 
 # # Original data
@@ -374,6 +391,7 @@ for ( i in seq_along(sample_files) ){
   copy_rows(con, prod_table, stage_table, counts_local)
 }
 
+message('Success!\n\n')
 
 
 dbDisconnect(con)
@@ -388,75 +406,75 @@ dbDisconnect(con)
 # )
 # 
 # setDT(tbl)
-
-tbl = fread('data/2020 Submission Times.csv')
-str(tbl)
-
-tbl[, Year_Record := as.integer(Year_Record)]
-tbl[, State_Code := as.integer(State_Code)]
-tbl[, Submitted_On := mdy_hm(Submitted_On)]
-
-stage_table = 'tt_stage'
-dbWriteTable(con, name=stage_table, value=tbl, overwrite=TRUE)
-
-# Check
-tt = tbl(con, from=stage_table)
-glimpse(tt)
-tt %>%
-  count(State_Code) %>%
-  print()
-
-tt %>%
-  count(Year_Record) %>%
-  print(n)
-
-
-# Update production table ---------------------------------------------
-
-# Check for existing current year
-current_yr = 2020
-
-tt = tbl(con, from='Timelinesstable')
-
-yr_count = tt %>%
-  filter(year_record == current_yr) %>%
-  count() %>%
-  pull(n)
-
-if ( yr_count > 0 ){
-  dbExecute(con, paste0('DELETE FROM Timelinesstable WHERE year_record = ',
-                        current_yr))
-}
-
-yr_count = tt %>%
-  filter(year_record == current_yr) %>%
-  count() %>%
-  pull(n)
-
-stopifnot(yr_count== 0)
-
-old_fields = dbListFields(con, 'Timelinesstable')
-new_fields = dbListFields(con, 'tt_stage')
-
-setdiff(new_fields, old_fields)
-setdiff(old_fields, new_fields)
-
-# Copy current year into full table.
-sql = paste0('insert into Timelinesstable(', paste(new_fields, collapse=', '),
-             ') select ', paste(new_fields, collapse=', '), ' from tt_stage')
-dbExecute(con, sql)
-
-
-stopifnot(
-  con %>%
-    tbl('Timelinesstable') %>%
-    filter(year_record == current_yr) %>%
-    count() %>%
-    pull(n) ==
-    con %>%
-    tbl('tt_stage') %>%
-    count() %>%
-    pull(n)
-)
-
-
+# 
+# tbl = fread('data/2020 Submission Times.csv')
+# str(tbl)
+# 
+# tbl[, Year_Record := as.integer(Year_Record)]
+# tbl[, State_Code := as.integer(State_Code)]
+# tbl[, Submitted_On := mdy_hm(Submitted_On)]
+# 
+# stage_table = 'tt_stage'
+# dbWriteTable(con, name=stage_table, value=tbl, overwrite=TRUE)
+# 
+# # Check
+# tt = tbl(con, from=stage_table)
+# glimpse(tt)
+# tt %>%
+#   count(State_Code) %>%
+#   print()
+# 
+# tt %>%
+#   count(Year_Record) %>%
+#   print(n)
+# 
+# 
+# # Update production table ---------------------------------------------
+# 
+# # Check for existing current year
+# current_yr = 2020
+# 
+# tt = tbl(con, from='Timelinesstable')
+# 
+# yr_count = tt %>%
+#   filter(year_record == current_yr) %>%
+#   count() %>%
+#   pull(n)
+# 
+# if ( yr_count > 0 ){
+#   dbExecute(con, paste0('DELETE FROM Timelinesstable WHERE year_record = ',
+#                         current_yr))
+# }
+# 
+# yr_count = tt %>%
+#   filter(year_record == current_yr) %>%
+#   count() %>%
+#   pull(n)
+# 
+# stopifnot(yr_count== 0)
+# 
+# old_fields = dbListFields(con, 'Timelinesstable')
+# new_fields = dbListFields(con, 'tt_stage')
+# 
+# setdiff(new_fields, old_fields)
+# setdiff(old_fields, new_fields)
+# 
+# # Copy current year into full table.
+# sql = paste0('insert into Timelinesstable(', paste(new_fields, collapse=', '),
+#              ') select ', paste(new_fields, collapse=', '), ' from tt_stage')
+# dbExecute(con, sql)
+# 
+# 
+# stopifnot(
+#   con %>%
+#     tbl('Timelinesstable') %>%
+#     filter(year_record == current_yr) %>%
+#     count() %>%
+#     pull(n) ==
+#     con %>%
+#     tbl('tt_stage') %>%
+#     count() %>%
+#     pull(n)
+# )
+# 
+# 

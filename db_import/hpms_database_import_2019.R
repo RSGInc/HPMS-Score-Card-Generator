@@ -6,6 +6,9 @@
 
 # Import HPMS 2019 from https://datahub.transportation.gov/
 
+
+# 1 Jun 2021 Used to restore 2019 data for VA and MO after deleting mistakenly
+
 # Initialize ===============================================================
 library('DBI')
 library('tidyverse')
@@ -14,7 +17,7 @@ library('stringr')
 library('lubridate')
 library('RSocrata')
 source('db_import/socrata_functions.R')
-source('code/connect_to_db.R')
+source('functions/connect_to_db.R')
 
 # Functions =================================================================
 
@@ -36,8 +39,13 @@ download_socrata = function(url, con, stage_table){
   
   coltype_chk_dt = data.table(field = names(col_type_chk), chk = col_type_chk)
   
+  query = paste0(
+    url,
+    '?$query=SELECT state_code,year_record,count(state_code) ',
+    'GROUP BY state_code, year_record ',
+    'ORDER BY state_code, year_record'
+    )
   
-  query = paste0(url, '?$query=SELECT state_code,year_record,count(state_code) GROUP BY state_code, year_record ORDER BY state_code, year_record')
   counts_remote = read.socrata2(query, email=email, password=password)
   setnames(counts_remote, 'count_state_code', 'n_remote')
   
@@ -45,7 +53,7 @@ download_socrata = function(url, con, stage_table){
   #   url = str_c(url, '.json')
   # }
   
-  message('Downloading ', sum(counts_remote[, 'n_remote']), ' rows from ', names(url))
+  message('Downloading ', sum(as.numeric(counts_remote[, 'n_remote'])), ' rows from ', names(url))
   
   dt = read.socrata(url=url, email=email, password=password)
   setDT(dt)
@@ -56,6 +64,11 @@ download_socrata = function(url, con, stage_table){
   if (class(dt$value_date) == 'character'){
     dt[, value_date := ymd_hms(value_date)]
   }
+  
+  dt[, year_record := as.integer(year_record)]
+  dt[, state_code := as.integer(state_code)]
+  dt[, begin_point := as.numeric(begin_point)]
+  dt[, end_point := as.numeric(end_point)]
   
   col_type_obs = sapply(dt, function(x) class(x)[1])
   coltype_obs_dt = data.table(field = names(col_type_obs), obs = col_type_obs)
@@ -72,8 +85,12 @@ download_socrata = function(url, con, stage_table){
     
   message('writing to database')
   
-  states = unique(dt[, 'state_code'])
-  years = unique(dt[, 'year_record'])
+  warning('Only using data from MO (29) and VA (51)')
+  
+  dt = dt[state_code %in% c(29, 51)]
+  
+  states = unique(dt[, state_code])
+  years = unique(dt[, year_record])
   
   if (stage_table %in% dbListTables(conn = con) ){
     sql = paste0(
@@ -102,18 +119,29 @@ download_socrata = function(url, con, stage_table){
   counts_check = merge(counts_remote, counts_local,
                        by = c('state_code', 'year_record'), all=TRUE)
   setDT(counts_check)
+  
+  counts_check = counts_check[state_code %in% c(29, 51)]
+  
   stopifnot(counts_check[n_local != n_remote, .N] == 0)
   
   return(counts_local)
 }
 
-copy_rows = function(con, prod_table, stage_table, counts_local){
+copy_rows = function(con, prod_table, stage_table){
   # Move data from stage to production -----------------------------------------
   
-  years = unique(counts_local$year_record)
-  states = unique(counts_local$state_code)
+  # years = unique(counts_local$year_record)
+  # states = unique(counts_local$state_code)
+  stage = tbl(con, from=stage_table)
   
-  prod = tbl(con, from=prod_table)
+  counts_stage = stage %>%
+    count(year_record, state_code) %>%
+    collect()
+  
+  years = unique(counts_stage$year_record)
+  states = unique(counts_stage$state_code)
+    
+  # prod = tbl(con, from=prod_table)
   
   old_fields = dbListFields(con, prod_table)
   new_fields = dbListFields(con, stage_table)
@@ -150,16 +178,23 @@ copy_rows = function(con, prod_table, stage_table, counts_local){
   
   # Get counts in production table
   counts_prod = prod %>%
-    filter(year_record %in% years,
-           state_code %in% states) %>%
-    count(state_code, year_record) %>%
+    filter(Year_Record %in% years,
+           State_Code %in% states) %>%
+    count(State_Code, Year_Record) %>%
     collect() %>%
-    rename(n_prod = n)
+    rename(state_code = State_Code, year_record = Year_Record, n_prod = n)
   
   counts_check = merge(counts_local, counts_prod, by = c('state_code', 'year_record'))
   setDT(counts_check)
   
   stopifnot(counts_check[n_local != n_prod, .N] == 0)
+  
+  sql = paste0(
+    'DELETE FROM ', stage_table,
+    ' WHERE state_code in (', paste(states, collapse=', '), ')',
+    ' AND year_record in (', paste(years, collapse=', '), ')')
+  dbExecute(con, sql)
+  
 }
 
 
@@ -180,7 +215,7 @@ prod_table = 'Review_Sample_Sections'
 stage_table = 'rss_stage'
 
 # Original data
-# url = 'https://datahub.transportation.gov/resource/w6jm-vtp5.json'
+url = 'https://datahub.transportation.gov/resource/w6jm-vtp5.json'
 
 # Resubmission
 # url = 'https://datahub.transportation.gov/resource/b37r-yiaq.json'
@@ -201,20 +236,20 @@ stage_table = 'rss_stage'
 #   CA = 'https://datahub.transportation.gov/dataset/HPMSCaliforniaSample2019/wev8-4s59'  
 # )
 
-# Resubmissions 21 Sep 2020
+# # Resubmissions 21 Sep 2020
+# 
+# sample_urls = c(
+#   WA = 'https://datahub.transportation.gov/Roadways-and-Bridges/WashingtonSample/abr7-b6qb',
+#   CA = 'https://datahub.transportation.gov/dataset/CaliforniaSample/uh86-bwdf'
+# )
 
-sample_urls = c(
-  WA = 'https://datahub.transportation.gov/Roadways-and-Bridges/WashingtonSample/abr7-b6qb',
-  CA = 'https://datahub.transportation.gov/dataset/CaliforniaSample/uh86-bwdf'
-)
 
-
-for ( i in seq_along(sample_urls) ){
-  url = sample_urls[i]
+# for ( i in seq_along(sample_urls) ){
+#  url = sample_urls[i]
   message('Working on ', names(url))
   counts_local = download_socrata(url, con, stage_table)
-  copy_rows(con, prod_table, stage_table, counts_local)
-}
+  # copy_rows(con, prod_table, stage_table, counts_local)
+# }
 
 
 
@@ -223,18 +258,18 @@ for ( i in seq_along(sample_urls) ){
 prod_table = 'Review_Sections'
 stage_table = 'rs_stage'
 
-# urls = c(
+urls = c(
 #   new_england = 'https://datahub.transportation.gov/resource/yed4-dz8a.json',
-#   heartland = 'https://datahub.transportation.gov/resource/pu8w-cqik.json',
+   heartland = 'https://datahub.transportation.gov/resource/pu8w-cqik.json',
 #   gulf = 'https://datahub.transportation.gov/resource/rf6n-m9pz.json',
-#   appalachia = 'https://datahub.transportation.gov/resource/j6bh-426b.json',
+   appalachia = 'https://datahub.transportation.gov/resource/j6bh-426b.json' #,
 #   mid_atlantic = 'https://datahub.transportation.gov/resource/f674-dyn6.json',
 #   lakes = 'https://datahub.transportation.gov/resource/xq7x-rndy.json',
 #   desert = 'https://datahub.transportation.gov/resource/gwx5-yka7.json',
 #   islands = 'https://datahub.transportation.gov/resource/imwx-p856.json',
 #   west = 'https://datahub.transportation.gov/resource/pdrm-udaf.json',
 #   badlands = 'https://datahub.transportation.gov/resource/gve6-cr9a.json'
-# )
+)
 
 # Set url to resubmissions
 # urls = c(
@@ -256,17 +291,17 @@ stage_table = 'rs_stage'
 #   HI = 'https://datahub.transportation.gov/dataset/HPMSHawaiiSections2019/tuf3-6qxe',
 #   CA = 'https://datahub.transportation.gov/dataset/HPMSCaliforniaSections2019/mydz-ydth'
 # )
+# 
+# # Resubmissions on 21 Sep 2020
+# sections_urls = c(
+#   WA = 'https://datahub.transportation.gov/Roadways-and-Bridges/ScoreCardWashingtonSections/ydyu-q73e',
+#   CA = 'https://datahub.transportation.gov/dataset/ScorecardCaliforniaSections/pcvt-4zpt'
+# )
 
-# Resubmissions on 21 Sep 2020
-sections_urls = c(
-  WA = 'https://datahub.transportation.gov/Roadways-and-Bridges/ScoreCardWashingtonSections/ydyu-q73e',
-  CA = 'https://datahub.transportation.gov/dataset/ScorecardCaliforniaSections/pcvt-4zpt'
-)
-
-for ( i in seq_along(sections_urls) ){
-  url = sections_urls[i]
+for ( i in seq_along(urls) ){
+  url = urls[i]
   counts_local = download_socrata(url, con, stage_table)
-  copy_rows(con, prod_table, stage_table, counts_local)
+  #copy_rows(con, prod_table, stage_table)
   
 }
 
