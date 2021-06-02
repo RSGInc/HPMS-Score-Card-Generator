@@ -1,79 +1,77 @@
-﻿Name,coverage_group,criteria
-AADT,3,"coverage[, required := FACILITY_TYPE %in% c(1,2,4) & (F_SYSTEM %in% c(1,2,3,4,5)|((F_SYSTEM == 6) & (URBAN_CODE<99999))|!is.na(NHS))]"
-AADT_COMBINATION,4,"coverage[, required := (F_SYSTEM == 1 | !is.na(NHS)) & FACILITY_TYPE %in% c(1,2) |!is.na(expansion_factor)]"
-AADT_SINGLE_UNIT,4,"coverage[, required := (F_SYSTEM == 1 | !is.na(NHS)) & FACILITY_TYPE %in% c(1,2) |!is.na(expansion_factor)]"
-ACCESS_CONTROL,5,"coverage[, required := FACILITY_TYPE %in% c(1,2) & (F_SYSTEM %in% c(1,2,3,4)|!is.na(NHS))]"
-AT_GRADE_OTHER,2,"data[data_item == variable & year_record == year & is.na(expansion_factor), .N] == 0"
-BASE_THICKNESS,6,"coverage[, required := !is.na(expansion_factor) & SURFACE_TYPE>1 & BASE_TYPE>1]"
-BASE_TYPE,7,"coverage[, required := !is.na(expansion_factor) & SURFACE_TYPE>1]"
-CAPACITY,1,"data[data_item == variable & year_record == year & !is.na(value_numeric), .N] > 0"
-COUNTER_PEAK_LANES,8,"coverage[, required := FACILITY_TYPE %in% c(2) & (URBAN_CODE < 99999 | THROUGH_LANES >= 4) &!is.na(expansion_factor)]"
-COUNTY_CODE,9,"coverage[, required := FACILITY_TYPE %in% c(1,2) & (F_SYSTEM %in% c(1,2,3,4,5)|(F_SYSTEM == 6 & URBAN_CODE == 99999)|!is.na(NHS))]"
-CRACKING_PERCENT,10,"coverage[, required := !is.na(expansion_factor) & SURFACE_TYPE %in% 2:10]"
-CURVES_A,,
-CURVES_B,,
-CURVES_C,,
-CURVES_D,,
-CURVES_E,,
-CURVES_F,,
-DIR_FACTOR,2,"data[data_item == variable & year_record == year & is.na(expansion_factor), .N] == 0"
-F_SYSTEM,11,"coverage[, required := TRUE]"
-FACILITY_TYPE,12,"coverage[, required := (F_SYSTEM %in% c(1,2,3,4,5)|(F_SYSTEM == 6 & URBAN_CODE == 99999)|!is.na(NHS))]"
-FAULTING,13,"coverage[, required := !is.na(expansion_factor) & SURFACE_TYPE %in% c(3,4,9,10)]"
-FUTURE_AADT,2,"data[data_item == variable & year_record == year & is.na(expansion_factor), .N] == 0"
-FUTURE_FACILITY,1,"data[data_item == variable & year_record == year & !is.na(value_numeric), .N] > 0"
-GRADES_A,,
-GRADES_B,,
-GRADES_C,,
-GRADES_D,,
-GRADES_E,,
-GRADES_F,,
-HOV_LANES,11,"coverage[, required := TRUE]"
-HOV_TYPE,11,"coverage[, required := TRUE]"
-IRI,14,"coverage[, required := FACILITY_TYPE %in% c(1,2) &(F_SYSTEM %in% c(1,2,3) | !is.na(NHS) |(!is.na(expansion_factor) & F_SYSTEM == 4 & URBAN_CODE == 99999)) &SURFACE_TYPE > 1]"
-K_FACTOR,2,"data[data_item == variable & year_record == year & is.na(expansion_factor), .N] == 0"
-LANE_WIDTH,2,"data[data_item == variable & year_record == year & is.na(expansion_factor), .N] == 0"
-LAST_OVERLAY_THICKNESS,,
-MAINTENANCE_OPERATIONS,15,"coverage[, required := !is.na(TOLL_CHARGED) &FACILITY_TYPE %in% c(1,2) &(F_SYSTEM %in% 1:5 | !is.na(NHS) | (F_SYSTEM == 6 & URBAN_CODE<99999))]"
-MEDIAN_TYPE,2,"data[data_item == variable & year_record == year & is.na(expansion_factor), .N] == 0"
-MEDIAN_WIDTH,16,"coverage[, required := MEDIAN_TYPE %in% 2:7 & (!is.na(expansion_factor))]"
-NHS,17,"coverage[, required :=  (F_SYSTEM == 1 & FACILITY_TYPE < 4)]"
-NUMBER_SIGNALS,18,"coverage[, required :=  (!is.na(expansion_factor) & !is.na(PCTGREENTIME)) |(!is.na(expansion_factor) & SIGNALTYPE %in% c(1,2,3,4) )]"
-OWNERSHIP,19,"coverage[, required := FACILITY_TYPE %in% c(1,2) & (F_SYSTEM %in% c(1,2,3,4,5)|((F_SYSTEM == 6) & (URBAN_CODE<99999))|!is.na(NHS))]"
-PCT_GREEN_TIME,20,"coverage[, required := (URBAN_CODE < 99999 &NUMBERSIGNALS >= 1 &!is.na(expansion_factor) )]"
-PCT_PASS_SIGHT,21,"coverage[, required := (!is.na(expansion_factor) &URBAN_CODE == 99999 &THROUGH_LANES == 2 &MEDIAN_TYPE %in% c(1,2))]"
-PCT_PEAK_COMBINATION,2,"data[data_item == variable & year_record == year & is.na(expansion_factor), .N] == 0"
-PCT_PEAK_SINGLE,2,"data[data_item == variable & year_record == year & is.na(expansion_factor), .N] == 0"
-PEAK_CAPACITY,,
-PEAK_LANES,2,"data[data_item == variable & year_record == year & is.na(expansion_factor), .N] == 0"
-PEAK_PARKING,22,"coverage[, required := URBAN_CODE<99999 & (!is.na(expansion_factor))]"
-PSR,23,"    coverage[, required := is.na(IRI) & !is.na(expansion_factor) & SURFACE_TYPE > 1 & 
+Name,extent,coverage_group,criteria
+FUTURE_FACILITY,FE**,1,"data[data_item == variable & year_record == year & !is.na(value_numeric), .N] > 0"
+STRAHNET_TYPE,FE**,1,"data[data_item == variable & year_record == year & !is.na(value_numeric), .N] > 0"
+STRUCTURE_TYPE,FE**,1,"data[data_item == variable & year_record == year & !is.na(value_numeric), .N] > 0"
+TRUCK,FE**,1,"data[data_item == variable & year_record == year & !is.na(value_numeric), .N] > 0"
+AT_GRADE_OTHER,SP,2,"data[data_item == variable & year_record == year & is.na(expansion_factor), .N] == 0"
+DIR_FACTOR,SP,2,"data[data_item == variable & year_record == year & is.na(expansion_factor), .N] == 0"
+FUTURE_AADT,SP,2,"data[data_item == variable & year_record == year & is.na(expansion_factor), .N] == 0"
+K_FACTOR,SP,2,"data[data_item == variable & year_record == year & is.na(expansion_factor), .N] == 0"
+LANE_WIDTH,SP,2,"data[data_item == variable & year_record == year & is.na(expansion_factor), .N] == 0"
+LAST_OVERLAY_THICKNESS,SP,2,"data[data_item == variable & year_record == year & is.na(expansion_factor), .N] == 0"
+MEDIAN_TYPE,SP,2,"data[data_item == variable & year_record == year & is.na(expansion_factor), .N] == 0"
+PCT_PEAK_COMBINATION,SP,2,"data[data_item == variable & year_record == year & is.na(expansion_factor), .N] == 0"
+PCT_PEAK_SINGLE,SP,2,"data[data_item == variable & year_record == year & is.na(expansion_factor), .N] == 0"
+PEAK_LANES,SP,2,"data[data_item == variable & year_record == year & is.na(expansion_factor), .N] == 0"
+SHOULDER_TYPE,SP,2,"data[data_item == variable & year_record == year & is.na(expansion_factor), .N] == 0"
+SPEED_LIMIT,FE*,2,"data[data_item == variable & year_record == year & is.na(expansion_factor), .N] == 0"
+STOP_SIGNS,SP,2,"data[data_item == variable & year_record == year & is.na(expansion_factor), .N] == 0"
+SURFACE_TYPE,SP,2,"data[data_item == variable & year_record == year & is.na(expansion_factor), .N] == 0"
+WIDENING_OBSTACLE,SP,2,"data[data_item == variable & year_record == year & is.na(expansion_factor), .N] == 0"
+WIDENING_POTENTIAL,SP,2,"data[data_item == variable & year_record == year & is.na(expansion_factor), .N] == 0"
+AADT,FE + R,3,"coverage[, required := FACILITY_TYPE %in% c(1,2,4) & (F_SYSTEM %in% c(1,2,3,4,5)|((F_SYSTEM == 6) & (URBAN_CODE<99999))|!is.na(NHS))]"
+THROUGH_LANES,FE + R,3,"coverage[, required := FACILITY_TYPE %in% c(1,2,4) & (F_SYSTEM %in% c(1,2,3,4,5)|((F_SYSTEM == 6) & (URBAN_CODE<99999))|!is.na(NHS))]"
+AADT_COMBINATION,FE*,4,"coverage[, required := (F_SYSTEM == 1 | !is.na(NHS)) & FACILITY_TYPE %in% c(1,2) |!is.na(expansion_factor)]"
+AADT_SINGLE_UNIT,FE*,4,"coverage[, required := (F_SYSTEM == 1 | !is.na(NHS)) & FACILITY_TYPE %in% c(1,2) |!is.na(expansion_factor)]"
+ACCESS_CONTROL,FE*,5,"coverage[, required := FACILITY_TYPE %in% c(1,2) & (F_SYSTEM %in% c(1,2,3,4)|!is.na(NHS))]"
+BASE_THICKNESS,SP,6,"coverage[, required := !is.na(expansion_factor) & SURFACE_TYPE>1 & BASE_TYPE>1]"
+BASE_TYPE,SP,7,"coverage[, required := !is.na(expansion_factor) & SURFACE_TYPE>1]"
+COUNTER_PEAK_LANES,SP,8,"coverage[, required := FACILITY_TYPE %in% c(2) & (URBAN_CODE < 99999 | THROUGH_LANES >= 4) &!is.na(expansion_factor)]"
+COUNTY_CODE,FE,9,"coverage[, required := FACILITY_TYPE %in% c(1,2) & (F_SYSTEM %in% c(1,2,3,4,5)|(F_SYSTEM == 6 & URBAN_CODE == 99999)|!is.na(NHS))]"
+CRACKING_PERCENT,FE*,10,"coverage[, required := !is.na(expansion_factor) & SURFACE_TYPE %in% 2:10]"
+YEAR_LAST_CONSTRUCTION,SP,10,"coverage[, required := !is.na(expansion_factor) & SURFACE_TYPE %in% 2:10]"
+F_SYSTEM,FE + R,11,"coverage[, required := TRUE]"
+HOV_LANES,FE**,11,"coverage[, required := TRUE]"
+HOV_TYPE,FE**,11,"coverage[, required := TRUE]"
+TOLL_CHARGED,FE**,11,"coverage[, required := TRUE]"
+TOLL_TYPE,FE**,11,"coverage[, required := TRUE]"
+FACILITY_TYPE,FE + R,12,"coverage[, required := (F_SYSTEM %in% c(1,2,3,4,5)|(F_SYSTEM == 6 & URBAN_CODE == 99999)|!is.na(NHS))]"
+FAULTING,FE*,13,"coverage[, required := !is.na(expansion_factor) & SURFACE_TYPE %in% c(3,4,9,10)]"
+IRI,FE*,14,"coverage[, required := FACILITY_TYPE %in% c(1,2) &(F_SYSTEM %in% c(1,2,3) | !is.na(NHS) |(!is.na(expansion_factor) & F_SYSTEM == 4 & URBAN_CODE == 99999)) &SURFACE_TYPE > 1]"
+MAINTENANCE_OPERATIONS,FE**,15,"coverage[, required := !is.na(TOLL_CHARGED) &FACILITY_TYPE %in% c(1,2) &(F_SYSTEM %in% 1:5 | !is.na(NHS) | (F_SYSTEM == 6 & URBAN_CODE<99999))]"
+MEDIAN_WIDTH,SP,16,"coverage[, required := MEDIAN_TYPE %in% 2:7 & (!is.na(expansion_factor))]"
+NHS,FE**,17,"coverage[, required :=  (F_SYSTEM == 1 & FACILITY_TYPE < 4)]"
+NUMBER_SIGNALS,SP,18,"coverage[, required :=  (!is.na(expansion_factor) & !is.na(PCTGREENTIME)) |(!is.na(expansion_factor) & SIGNALTYPE %in% c(1,2,3,4) )]"
+OWNERSHIP,FE,19,"coverage[, required := FACILITY_TYPE %in% c(1,2) & (F_SYSTEM %in% c(1,2,3,4,5)|((F_SYSTEM == 6) & (URBAN_CODE<99999))|!is.na(NHS))]"
+PCT_GREEN_TIME,SP*,20,"coverage[, required := (URBAN_CODE < 99999 &NUMBERSIGNALS >= 1 &!is.na(expansion_factor) )]"
+PCT_PASS_SIGHT,SP,21,"coverage[, required := (!is.na(expansion_factor) &URBAN_CODE == 99999 &THROUGH_LANES == 2 &MEDIAN_TYPE %in% c(1,2))]"
+PEAK_PARKING,SP,22,"coverage[, required := URBAN_CODE<99999 & (!is.na(expansion_factor))]"
+PSR,FE*,23,"    coverage[, required := is.na(IRI) & !is.na(expansion_factor) & SURFACE_TYPE > 1 & 
         ((F_SYSTEM %in% c(4, 5, 6) & URBAN_CODE < 99999 & FACILITY_TYPE %in% c(1, 2)) |
             (F_SYSTEM == 5 & FACILITY_TYPE %in% c(1, 2) & URBAN_CODE == 99999))]"
-ROUTE_NUMBER,24,"coverage[, required := (F_SYSTEM %in% c(1,2,3,4) | !is.na(NHS)) & FACILITY_TYPE %in% 1:2 & ROUTESIGNING %in% 2:9 ]"
-ROUTE_QUALIFIER,25,"coverage[, required := FACILITY_TYPE %in% c(1,2) & (F_SYSTEM %in% c(1,2,3,4)|!is.na(NHS))]"
-ROUTE_SIGNING,25,"coverage[, required := FACILITY_TYPE %in% c(1,2) & (F_SYSTEM %in% c(1,2,3,4)|!is.na(NHS))]"
-RUTTING,26,"coverage[, required := !is.na(expansion_factor) & SURFACE_TYPE%in%c(2,6,7,8)]"
-SHOULDER_TYPE,2,"data[data_item == variable & year_record == year & is.na(expansion_factor), .N] == 0"
-SHOULDER_WIDTH_L,27,"coverage[, required := SHOULDER_TYPE %in% 2:6 & MEDIAN_TYPE %in% 2:7 & (!is.na(expansion_factor))]"
-SHOULDER_WIDTH_R,27,"coverage[, required := SHOULDER_TYPE %in% 2:6 & MEDIAN_TYPE %in% 2:7 & (!is.na(expansion_factor))]"
-SIGNAL_TYPE,28,"coverage[, required :=  (URBAN_CODE != 99999 &ACCESS_CONTROL == 1 &!is.na(expansion_factor))]"
-SPEED_LIMIT,2,"data[data_item == variable & year_record == year & is.na(expansion_factor), .N] == 0"
-STOP_SIGNS,2,"data[data_item == variable & year_record == year & is.na(expansion_factor), .N] == 0"
-STRAHNET_TYPE,1,"data[data_item == variable & year_record == year & !is.na(value_numeric), .N] > 0"
-STRUCTURE_TYPE,1,"data[data_item == variable & year_record == year & !is.na(value_numeric), .N] > 0"
-SURFACE_TYPE,2,"data[data_item == variable & year_record == year & is.na(expansion_factor), .N] == 0"
-TERRAIN_TYPE,29,"coverage[, required := !is.na(expansion_factor) & URBAN_CODE<99999]"
-THICKNESS_FLEXIBLE,30,"coverage[, required := !is.na(expansion_factor) & SURFACE_TYPE %in% c(2,6,7,8)]"
-THICKNESS_RIGID,31,"coverage[, required := !is.na(expansion_factor) & SURFACE_TYPE %in% 3:10]"
-THROUGH_LANES,3,"coverage[, required := FACILITY_TYPE %in% c(1,2,4) & (F_SYSTEM %in% c(1,2,3,4,5)|((F_SYSTEM == 6) & (URBAN_CODE<99999))|!is.na(NHS))]"
-TOLL_CHARGED,11,"coverage[, required := TRUE]"
-TOLL_TYPE,11,"coverage[, required := TRUE]"
-TRUCK,1,"data[data_item == variable & year_record == year & !is.na(value_numeric), .N] > 0"
-TURN_LANES_L,32,"coverage[, required := URBAN_CODE<99999 & ACCESS_CONTROL>1 & (!is.na(expansion_factor))]"
-TURN_LANES_R,32,"coverage[, required := URBAN_CODE<99999 & ACCESS_CONTROL>1 & (!is.na(expansion_factor))]"
-URBAN_CODE,33,"coverage[, required := FACILITY_TYPE %in% c(1,2,4) & (F_SYSTEM %in% c(1,2,3,4,5,6)|!is.na(NHS))]"
-WIDENING_OBSTACLE,2,"data[data_item == variable & year_record == year & is.na(expansion_factor), .N] == 0"
-WIDENING_POTENTIAL,2,"data[data_item == variable & year_record == year & is.na(expansion_factor), .N] == 0"
-YEAR_LAST_CONSTRUCTION,10,"coverage[, required := !is.na(expansion_factor) & SURFACE_TYPE %in% 2:10]"
-YEAR_LAST_IMPROV,34,"coverage[, required := (!is.na(expansion_factor) & SURFACE_TYPE %in% 2:10)]"
+ROUTE_NUMBER,FE**,24,"coverage[, required := (F_SYSTEM %in% c(1,2,3,4) | !is.na(NHS)) & FACILITY_TYPE %in% 1:2 & ROUTESIGNING %in% 2:9 ]"
+ROUTE_QUALIFIER,FE**,25,"coverage[, required := FACILITY_TYPE %in% c(1,2) & (F_SYSTEM %in% c(1,2,3,4)|!is.na(NHS))]"
+ROUTE_SIGNING,FE**,25,"coverage[, required := FACILITY_TYPE %in% c(1,2) & (F_SYSTEM %in% c(1,2,3,4)|!is.na(NHS))]"
+RUTTING,SP,26,"coverage[, required := !is.na(expansion_factor) & SURFACE_TYPE%in%c(2,6,7,8)]"
+SHOULDER_WIDTH_L,SP,27,"coverage[, required := SHOULDER_TYPE %in% 2:6 & MEDIAN_TYPE %in% 2:7 & (!is.na(expansion_factor))]"
+SHOULDER_WIDTH_R,SP,27,"coverage[, required := SHOULDER_TYPE %in% 2:6 & MEDIAN_TYPE %in% 2:7 & (!is.na(expansion_factor))]"
+SIGNAL_TYPE,SP,28,"coverage[, required :=  (URBAN_CODE != 99999 &ACCESS_CONTROL == 1 &!is.na(expansion_factor))]"
+TERRAIN_TYPE,SP,29,"coverage[, required := !is.na(expansion_factor) & URBAN_CODE<99999]"
+THICKNESS_FLEXIBLE,SP,30,"coverage[, required := !is.na(expansion_factor) & SURFACE_TYPE %in% c(2,6,7,8)]"
+THICKNESS_RIGID,SP,31,"coverage[, required := !is.na(expansion_factor) & SURFACE_TYPE %in% 3:10]"
+TURN_LANES_L,SP,32,"coverage[, required := URBAN_CODE<99999 & ACCESS_CONTROL>1 & (!is.na(expansion_factor))]"
+TURN_LANES_R,SP,32,"coverage[, required := URBAN_CODE<99999 & ACCESS_CONTROL>1 & (!is.na(expansion_factor))]"
+URBAN_CODE,FE + R,33,"coverage[, required := FACILITY_TYPE %in% c(1,2,4) & (F_SYSTEM %in% c(1,2,3,4,5,6)|!is.na(NHS))]"
+YEAR_LAST_IMPROV,SP,34,"coverage[, required := (!is.na(expansion_factor) & SURFACE_TYPE %in% 2:10)]"
+CURVES_A,SP*,,
+CURVES_B,SP*,,
+CURVES_C,SP*,,
+CURVES_D,SP*,,
+CURVES_E,SP*,,
+CURVES_F,SP*,,
+GRADES_A,SP*,,
+GRADES_B,SP*,,
+GRADES_C,SP*,,
+GRADES_D,SP*,,
+GRADES_E,SP*,,
+GRADES_F,SP*,,
