@@ -408,12 +408,27 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
   dt_coverage[coverage_type == 2, card_score := CompleteMed]
   dt_coverage[coverage_type == 3, card_score := CompleteHigh]
   
-  submittedN = dt_coverage[coverage_type >= 2, .N]
-  CompletedScore = sum(dt_coverage$card_score * dt_quality$Completeness_Weight, na.rm=TRUE)
-  CompletedScoreMax = sum(CompleteHigh * dt_coverage[, !is.na(card_score)] * dt_quality$Completeness_Weight)
-
-  QualityScore    <- sum(dt_quality$Quality_Score * dt_quality$Quality_Weight, na.rm=TRUE)
-  QualityScoreMax <- sum(!is.na(dt_quality$Quality_Score) * dt_quality$Quality_Weight) * 100
+  # Take into account Curves and grades (only one of A-F required)
+  dt_other = dt_coverage[!Name %like% 'CURVES|GRADES']
+  dt_curves = dt_coverage[Name %like% 'CURVES'][which.max(coverage_score)]
+  dt_grades = dt_coverage[Name %like% 'GRADES'][which.max(coverage_score)]
+  
+  
+  dt_coverage2 = merge(
+    rbind(dt_other, dt_curves, dt_grades),
+    dt_quality[, .(Name, Completeness_Weight)],
+    by = 'Name',
+    all.x=TRUE
+  )
+  
+  stopifnot((dt_coverage[, .N] - dt_coverage2[, .N]) == 10)
+  
+  submittedN = dt_coverage2[coverage_type >= 2, .N]
+  CompletedScore = dt_coverage2[, sum(card_score * Completeness_Weight, na.rm=TRUE)]
+  CompletedScoreMax = dt_coverage2[, sum(CompleteHigh * (!is.na(card_score)) * Completeness_Weight)]
+  
+  QualityScore    <- dt_quality[, sum(Quality_Score * Quality_Weight, na.rm=TRUE)]
+  QualityScoreMax <- dt_quality[, sum(!is.na(Quality_Score) * Quality_Weight) * 100]
   qMean <- QualityScore / QualityScoreMax
   
   # Incorporate cross-validation score
@@ -437,25 +452,21 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
 
   # Write scores ---------------------------------------------------
 
-  # FIXME: Merge quality and coverage into a single file
-  # Write out the quality scores
+  dt_scores = merge(
+    dt_quality,
+    dt_coverage,
+    by = 'Name',
+    all = TRUE
+  )
   
   path <- file.path('data', state_name)
-  file <- paste0(state_name, '_', year, '_', year_compare, '_quality_summary.csv')
+  file <- paste0(state_name, '_', year, '_', year_compare, '_item_score_summary.csv')
   fullpath <- file.path(path, file)
   
   if (!dir.exists(path)) dir.create(path)
   
-  fwrite(x=dt_quality, file=fullpath, na = '')
+  fwrite(x=dt_scores, file=fullpath, na = '')
 
-  # Write out the coverage scores
-  path = file.path('data', state_name)
-  file = paste0(state_name, '_', year, '_coverage_summary.csv')
-  fullpath = file.path(path, file)
-  
-  fwrite(x = dt_coverage, file=fullpath, na='')
-  
-  
   # Write out the cross-validation scores
   
   path <- file.path('data', state_name)
