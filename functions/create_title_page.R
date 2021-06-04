@@ -14,6 +14,14 @@
 
 create_title_page <- function(data, state, year, year_compare = NULL) {
   
+  col_head = 'steelblue4'
+  col_item = 'slategray'
+  col_body = 'black'
+  col_blank = 'white'
+  
+  
+  
+  
   state_num = data$state_code[1]
   state_name = getStateLabelFromNum(state_num)
   state_abb = getStateAbbrFromNum(state_num)
@@ -68,7 +76,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
     y = 0.68,
     just = "left",
     gp = gpar(
-      col = "slategray",
+      col = col_item,
       fontface = "bold",
       fontsize = 10
     )
@@ -77,7 +85,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
   grid.draw(linesGrob(
     x = unit(c(0.03, 0.18), "npc"),
     y = unit(c(0.66, 0.66), "npc"),
-    gp = gpar(col = "black", lty = 1)
+    gp = gpar(col = col_body, lty = 1)
   ))
   
   grid.text(
@@ -86,7 +94,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
     y = 0.63,
     just = "left",
     gp = gpar(
-      col = "black",
+      col = col_body,
       fontface = "bold",
       fontsize = 13
     )
@@ -98,7 +106,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
     y = 0.57,
     just = "left",
     gp = gpar(
-      col = "black",
+      col = col_body,
       fontface = "bold",
       fontsize = 27
     )
@@ -107,7 +115,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
   grid.draw(linesGrob(
     x = unit(c(0.03, 0.18), "npc"),
     y = unit(c(0.505, 0.505), "npc"),
-    gp = gpar(col = "black", lty = 1)
+    gp = gpar(col = col_body, lty = 1)
   ))
   
   grid.text(
@@ -116,7 +124,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
     y = 0.52,
     just = "left",
     gp = gpar(
-      col = "black",
+      col = col_body,
       fontface = "italic",
       fontsize = 7
     )
@@ -127,7 +135,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
     x = 0.03,
     y = 0.285,
     just = "left",
-    gp = gpar(col = "black", fontsize = 6)
+    gp = gpar(col = col_body, fontsize = 6)
   )
   
   
@@ -138,10 +146,10 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
   # Add section headers
   
   sec_header_gp <-
-    gpar(col = "steelblue4",
+    gpar(col = col_head,
          fontface = "bold",
          fontsize = 13)
-  line_gp <- gpar(col = 'slategray', lty = 3)
+  line_gp <- gpar(col = col_item, lty = 3)
   
   hdr_left <- 0.25
   y_top_hdr <- 0.98
@@ -236,13 +244,13 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
   grid.draw(linesGrob(
     x = unit(c(0.73, 0.73), "npc"),
     y = unit(c(1, 0.79), "npc"),
-    gp = gpar(col = "white", lty = 1, lwd = 3)
+    gp = gpar(col = col_blank, lty = 1, lwd = 3)
   ))
   
   label_gp <- gpar(fontsize = 8,
                    fontface = "bold",
-                   col = "slategray")
-  item_gp <- gpar(fontsize = 8, col = "black")
+                   col = col_item)
+  item_gp <- gpar(fontsize = 8, col = col_body)
   
   y_bot <- 0.825
   
@@ -264,7 +272,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
     gp = gpar(
       fontsize = 9,
       fontface = "bold",
-      col = "slategray"
+      col = col_item
     ),
     hjust = 1
   )
@@ -276,7 +284,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
     gp = gpar(
       fontsize = 9,
       fontface = "bold",
-      col = "slategray"
+      col = col_item
     ),
     hjust = 1
   )
@@ -314,7 +322,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
     gp = gpar(
       fontsize = 5,
       fontface = "italic",
-      col = "slategray"
+      col = col_item
     ),
     hjust = 0.5
   )
@@ -379,19 +387,17 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
         x=startx + (C - 1) * colWidth,
         y=starty - (R - 1) * rowWidth,
         hjust = 1,
-        gp = gpar(col = "slategray", fontsize = 7)
+        gp = gpar(col = col_item, fontsize = 7)
       ))
       
-      thisComplete <- dt_coverage[Name == variable, coverage_type]
-      
       plotCompleteness(
-        score = thisComplete,
         x = startx + (C - 1) * colWidth + space1,
-        y = starty - (R - 1) * rowWidth)
-
-      thisQuality <- group_vars$Quality_Score[i] 
+        y = starty - (R - 1) * rowWidth,
+        score = dt_coverage[Name == variable, coverage_type],
+        item_required = dt_coverage[Name == variable, required]
+      )
       
-      plotQuality(thisQuality,
+      plotQuality(group_vars$Quality_Score[i],
                   x = startx + (C - 1) * colWidth + space1 + space2,
                   y = starty - (R - 1) * rowWidth)
       
@@ -510,78 +516,132 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
   
   # legend ----------------------------------------------------------------
   
+  
   grid.draw(linesGrob(
-    x = unit(c(0.25, 0.97), "npc"),
+    x = unit(c(hdr_left, 0.97), "npc"),
     y = unit(c(0.03, 0.03), "npc"),
     gp = gpar(col = "gray60")
   ))
   
-  xshift <- 0.05
+  y <- 0.015
   
-  plotCompleteness(
-    score = 3,
-    x = 0.37 + xshift + 0.01,
-    y = 0.015)
-  
-  plotCompleteness(
-    score = 2,
-    x = 0.46 + xshift + 0.01,
-    y = 0.015)
-  
-  plotCompleteness(
-    score = 1,
-    x = 0.55 + xshift + 0.01,
-    y = 0.015)
+  # Completeness ----
   
   grid.text(
-    "Submitted and Complete",
-    x = 0.38 + xshift + 0.01,
-    y = 0.015,
+    "Key to data item completeness: ",
+    x = hdr_left,
+    y = y,
     hjust = 0,
     gp = gpar(
-      col = "slategray",
+      col = col_head,
+      fontface = "bold",
+      fontsize = 8
+    )
+  )
+
+  xshift <- hdr_left + 0.15
+  
+  plotCompleteness(
+    x = xshift,
+    y = y,
+    score = 3)
+  
+  grid.text(
+    "Complete",
+    x = xshift + space1,
+    y = y,
+    hjust = 0,
+    gp = gpar(
+      col = col_item,
       fontface = "italic",
       fontsize = 6
     )
   )
   
+  
+  plotCompleteness(
+    x = xshift + 0.045,
+    y = y,
+    score = 2)
+  
   grid.text(
-    "Submitted and Incomplete",
-    x = 0.47 + xshift + 0.01,
-    y = 0.015,
+    "Incomplete",
+    x = xshift + 0.045 + space1,
+    y = y,
     hjust = 0,
     gp = gpar(
-      col = "slategray",
+      col = col_item,
       fontface = "italic",
       fontsize = 6
     )
   )
+  
+  plotCompleteness(
+    x = xshift + 0.09,
+    y = y,
+    score = 1)
   
   grid.text(
     "Not Submitted",
-    x = 0.56 + xshift + 0.01,
-    y = 0.015,
+    x = xshift + 0.09 + space1,
+    y = y,
     hjust = 0,
     gp = gpar(
-      col = "slategray",
+      col = col_item,
       fontface = "italic",
       fontsize = 6
     )
   )
   
+  plotCompleteness(
+    x = xshift + 0.145,
+    y = y,
+    score = NA
+  )
   
-  # high quality
-  plotQuality(score=100,
-              x = 0.76 + xshift,
-              y = 0.015, text=FALSE)
-
   grid.text(
-    "High",
-    x = 0.78 + xshift,
-    y = 0.015,
+    "Not Required",
+    x = xshift + 0.145 + space1,
+    y=y,
     hjust = 0,
     gp = gpar(
-      col = "slategray",
+      col= col_item,
+      fontface='italic',
+      fontsize=6
+    )
+  )
+  
+  # quality ------
+  
+  
+  xshift <- hdr_left + 0.15 + 0.2
+  
+  grid.text(
+    "Key to data item quality: ",
+    x = xshift,
+    y = y,
+    hjust = 0,
+    gp = gpar(
+      col = col_head,
+      fontface = "bold",
+      fontsize = 8
+    )
+  )
+
+  plotQuality(
+    score=100,
+    x = xshift + 0.11,
+    y = y,
+    text=FALSE)
+  
+  # high quality
+  grid.text(
+    "High",
+    x = xshift + 0.11 + 2.5*space1,
+    y = y,
+    hjust = 0,
+    gp = gpar(
+      col = col_item,
       fontface = "italic",
       fontsize = 6
     )
@@ -589,65 +649,65 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
   
 
   # medium quality
-  plotQuality(score=50,
-              x = 0.81 + xshift,
-              y = 0.015, text=FALSE)
+  
+  plotQuality(
+    score=50,
+    x = xshift + 0.15,
+    y = y, text=FALSE)
   
   grid.text(
     "Medium",
-    x = 0.83 + xshift,
-    y = 0.015,
+    x = xshift + 0.15 + 2.5*space1,
+    y = y,
     hjust = 0,
     gp = gpar(
-      col = "slategray",
+      col = col_item,
       fontface = "italic",
       fontsize = 6
     )
   )
   
+  
   # lowquality
-  plotQuality(score=25,
-              x = 0.86 + xshift,
-              y = 0.015, text=FALSE)
+  plotQuality(
+    score=25,
+    x = xshift + 0.195,
+    y = y, text=FALSE)
   
   grid.text(
     "Low",
-    x = 0.88 + xshift,
-    y = 0.015,
+    x = xshift + 0.195 + 2.5*space1,
+    y = y,
     hjust = 0,
     gp = gpar(
-      col = "slategray",
+      col = col_item,
+      fontface = "italic",
+      fontsize = 6
+    )
+  )
+  
+  # No data
+  plotQuality(
+    score=NA,
+    x = xshift + 0.24,
+    y = y, text=FALSE)
+  
+  grid.text(
+    "No Data",
+    x = xshift + 0.24 + 2.5*space1,
+    y = y,
+    hjust = 0,
+    gp = gpar(
+      col = col_item,
       fontface = "italic",
       fontsize = 6
     )
   )
   
   
-  #grid.text("Not Submitted but Worth Exploring", x=0.805+xshift, y=0.015, hjust=0, gp=gpar(col="slategray", fontface="italic", fontsize=6))
   
-  grid.text(
-    "Key to data item status and completeness: ",
-    x = 0.365 + xshift + 0.01,
-    y = 0.015,
-    hjust = 1,
-    gp = gpar(
-      col = "steelblue4",
-      fontface = "bold",
-      fontsize = 8
-    )
-  )
+  #grid.text("Not Submitted but Worth Exploring", x=0.805+xshift, y=y, hjust=0, gp=gpar(col=col_item, fontface="italic", fontsize=6))
   
-  grid.text(
-    "Key to data item quality: ",
-    x = 0.75 + xshift,
-    y = 0.015,
-    hjust = 1,
-    gp = gpar(
-      col = "steelblue4",
-      fontface = "bold",
-      fontsize = 8
-    )
-  )
   
   # logos
   grid.raster(
@@ -680,7 +740,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
         "npc"
       ),
       vjust = 0,
-      gp = gpar(fill = "black", col = "black")
+      gp = gpar(fill = col_body, col = col_body)
     )
   }
   if (cscore > 0)
@@ -694,7 +754,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
         "npc"
       ),
       vjust = 0,
-      gp = gpar(fill = "black", col = "black")
+      gp = gpar(fill = col_body, col = col_body)
     )
   }
   if (qscore > 0)
@@ -708,7 +768,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
         "npc"
       ),
       vjust = 0,
-      gp = gpar(fill = "black", col = "black")
+      gp = gpar(fill = col_body, col = col_body)
     )
   }
   
@@ -764,7 +824,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
     y = 0.83 + 0.1 * tscore / max(time_weight, complete_weight, quality_weight) +
       0.03,
     hjust = 0.5,
-    gp = gpar(fontsize = 7, col = "black")
+    gp = gpar(fontsize = 7, col = col_body)
   )
   grid.text(
     cscore,
@@ -772,7 +832,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
     y = 0.83 + 0.1 * cscore / max(time_weight, complete_weight, quality_weight) +
       0.03,
     hjust = 0.5,
-    gp = gpar(fontsize = 7, col = "black")
+    gp = gpar(fontsize = 7, col = col_body)
   )
   grid.text(
     qscore,
@@ -780,7 +840,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
     y = 0.83 + 0.1 * qscore / max(time_weight, complete_weight, quality_weight) +
       0.03,
     hjust = 0.5,
-    gp = gpar(fontsize = 7, col = "black")
+    gp = gpar(fontsize = 7, col = col_body)
   )
   
   grid.text(
@@ -788,7 +848,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
     y = 0.90,
     x = 0.71,
     hjust = 1,
-    gp = gpar(fontsize = 10, col = "gray50")
+    gp = gpar(fontsize = 10, col = col_item)
   )
   
   grid.circle(
@@ -797,13 +857,13 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
     r = unit(0.07, "npc"),
     gp = gpar(fill = "gray85", col = "gray50")
   )
-  #grid.text("Overall",     x=0.31, y=0.87, just="right", gp=gpar(fontsize=18, col="slategray"))
+  #grid.text("Overall",     x=0.31, y=0.87, just="right", gp=gpar(fontsize=18, col=col_item))
   grid.text(
     paste0(tscore + qscore + cscore),
     x = 0.32,
     y = 0.90,
     just = "left",
-    gp = gpar(fontsize = 23, col = "black"),
+    gp = gpar(fontsize = 23, col = col_body),
     hjust = 0.5
   )
   grid.text(
@@ -814,6 +874,5 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
     gp = gpar(fontsize = 13, col = "gray50"),
     hjust = 0.5
   )
-  
   return(list(quality = dt_quality, cross_validation = dt_cross, coverage=dt_coverage))
 }

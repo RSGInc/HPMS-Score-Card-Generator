@@ -22,6 +22,11 @@ create_travel_yoy_density <- function(
   nvalues_bar = 11
 ){
   
+  col_year1 = 'slategray'
+  col_year2 = 'gray75'
+  col_national = 'black'
+  col_noplot = 'white'
+  
   #if ( variable %in% c('YEAR_LAST_CONSTRUCTION', 'YEAR_LAST_IMPROV') ) browser()
   
   # What data type?
@@ -186,11 +191,6 @@ create_travel_yoy_density <- function(
         heights=unit(c((1 - spacer_height)/2, spacer_height, (1-spacer_height)/2), units='npc'))
       
     } else {  # Make bar plots
-      
-      col_year1 = 'slategray'
-      col_year2 = 'gray75'
-      col_national = 'black'
-      col_noplot = 'white'
       
       # get labels for bars
       

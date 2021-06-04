@@ -26,25 +26,35 @@ create_travel_data_yoy <- function(
   ramps
 ){
   
+  col_same = 'slategray'
+  col_changed = 'gray75'
+  col_not_matched = 'black'
+  col_highlight = 'red'
+  
+  
   type <- gVariables[Name == variable, Data_Type]
   
   if(type == 'numeric'){
     if(ramps){
       var.1 = data[state_code == state & year_record == year &
                      data_item == variable & FACILITY_TYPE == 4,
-                   list(route_id,begin_point,end_point, value.1 = value_numeric, F_SYSTEM)]
+                   list(route_id, begin_point, end_point,
+                        value.1 = value_numeric, F_SYSTEM)]
       
       var.2 = data[state_code == state & year_record == yearcomparison &
                      data_item == variable & FACILITY_TYPE == 4,
-                   list(route_id,begin_point,end_point, value.2 = value_numeric, F_SYSTEM)]
+                   list(route_id,begin_point,end_point,
+                        value.2 = value_numeric, F_SYSTEM)]
     } else {
       var.1 = data[state_code == state & year_record == year &
                      data_item == variable & FACILITY_TYPE != 4,
-                   list(route_id,begin_point,end_point, value.1 = value_numeric, F_SYSTEM)]
+                   list(route_id,begin_point,end_point,
+                        value.1 = value_numeric, F_SYSTEM)]
       
       var.2 = data[state_code == state & year_record == yearcomparison &
                      data_item == variable & FACILITY_TYPE != 4,
-                   list(route_id,begin_point,end_point, value.2 = value_numeric, F_SYSTEM)]       
+                   list(route_id,begin_point,end_point,
+                        value.2 = value_numeric, F_SYSTEM)]       
     }   
   }
   
@@ -52,20 +62,24 @@ create_travel_data_yoy <- function(
     if(ramps){
       var.1 = data[state_code == state&year_record == year &
                      data_item == variable & FACILITY_TYPE == 4 & !is.na(value_date),
-                   list(route_id,begin_point,end_point,value.1 = year(value_date),F_SYSTEM)]
+                   list(route_id,begin_point,end_point,
+                        value.1 = year(value_date),F_SYSTEM)]
       
       var.2 = data[state_code == state&year_record == yearcomparison &
                      data_item == variable & FACILITY_TYPE == 4 & !is.na(value_date),
-                   list(route_id,begin_point,end_point,value.2 = year(value_date),F_SYSTEM)]
+                   list(route_id,begin_point,end_point,
+                        value.2 = year(value_date),F_SYSTEM)]
       
     } else {
       var.1 = data[state_code == state & year_record == year &
                      data_item == variable & FACILITY_TYPE != 4 & !is.na(value_date),
-                   list(route_id,begin_point,end_point, value.1 = year(value_date),F_SYSTEM)]
+                   list(route_id,begin_point,end_point,
+                        value.1 = year(value_date),F_SYSTEM)]
       
       var.2 = data[state_code == state & year_record == yearcomparison &
                      data_item == variable & FACILITY_TYPE != 4 & !is.na(value_date),
-                   list(route_id,begin_point,end_point,value.2 = year(value_date),F_SYSTEM)]       
+                   list(route_id,begin_point,end_point,
+                        value.2 = year(value_date),F_SYSTEM)]       
     }
   }
   
@@ -143,23 +157,46 @@ create_travel_data_yoy <- function(
     
     # custom axis labels
     if(histtype == 1){
-      p <- ggplot(report, aes(x=bin2,fill=color,weight=end_point-begin_point)) + geom_bar(width=0.75)
-      p <- p + scale_x_discrete("", breaks=factor(c(1:17,18),levels=c(1:17,18),labels=c("< -100%","-100%","-75%","-50%","-25%","-15%","-5%","-1%","0%","1%","5%","15%","25%","50%","75%","100%","> 100%","No Match"),exclude=NULL), drop=FALSE)
-      p <- p + scale_fill_manual("",values=c("Same"="slategray","Reduction"="gray50","Increase"="gray50","No Match"="black"))
+      p <- ggplot(report, aes(x=bin2,fill=color,weight=end_point-begin_point)) +
+        geom_bar(width=0.75)
+      
+      p <- p + scale_x_discrete(
+        "",
+        breaks=factor(
+          c(1:17,18),
+          levels=c(1:17,18),
+          labels=c("< -100%","-100%","-75%","-50%","-25%","-15%","-5%","-1%","0%","1%","5%","15%","25%","50%","75%","100%","> 100%","No Match"),
+          exclude=NULL),
+        drop=FALSE)
+      
+      p <- p + scale_fill_manual(
+        "",
+        values=c(
+          "Same"=col_same,
+          "Reduction"=col_changed,
+          "Increase"=col_changed,
+          "No Match"=col_not_matched))
+      
       p <- p + scale_y_continuous(labels=percent,limits=c(-0.01, 1.05)) 
       
     } else {
-      p <- ggplot(report, aes(x=1,y=V1,fill=color)) + geom_bar(stat="identity",width=0.75) 
+      
+      p <- ggplot(report, aes(x=1,y=V1,fill=color)) +
+        geom_bar(stat="identity",width=0.75) 
+      
       p <- p + coord_flip()   
-      colors <- c("slategray","gray50","black")
+      
+      colors <- c(col_same,col_changed,col_not_matched)
       names(colors)[1]<-toString(report[color2 == "No",color])
       names(colors)[2]<-toString(report[color2 == "Yes", color])
       names(colors)[3]<-toString(report[color2 == "NA", color])
       #names(colors)<-levels(report[,color])
+      
       p <- p + scale_fill_manual("",values=colors)
       p <- p + scale_y_continuous(labels=percent)
       p <- p + scale_x_continuous(labels=percent)
-      p <- p + theme(axis.text.x=element_text(angle = 0, hjust = 1,vjust=-0.5,size=5,color="slategray"))
+      p <- p + theme(
+        axis.text.x=element_text(angle = 0, hjust = 1, vjust=-0.5, size=5, color=col_same))
     }
     
     p <- p + theme(axis.line=element_blank(),
@@ -180,7 +217,13 @@ create_travel_data_yoy <- function(
       
       p <- arrangeGrob(
         suppressWarnings(arrangeGrob(p)),
-        arrangeGrob(textGrob(paste0("Total of ",string_format(totalmiles)," centerline miles."),hjust=0.5 ,vjust=0  ,gp=gpar(fontsize=4.5, col="gray50"))),
+        arrangeGrob(
+          textGrob(
+            paste0("Total of ",string_format(totalmiles)," centerline miles."),
+            hjust=0.5,
+            vjust=0,
+            gp=gpar(fontsize=4.5, col=col_changed))),
+        
         nrow=2,
         heights=unit(c(0.90, 0.1),units="npc"),
         widths=unit(1, units="npc"))
@@ -193,29 +236,73 @@ create_travel_data_yoy <- function(
         legend.text     = element_blank(),
         plot.margin = unit(c(top=1, right=0.5, bottom=0.5, left=0.5), units='lines'))
       
-      p <- arrangeGrob(textGrob(""),
-                       suppressWarnings(arrangeGrob(p)),
-                       arrangeGrob(textGrob(paste0(report[color2 == "No",paste0(round(V1,3)*100,"%",ff1)]),hjust=0.5   ,vjust=0  ,gp=gpar(fontsize=17, col="slategray",fontface="bold")),
-                                   textGrob(paste0(report[color2 == "Yes",paste0(round(V1,3)*100,"%",ff2)]),hjust=0.5,vjust=0  ,gp=gpar(fontsize=17, col="gray50",fontface="bold")),
-                                   textGrob(paste0(report[color2 == "NA",paste0(round(V1,3)*100,"%")]),hjust=0.5   ,vjust=0  ,gp=gpar(fontsize=17, col="black",fontface="bold")),
-                                   ncol=3,widths=unit(c(0.4,0.2,0.4),units="npc")),
-                       arrangeGrob(textGrob("of all miles\nstayed the same" ,hjust=0.5   ,vjust=0  ,gp=gpar(fontsize=5.5, col="slategray",fontface="bold")),
-                                   textGrob("of all miles\nchanged"         ,hjust=0.5 ,vjust=0  ,gp=gpar(fontsize=5.5, col="gray50",fontface="bold")),
-                                   textGrob("of all miles\nwere not matched",hjust=0.5   ,vjust=0  ,gp=gpar(fontsize=5.5, col="black",fontface="bold")),
-                                   ncol=3,widths=unit(c(0.4,0.2,0.4),units="npc")),
-                       arrangeGrob(textGrob(paste0("Total of ",string_format(totalmiles)," centerline miles."),hjust=0.5 ,vjust=0  ,gp=gpar(fontsize=5, col="gray50"))),
-                       nrow=5,
-                       heights=unit(c(0.05, 0.4, 0.22, 0.23, 0.1),units="npc"),
-                       widths=unit(1,units="npc")
+      p <- arrangeGrob(
+        textGrob(""),
+        suppressWarnings(arrangeGrob(p)),
+        
+        arrangeGrob(
+          
+          textGrob(
+            paste0(report[color2 == "No", paste0(round(V1,3)*100,"%",ff1)]),
+            hjust=0.5,
+            vjust=0 ,
+            gp=gpar(fontsize=17, col=col_same,fontface="bold")),
+          
+          textGrob(
+            paste0(report[color2 == "Yes",paste0(round(V1,3)*100,"%",ff2)]),
+            hjust=0.5,
+            vjust=0,
+            gp=gpar(fontsize=17, col=col_changed,fontface="bold")),
+          
+          textGrob(
+            paste0(report[color2 == "NA",paste0(round(V1,3)*100,"%")]),
+            hjust=0.5,
+            vjust=0,
+            gp=gpar(fontsize=17, col=col_not_matched,fontface="bold")),
+          
+          ncol=3,widths=unit(c(0.4,0.2,0.4),units="npc")),
+        
+        arrangeGrob(
+          
+          textGrob(
+            "of all miles\nstayed the same",
+            hjust=0.5,
+            vjust=0 ,
+            gp=gpar(fontsize=5.5, col=col_same,fontface="bold")),
+          
+          textGrob(
+            "of all miles\nchanged",
+            hjust=0.5,
+            vjust=0,
+            gp=gpar(fontsize=5.5, col=col_changed,fontface="bold")),
+          
+          textGrob(
+            "of all miles\nwere not matched",
+            hjust=0.5,
+            vjust=0,
+            gp=gpar(fontsize=5.5, col=col_not_matched,fontface="bold")),
+          
+          ncol=3,widths=unit(c(0.4,0.2,0.4),units="npc")),
+        
+        arrangeGrob(
+          textGrob(
+            paste0("Total of ", string_format(totalmiles)," centerline miles."),
+            hjust=0.5, 
+            vjust=0, 
+            gp=gpar(fontsize=5, col=col_changed))),
+        
+        nrow=5,
+        heights=unit(c(0.05, 0.4, 0.22, 0.23, 0.1),units="npc"),
+        widths=unit(1,units="npc")
       )
-
+      
     }
     
     return(p)
   } else
   {
     # nothing to report because data are missing
-    return(textGrob(NoDataString,gp=gpar(fontsize=8, col="Red")))
+    return(textGrob(NoDataString,gp=gpar(fontsize=8, col=col_highlight)))
   }
   
 }
