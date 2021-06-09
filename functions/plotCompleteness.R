@@ -11,7 +11,7 @@
 ###########################################################################
 
 
-plotCompleteness = function(x, y, score, item_required = 1, col_na = 'gray90'){
+plotCompleteness = function(score, x, y, item_required = 1, col_na = 'gray90'){
   
   col_blank = 'white'
   col_not_submitted = 'white'
@@ -23,6 +23,8 @@ plotCompleteness = function(x, y, score, item_required = 1, col_na = 'gray90'){
     
     border_col = col_na
     fill_col = col_blank
+    symbol = 21
+    symbol_size = unit(3, 'mm')
     
   } else {
     
@@ -35,6 +37,16 @@ plotCompleteness = function(x, y, score, item_required = 1, col_na = 'gray90'){
                       `1` = col_not_submitted,      # not submitted
                       `2` = col_incomplete,     # submitted and incomplete
                       `3` = col_complete)  # submitted and complete
+    
+    symbol = switch(as.character(score),
+                    `1` = 13,     
+                    `2` = 21,            # '\u25DO', # half circle
+                    `3` = 21)
+    
+    symbol_size = switch(as.character(score),
+                         `1` = unit(3, 'mm'),
+                         `2` = unit(3, 'mm'),
+                         `3` = unit(3, 'mm'))
   }
 
   # Plot circles ----------------------------------------------------------
@@ -42,8 +54,8 @@ plotCompleteness = function(x, y, score, item_required = 1, col_na = 'gray90'){
   grid.points(
     x=x,
     y=y,
-    pch=21,
-    size=unit(0.01, 'npc'),
+    pch=symbol,
+    size=symbol_size,
     gp=gpar(fill=fill_col, col=border_col),
     default.units='npc'
   )

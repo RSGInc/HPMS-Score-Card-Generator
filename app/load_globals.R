@@ -66,13 +66,20 @@ debugmode <- FALSE
 # State Labels & Codes
 gState_Labels <- fread('resources/dat/state_labels.csv')
 
+# Colors
+
+gColors <- list(
+  blank = 'white',
+  headings = 'slategray',
+  highlight = 'red'
+)
 # FHWA and DVC Logos
 gLogo  <- suppressWarnings(readPNG("resources/img/FHWA_vertical_2013.png"))
 gLogo2 <- suppressWarnings(readPNG("resources/img/DVC-Logo.png"))
 gLogo3 <- suppressWarnings(readPNG("resources/img/info.png"))
 
 # Number of blank lines between menu question text
-gSpaces <- 100
+gSpaces <- 2
 
 
 #######################################################################

@@ -10,9 +10,11 @@
 # calcQuality function.
 ###########################################################################
 
-plotQuality <- function(x, y, score, text=TRUE, col_na = 'gray90'){
+plotQuality <- function(score, x, y, text=TRUE, col_na = 'gray90'){
 
-  full_length <- 0.015
+  bar_height = 2.5
+  asp_ratio = 2
+  max_length = bar_height * asp_ratio
   
   col_blank = 'white'
   
@@ -29,25 +31,27 @@ plotQuality <- function(x, y, score, text=TRUE, col_na = 'gray90'){
     
   }
   
+  # browser()
+  
   grid.rect(x=x,
             y=y,
-            width=unit(full_length, "npc"),
-            height=unit(0.0125, "npc"),
+            width=unit(max_length, "mm"),
+            height=unit(bar_height, "mm"),
             just='left',
             gp=gpar(fill=col_blank, col=border_col))
   
   grid.rect(x=x,
             y=y,
-            width=unit(full_length * (score / 100), "npc"),
-            height=unit(0.0125, "npc"),
+            width=unit(max_length * (score / 100), "mm"),
+            height=unit(bar_height, "mm"),
             just='left',
             gp=gpar(fill=fill_col, col=border_col))
   
   if ( text ){
     grid.text(label = score,
-              x= x + full_length + 0.004,
+              x= unit(x, 'npc') + unit(max_length, 'mm') + unit(0.004, 'npc'),
               y=y,
-              just = c(0, 0.5),
+              just = c(0, 0.4),
               gp = gpar(col=border_col, fontsize=6.5))
   }
   
