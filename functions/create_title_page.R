@@ -14,13 +14,8 @@
 
 create_title_page <- function(data, state, year, year_compare = NULL) {
   
-  col_head = 'steelblue4'
-  col_item = 'slategray'
-  col_body = 'black'
-  col_blank = 'white'
   
-  
-  
+  # Load data -----------------------------------------------------------------
   
   state_num = data$state_code[1]
   state_name = getStateLabelFromNum(state_num)
@@ -34,7 +29,155 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
   reqs = gReqs[, c('Name', state_abb), with=FALSE]
   setnames(reqs, state_abb, 'required')
   
-  # Page setup ==============================================================
+  data_summary <- create_data_summary(data, state, year, year_compare)
+  data_summary <- data_summary[nrow(data_summary):1,]
+  #data_summary <- data.frame(data_summary)
+  
+  message("Calculating quality score for each item.")
+  dt_quality <- calc_quality_all(data, year, year_compare)
+  
+  message("Calculating cross-validations.")
+  dt_cross <- calc_cross_validation(data, year)
+  
+  message("Calculating coverage validation results. This may take some time to complete.")
+  dt_coverage <- calc_completeness_all(data, year, reqs)
+  
+  CompletedScore <- 0
+  CompletedScoreMax <- 0
+  
+  #QualityScore <- 0
+  submittedN   <- 0
+  #QualityScoreMax <- 0
+  
+  # Scores for getting a medium or high quality value
+  CompleteLow = 0
+  CompleteMed = 1
+  CompleteHigh = 1.5
+  
+  dt_coverage[coverage_type == 1, card_score := CompleteLow]
+  dt_coverage[coverage_type == 2, card_score := CompleteMed]
+  dt_coverage[coverage_type == 3, card_score := CompleteHigh]
+  
+  # Take into account Curves and grades (only one of A-F required)
+  dt_other = dt_coverage[!Name %like% 'CURVES|GRADES']
+  dt_curves = dt_coverage[Name %like% 'CURVES'][which.max(coverage_score)]
+  dt_grades = dt_coverage[Name %like% 'GRADES'][which.max(coverage_score)]
+  
+  
+  dt_coverage2 = merge(
+    rbind(dt_other, dt_curves, dt_grades),
+    dt_quality[, .(Name, Completeness_Weight)],
+    by = 'Name',
+    all.x=TRUE
+  )
+  
+  stopifnot((dt_coverage[, .N] - dt_coverage2[, .N]) == 10)
+  
+  submittedN = dt_coverage2[coverage_type >= 2, .N]
+  CompletedScore = dt_coverage2[, sum(card_score * Completeness_Weight, na.rm=TRUE)]
+  CompletedScoreMax = dt_coverage2[, sum(CompleteHigh * (!is.na(card_score)) * Completeness_Weight)]
+  
+  QualityScore    <- dt_quality[, sum(Quality_Score * Quality_Weight, na.rm=TRUE)]
+  QualityScoreMax <- dt_quality[, sum(!is.na(Quality_Score) * Quality_Weight) * 100]
+  qMean <- QualityScore / QualityScoreMax
+  
+  # Incorporate cross-validation score
+  cvMean <- mean(dt_cross$mileage_pass, na.rm=TRUE)
+  
+  QualityCross <- qMean * (1 - cvWeight) + cvMean * cvWeight  
+  
+  #(cvMean * nrow(dt_cross) + qMean * nrow(dt_quality)) /
+  #  (nrow(dt_cross) + nrow(dt_quality))
+  
+  
+  # Summary scores ------------------------------------------------------------
+  # Completeness, quality, and timeliness scores 
+  
+  tscore <- time_weight * getTimelinessScore(state, year, submission_deadline)
+  cscore <-
+    round(complete_weight * CompletedScore / CompletedScoreMax, 1)
+  qscore <-
+    round(quality_weight * QualityCross, 1)
+  
+  
+  # Write scores ---------------------------------------------------
+  
+  dt_scores = merge(
+    dt_quality,
+    dt_coverage,
+    by = 'Name',
+    all = TRUE
+  )
+  
+  path <- file.path('data', state_name)
+  file <- paste0(state_name, '_', year, '_', year_compare, '_item_score_summary.csv')
+  fullpath <- file.path(path, file)
+  
+  if (!dir.exists(path)) dir.create(path)
+  
+  fwrite(x=dt_scores, file=fullpath, na = '')
+  
+  # Write out the cross-validation scores
+  
+  path <- file.path('data', state_name)
+  file <- paste0(state_name, '_', year,
+                 '_cross_validation_summary.csv')
+  fullpath <- file.path(path, file)
+  
+  if (!dir.exists(path)) dir.create(path)
+  
+  fwrite(x=dt_cross, file=fullpath, na='')
+  
+  
+  # Write out high level scores
+  
+  scores <- data.table(
+    state_num = state_num,
+    state = state_abb,
+    timely = tscore,
+    complete = cscore,
+    quality = qscore,
+    quality_sub = qMean,
+    cross_sub = cvMean,
+    total = tscore + qscore + cscore,
+    datetime = now()
+  )
+  
+  fullpath = file.path('output/_score_summary.csv')
+  
+  if ( file.exists(fullpath) ){
+    all_scores = fread(file=fullpath)
+    all_scores = all_scores[state != state_abb]
+    all_scores = rbind(all_scores, scores)
+    fwrite(all_scores, fullpath)
+    
+  } else {
+    
+    fwrite(scores, fullpath)
+    
+  }
+  
+  
+  # Draw page ==============================================================
+  
+  # Graphics parameters ----------------------------------------------------
+  
+  col_head = 'steelblue4'
+  col_item = 'slategray'
+  col_body = 'black'
+  col_blank = 'white'
+  
+  hdr_left <- 0.25  # Where do the headers start?
+  hdr_top <- 0.98 
+  
+  sec_header_gp <-
+    gpar(col = col_head,
+         fontface = "bold",
+         fontsize = 13)
+  line_gp <- gpar(col = col_item, lty = 3)
+  
+  
+  # Page setup -------------------------------------------------------------
   
   grid.arrange(
     arrangeGrob(
@@ -69,6 +212,9 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
     nrow = 1,
     heights = unit(1, units = "npc")
   )
+  
+  
+  # Sidebar -----------------------------------------------------------------
   
   grid.text(
     "HPMS SCORECARD",
@@ -138,108 +284,181 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
     gp = gpar(col = col_body, fontsize = 6)
   )
   
+  # logos
+
+  grid.raster(
+    image = gLogo2,
+    x = 0.02,
+    y = 0.04,
+    just = "left",
+    width = 0.10
+  )
+  
+  grid.raster(
+    image = gLogo,
+    x = 0.03,
+    y = 0.85,
+    just = "left",
+    width = 0.10
+  )
   
   
-  vertical_adj <- 0.05
-  
-  
-  # Add section headers
-  
-  sec_header_gp <-
-    gpar(col = col_head,
-         fontface = "bold",
-         fontsize = 13)
-  line_gp <- gpar(col = col_item, lty = 3)
-  
-  hdr_left <- 0.25
-  y_top_hdr <- 0.98
+  # High level scores --------------------------------------------------------
   
   grid.text("Score"           ,
             hdr_left,
-            y_top_hdr,
-            hjust = 0,
-            gp = sec_header_gp)
-  grid.text("inventory"       ,
-            hdr_left,
-            0.823 - vertical_adj,
-            hjust = 0,
-            gp = sec_header_gp)
-  grid.text("pavement"        ,
-            hdr_left,
-            0.665 - vertical_adj,
-            hjust = 0,
-            gp = sec_header_gp)
-  grid.text("traffic"         ,
-            hdr_left,
-            0.535 - vertical_adj,
-            hjust = 0,
-            gp = sec_header_gp)
-  grid.text("geometric"       ,
-            hdr_left,
-            0.387 - vertical_adj,
-            hjust = 0,
-            gp = sec_header_gp)
-  grid.text("route"           ,
-            hdr_left,
-            0.237 - vertical_adj,
-            hjust = 0,
-            gp = sec_header_gp)
-  grid.text("special networks",
-            hdr_left,
-            0.14 - vertical_adj,
+            hdr_top,
             hjust = 0,
             gp = sec_header_gp)
   
-  # inventory
-  grid.draw(linesGrob(
-    x = unit(c(hdr_left, 0.97), "npc"),
-    y = unit(c(0.8045, 0.8045) - vertical_adj, "npc"),
-    gp = line_gp
-  ))
+  if (tscore > 0){
+    grid.rect(
+      x = 0.41,
+      y = 0.85,
+      width = unit(0.025, "npc"),
+      height = unit(
+        0.1 * tscore / max(time_weight, complete_weight, quality_weight),
+        "npc"
+      ),
+      vjust = 0,
+      gp = gpar(fill = col_body, col = col_body)
+    )
+  }
   
-  # pavement
-  grid.draw(linesGrob(
-    x = unit(c(hdr_left, 0.97), "npc"),
-    y = unit(c(0.6465, 0.6465) - vertical_adj, "npc"),
-    gp = line_gp
-  ))
+  if (cscore > 0){
+    grid.rect(
+      x = 0.475,
+      y = 0.85,
+      width = unit(0.025, "npc"),
+      height = unit(
+        0.1 * cscore / max(time_weight, complete_weight, quality_weight),
+        "npc"
+      ),
+      vjust = 0,
+      gp = gpar(fill = col_body, col = col_body)
+    )
+  }
   
-  # traffic
-  grid.draw(linesGrob(
-    x = unit(c(hdr_left, 0.97), "npc"),
-    y = unit(c(0.5165, 0.5165) - vertical_adj, "npc"),
-    gp = line_gp
-  ))
+  if (qscore > 0){
+    grid.rect(
+      x = 0.54,
+      y = 0.85,
+      width = unit(0.025, "npc"),
+      height = unit(
+        0.1 * qscore / max(time_weight, complete_weight, quality_weight),
+        "npc"
+      ),
+      vjust = 0,
+      gp = gpar(fill = col_body, col = col_body)
+    )
+  }
   
-  # geometric
-  grid.draw(linesGrob(
-    x = unit(c(hdr_left, 0.97), "npc"),
-    y = unit(c(0.3685, 0.3685) - vertical_adj, "npc"),
-    gp = line_gp
-  ))
   
-  # route
-  grid.draw(linesGrob(
-    x = unit(c(hdr_left, 0.97), "npc"),
-    y = unit(c(0.2185, 0.2185) - vertical_adj, "npc"),
-    gp = line_gp
-  ))
+  grid.text(
+    "Timeliness",
+    x = 0.41,
+    y = 0.83,
+    hjust = 0.5,
+    gp = gpar(fontsize = 7, col = "gray50")
+  )
+  grid.text(
+    "Completeness",
+    x = 0.475,
+    y = 0.83,
+    hjust = 0.5,
+    gp = gpar(fontsize = 7, col = "gray50")
+  )
+  grid.text(
+    "Quality",
+    x = 0.54,
+    y = 0.83,
+    hjust = 0.5,
+    gp = gpar(fontsize = 7, col = "gray50")
+  )
   
-  # special network
-  grid.draw(linesGrob(
-    x = unit(c(hdr_left, 0.97), "npc"),
-    y = unit(c(0.12, 0.12) - vertical_adj, "npc"),
-    gp = line_gp
-  ))
+  grid.text(
+    paste0("out of ", time_weight),
+    x = 0.41,
+    y = 0.81,
+    hjust = 0.5,
+    gp = gpar(fontsize = 7, col = "gray50")
+  )
+  grid.text(
+    paste0("out of ", complete_weight),
+    x = 0.475,
+    y = 0.81,
+    hjust = 0.5,
+    gp = gpar(fontsize = 7, col = "gray50")
+  )
+  grid.text(
+    paste0("out of ", quality_weight),
+    x = 0.54,
+    y = 0.81,
+    hjust = 0.5,
+    gp = gpar(fontsize = 7, col = "gray50")
+  )
   
+  
+  grid.text(
+    tscore,
+    x = 0.41,
+    y = 0.83 + 0.1 * tscore / max(time_weight, complete_weight, quality_weight) +
+      0.03,
+    hjust = 0.5,
+    gp = gpar(fontsize = 7, col = col_body)
+  )
+  grid.text(
+    cscore,
+    x = 0.475,
+    y = 0.83 + 0.1 * cscore / max(time_weight, complete_weight, quality_weight) +
+      0.03,
+    hjust = 0.5,
+    gp = gpar(fontsize = 7, col = col_body)
+  )
+  grid.text(
+    qscore,
+    x = 0.54,
+    y = 0.83 + 0.1 * qscore / max(time_weight, complete_weight, quality_weight) +
+      0.03,
+    hjust = 0.5,
+    gp = gpar(fontsize = 7, col = col_body)
+  )
+  
+  grid.text(
+    "The Score is the sum of\npoints received from\ntimeliness, completeness, \nand quality.",
+    y = 0.90,
+    x = 0.71,
+    hjust = 1,
+    gp = gpar(fontsize = 10, col = col_item)
+  )
+  
+  grid.circle(
+    x = 0.32,
+    y = 0.88,
+    r = unit(0.07, "npc"),
+    gp = gpar(fill = "gray85", col = "gray50")
+  )
+  #grid.text("Overall",     x=0.31, y=0.87, just="right", gp=gpar(fontsize=18, col=col_item))
+  grid.text(
+    paste0(tscore + qscore + cscore),
+    x = 0.32,
+    y = 0.90,
+    just = "left",
+    gp = gpar(fontsize = 23, col = col_body),
+    hjust = 0.5
+  )
+  grid.text(
+    paste0("out of ", time_weight + complete_weight + quality_weight),
+    x = 0.32,
+    y = 0.86,
+    just = "left",
+    gp = gpar(fontsize = 13, col = "gray50"),
+    hjust = 0.5
+  )
   
   
   # Data summary ==============================================================
-  # Add the data summary table
   
-  results <- create_data_summary(data, state, year, year_compare)
-  results <- results[nrow(results):1,]
-  #results <- data.frame(results)
   
   grid.draw(linesGrob(
     x = unit(c(0.73, 0.73), "npc"),
@@ -261,14 +480,14 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
   
   grid.text("Data Summary"    ,
             x_label,
-            y_top_hdr,
+            hdr_top,
             hjust = 1,
             gp = sec_header_gp)
   
   grid.text(
     paste0("", year),
     x = x_col1,
-    y = y_bot + y_row_spc * (nrow(results) - 1) + 0.005,
+    y = y_bot + y_row_spc * (nrow(data_summary) - 1) + 0.005,
     gp = gpar(
       fontsize = 9,
       fontface = "bold",
@@ -280,7 +499,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
   grid.text(
     paste0("", year_compare),
     x = x_col2,
-    y = y_bot + y_row_spc * (nrow(results) - 1) + 0.005,
+    y = y_bot + y_row_spc * (nrow(data_summary) - 1) + 0.005,
     gp = gpar(
       fontsize = 9,
       fontface = "bold",
@@ -290,23 +509,23 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
   )
   
   # Draw labels
-  for (i in 1:(nrow(results) - 1)) {
+  for (i in 1:(nrow(data_summary) - 1)) {
     grid.text(
-      results[i, 1, with = FALSE],
+      data_summary[i, 1, with = FALSE],
       x = x_label,
       y = y_bot + y_row_spc * (i - 1),
       gp = label_gp,
       hjust = 1
     )
     grid.text(
-      results[i, 2, with = FALSE],
+      data_summary[i, 2, with = FALSE],
       x = x_col1,
       y = y_bot + y_row_spc * (i - 1),
       gp = item_gp,
       hjust = 1
     )
     grid.text(
-      results[i, 3, with = FALSE],
+      data_summary[i, 3, with = FALSE],
       x = x_col2,
       y = y_bot + y_row_spc * (i - 1),
       gp = item_gp,
@@ -332,31 +551,95 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
   # The following section calculates completeness and quality for each data item
   # Then plots it.
   
-  message("Calculating quality score for each item.")
-  dt_quality <- calc_quality_all(data, year, year_compare)
+  vertical_adj <- 0.05
   
-  message("Calculating cross-validations.")
-  dt_cross <- calc_cross_validation(data, year)
+  # inventory
+  grid.text("inventory"       ,
+            hdr_left,
+            0.823 - vertical_adj,
+            hjust = 0,
+            gp = sec_header_gp)
+
+  grid.draw(linesGrob(
+    x = unit(c(hdr_left, 0.97), "npc"),
+    y = unit(c(0.8045, 0.8045) - vertical_adj, "npc"),
+    gp = line_gp
+  ))
+
+  # pavement
+  grid.text("pavement"        ,
+            hdr_left,
+            0.665 - vertical_adj,
+            hjust = 0,
+            gp = sec_header_gp)
+
+  grid.draw(linesGrob(
+    x = unit(c(hdr_left, 0.97), "npc"),
+    y = unit(c(0.6465, 0.6465) - vertical_adj, "npc"),
+    gp = line_gp
+  ))
+
+  # traffic
+  grid.text("traffic"         ,
+            hdr_left,
+            0.535 - vertical_adj,
+            hjust = 0,
+            gp = sec_header_gp)
+
+  grid.draw(linesGrob(
+    x = unit(c(hdr_left, 0.97), "npc"),
+    y = unit(c(0.5165, 0.5165) - vertical_adj, "npc"),
+    gp = line_gp
+  ))
   
-  message("Calculating coverage validation results. This may take some time to complete.")
-  dt_coverage <- calc_completeness_all(data, year, reqs)
+  # geometric
+  grid.text("geometric"       ,
+            hdr_left,
+            0.387 - vertical_adj,
+            hjust = 0,
+            gp = sec_header_gp)
+  
+  grid.draw(linesGrob(
+    x = unit(c(hdr_left, 0.97), "npc"),
+    y = unit(c(0.3685, 0.3685) - vertical_adj, "npc"),
+    gp = line_gp
+  ))
+
+  # route
+  grid.text("route"           ,
+            hdr_left,
+            0.237 - vertical_adj,
+            hjust = 0,
+            gp = sec_header_gp)
+  
+  grid.draw(linesGrob(
+    x = unit(c(hdr_left, 0.97), "npc"),
+    y = unit(c(0.2185, 0.2185) - vertical_adj, "npc"),
+    gp = line_gp
+  ))
+  
+  
+  # special network
+  
+  grid.text("special networks",
+            hdr_left,
+            0.14 - vertical_adj,
+            hjust = 0,
+            gp = sec_header_gp)
+  
+  
+  grid.draw(linesGrob(
+    x = unit(c(hdr_left, 0.97), "npc"),
+    y = unit(c(0.12, 0.12) - vertical_adj, "npc"),
+    gp = line_gp
+  ))
+  
   
   colWidth <- 0.152
   rowWidth <- 0.020 
   space1 <- 0.008    # Space between start of text and completeness symbol
   space2 <- 0.008   # Space between completeness symbol and quality symbol
   
-  CompletedScore <- 0
-  CompletedScoreMax <- 0
-  
-  #QualityScore <- 0
-  submittedN   <- 0
-  #QualityScoreMax <- 0
-  
-  # Scores for getting a medium or high quality value
-  CompleteLow = 0
-  CompleteMed = 1
-  CompleteHigh = 1.5
   
   # Set parameters for each section
   
@@ -364,7 +647,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
     Grouping = c('Inventory', 'Pavement', 'Traffic', 'Geometric', 'Route', 'Special Networks'),
     abbrev   = c( 'I', 'P', 'T', 'G', 'R', 'SN'),
     starty   = c(0.79, 0.63, 0.5, 0.35, 0.2, 0.105),
-    nRow     = c(   4,    3,   4,    5,   1,     1))
+    nRow     = c(   4,    3,   3,    5,   1,     1))
   
   # completeness / coverage validation ----------------------------------------
   
@@ -410,109 +693,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
     }
   }
   
-  dt_coverage[coverage_type == 1, card_score := CompleteLow]
-  dt_coverage[coverage_type == 2, card_score := CompleteMed]
-  dt_coverage[coverage_type == 3, card_score := CompleteHigh]
   
-  # Take into account Curves and grades (only one of A-F required)
-  dt_other = dt_coverage[!Name %like% 'CURVES|GRADES']
-  dt_curves = dt_coverage[Name %like% 'CURVES'][which.max(coverage_score)]
-  dt_grades = dt_coverage[Name %like% 'GRADES'][which.max(coverage_score)]
-  
-  
-  dt_coverage2 = merge(
-    rbind(dt_other, dt_curves, dt_grades),
-    dt_quality[, .(Name, Completeness_Weight)],
-    by = 'Name',
-    all.x=TRUE
-  )
-  
-  stopifnot((dt_coverage[, .N] - dt_coverage2[, .N]) == 10)
-  
-  submittedN = dt_coverage2[coverage_type >= 2, .N]
-  CompletedScore = dt_coverage2[, sum(card_score * Completeness_Weight, na.rm=TRUE)]
-  CompletedScoreMax = dt_coverage2[, sum(CompleteHigh * (!is.na(card_score)) * Completeness_Weight)]
-  
-  QualityScore    <- dt_quality[, sum(Quality_Score * Quality_Weight, na.rm=TRUE)]
-  QualityScoreMax <- dt_quality[, sum(!is.na(Quality_Score) * Quality_Weight) * 100]
-  qMean <- QualityScore / QualityScoreMax
-  
-  # Incorporate cross-validation score
-  cvMean <- mean(dt_cross$mileage_pass, na.rm=TRUE)
-  
-  QualityCross <- qMean * (1 - cvWeight) + cvMean * cvWeight  
-  
-  #(cvMean * nrow(dt_cross) + qMean * nrow(dt_quality)) /
-  #  (nrow(dt_cross) + nrow(dt_quality))
-  
-  
-  # Summary scores ------------------------------------------------------------
-  # Completeness, quality, and timeliness scores 
-  
-  tscore <- time_weight * getTimelinessScore(state, year, submission_deadline)
-  cscore <-
-    round(complete_weight * CompletedScore / CompletedScoreMax, 1)
-  qscore <-
-    round(quality_weight * QualityCross, 1)
-  
-
-  # Write scores ---------------------------------------------------
-
-  dt_scores = merge(
-    dt_quality,
-    dt_coverage,
-    by = 'Name',
-    all = TRUE
-  )
-  
-  path <- file.path('data', state_name)
-  file <- paste0(state_name, '_', year, '_', year_compare, '_item_score_summary.csv')
-  fullpath <- file.path(path, file)
-  
-  if (!dir.exists(path)) dir.create(path)
-  
-  fwrite(x=dt_scores, file=fullpath, na = '')
-
-  # Write out the cross-validation scores
-  
-  path <- file.path('data', state_name)
-  file <- paste0(state_name, '_', year,
-                 '_cross_validation_summary.csv')
-  fullpath <- file.path(path, file)
-  
-  if (!dir.exists(path)) dir.create(path)
-  
-  fwrite(x=dt_cross, file=fullpath, na='')
-  
-  
-  # Write out high level scores
-
-  scores <- data.table(
-    state_num = state_num,
-    state = state_abb,
-    timely = tscore,
-    complete = cscore,
-    quality = qscore,
-    quality_sub = qMean,
-    cross_sub = cvMean,
-    total = tscore + qscore + cscore,
-    datetime = now()
-  )
-  
-  fullpath = file.path('output/_score_summary.csv')
-  
-  if ( file.exists(fullpath) ){
-    all_scores = fread(file=fullpath)
-    all_scores = all_scores[state != state_abb]
-    all_scores = rbind(all_scores, scores)
-    fwrite(all_scores, fullpath)
-    
-  } else {
-    
-    fwrite(scores, fullpath)
-  
-  }
-
   
   # legend ----------------------------------------------------------------
   
@@ -704,175 +885,10 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
     )
   )
   
-  
-  
   #grid.text("Not Submitted but Worth Exploring", x=0.805+xshift, y=y, hjust=0, gp=gpar(col=col_item, fontface="italic", fontsize=6))
   
   
-  # logos
-  grid.raster(
-    image = gLogo,
-    x = 0.03,
-    y = 0.85,
-    just = "left",
-    width = 0.10
-  )
-  grid.raster(
-    image = gLogo2,
-    x = 0.02,
-    y = 0.04,
-    just = "left",
-    width = 0.10
-  )
   
   
-  # Summary ============================================================================
-  
-  
-  if (tscore > 0)
-  {
-    grid.rect(
-      x = 0.41,
-      y = 0.85,
-      width = unit(0.025, "npc"),
-      height = unit(
-        0.1 * tscore / max(time_weight, complete_weight, quality_weight),
-        "npc"
-      ),
-      vjust = 0,
-      gp = gpar(fill = col_body, col = col_body)
-    )
-  }
-  if (cscore > 0)
-  {
-    grid.rect(
-      x = 0.475,
-      y = 0.85,
-      width = unit(0.025, "npc"),
-      height = unit(
-        0.1 * cscore / max(time_weight, complete_weight, quality_weight),
-        "npc"
-      ),
-      vjust = 0,
-      gp = gpar(fill = col_body, col = col_body)
-    )
-  }
-  if (qscore > 0)
-  {
-    grid.rect(
-      x = 0.54,
-      y = 0.85,
-      width = unit(0.025, "npc"),
-      height = unit(
-        0.1 * qscore / max(time_weight, complete_weight, quality_weight),
-        "npc"
-      ),
-      vjust = 0,
-      gp = gpar(fill = col_body, col = col_body)
-    )
-  }
-  
-  
-  grid.text(
-    "Timeliness",
-    x = 0.41,
-    y = 0.83,
-    hjust = 0.5,
-    gp = gpar(fontsize = 7, col = "gray50")
-  )
-  grid.text(
-    "Completeness",
-    x = 0.475,
-    y = 0.83,
-    hjust = 0.5,
-    gp = gpar(fontsize = 7, col = "gray50")
-  )
-  grid.text(
-    "Quality",
-    x = 0.54,
-    y = 0.83,
-    hjust = 0.5,
-    gp = gpar(fontsize = 7, col = "gray50")
-  )
-  
-  grid.text(
-    paste0("out of ", time_weight),
-    x = 0.41,
-    y = 0.81,
-    hjust = 0.5,
-    gp = gpar(fontsize = 7, col = "gray50")
-  )
-  grid.text(
-    paste0("out of ", complete_weight),
-    x = 0.475,
-    y = 0.81,
-    hjust = 0.5,
-    gp = gpar(fontsize = 7, col = "gray50")
-  )
-  grid.text(
-    paste0("out of ", quality_weight),
-    x = 0.54,
-    y = 0.81,
-    hjust = 0.5,
-    gp = gpar(fontsize = 7, col = "gray50")
-  )
-  
-  
-  grid.text(
-    tscore,
-    x = 0.41,
-    y = 0.83 + 0.1 * tscore / max(time_weight, complete_weight, quality_weight) +
-      0.03,
-    hjust = 0.5,
-    gp = gpar(fontsize = 7, col = col_body)
-  )
-  grid.text(
-    cscore,
-    x = 0.475,
-    y = 0.83 + 0.1 * cscore / max(time_weight, complete_weight, quality_weight) +
-      0.03,
-    hjust = 0.5,
-    gp = gpar(fontsize = 7, col = col_body)
-  )
-  grid.text(
-    qscore,
-    x = 0.54,
-    y = 0.83 + 0.1 * qscore / max(time_weight, complete_weight, quality_weight) +
-      0.03,
-    hjust = 0.5,
-    gp = gpar(fontsize = 7, col = col_body)
-  )
-  
-  grid.text(
-    "The Score is the sum of\npoints received from\ntimeliness, completeness, \nand quality.",
-    y = 0.90,
-    x = 0.71,
-    hjust = 1,
-    gp = gpar(fontsize = 10, col = col_item)
-  )
-  
-  grid.circle(
-    x = 0.32,
-    y = 0.88,
-    r = unit(0.07, "npc"),
-    gp = gpar(fill = "gray85", col = "gray50")
-  )
-  #grid.text("Overall",     x=0.31, y=0.87, just="right", gp=gpar(fontsize=18, col=col_item))
-  grid.text(
-    paste0(tscore + qscore + cscore),
-    x = 0.32,
-    y = 0.90,
-    just = "left",
-    gp = gpar(fontsize = 23, col = col_body),
-    hjust = 0.5
-  )
-  grid.text(
-    paste0("out of ", time_weight + complete_weight + quality_weight),
-    x = 0.32,
-    y = 0.86,
-    just = "left",
-    gp = gpar(fontsize = 13, col = "gray50"),
-    hjust = 0.5
-  )
   return(list(quality = dt_quality, cross_validation = dt_cross, coverage=dt_coverage))
 }

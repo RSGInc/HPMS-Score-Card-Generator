@@ -6,7 +6,6 @@ ACCESS_CONTROL,5,Access Control,I,Y,Y,numeric,,2,FE*,4,1,3,,N,,,,N,1,1
 AT_GRADE_OTHER,33,"Number of Intersections, Type - Other",T,Y,Y,numeric,density,2,SP,0,0,Inf,,N,,,,N,1,1
 BASE_THICKNESS,60,Base Thickness,P,Y,Y,numeric,,1,SP,0,0,Inf,,N,,,,N,1,1
 BASE_TYPE,59,Base Type,P,Y,Y,numeric,,2,SP,0,1,8,,N,,,,N,1,1
-CAPACITY,69,Capacity,T,Y,Y,numeric,density,1,SP,0,0,Inf,,Y,,,,N,1,1
 COUNTER_PEAK_LANES,11,Counter Peak Lanes,I,Y,Y,numeric,,1,SP,0,,,,N,,,,N,1,1
 COUNTY_CODE,63,County Code,I,Y,N,numeric,density,2,FE,0,,,,N,,,,N,1,1
 CRACKING_PERCENT,52,Cracking Percent,P,Y,Y,numeric,density,1,FE*,2,0,100,Y,Y,1,5,5,N,1,1
@@ -44,7 +43,6 @@ PCT_GREEN_TIME,30,Percent Green Time,T,Y,Y,numeric,density,1,SP*,0,0,100,,N,,,,N
 PCT_PASS_SIGHT,46,Percent Passing Sight Distance,G,Y,Y,numeric,density,1,SP,0,0,100,,N,,,,N,1,1
 PCT_PEAK_COMBINATION,25,Percent Peak Combination Trucks,T,Y,Y,numeric,density,1,SP,0,0,20,,Y,,,,N,1,1
 PCT_PEAK_SINGLE,23,Percent Peak Single-Unit Trucks and Buses,T,Y,Y,numeric,density,1,SP,0,0,20,,Y,,,,N,1,1
-PEAK_CAPACITY,NA,Peak Capacity,,N,NA,numeric,,1,SP,0,,,,N,,,,N,1,1
 PEAK_LANES,10,Peak Lanes,I,Y,Y,numeric,,1,SP,0,,,,N,,,,N,1,1
 PEAK_PARKING,40,Peak Parking,G,Y,Y,numeric,,2,SP,0,1,3,,N,,,,N,1,1
 PSR,48,Present Serviceability Rating,P,Y,Y,numeric,density,1,FE*,2,,,,Y,,,,N,1,1

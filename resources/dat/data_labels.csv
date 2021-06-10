@@ -73,5 +73,3 @@ Item Number,Name,NumLevels,Code1,Code2,Code3,Code4,Code5,Code6,Code7,Code8,Code9
 66,TRUCK,2,Section is on the National Network (NN),Other State-designated truck route (optional),,,,,,,,,,,,,,,,,
 67,FUTURE_FACILITY,1,Un-built NHS section,,,,,,,,,,,,,,,,,,
 68,MAINTENANCE_OPERATIONS,0,,,,,,,,,,,,,,,,,,,
-69,CAPACITY,0,N/A,,,,,,,,,,,,,,,,,,
-NA,PEAK_CAPACITY,0,N/A,,,,,,,,,,,,,,,,,,
