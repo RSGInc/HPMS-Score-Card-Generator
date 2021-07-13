@@ -2,7 +2,7 @@
 
 ## 2021
 
-1) Drop CAPACITY and PEAK_CAPACITY entirely from all pages
+1) DONE: Drop CAPACITY and PEAK_CAPACITY entirely from all pages
   
 
 2) DONE: LAST_OVERLAY_THICKNESS - value for every sample: DONE

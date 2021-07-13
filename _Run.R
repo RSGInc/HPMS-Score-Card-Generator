@@ -23,7 +23,7 @@
 
 options(scipen=9999)  # Make sure numbers are not converted to sci notation
 
-submission_deadline = '2020-06-16'   # Deadline
+submission_deadline = '2021-06-16'   # Deadline
 # submission_deadline = '2020-06-16' # Usual deadline
 
 # Load Code
@@ -36,8 +36,10 @@ invisible(sapply(X =codefiles , FUN = source))
 # Run scorecards via command line tool.
 # Rscript RunBatch.R ALL
 
-debugmode = FALSE # Displays output to graphics device instead of PDF
-# debug(calc_completeness)
+# debugmode = TRUE # Displays output to graphics device instead of PDF
+# debug(plot_completeness)
 
-# Run(task = 1, state = 'IN', year = 2019)
-Run(task = 2, state = 'VA', year = 2020, year_compare = 2019)
+# Run(task = 1, state = 'MO', year = 2020)
+# Run(task = 1, state = 'VA', year = 2019)
+
+Run(task = 2, state = 'MO', year = 2020, year_compare = 2019)
