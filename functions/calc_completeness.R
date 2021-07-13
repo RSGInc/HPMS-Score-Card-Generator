@@ -85,7 +85,7 @@ calc_completeness <- function(data, year, variable){
   # these variables just need to have something to be complete
   
   if( (variable %in% c(
-    "STRUCTURE_TYPE", "STRAHNET_TYPE", "TRUCK", "FUTURE_FACILITY", "CAPACITY"))){
+    "STRUCTURE_TYPE", "STRAHNET_TYPE", "TRUCK", "FUTURE_FACILITY"))){
     score = 1
     return(score)
   } else
@@ -98,12 +98,14 @@ calc_completeness <- function(data, year, variable){
   # if no expansion factor, than the coverage is invalidated
   
   if( variable %in% c(
-    "PEAK_LANES", "SPEED_LIMIT", "PCT_PEAK_SINGLE", "PCT_PEAK_COMBINATION",
-    "K_FACTOR", "DIR_FACTOR", "FUTURE_AADT", "STOP_SIGNS", "AT_GRADE_OTHER",
-    "LANE_WIDTH", "MEDIAN_TYPE", "SHOULDER_TYPE", "WIDENING_OBSTACLE",
-    "WIDENING_POTENTIAL", "SURFACE_TYPE")){
-  
+    "AT_GRADE_OTHER", "DIR_FACTOR", "FUTURE_AADT", "K_FACTOR",
+    "LANE_WIDTH", "LAST_OVERLAY_THICKNESS", "MEDIAN_TYPE", 
+    "PEAK_LANES", "PCT_PEAK_SINGLE", "PCT_PEAK_COMBINATION",
+    "SHOULDER_TYPE", "SPEED_LIMIT", "STOP_SIGNS", "SURFACE_TYPE", 
+    "WIDENING_OBSTACLE", "WIDENING_POTENTIAL")){
 
+    # if ( variable == 'LAST_OVERLAY_THICKNESS') browser()
+    
     # Calculate fraction of rows with expansion_factors
     score = data[data_item == variable & year_record == year & !is.na(expansion_factor), .N] /
       data[data_item == variable & year_record == year, .N]
@@ -188,6 +190,7 @@ calc_completeness <- function(data, year, variable){
   
   if(variable %in% c("BASE_THICKNESS")){
     
+    
     dat.variable <- data[data_item == variable & year_record == year,]
     dat.SURFACE_TYPE <- data[data_item == "SURFACE_TYPE" & year_record == year,] 
     dat.BASE_TYPE <- data[data_item == "BASE_TYPE" & year_record == year,] 
@@ -207,6 +210,7 @@ calc_completeness <- function(data, year, variable){
     # base_type ---------------------------------------------------------------
   
   if(variable %in% c("BASE_TYPE")){
+    
     
     dat.variable <- data[data_item == variable & year_record == year,]
     dat.SURFACE_TYPE <- data[data_item == "SURFACE_TYPE" & year_record == year,] 
@@ -271,7 +275,7 @@ calc_completeness <- function(data, year, variable){
   
     # cracking_percent or year_last_construction -------------------------------
   
-  if(variable %in% c("CRACKING_PERCENT", "YEAR_LAST_CONSTRUCTION")){
+  if(variable %in% c("CRACKING_PERCENT")){
     
     dat.variable <- data[data_item == variable & year_record == year,]
     dat.SURFACE_TYPE <- data[data_item == "SURFACE_TYPE" & year_record == year,] 
@@ -287,12 +291,14 @@ calc_completeness <- function(data, year, variable){
   
   
     # curves and grades ------------------------------------------------------
-    # No criteria have been set for these
-  if(variable %like% 'CURVES|GRADES|LAST_OVERLAY_THICKNESS|PEAK_CAPACITY'){
+  if(variable %like% 'CURVES|GRADES'){
     
-    score = NA
+    # Calculate fraction of rows with expansion_factors
+    score = data[data_item == variable & year_record == year & !is.na(expansion_factor), .N] /
+      data[data_item == variable & year_record == year, .N]
+    
     return(score)
-
+    
   } else 
     
     
@@ -453,7 +459,6 @@ calc_completeness <- function(data, year, variable){
     
   } else 
   
-  
     # maintenance_operations ---------------------------------------------------
   
   if(variable %in% c("MAINTENANCE_OPERATIONS")){
@@ -604,7 +609,6 @@ calc_completeness <- function(data, year, variable){
   # pct_pass_sight -----------------------------------------------------------
   
   if(variable %in% c("PCT_PASS_SIGHT")){
-    browser()
     
     dat.variable <- data[data_item == variable & year_record == year,]
     dat.URBAN_CODE <- data[data_item == "URBAN_CODE" & year_record == year,]
@@ -939,9 +943,22 @@ calc_completeness <- function(data, year, variable){
     
     
   } else
-  
-  
-  # Year_last_improv ---------------------------------------------------------
+    
+    if(variable %in% c("YEAR_LAST_CONSTRUCTION")){
+      
+      dat.variable <- data[data_item == variable & year_record == year,]
+      dat.SURFACE_TYPE <- data[data_item == "SURFACE_TYPE" & year_record == year,] 
+      
+      coverage = dat.SURFACE_TYPE[, .(route_id, begin_point, end_point, SURFACE_TYPE = value_numeric)] %>%
+        coverage_join(
+          dat.variable[, .(route_id, begin_point, end_point, expansion_factor, variable = value_date)])
+      
+      coverage[, required := !is.na(expansion_factor) & SURFACE_TYPE %in% 2:10]
+      
+      
+  } else
+      
+      # Year_last_improv ---------------------------------------------------------
   
   if(variable %in% c("YEAR_LAST_IMPROV")){
     
@@ -950,7 +967,7 @@ calc_completeness <- function(data, year, variable){
     dat.YEAR_LAST_CONSTRUCTION <- data[data_item == "YEAR_LAST_CONSTRUCTION" & year_record == year,]
     
     coverage = dat.SURFACE_TYPE[, .(route_id, begin_point, end_point, SURFACE_TYPE = value_numeric)] %>%
-      coverage_join(dat.variable[, .(route_id, begin_point, end_point, variable = value_numeric, expansion_factor)]) %>%
+      coverage_join(dat.variable[, .(route_id, begin_point, end_point, variable = value_date, expansion_factor)]) %>%
       coverage_join(dat.YEAR_LAST_CONSTRUCTION[, .(route_id, begin_point, end_point, YEAR_LAST_CONSTRUCTION = value_date)])
     
     coverage[, required := (!is.na(expansion_factor) & SURFACE_TYPE %in% 2:10)]

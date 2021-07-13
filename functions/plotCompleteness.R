@@ -11,27 +11,62 @@
 ###########################################################################
 
 
-plotCompleteness = function(score, x, y){
+plotCompleteness = function(score, x, y, item_required = 1, col_na = 'gray90'){
   
+  col_blank = 'white'
+  col_not_submitted = 'white'
+  col_incomplete = 'gray75'
+  col_complete = 'slategray'
+  col_highlight = 'red'
   
-  if ( is.na(score) ){
+  if ( is.na(score) | item_required == 0 ){
     
-    border_col = 'gray90'
-    fill_col = 'white'
+    border_col = col_na
+    fill_col = col_blank
+    symbol = 21
+    symbol_size = unit(3, 'mm')
     
   } else {
-    border_col = 'slategray'
+    
+    border_col = switch(as.character(score),
+                        `1` = col_highlight,
+                        `2` = col_complete,
+                        `3` = col_complete)
     
     fill_col = switch(as.character(score),
-      `1` = 'white',      # not submitted
-      `2` = 'gray75',     # submitted and incomplete
-      `3` = 'slategray')  # submitted and complete
+                      `1` = col_not_submitted,      # not submitted
+                      `2` = col_incomplete,     # submitted and incomplete
+                      `3` = col_complete)  # submitted and complete
+    
+    symbol = switch(as.character(score),
+                    `1` = 13,     
+                    `2` = 21,            # '\u25DO', # half circle
+                    `3` = 21)
+    
+    symbol_size = switch(as.character(score),
+                         `1` = unit(3, 'mm'),
+                         `2` = unit(3, 'mm'),
+                         `3` = unit(3, 'mm'))
   }
+
   # Plot circles ----------------------------------------------------------
   
-    grid.circle(
-      x=x,
-      y=y,
-      r=unit(0.007,"npc"),
-      gp=gpar(fill=fill_col, col=border_col))
+  grid.points(
+    x=x,
+    y=y,
+    pch=symbol,
+    size=symbol_size,
+    gp=gpar(fill=fill_col, col=border_col),
+    default.units='npc'
+  )
+  
+  # if ( item_required == 0 ){
+  #   grid.points(
+  #     x=x,
+  #     y=y,
+  #     pch=13,
+  #     size=unit(0.01, 'npc'),
+  #     gp=gpar(col='gray75'),
+  #     default.units='npc')
+  # }
 }

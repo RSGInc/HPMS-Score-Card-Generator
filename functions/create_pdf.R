@@ -37,7 +37,7 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
   # showtext.begin() # this controls the issues with the fonts
 
   # Create title page -------------------------------------------------------
-
+  
   message("Title page...")
   ts <- Sys.time()
   scores_list <- create_title_page(data, state, year, year_compare)
@@ -61,6 +61,11 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
   # data <- data[year_record %in% c(year, year_compare), ]
   #
 
+  # Documentation page ------------------------------------------------------
+  
+  message('Documentation page ...')
+  create_documentation_page()
+  
   # Information page --------------------------------------------------------
 
   message("Information page...")
@@ -199,7 +204,7 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
   gPageNumber <<- gPageNumber + 1
   create_page_summary(data, state, year, year_compare,
                       x1 = todo[i +  1, 1],
-                      x2 = todo[i + 1, 2],
+                      #x2 = todo[i + 1, 2],
                       title = "traffic", icontext = "t", page = gPageNumber)
   message(paste0(" completed in: ", round(difftime(Sys.time(), ts, units = "secs"),
                                       2), " seconds!\n"))

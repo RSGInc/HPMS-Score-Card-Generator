@@ -13,6 +13,9 @@
 
 calc_completeness_all <- function(data, year, reqs){
   
+  # Set minimum score required to be "complete"
+  complete_threshold = 0.99
+  
   dt_output = merge(
     gVariables[, .(Name)],
     reqs,
@@ -32,7 +35,7 @@ calc_completeness_all <- function(data, year, reqs){
   
   dt_output[, coverage_type := 1] # Not submitted
   dt_output[coverage_score > 0, coverage_type := 2]     # Submitted but incomplete
-  dt_output[coverage_score == 1, coverage_type := 3]    # Submitted and complete
+  dt_output[coverage_score >= complete_threshold, coverage_type := 3]    # Submitted and complete
   dt_output[, coverage_type := coverage_type * required] # 0 = not required
   
   return(dt_output)
