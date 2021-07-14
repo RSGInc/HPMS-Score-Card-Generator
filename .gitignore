@@ -12,3 +12,6 @@ renv/
 .Rhistory
 Thumbs.db
 resources/fss/*.RDS
+client_data
+download_cache
+
