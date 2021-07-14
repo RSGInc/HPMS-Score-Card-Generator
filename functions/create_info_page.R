@@ -26,7 +26,7 @@ create_info_page <- function(state, year, color="white"){
      
     add_header(state,year,"how to interpret key scorecard charts","?")
 
-    grid.raster(image=gLogo3,x = 0, y=0.9,hjust = 0,vjust=1)
+    grid.raster(image=gInfoPage,x = 0, y=0.9,hjust = 0,vjust=1)
     
     gPageNumber <<- gPageNumber + 1
     add_page_number(gPageNumber)

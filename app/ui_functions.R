@@ -231,7 +231,15 @@ getStateDataSets <- function(state_selection, year_selection, year_compare) {
   summary_str <- '\nLoading state selections\n\n'
   cat(summary_str)
   
-  dat <- readRDS(paste0("data/", getStateLabel(state_selection), "/", year_selection, ".rds"))
+  data_file = file.path('data',
+                        getStateLabel(state_selection),
+                        paste0(year_selection, ".rds"))
+  
+  if ( !file.exists(data_file) ){
+    stop('Data for ', state_selection, ' and ', year_selection, ' has not been imported')
+  }
+  
+  dat <- readRDS(data_file)
   dat[, year_record := as.numeric(year_selection)]
   if (!is.null(year_compare)) {
     dat.compare <- readRDS(paste0("data/", getStateLabel(state_selection), "/", year_compare, ".rds"))

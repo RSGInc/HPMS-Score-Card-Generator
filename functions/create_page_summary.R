@@ -195,7 +195,7 @@ create_page_summary <- function(
   #browser()
   quality_results = fread(paste0("data/", gState_Labels[index==state,label],
                                  "/", gState_Labels[index==state,label],
-                                 "_", year, "_", year_compare, "_quality_summary.csv"))
+                                 "_", year, "_", year_compare, "_item_score_summary.csv"))
   
   add_summary_col_labels(
     paste0(gVariables[x1,Label],

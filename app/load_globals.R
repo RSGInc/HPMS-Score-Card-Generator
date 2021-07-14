@@ -76,7 +76,8 @@ gColors <- list(
 # FHWA and DVC Logos
 gLogo  <- suppressWarnings(readPNG("resources/img/FHWA_vertical_2013.png"))
 gLogo2 <- suppressWarnings(readPNG("resources/img/DVC-Logo.png"))
-gLogo3 <- suppressWarnings(readPNG("resources/img/info.png"))
+gInfoPage <- suppressWarnings(readPNG("resources/img/info.png"))
+gScorePage <- suppressWarnings(readPNG('resources/img/score_info.png'))
 
 # Number of blank lines between menu question text
 gSpaces <- 2

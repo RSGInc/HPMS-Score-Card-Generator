@@ -46,6 +46,12 @@ create_travel_data_outlier <- function(
   result.4 <- comparison[F_SYSTEM == 2 & ((FUTURE_AADT > 3 * AADT) | (FUTURE_AADT < AADT)),
                          list(miles=sum(end_point - begin_point))]
   
+  # Replace NAs with zeros if there are none that meet the criteria
+  if ( result.1[, .N] == 0 ) result.1 <- 0
+  if ( result.2[, .N] == 0 ) result.2 <- 0
+  if ( result.3[, .N] == 0 ) result.3 <- 0
+  if ( result.4[, .N] == 0 ) result.4 <- 0
+  
   total.1 <- aadt[Interstate == 1,
                   list(totalmiles=round(sum(end_point-begin_point), 2)), ]
   total.2 <- aadt[NHS == 1,
@@ -58,7 +64,7 @@ create_travel_data_outlier <- function(
   report <- data.table(groupCat=1:4,
                        miles=as.numeric(c(result.1, result.2, result.3, result.4)),
                        totalmiles=as.numeric(c(total.1, total.2, total.3, total.4)))
-
+  
   report[, perc_miles:=ifelse(is.na(miles), 0, as.character(round(miles/totalmiles, 2)*100))]
   
   report <- report[, totalmiles:=NULL]

@@ -12,7 +12,10 @@
 
 
 # Setup ---------------------------------------------------------------
+
 library('stringr')
+library('rprojroot')
+
 options(warn=1)
 options(scipen=9999)
 
@@ -23,13 +26,14 @@ if ( length(args) < 1 ){
   stop('Please supply a comma-delimited list of states or specify "ALL"\nFor example: Rscript RunBatch.R PA,NY,NH,VT', call.=FALSE)
 }
 
-year_selection <- 2019
-year_compare <- 2018
-submission_deadline <- '2020-06-15'
-reimport = TRUE
+year_selection <- 2020
+year_compare <- 2019
+submission_deadline <- '2021-06-15'
+reimport = FALSE
 
+root <- rprojroot::find_rstudio_root_file()
+setwd(root)
 
-setwd('..')
 msg_file <- file.path('output', paste0('_RunBatch_messages_',
 format(Sys.time(), '%Y%m%d_%H%M%S.txt')))
 
@@ -48,11 +52,10 @@ message('submission_deadline: ', submission_deadline)
 
 # Load Code -------------------------------------------------------------------
 
-invisible(sapply(X = list.files(path = "code", pattern = "*.R$",
-                                full.names = TRUE)[-1], FUN = source))
+codefiles = c(Sys.glob('app/*.R'), Sys.glob('functions/*.R'))
+invisible(sapply(X =codefiles , FUN = source))
 
 # Increase the memory limit.  If above physical ram it will use virtual memory
-invisible(memory.limit(32768))
 
 cat('Checking availability of states for', year_selection, '\n')
 
