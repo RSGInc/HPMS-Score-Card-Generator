@@ -51,7 +51,6 @@ invisible(memory.limit(64000))
 
 # Create PDF ----------------------------------------------------------------
 savepath <- "output/"
-national <- NULL
 
 
 tryCatch(
@@ -79,7 +78,7 @@ tryCatch(
                year = data.list[["year_selection"]],
                year_compare = data.list[["year_compare"]],
                # population = population,
-               national = national,
+               # national = national,
                path = savepath)
     
   }, error = function(cond){

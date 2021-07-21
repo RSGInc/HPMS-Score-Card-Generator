@@ -10,7 +10,7 @@
 #
 ###########################################################################
 
-create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
+create_pdf <- function(data, state, year, year_compare, path) {
   TS <- Sys.time()
 
   message(
@@ -64,17 +64,8 @@ create_pdf <- function(data, state, year, year_compare, national = NULL, path) {
   # Documentation page ------------------------------------------------------
   
   message('Documentation page ...')
-  create_documentation_page()
+  create_documentation_pages(state, year)
   
-  # Information page --------------------------------------------------------
-
-  message("Information page...")
-  ts <- Sys.time()
-  create_info_page(state, year)
-  message(paste0(" completed in: ",
-             round(difftime(Sys.time(), ts, units = "secs"), 2), " seconds!\n"))
-  # cat('\tMemory used: ', round(mem_used() / 1e9, 3), 'GB \n')
-
 
   # Pavement: Detailed Review ------------------------------------------------
 

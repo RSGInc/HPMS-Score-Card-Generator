@@ -23,8 +23,8 @@
 
 options(scipen=9999)  # Make sure numbers are not converted to sci notation
 
-submission_deadline = '2021-06-16'   # Deadline
-# submission_deadline = '2020-06-16' # Usual deadline
+submission_deadline = '2021-06-15'   # Deadline
+# submission_deadline = '2020-06-15' # Usual deadline
 
 # Load Code
 codefiles = c(Sys.glob('app/*.R'), Sys.glob('functions/*.R'))
@@ -32,7 +32,8 @@ invisible(sapply(X =codefiles , FUN = source))
 
 # Run Tool
 # Run()  # Import all states
-# updateNation()
+# updateNation(years = as.numeric(str_extract(submission_deadline, '^[0-9]{4}')) - 2)
+
 # Run scorecards via command line tool.
 # Rscript RunBatch.R ALL
 
@@ -42,4 +43,5 @@ invisible(sapply(X =codefiles , FUN = source))
 # Run(task = 1, state = 'MO', year = 2020)
 # Run(task = 1, state = 'VA', year = 2019)
 
-Run(task = 2, state = 'MO', year = 2020, year_compare = 2019)
+Run(task = 2, state = 'PR', year = 2020, year_compare = 2019)
+

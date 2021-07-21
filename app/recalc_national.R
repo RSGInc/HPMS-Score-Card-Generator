@@ -15,13 +15,16 @@
 
 updateNation <- function(years = getAllStateYears()) {
   
+  message('Checking ', paste(years, collapse=', '), ' for updates')
+  
   # Check if any year in 'years' has had any state data added/deleted/modified
-  cat("\n\nUpdating national statistics...")
   years_changed <- sapply(X = years, FUN = detectYearChanges)
-  years_changed <- names(years_changed)[years_changed]
+  years_changed <- years[years_changed]
   
   # For each year that has changed, update the national summaries for that year
   if (length(years_changed) > 0) {
+
+    message("Updating national statistics for ", paste(years_changed, collapse=', '))
     
     summaries <- sapply(X = years_changed, FUN = SummarizeNation)
     
@@ -33,10 +36,10 @@ updateNation <- function(years = getAllStateYears()) {
     
     # Save state snapshots
     sapply(X = years_changed, FUN = function(year) {cat(".");saveRDS(getFileSnapShot(year), file = paste0("resources/fss/", year, ".RDS"))})
-    cat(" complete!")
+    message(" complete!")
     
   } else {
-    cat(" no new data, skipping.")
+    message(" no new data, skipping.")
   }
   
 }
@@ -52,12 +55,18 @@ SummarizeNation <- function(year) {
   variables <- gVariables[,Name]
   
   # create a folder
-  dir.create(paste0("data\\+National\\",year), showWarnings = FALSE, recursive = FALSE, mode = "0777")
+  dir.create(
+    paste0("data\\+National\\",year),
+    showWarnings = FALSE,
+    recursive = FALSE,
+    mode = "0777")
   
   sumDT <- NULL
-  cat("Processing national data. This will take a while to complete.\n")
+  
+  message("Processing national data. This will take a while to complete.\n")
   for(variable in variables){
     for(stateRDS in 1:length(RDSfiles)){
+      
       message('Variable: ', variable, ', State: ', basename(dirname(RDSfiles[stateRDS])),
               ', year:', year)
       stateDT <- readRDS(RDSfiles[stateRDS])[data_item == variable, ]

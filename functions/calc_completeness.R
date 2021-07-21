@@ -684,6 +684,8 @@ calc_completeness <- function(data, year, variable){
   if(variable %in% c("ROUTE_NUMBER")){
     
     dat.variable <- data[data_item == variable & year_record == year,]
+    dat.variable[, value_text := as.character(value_text)]
+    
     dat.FACILITY_TYPE <- data[data_item == "FACILITY_TYPE" & year_record == year,]
     dat.F_SYSTEM <- data[data_item == "F_SYSTEM" & year_record == year,]
     dat.ROUTE_SIGNING <- data[data_item == "ROUTE_SIGNING" & year_record == year,]
@@ -691,11 +693,10 @@ calc_completeness <- function(data, year, variable){
     
     # NOTE: coalesce
     
-    
     coverage = dat.FACILITY_TYPE[, .(route_id, begin_point, end_point, expansion_factor, FACILITY_TYPE = value_numeric)] %>%
       coverage_join(
         dat.variable[, .(route_id, begin_point, end_point, expansion_factor,
-          variable = fcoalesce(value_text, as.character(value_numeric)))]) %>%
+          variable = fcoalesce(as.character(value_text), as.character(value_numeric)))]) %>%
       coverage_join(
         dat.F_SYSTEM[, .(route_id, begin_point, end_point, F_SYSTEM = value_numeric)]) %>%
       coverage_join(

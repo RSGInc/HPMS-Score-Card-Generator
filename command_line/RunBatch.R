@@ -29,7 +29,7 @@ if ( length(args) < 1 ){
 year_selection <- 2020
 year_compare <- 2019
 submission_deadline <- '2021-06-15'
-reimport = FALSE
+reimport = TRUE
 
 root <- rprojroot::find_rstudio_root_file()
 setwd(root)
@@ -109,7 +109,6 @@ cat('Running states:', state_abbrev, '\n\n')
 
 # Create PDF ----------------------------------------------------------------
 savepath <- "output/"
-national <- NULL
 
 for(state in state_abbrev){
   
@@ -137,7 +136,7 @@ for(state in state_abbrev){
       goverwrite = 'ALL N'
       success <- ImportData(state_selection=state,
                             year_selection=year_compare)
-      cat('complete!\n')
+      cat('Import complete!\n')
       message('Finished importing ', state, ' at ', format(Sys.time(), '%H:%M:%S\n'))
       
       data.list <- getStateDataSets(state, year_selection, year_compare)
@@ -147,7 +146,7 @@ for(state in state_abbrev){
                  year = data.list[["year_selection"]],
                  year_compare = data.list[["year_compare"]],
                  # population = population,
-                 national = national,
+                 # national = national,
                  path = savepath)
       
     }, error = function(cond){
@@ -159,6 +158,7 @@ for(state in state_abbrev){
   msg <- paste('Finished', state, 'at',  format(Sys.time(), '%H:%M:%S\n'))
   cat(msg)    
   message(msg)
+  message('===================================================================')
 }
 
 #warnings()

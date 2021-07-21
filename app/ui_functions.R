@@ -94,7 +94,7 @@ Run <- function(task=NA, ...) {
                    year = data.list[["year_selection"]],
                    year_compare = data.list[["year_compare"]],
                    # population = population,
-                   national = national,
+                   # national = national,
                    path = savepath)
   
       } else if (sctask == 2) {
