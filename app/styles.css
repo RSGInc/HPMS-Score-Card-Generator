@@ -1,0 +1,64 @@
+/* RSG orange rgb(246,139,31);*/
+
+/* primary grey 72,72,74*/
+/* secondary grey 119,120,123*/
+
+/* RSG marine 0,111,161*/
+
+.navbar {
+  background-color:#708090;
+  /*border-color:rgb(246,139,31);*/
+}
+.navbar-brand {
+  font-size:1.75em;
+  background-image: url("fhwa_logo.png");
+  background-repeat: no-repeat;
+  background-size: 50%;
+  background-position: 0 50%;
+  padding-left:450px;
+  background-origin: padding-box;
+}
+
+.navbar-inverse .navbar-nav>.active>a, .navbar-inverse .navbar-nav>.active>a:hover, .navbar-inverse .navbar-nav>.active>a:focus {
+  background-color:#708090;
+}
+
+.navbar-inverse .navbar-nav>li>a:hover {
+  background-color:#708090;
+}
+
+.nav-tabs-custom > .nav-tabs > li.active {
+  border-top-color: #36648B;
+}
+
+.button-download {
+  background-color: #e7e7e7; color: black;
+}
+.value {
+  background-color:#36648B;
+}
+
+.inner {
+  background-color:#36648B;
+}
+
+.caption {
+  background-color:#36648B;
+}
+
+a {
+  text-decoration: none;
+}
+
+a:hover {
+  color: #708090;
+  text-decoration: underline;
+}
+
+a:active {
+  color: #708090;
+}
+
+a:visited {
+  color: #36648B;
+}
