@@ -14,6 +14,7 @@
 
 create_title_page <- function(data, state, year, year_compare = NULL) {
   
+  if ( debugmode ) browser()
   
   # Load data -----------------------------------------------------------------
   
@@ -32,6 +33,8 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
   data_summary <- create_data_summary(data, state, year, year_compare)
   data_summary <- data_summary[nrow(data_summary):1,]
   #data_summary <- data.frame(data_summary)
+  
+
   
   message("Calculating quality score for each item.")
   dt_quality <- calc_quality_all(data, year, year_compare)
@@ -77,6 +80,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
   CompletedScore = dt_coverage2[, sum(card_score * Completeness_Weight, na.rm=TRUE)]
   CompletedScoreMax = dt_coverage2[, sum(CompleteHigh * (!is.na(card_score)) * Completeness_Weight)]
   
+  # FIXME: items not required should not count towards top level score
   QualityScore    <- dt_quality[, sum(Quality_Score * Quality_Weight, na.rm=TRUE)]
   QualityScoreMax <- dt_quality[, sum(!is.na(Quality_Score) * Quality_Weight) * 100]
   qMean <- QualityScore / QualityScoreMax

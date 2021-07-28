@@ -37,11 +37,12 @@ invisible(sapply(X =codefiles , FUN = source))
 # Run scorecards via command line tool.
 # Rscript RunBatch.R ALL
 
-# debugmode = TRUE # Displays output to graphics device instead of PDF
+debugmode = TRUE # Displays output to graphics device instead of PDF
 # debug(plot_completeness)
 
-# Run(task = 1, state = 'MO', year = 2020)
-# Run(task = 1, state = 'VA', year = 2019)
+# Import data
+Run(task = 1, state = 'IN', year = 2020)
 
-Run(task = 2, state = 'PR', year = 2020, year_compare = 2019)
+# Run scorecard
+Run(task = 2, state = 'IN', year = 2020, year_compare = 2019)
 

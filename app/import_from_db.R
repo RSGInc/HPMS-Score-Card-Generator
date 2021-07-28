@@ -155,6 +155,8 @@ ImportData <- function(state_selection, year_selection) {
   
   # Load the data -----------------------------------------------------------
   
+  if ( debugmode ) browser()
+  
   for (state in states) {
     
     for(year in years) {
@@ -493,8 +495,13 @@ FormatDataSet <- function(dat, state_abbr, year) {
   
   data_exp[, rural_urban := c("Urban","Rural")[1 + 1 * (URBAN_CODE == 99999)]]
   
-  data_exp = gExtentDetail[data_exp, on = .(data_item, rural_urban)]
+  data_exp = merge(
+    data_exp,
+    gExtentDetail,
+    by  = c('data_item', 'rural_urban'),
+    all.x=TRUE)
 
+  # Create section_extent based on data item, f-system and rural/urban designation
   data_exp[, section_extent := ""]
   
   data_exp[NHS == 1, section_extent := nhs]
@@ -506,48 +513,61 @@ FormatDataSet <- function(dat, state_abbr, year) {
   data_exp[section_extent == "" & F_SYTEMorig==6, section_extent := fs6]
   data_exp[section_extent == "" & F_SYTEMorig==7, section_extent := fs7]
   
-  for(name in c("extent", "rural_urban", "nhs",
-                "fs1", "fs2", "fs3", "fs4", "fs5", "fs6", "fs7")){
-    data_exp[, (name) := NULL]
-  }
     
-  # Turn off checks -- data won't match because of expansion and subsetting
-  # # Check imported data against summary table -------------------------------
-  # state_code <- getStateNumFromCode(state_abbr)
-  # 
-  # check <- checkSummary(year, state_code, data_exp)
-  # 
-  # if ( !isTRUE(check) ){
-  #  
-  #   # Save the mismatches
-  #   path <- file.path('data', getStateLabelFromNum(state_code))
-  #   file <- paste0(year, '_summary_formatting_differences.csv')
-  #   fullpath <- file.path(path, file)
-  #   
-  #   cat('... saving differences to', fullpath, '\n')
-  #   
-  #   # Create new directory if needed
-  #   if (!dir.exists(path)) dir.create(path)
-  #   
-  #   # Write the file
-  #   write.csv(x=check, file=fullpath, na='', row.names=FALSE)
-  #  
-  #   # warntext <- paste(year, getStateAbbrFromNum(state_code),
-  #   #                   'Saving differences to',
-  #   #                   fullpath, '\n')
-  #   # warning(warntext)
-  # }
-  # 
-  # Filter out sections that are not needed.  E.g. SP items with no expansion factor or sample_id
+  # Filter out sections that are not needed.  E.g. SP items with no expansion factor
+  # or sample_id
   # E.g. Ramps (FACILITY_TYPE = 4) for non FE+R
   
-  cat("Mileage removed for SP sections with no expansion factors: ",data_exp[(section_extent %in% c('SP', 'SP*') & is.na(data_exp$expansion_factor)),sum(end_point-begin_point)],"\n")
+  warning(
+    "Mileage removed for SP sections with no expansion factors: ",
+    data_exp[
+      (section_extent %in% c('SP', 'SP*') & is.na(data_exp$expansion_factor)),
+      sum(end_point-begin_point)],
+    "\n")
   
-  data_exp = data_exp[!(section_extent %in% c('SP', 'SP*') & is.na(data_exp$expansion_factor))]
+  data_exp = data_exp[
+    !(section_extent %in% c('SP', 'SP*') & is.na(data_exp$expansion_factor))]
+  
+  
+  if ( debugmode ){
+    
+    browser()
+    
+    
+    data_exp[, has_se := 1 * (section_extent != '')]
+    
+    data_exp[, has_ext := 1 * !is.na(extent)]
+    
+    data_exp[, .N, has_ext]
+    
+    data_exp[, .N, keyby=.(has_se, data_item, rural_urban)] %>%
+      dcast(data_item + rural_urban ~ has_se, value.var = 'N')
+  
+    data_exp[, .N, keyby=.(has_se, rural_urban, F_SYTEMorig)] %>%
+      dcast(rural_urban + F_SYTEMorig ~ has_se, value.var = 'N')
+    
+    data_exp[, .N, keyby=.(has_se, rural_urban, F_SYTEMorig)] %>%
+      dcast(rural_urban + F_SYTEMorig ~ has_se, value.var = 'N')
+    
+    data_exp[, .N, keyby= .(has_se, has_ef = 1 * !is.na(expansion_factor))]
+  }
+  
+  
+  # Drop rows that have no designated section_extent
+  # FIXME: why would these have no section_extent?
+  # depends on F_SYSTEM, rural/urban, and data item
   
   data_exp = data_exp[section_extent != '',]
   
+
   # Prepare to write out the data
+  
+  drop_cols  = c(
+    "extent", "rural_urban", "nhs",
+    "fs1", "fs2", "fs3", "fs4", "fs5", "fs6", "fs7")
+  
+  data_exp[, (drop_cols) := NULL]
+  
   setkeyv(data_exp, c("state_code","year_record","route_id","data_item","begin_point","end_point"))
 
   rm(data_noFT6)  
