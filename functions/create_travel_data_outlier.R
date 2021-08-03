@@ -80,11 +80,11 @@ create_travel_data_outlier <- function(
     setnames(report, "perc_miles", "% of \nMiles")
 
     thm <- ttheme_default(
-      core = list(fg_params = list(col='black', fontsize=6.5, hjust=1, x=0.95),
+      core = list(fg_params = list(col=gColors$text, fontsize=6.5, hjust=1, x=0.95),
                   bg_params=list(fill='grey95'),
                   padding=unit(c(0.1, 0.1), 'inches')),
-      colhead = list(fg_params = list(col='black', fontsize=7, fontface='bold', hjust=1, x=0.95),
-                     bg_params = list(fill='grey90'),
+      colhead = list(fg_params = list(col=gColors$text, fontsize=7, fontface='bold', hjust=1, x=0.95),
+                     bg_params = list(fill=gColors$text_background),
                      padding=unit(c(0.1, 0.1), 'inches'))
     )
     
@@ -95,7 +95,7 @@ create_travel_data_outlier <- function(
     return(ob)
   } else
   {
-    return(textGrob(NoDataString, gp=gpar(fontsize=8, col="Red")))
+    return(textGrob(NoDataString, gp=gpar(fontsize=8, col=gColors$highlight)))
   }
   
 }

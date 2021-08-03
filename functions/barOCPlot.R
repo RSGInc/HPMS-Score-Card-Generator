@@ -50,28 +50,28 @@ barOCPlot <- function(
     coord_flip() +
     ylab(label="") +
     xlab(label=title) +
-    scale_fill_manual("", values=c("slategray"="slategray",
+    scale_fill_manual("", values=c("slategray"=gColors$dark,
                                    "gray85"="gray85",
                                    "gray65"="gray65",
-                                   "black"="black")) +
+                                   "black"=gColors$text)) +
     theme_minimal() + 
     theme(
       strip.text.x = element_text(size = 8, angle = 0),
       strip.text.y = element_text(size = 8, angle = 0),
       axis.ticks=element_blank(),
-      axis.title.x=element_text(size=8,face="bold",colour="slategray",hjust=0.5,angle=90),
-      axis.title.y=element_text(size=8,face="bold",colour="slategray",hjust=0.5),
+      axis.title.x=element_text(size=8,face="bold",colour=gColors$dark,hjust=0.5,angle=90),
+      axis.title.y=element_text(size=8,face="bold",colour=gColors$dark,hjust=0.5),
       legend.position="none",
       panel.grid.major = element_blank(),
       panel.grid.minor = element_blank(),
       panel.border = element_blank(),
       panel.background = element_blank(),
-      axis.line = element_line(colour = "white"),
+      axis.line = element_line(colour = gColors$blank),
       plot.margin = unit(c(0,-3,0,-3), "cm")
     ) +
     
     theme(axis.text.x=element_blank()) +
-    theme(axis.text.y=element_text(size=5, hjust = 1,colour="slategray"))
+    theme(axis.text.y=element_text(size=5, hjust = 1,colour=gColors$dark))
   
   return(p)
   
