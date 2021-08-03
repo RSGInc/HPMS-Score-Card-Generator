@@ -30,7 +30,7 @@ create_donut_chart <- function(results)
      results$label <- paste0(round(results$fraction,2)*100,"%")
      
      p <- ggplot(results, aes(fill=category, ymax=ymax, ymin=ymin, xmax=5, xmin=3.5)) +
-          geom_rect(colour="white",fill=c("gray65","gray85","red")) +
+          geom_rect(colour=gColors$blank,fill=c("gray65","gray85",gColors$highlight)) +
           #geom_text(aes(x = count)) +
           coord_polar(theta="y") +
           xlim(c(0, 5)) +
@@ -40,7 +40,7 @@ create_donut_chart <- function(results)
                 axis.text.y=element_blank(),
                 axis.ticks=element_blank(),
                 panel.border = element_blank(),
-                text = element_text(size=8,colour = "black",face="bold")
+                text = element_text(size=8,colour=gColors$text, face="bold")
           ) +
           guides(fill = guide_legend(override.aes = list(colour = NA))) 
      

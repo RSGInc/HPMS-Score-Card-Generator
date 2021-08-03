@@ -10,24 +10,24 @@
 # calcQuality function.
 ###########################################################################
 
-plotQuality <- function(score, x, y, text=TRUE, col_na = 'gray90'){
+plotQuality <- function(score, x, y, text=TRUE, col_na = gColors$text_background){
 
   bar_height = 2.5
   asp_ratio = 2
   max_length = bar_height * asp_ratio
   
-  col_blank = 'white'
+  col_blank = gColors$blank
   
   if ( is.na(score) ){
     
     border_col = col_na
-    fill_col = 'white'
+    fill_col = col_blank
     text = FALSE
     
   } else {
   
-    border_col = 'slategray'
-    fill_col = 'slategray'
+    border_col = gColors$dark
+    fill_col = gColors$dark
     
   }
   

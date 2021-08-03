@@ -12,15 +12,15 @@
 ###########################################################################
 
 
-create_info_page <- function(state, year, color="white"){
+create_info_page <- function(state, year, color=gColors$blank){
     grid.arrange(
           # header
           rectGrob(gp = gpar(fill = color, col = color)), # saves space for the header
           
-          rectGrob(gp = gpar(fill = "slategray", col = "white")), 
+          rectGrob(gp = gpar(fill = gColors$dark, col = gColors$blank)), 
 
           # this text gets overlayed by Kevin's image
-          textGrob("information goes here!",gp = gpar(fill = "white", col = "red")), 
+          textGrob("information goes here!",gp = gpar(fill = gColors$blank, col = gColors$highlight)), 
           
           nrow=3,heights = unit(c(0.6,0.03,7.5-0.63),units="inches"))
      

@@ -12,9 +12,9 @@
 
 crossbarPlot <- function(result){
 
-  col_point = 'black'
-  col_label = 'slategray'
-  col_blank = 'white'
+  col_point = gColors$text
+  col_label = gColors$dark
+  col_blank = gColors$blank
   
      p <- ggplot(result, aes(groupCat, mq, ymin = lq, ymax=uq))
      p <- p + 

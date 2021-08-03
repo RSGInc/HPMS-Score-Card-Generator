@@ -16,7 +16,7 @@ create_page_summary <- function(
   year,
   year_compare=NULL,
   x1,x2=NULL,x3=NULL, 
-  color="white",
+  color=gColors$blank,
   title,icontext,
   page,
   ramps=FALSE){
@@ -41,39 +41,39 @@ create_page_summary <- function(
   
   # header (1, 2)
   row1 <- rectGrob(gp = gpar(fill = color, col = color)) # saves space for the header
-  row2 <- rectGrob(gp = gpar(fill = "slategray", col = "white"))
+  row2 <- rectGrob(gp = gpar(fill = gColors$dark, col = gColors$blank))
   
   # titles (3)
   row3 <- arrangeGrob(
     rectGrob(gp=gpar(fill=color, col = color)),
-    rectGrob(gp=gpar(fill="white", col = "white")),
+    rectGrob(gp=gpar(fill=gColors$blank, col = gColors$blank)),
     rectGrob(gp=gpar(fill=color, col = color)),
-    rectGrob(gp=gpar(fill="white", col = "white")),
+    rectGrob(gp=gpar(fill=gColors$blank, col = gColors$blank)),
     if(show2){
       rectGrob(gp=gpar(fill=color, col = color))
     } else {
-      rectGrob(gp=gpar(fill="white", col = "white"))
+      rectGrob(gp=gpar(fill=gColors$blank, col = gColors$blank))
     },
-    rectGrob(gp=gpar(fill="white", col = "white")),
+    rectGrob(gp=gpar(fill=gColors$blank, col = gColors$blank)),
     if(show3){
       rectGrob(gp=gpar(fill=color, col = color))
     } else {
-      rectGrob(gp=gpar(fill="white", col = "white"))
+      rectGrob(gp=gpar(fill=gColors$blank, col = gColors$blank))
     },
-    rectGrob(gp = gpar(fill = "white", col = "white")),
+    rectGrob(gp = gpar(fill = gColors$blank, col = gColors$blank)),
     nrow=1, ncol=8, widths=width
   )
 
   # buffer (4)
   row4 <- arrangeGrob(
     rectGrob(gp=gpar(fill=color, col = color)),
-    rectGrob(gp=gpar(fill="white", col = "white")),
-    rectGrob(gp=gpar(fill="white", col = "white")),
-    rectGrob(gp=gpar(fill="white", col = "white")),
-    rectGrob(gp=gpar(fill="white", col = "white")),
-    rectGrob(gp=gpar(fill="white", col = "white")),
-    rectGrob(gp=gpar(fill="white", col = "white")),
-    rectGrob(gp = gpar(fill = "white", col = "white")),
+    rectGrob(gp=gpar(fill=gColors$blank, col = gColors$blank)),
+    rectGrob(gp=gpar(fill=gColors$blank, col = gColors$blank)),
+    rectGrob(gp=gpar(fill=gColors$blank, col = gColors$blank)),
+    rectGrob(gp=gpar(fill=gColors$blank, col = gColors$blank)),
+    rectGrob(gp=gpar(fill=gColors$blank, col = gColors$blank)),
+    rectGrob(gp=gpar(fill=gColors$blank, col = gColors$blank)),
+    rectGrob(gp = gpar(fill = gColors$blank, col = gColors$blank)),
     nrow=1, ncol=8, widths=width
   )
   
@@ -86,7 +86,7 @@ create_page_summary <- function(
                           gVariables[x2, Data_Type], gVariables[x2,Extent],
                           gVariables[x2,Extent_FS],ramps=ramps)
   } else {
-    tab52 <- rectGrob(gp=gpar(fill="white", col = "white"))
+    tab52 <- rectGrob(gp=gpar(fill=gColors$blank, col = gColors$blank))
   }
   
   if(show3){
@@ -94,18 +94,18 @@ create_page_summary <- function(
                                         gVariables[x3, Data_Type], gVariables[x3,Extent],
                                         gVariables[x3,Extent_FS], ramps=ramps)
   } else {
-    tab53 <- rectGrob(gp=gpar(fill="white", col = "white"))
+    tab53 <- rectGrob(gp=gpar(fill=gColors$blank, col = gColors$blank))
   }
   
   row5 <- arrangeGrob(
     rectGrob(gp=gpar(fill=color, col = color)),
-    rectGrob(gp=gpar(fill="white", col = "white")),
+    rectGrob(gp=gpar(fill=gColors$blank, col = gColors$blank)),
     tab51,
-    rectGrob(gp=gpar(fill="white", col = "white")),
+    rectGrob(gp=gpar(fill=gColors$blank, col = gColors$blank)),
     tab52,
-    rectGrob(gp=gpar(fill="white", col = "white")),
+    rectGrob(gp=gpar(fill=gColors$blank, col = gColors$blank)),
     tab53,
-    rectGrob(gp = gpar(fill = "white", col = "white")),
+    rectGrob(gp = gpar(fill = gColors$blank, col = gColors$blank)),
     nrow=1,ncol=8,widths=width
   )
   
@@ -122,7 +122,7 @@ create_page_summary <- function(
                                 gVariables[x2,National_Data_Comparison],
                                 ramps=ramps))
   } else {
-    plt62 <- rectGrob(gp=gpar(fill="white", col = "white"))
+    plt62 <- rectGrob(gp=gpar(fill=gColors$blank, col = gColors$blank))
   }
   
   if (show3){
@@ -132,18 +132,18 @@ create_page_summary <- function(
                                 gVariables[x3,National_Data_Comparison],
                                 ramps=ramps))
   } else {
-    plt63 <- rectGrob(gp=gpar(fill="white", col = "white"))
+    plt63 <- rectGrob(gp=gpar(fill=gColors$blank, col = gColors$blank))
   }
   
   row6 <- arrangeGrob(
-    rectGrob(gp=gpar(fill=color, col = "white")),
-    rectGrob(gp=gpar(fill="white", col = "white")),
+    rectGrob(gp=gpar(fill=color, col = gColors$blank)),
+    rectGrob(gp=gpar(fill=gColors$blank, col = gColors$blank)),
     plt61,
-    rectGrob(gp=gpar(fill="white", col = "white")),
+    rectGrob(gp=gpar(fill=gColors$blank, col = gColors$blank)),
     plt62,
-    rectGrob(gp=gpar(fill="white", col = "white")),
+    rectGrob(gp=gpar(fill=gColors$blank, col = gColors$blank)),
     plt63,
-    rectGrob(gp = gpar(fill = "white", col = "white")),
+    rectGrob(gp = gpar(fill = gColors$blank, col = gColors$blank)),
     nrow=1, ncol=8, widths=width
   )
   
@@ -158,7 +158,7 @@ create_page_summary <- function(
                                      gVariables[x2,Name], gVariables[x2, YOY_Hist_Type],
                                      ramps=ramps)
   } else {
-    plt72 <- rectGrob(gp=gpar(fill="white", col = "white"))
+    plt72 <- rectGrob(gp=gpar(fill=gColors$blank, col = gColors$blank))
   }
   
   if ( show3 ){
@@ -166,20 +166,20 @@ create_page_summary <- function(
                                     gVariables[x3,Name], gVariables[x3, YOY_Hist_Type],
                                     ramps=ramps)
   } else {
-    plt73 <- rectGrob(gp=gpar(fill="white", col = "white"))
+    plt73 <- rectGrob(gp=gpar(fill=gColors$blank, col = gColors$blank))
   }
   
   
   
   row7 <- arrangeGrob(
-    rectGrob(gp=gpar(fill=color, col = "white")),
-    rectGrob(gp=gpar(fill="white", col = "white")),
+    rectGrob(gp=gpar(fill=color, col = gColors$blank)),
+    rectGrob(gp=gpar(fill=gColors$blank, col = gColors$blank)),
     plt71,
-    rectGrob(gp=gpar(fill="white", col = "white")),
+    rectGrob(gp=gpar(fill=gColors$blank, col = gColors$blank)),
     plt72,
-    rectGrob(gp=gpar(fill="white", col = "white")),
+    rectGrob(gp=gpar(fill=gColors$blank, col = gColors$blank)),
     plt73,
-    rectGrob(gp = gpar(fill = "white", col = "white")),
+    rectGrob(gp = gpar(fill = gColors$blank, col = gColors$blank)),
     nrow=1, ncol=8, widths=width
   )
   

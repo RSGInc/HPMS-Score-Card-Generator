@@ -11,7 +11,7 @@
 ###########################################################################
 
 create_cross_validation_page <- function(dt_cross, state, year){
-  color <- 'white'
+  color <- gColors$blank
   
   maxrows <- 21
   max_stringwidth <- 90
@@ -37,9 +37,9 @@ create_cross_validation_page <- function(dt_cross, state, year){
   core_x <- matrix(c(0.99, 0.9, 0.99), ncol=3, nrow=nrow(dt_1), byrow=TRUE)
   
   thm <- ttheme_default(
-    core    = list(fg_params=list(col='slategray', fontsize=fontsize, hjust=core_hjust, x=core_x),
+    core    = list(fg_params=list(col=gColors$dark, fontsize=fontsize, hjust=core_hjust, x=core_x),
                    padding = unit(c(0, 0), 'mm')),
-    colhead = list(fg_params=list(col='black', fontsize=fontsize,
+    colhead = list(fg_params=list(col=gColors$text, fontsize=fontsize,
                                   fontface='bold', hjust=0.5),
                    padding=unit(c(3, 3), 'mm')))
   
@@ -53,9 +53,9 @@ create_cross_validation_page <- function(dt_cross, state, year){
   core_x <- matrix(c(0.99, 0.9, 0.99), ncol=3, nrow=nrow(dt_2), byrow=TRUE)
   
   thm <- ttheme_default(
-    core    = list(fg_params=list(col='slategray', fontsize=fontsize, hjust=core_hjust, x=core_x),
+    core    = list(fg_params=list(col=gColors$dark, fontsize=fontsize, hjust=core_hjust, x=core_x),
                    padding = unit(c(0, 0), 'mm')),
-    colhead = list(fg_params=list(col='black', fontsize=fontsize,
+    colhead = list(fg_params=list(col=gColors$text, fontsize=fontsize,
                                   fontface='bold', hjust=0.5),
                    padding=unit(c(3, 3), 'mm')))
   
@@ -67,7 +67,7 @@ create_cross_validation_page <- function(dt_cross, state, year){
   ob <- arrangeGrob(
     # header
     rectGrob(gp = gpar(fill = color, col = color)), # saves space for the header
-    rectGrob(gp = gpar(fill = "slategray", col = "white")), 
+    rectGrob(gp = gpar(fill = gColors$dark, col = gColors$blank)), 
     tbl_1, tbl_2,
     layout_matrix = rbind(c(1,1), c(2,2), c(3, 4)),
     heights = unit(c(0.6, 0.03, 7.5-0.63), units="inches")

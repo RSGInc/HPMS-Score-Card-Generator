@@ -26,10 +26,10 @@ create_travel_data_yoy <- function(
   ramps
 ){
   
-  col_same = 'slategray'
-  col_changed = 'gray75'
-  col_not_matched = 'black'
-  col_highlight = 'red'
+  col_same = gColors$dark
+  col_changed = gColors$light
+  col_not_matched = gColors$text
+  col_highlight = gColors$highlight
   
   
   type <- gVariables[Name == variable, Data_Type]

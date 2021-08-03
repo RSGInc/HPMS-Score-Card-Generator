@@ -22,10 +22,10 @@ create_travel_yoy_density <- function(
   nvalues_bar = 11
 ){
   
-  col_year1 = 'slategray'
-  col_year2 = 'gray75'
-  col_national = 'black'
-  col_noplot = 'white'
+  col_year1 = gColors$dark
+  col_year2 = gColors$light
+  col_national = gColors$text
+  col_noplot = gColors$blank
   
   #if ( variable %in% c('YEAR_LAST_CONSTRUCTION', 'YEAR_LAST_IMPROV') ) browser()
   
@@ -179,7 +179,7 @@ create_travel_yoy_density <- function(
                         density_type = density_type)
       
       spacer_height <- 0.07
-      fill_rect <- rectGrob(gp = gpar(fill='white', col='white'))
+      fill_rect <- rectGrob(gp = gpar(fill=gColors$blank, col=gColors$blank))
       
       
       obj <- arrangeGrob(
@@ -369,7 +369,7 @@ create_travel_yoy_density <- function(
     return(obj)
   } else {
     # nothing to report because data are missing
-    return(textGrob(NoDataString,gp=gpar(fontsize=8, col="Red")))
+    return(textGrob(NoDataString,gp=gpar(fontsize=8, col=gColors$highlight)))
   }
   
 }

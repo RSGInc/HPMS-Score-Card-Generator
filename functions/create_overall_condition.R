@@ -48,7 +48,7 @@ create_overall_condition <- function(data, state, year, population)
         nrow(surface) == 0)
      {
        # exit if not enough data to complete the analysis 
-       return(textGrob(NoDataString, gp=gpar(fontsize=8,  col="Red")))
+       return(textGrob(NoDataString, gp=gpar(fontsize=8,  col=gColors$highlight)))
      } else {
        urban[, rural:=0]
        urban[urban_code == 99999, rural:=1]
@@ -156,7 +156,7 @@ create_overall_condition <- function(data, state, year, population)
             p1 <- barOCPlot(results.interstate, "Interstate")
        } else
        {
-            p1 <- textGrob(NoDataString, gp=gpar(fontsize=8,  col="Red"))
+            p1 <- textGrob(NoDataString, gp=gpar(fontsize=8,  col=gColors$highlight))
        }
        
        if(nrow(results.NHS) > 0)
@@ -164,12 +164,12 @@ create_overall_condition <- function(data, state, year, population)
             p2 <- barOCPlot(results.NHS, "NHS")
        } else
        {
-            p2 <- textGrob(NoDataString, gp=gpar(fontsize=8,  col="Red"))
+            p2 <- textGrob(NoDataString, gp=gpar(fontsize=8,  col=gColors$highlight))
        }
        
        groblist <- list(textGrob(''),
                         textGrob("The algorithm applies the MAP-21\ncondition rule to classify\nsections as good,  fair or poor.", 
-                                 hjust=1, gp=gpar(col="slategray", fontface="bold", fontsize=7)), 
+                                 hjust=1, gp=gpar(col=gColors$dark, fontface="bold", fontsize=7)), 
                         p1,
                         textGrob(""),
                         p2) 

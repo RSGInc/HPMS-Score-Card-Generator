@@ -164,47 +164,49 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
   
   # Draw page ==============================================================
   
+  
   # Graphics parameters ----------------------------------------------------
   
-  col_head = 'steelblue4'
-  col_item = 'slategray'
-  col_body = 'black'
-  col_blank = 'white'
+  col_header = gColors$accent 
+  col_item_label = gColors$dark  
+  col_text = gColors$text
+  col_blank = gColors$blank
+  col_background = gColors$text_background
   
   hdr_left <- 0.25  # Where do the headers start?
   hdr_top <- 0.98 
   
   sec_header_gp <-
-    gpar(col = col_head,
+    gpar(col = col_header,
          fontface = "bold",
          fontsize = 13)
-  line_gp <- gpar(col = col_item, lty = 3)
+  line_gp <- gpar(col = col_item_label, lty = 3)
   
   
   # Page setup -------------------------------------------------------------
   
   grid.arrange(
     arrangeGrob(
-      rectGrob(gp = gpar(fill = "gray90", col = "gray90")),
-      rectGrob(gp = gpar(fill = "white", col = "white")),
+      rectGrob(gp = gpar(fill = col_background, col = col_background)),
+      rectGrob(gp = gpar(fill = col_blank, col = col_blank)),
       rectGrob(gp = gpar(fill = "gray20", col = "gray20")),
       
       arrangeGrob(
-        rectGrob(gp = gpar(fill = "gray90", col = "gray90")),
-        rectGrob(gp = gpar(fill = "gray90", col = "gray90")),
-        rectGrob(gp = gpar(fill = "gray90", col = "gray90")),
-        rectGrob(gp = gpar(fill = "gray90", col = "gray90")),
-        rectGrob(gp = gpar(fill = "gray90", col = "gray90")),
-        rectGrob(gp = gpar(fill = "gray90", col = "gray90")),
-        rectGrob(gp = gpar(fill = "white", col = "white")),
-        rectGrob(gp = gpar(fill = "white", col = "white")),
-        rectGrob(gp = gpar(fill = "white", col = "white")),
-        rectGrob(gp = gpar(fill = "white", col = "white")),
-        rectGrob(gp = gpar(fill = "white", col = "white")),
-        rectGrob(gp = gpar(fill = "white", col = "white")),
-        rectGrob(gp = gpar(fill = "white", col = "white")),
-        rectGrob(gp = gpar(fill = "white", col = "white")),
-        rectGrob(gp = gpar(fill = "white", col = "white")),
+        rectGrob(gp = gpar(fill = col_background, col = col_background)),
+        rectGrob(gp = gpar(fill = col_background, col = col_background)),
+        rectGrob(gp = gpar(fill = col_background, col = col_background)),
+        rectGrob(gp = gpar(fill = col_background, col = col_background)),
+        rectGrob(gp = gpar(fill = col_background, col = col_background)),
+        rectGrob(gp = gpar(fill = col_background, col = col_background)),
+        rectGrob(gp = gpar(fill = col_blank, col = col_blank)),
+        rectGrob(gp = gpar(fill = col_blank, col = col_blank)),
+        rectGrob(gp = gpar(fill = col_blank, col = col_blank)),
+        rectGrob(gp = gpar(fill = col_blank, col = col_blank)),
+        rectGrob(gp = gpar(fill = col_blank, col = col_blank)),
+        rectGrob(gp = gpar(fill = col_blank, col = col_blank)),
+        rectGrob(gp = gpar(fill = col_blank, col = col_blank)),
+        rectGrob(gp = gpar(fill = col_blank, col = col_blank)),
+        rectGrob(gp = gpar(fill = col_blank, col = col_blank)),
         nrow = 5,
         ncol = 3,
         widths = unit(c(0.035, 0.93, 0.035), units = "npc"),
@@ -226,7 +228,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
     y = 0.68,
     just = "left",
     gp = gpar(
-      col = col_item,
+      col = col_item_label,
       fontface = "bold",
       fontsize = 10
     )
@@ -235,7 +237,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
   grid.draw(linesGrob(
     x = unit(c(0.03, 0.18), "npc"),
     y = unit(c(0.66, 0.66), "npc"),
-    gp = gpar(col = col_body, lty = 1)
+    gp = gpar(col = col_text, lty = 1)
   ))
   
   grid.text(
@@ -244,7 +246,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
     y = 0.63,
     just = "left",
     gp = gpar(
-      col = col_body,
+      col = col_text,
       fontface = "bold",
       fontsize = 13
     )
@@ -256,7 +258,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
     y = 0.57,
     just = "left",
     gp = gpar(
-      col = col_body,
+      col = col_text,
       fontface = "bold",
       fontsize = 27
     )
@@ -265,7 +267,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
   grid.draw(linesGrob(
     x = unit(c(0.03, 0.18), "npc"),
     y = unit(c(0.505, 0.505), "npc"),
-    gp = gpar(col = col_body, lty = 1)
+    gp = gpar(col = col_text, lty = 1)
   ))
   
   grid.text(
@@ -274,7 +276,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
     y = 0.52,
     just = "left",
     gp = gpar(
-      col = col_body,
+      col = col_text,
       fontface = "italic",
       fontsize = 7
     )
@@ -285,7 +287,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
     x = 0.03,
     y = 0.285,
     just = "left",
-    gp = gpar(col = col_body, fontsize = 6)
+    gp = gpar(col = col_text, fontsize = 6)
   )
   
   # logos
@@ -325,7 +327,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
         "npc"
       ),
       vjust = 0,
-      gp = gpar(fill = col_body, col = col_body)
+      gp = gpar(fill = col_text, col = col_text)
     )
   }
   
@@ -339,7 +341,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
         "npc"
       ),
       vjust = 0,
-      gp = gpar(fill = col_body, col = col_body)
+      gp = gpar(fill = col_text, col = col_text)
     )
   }
   
@@ -353,7 +355,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
         "npc"
       ),
       vjust = 0,
-      gp = gpar(fill = col_body, col = col_body)
+      gp = gpar(fill = col_text, col = col_text)
     )
   }
   
@@ -363,21 +365,21 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
     x = 0.41,
     y = 0.83,
     hjust = 0.5,
-    gp = gpar(fontsize = 7, col = "gray50")
+    gp = gpar(fontsize = 7, col = col_item_label)
   )
   grid.text(
     "Completeness",
     x = 0.475,
     y = 0.83,
     hjust = 0.5,
-    gp = gpar(fontsize = 7, col = "gray50")
+    gp = gpar(fontsize = 7, col = col_item_label)
   )
   grid.text(
     "Quality",
     x = 0.54,
     y = 0.83,
     hjust = 0.5,
-    gp = gpar(fontsize = 7, col = "gray50")
+    gp = gpar(fontsize = 7, col = col_item_label)
   )
   
   grid.text(
@@ -385,21 +387,21 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
     x = 0.41,
     y = 0.81,
     hjust = 0.5,
-    gp = gpar(fontsize = 7, col = "gray50")
+    gp = gpar(fontsize = 7, col = col_item_label)
   )
   grid.text(
     paste0("out of ", complete_weight),
     x = 0.475,
     y = 0.81,
     hjust = 0.5,
-    gp = gpar(fontsize = 7, col = "gray50")
+    gp = gpar(fontsize = 7, col = col_item_label)
   )
   grid.text(
     paste0("out of ", quality_weight),
     x = 0.54,
     y = 0.81,
     hjust = 0.5,
-    gp = gpar(fontsize = 7, col = "gray50")
+    gp = gpar(fontsize = 7, col = col_item_label)
   )
   
   
@@ -409,7 +411,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
     y = 0.83 + 0.1 * tscore / max(time_weight, complete_weight, quality_weight) +
       0.03,
     hjust = 0.5,
-    gp = gpar(fontsize = 7, col = col_body)
+    gp = gpar(fontsize = 7, col = col_text)
   )
   grid.text(
     cscore,
@@ -417,7 +419,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
     y = 0.83 + 0.1 * cscore / max(time_weight, complete_weight, quality_weight) +
       0.03,
     hjust = 0.5,
-    gp = gpar(fontsize = 7, col = col_body)
+    gp = gpar(fontsize = 7, col = col_text)
   )
   grid.text(
     qscore,
@@ -425,7 +427,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
     y = 0.83 + 0.1 * qscore / max(time_weight, complete_weight, quality_weight) +
       0.03,
     hjust = 0.5,
-    gp = gpar(fontsize = 7, col = col_body)
+    gp = gpar(fontsize = 7, col = col_text)
   )
   
   grid.text(
@@ -433,22 +435,22 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
     y = 0.90,
     x = 0.71,
     hjust = 1,
-    gp = gpar(fontsize = 10, col = col_item)
+    gp = gpar(fontsize = 10, col = col_item_label)
   )
   
   grid.circle(
     x = 0.32,
     y = 0.88,
     r = unit(0.07, "npc"),
-    gp = gpar(fill = "gray85", col = "gray50")
+    gp = gpar(fill = "gray85", col = col_item_label)
   )
-  #grid.text("Overall",     x=0.31, y=0.87, just="right", gp=gpar(fontsize=18, col=col_item))
+  #grid.text("Overall",     x=0.31, y=0.87, just="right", gp=gpar(fontsize=18, col=col_item_label))
   grid.text(
     paste0(tscore + qscore + cscore),
     x = 0.32,
     y = 0.90,
     just = "left",
-    gp = gpar(fontsize = 23, col = col_body),
+    gp = gpar(fontsize = 23, col = col_text),
     hjust = 0.5
   )
   grid.text(
@@ -456,7 +458,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
     x = 0.32,
     y = 0.86,
     just = "left",
-    gp = gpar(fontsize = 13, col = "gray50"),
+    gp = gpar(fontsize = 13, col = col_item_label),
     hjust = 0.5
   )
   
@@ -472,8 +474,8 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
   
   label_gp <- gpar(fontsize = 8,
                    fontface = "bold",
-                   col = col_item)
-  item_gp <- gpar(fontsize = 8, col = col_body)
+                   col = col_item_label)
+  item_gp <- gpar(fontsize = 8, col = col_text)
   
   y_bot <- 0.825
   
@@ -495,7 +497,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
     gp = gpar(
       fontsize = 9,
       fontface = "bold",
-      col = col_item
+      col = col_item_label
     ),
     hjust = 1
   )
@@ -507,7 +509,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
     gp = gpar(
       fontsize = 9,
       fontface = "bold",
-      col = col_item
+      col = col_item_label
     ),
     hjust = 1
   )
@@ -545,7 +547,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
     gp = gpar(
       fontsize = 5,
       fontface = "italic",
-      col = col_item
+      col = col_item_label
     ),
     hjust = 0.5
   )
@@ -674,7 +676,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
         x=startx + (C - 1) * colWidth,
         y=starty - (R - 1) * rowWidth,
         hjust = 1,
-        gp = gpar(col = col_item, fontsize = 7)
+        gp = gpar(col = col_item_label, fontsize = 7)
       ))
       
       plotCompleteness(
@@ -718,7 +720,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
     y = y,
     hjust = 0,
     gp = gpar(
-      col = col_head,
+      col = col_header,
       fontface = "bold",
       fontsize = 8
     )
@@ -737,7 +739,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
     y = y,
     hjust = 0,
     gp = gpar(
-      col = col_item,
+      col = col_item_label,
       fontface = "italic",
       fontsize = 6
     )
@@ -755,7 +757,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
     y = y,
     hjust = 0,
     gp = gpar(
-      col = col_item,
+      col = col_item_label,
       fontface = "italic",
       fontsize = 6
     )
@@ -772,7 +774,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
     y = y,
     hjust = 0,
     gp = gpar(
-      col = col_item,
+      col = col_item_label,
       fontface = "italic",
       fontsize = 6
     )
@@ -790,7 +792,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
     y=y,
     hjust = 0,
     gp = gpar(
-      col= col_item,
+      col= col_item_label,
       fontface='italic',
       fontsize=6
     )
@@ -807,7 +809,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
     y = y,
     hjust = 0,
     gp = gpar(
-      col = col_head,
+      col = col_header,
       fontface = "bold",
       fontsize = 8
     )
@@ -826,7 +828,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
     y = y,
     hjust = 0,
     gp = gpar(
-      col = col_item,
+      col = col_item_label,
       fontface = "italic",
       fontsize = 6
     )
@@ -846,7 +848,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
     y = y,
     hjust = 0,
     gp = gpar(
-      col = col_item,
+      col = col_item_label,
       fontface = "italic",
       fontsize = 6
     )
@@ -865,7 +867,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
     y = y,
     hjust = 0,
     gp = gpar(
-      col = col_item,
+      col = col_item_label,
       fontface = "italic",
       fontsize = 6
     )
@@ -883,13 +885,13 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
     y = y,
     hjust = 0,
     gp = gpar(
-      col = col_item,
+      col = col_item_label,
       fontface = "italic",
       fontsize = 6
     )
   )
   
-  #grid.text("Not Submitted but Worth Exploring", x=0.805+xshift, y=y, hjust=0, gp=gpar(col=col_item, fontface="italic", fontsize=6))
+  #grid.text("Not Submitted but Worth Exploring", x=0.805+xshift, y=y, hjust=0, gp=gpar(col=col_item_label, fontface="italic", fontsize=6))
   
   
   

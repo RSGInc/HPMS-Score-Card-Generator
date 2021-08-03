@@ -56,7 +56,7 @@ theme_adjust <- theme(
   panel.grid.minor = element_blank(),
   panel.border = element_blank(),
   panel.background = element_blank(),
-  axis.line = element_line(colour = "white"),
+  axis.line = element_line(colour = gColors$blank),
   plot.margin = unit(c(topMargin=0,leftMargin=0,bottomMargin=0,rightMargin=0), "cm")
 )
 
@@ -74,10 +74,10 @@ densityPlot <- function(
   
   plotfun = get(paste0('geom_', density_type))
   
-  col_year1 = 'slategray'
-  col_year2 = 'gray75'
-  col_national = 'black'
-  col_noplot = 'white'
+  col_year1 = gColors$dark
+  col_year2 = gColors$light
+  col_national = gColors$text
+  col_noplot = gColors$blank
   
   
   if(density_type == 'bar' ){
@@ -220,7 +220,7 @@ densityPlot <- function(
       theme(axis.text.x=element_text(size=4.5, angle=30, hjust = 1,colour=col_noplot),
             plot.title = element_text(size=6.1, face="bold",colour = col_year1, hjust=0.5),
             axis.title.y=element_text(size=5, face="bold", angle = 90, hjust = 0.5, colour=col_year1),
-            axis.line.x.bottom= element_line(color=ifelse(density_type == 'bar', col_year1, 'white')))
+            axis.line.x.bottom= element_line(color=ifelse(density_type == 'bar', col_year1, gColors$blank)))
     
     p2 <- p2 +     
       ggtitle(title) +
@@ -234,7 +234,7 @@ densityPlot <- function(
       theme(axis.text.x=element_text(size=4.5, angle=30, hjust = 1, colour=col_noplot),
             plot.title = element_text(size=6.1, face="bold",colour = col_noplot, hjust=0.5),
             axis.title.y=element_text(size=5, face="bold", angle = 90, hjust = 0.5, colour=col_year2),
-            axis.line.x.bottom= element_line(color=ifelse(density_type == 'bar', col_year2, 'white')))
+            axis.line.x.bottom= element_line(color=ifelse(density_type == 'bar', col_year2, gColors$blank)))
     
     
     p3 <- p3 + 
@@ -247,9 +247,9 @@ densityPlot <- function(
       ylab(label = ifelse(showLabel, "National", '')) +
       theme_adjust +
       theme(axis.text.x=element_text(size=4.5, angle=30, hjust = 1,colour=col_year1),
-            plot.title = element_text(size=6.1, face="bold",colour = "white", hjust=0.5),
+            plot.title = element_text(size=6.1, face="bold",colour = gColors$blank, hjust=0.5),
             axis.title.y=element_text(size=5, face="bold", angle = 90, hjust = 0.5, colour=col_national),
-            axis.line.x.bottom= element_line(color=ifelse(density_type == 'bar', col_national, 'white')))
+            axis.line.x.bottom= element_line(color=ifelse(density_type == 'bar', col_national, gColors$blank)))
     
     # browser()
     
@@ -267,7 +267,7 @@ densityPlot <- function(
     return(
       arrangeGrob(
         textGrob(paste0(title,"\ndata are not available or not applicable"),
-                 just="top", gp=gpar(fontsize=5, col = "red")),
+                 just="top", gp=gpar(fontsize=5, col = gColors$highlight)),
         heights=unit(1, units="npc"))
     )
   }

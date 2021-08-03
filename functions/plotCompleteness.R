@@ -11,13 +11,13 @@
 ###########################################################################
 
 
-plotCompleteness = function(score, x, y, item_required = 1, col_na = 'gray90'){
+plotCompleteness = function(score, x, y, item_required = 1, col_na = gColors$text_background){
   
-  col_blank = 'white'
-  col_not_submitted = 'white'
-  col_incomplete = 'gray75'
-  col_complete = 'slategray'
-  col_highlight = 'red'
+  col_blank = gColors$blank
+  col_not_submitted = gColors$blank
+  col_incomplete = gColors$light
+  col_complete = gColors$dark
+  col_highlight = gColors$highlight
   
   if ( is.na(score) | item_required == 0 ){
     
@@ -66,7 +66,7 @@ plotCompleteness = function(score, x, y, item_required = 1, col_na = 'gray90'){
   #     y=y,
   #     pch=13,
   #     size=unit(0.01, 'npc'),
-  #     gp=gpar(col='gray75'),
+  #     gp=gpar(col=gColors$light),
   #     default.units='npc')
   # }
 }
