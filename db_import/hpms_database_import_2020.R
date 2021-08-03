@@ -39,16 +39,16 @@ sample_urls = c(sample = 'https://datahub.transportation.gov/resource/md8h-imnk.
 
 # Sections
 section_urls = c(
-  # new_england = 'https://datahub.transportation.gov/resource/hbyg-7iey.json',
-  # heartland = 'https://datahub.transportation.gov/resource/jh87-u8fg.json',
-  # gulf = 'https://datahub.transportation.gov/resource/vjhv-he2m.json',
-  # appalachia = 'https://datahub.transportation.gov/resource/5kg6-4nxs.json',
+  new_england = 'https://datahub.transportation.gov/resource/hbyg-7iey.json',
+  heartland = 'https://datahub.transportation.gov/resource/jh87-u8fg.json',
+  gulf = 'https://datahub.transportation.gov/resource/vjhv-he2m.json',
+  appalachia = 'https://datahub.transportation.gov/resource/5kg6-4nxs.json',
   mid_atlantic = 'https://datahub.transportation.gov/resource/g4cy-ux2k.json',
-  # lakes = 'https://datahub.transportation.gov/resource/uvrx-u32d.json',
-  desert = 'https://datahub.transportation.gov/resource/pa99-vcx4.json'
-  # islands = 'https://datahub.transportation.gov/resource/mcd2-efbe.json',
-  # west = 'https://datahub.transportation.gov/resource/cub3-t2sg.json',
-  # badlands = 'https://datahub.transportation.gov/resource/act5-byyg.json'
+  lakes = 'https://datahub.transportation.gov/resource/uvrx-u32d.json',
+  desert = 'https://datahub.transportation.gov/resource/pa99-vcx4.json',
+  islands = 'https://datahub.transportation.gov/resource/mcd2-efbe.json',
+  west = 'https://datahub.transportation.gov/resource/cub3-t2sg.json',
+  badlands = 'https://datahub.transportation.gov/resource/act5-byyg.json'
 )
 
 update_tt = FALSE

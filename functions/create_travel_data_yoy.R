@@ -121,7 +121,8 @@ create_travel_data_yoy <- function(
   if(nrow(var.yoy) > 0){ # we have something to report
     
     if(histtype == 1){
-      report = var.yoy[, change := 0]
+      report = var.yoy[, change := NA_real_]
+      # report = var.yoy[, change := 0]
       report[value.2 != 0, change := (value.1 - value.2) / value.2]
       report[, change := change * 100]
       

@@ -28,10 +28,14 @@ create_pdf <- function(data, state, year, year_compare, path) {
   }
   
   if (debugmode) {
+    
     windows(width = 13.333, height = 7.5)
+    
   } else {
+    
     pdf(file = pdfpath, width = 13.333, height = 7.5)
     on.exit(expr = dev.off())
+  
   }
   
   # showtext.begin() # this controls the issues with the fonts
@@ -62,10 +66,10 @@ create_pdf <- function(data, state, year, year_compare, path) {
   #
 
   # Documentation page ------------------------------------------------------
-  
+
   message('Documentation page ...')
   create_documentation_pages(state, year)
-  
+
 
   # Pavement: Detailed Review ------------------------------------------------
 
@@ -128,8 +132,9 @@ create_pdf <- function(data, state, year, year_compare, path) {
   todo_vec <- (1:nrow(gVariables))[gVariables[, Grouping] == "I"]
   todo_vec <- c(todo_vec, rep(NA, 3 - (length(todo_vec) %% 3)))
   todo <- matrix(todo_vec, ncol = 3, byrow = TRUE)
-  for (i in 1:6) {
 
+  for (i in 1:6) {
+    
     x1 <- todo[i, 1]
     x2 <- todo[i, 2]
     x3 <- todo[i, 3]

@@ -14,7 +14,7 @@
 
 create_title_page <- function(data, state, year, year_compare = NULL) {
   
-  if ( debugmode ) browser()
+  # if ( debugmode ) browser()
   
   # Load data -----------------------------------------------------------------
   

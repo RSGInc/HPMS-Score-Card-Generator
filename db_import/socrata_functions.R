@@ -112,8 +112,12 @@ write_to_stage = function(cache_path, con, stage_table, chunk_size=100000){
   message('Updating data types')
   
   #if ( names(url) %in% c('mid_atlantic', 'SC', 'AZ', 'TN') ){
-  if (class(dt$value_date)[1] == 'character'){
-    dt[, value_date := ymd_hms(value_date)]
+  if ( class(dt$value_date)[1] == 'character' ){
+    if ( str_length(dt[!is.na(value_date), value_date][1]) > 10 ){
+      dt[, value_date := ymd_hms(value_date)]
+    } else {
+      dt[, value_date := ymd(value_date)]
+    }
   }
   
   dt[, year_record := as.integer(year_record)]
@@ -134,7 +138,7 @@ write_to_stage = function(cache_path, con, stage_table, chunk_size=100000){
   if ( coltype_dt[chk != obs, .N] > 0 ){
     
     message('Column type mismatch')
-    print(coltype_dt)
+    print(coltype_dt[chk != obs])
     browser()
     
   }

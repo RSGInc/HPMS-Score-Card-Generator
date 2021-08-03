@@ -188,12 +188,12 @@ ImportData <- function(state_selection, year_selection) {
           overwrite <- "N"
         }
         
-        if(overwrite=="ALL Y"){
+        if(overwrite == "ALL Y"){
           goverwrite <<- overwrite
           overwrite <- "Y"
         } 
         
-        if(overwrite=="ALL N"){
+        if(overwrite == "ALL N"){
           goverwrite <<- overwrite
           overwrite <- "N"
         }  
@@ -570,8 +570,6 @@ FormatDataSet <- function(dat, state_abbr, year) {
   
   setkeyv(data_exp, c("state_code","year_record","route_id","data_item","begin_point","end_point"))
 
-  rm(data_noFT6)  
-  gc()
   # if ( nrow(data_exp) == 0 ){browser()}
   return(data_exp)
   
