@@ -181,7 +181,8 @@ calc_completeness <- function(data, year, variable){
     
     setDT(coverage)
     
-    coverage[, required := FACILITY_TYPE %in% c(1,2) & (F_SYSTEM %in% c(1,2,3,4)|!is.na(NHS))]
+    coverage[, required := 
+               !is.na(expansion_factor) & FACILITY_TYPE %in% c(1,2) & (F_SYSTEM %in% c(1,2,3,4) | !is.na(NHS))]
     
   } else 
   
