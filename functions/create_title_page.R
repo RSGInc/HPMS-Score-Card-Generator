@@ -33,8 +33,9 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
   data_summary <- create_data_summary(data, state, year, year_compare)
   data_summary <- data_summary[nrow(data_summary):1,]
   #data_summary <- data.frame(data_summary)
-  
 
+  message("Calculating coverage validation results. This may take some time to complete.")
+  dt_coverage <- calc_completeness_all(data, year, reqs)
   
   message("Calculating quality score for each item.")
   dt_quality <- calc_quality_all(data, year, year_compare)
@@ -42,8 +43,6 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
   message("Calculating cross-validations.")
   dt_cross <- calc_cross_validation(data, year)
   
-  message("Calculating coverage validation results. This may take some time to complete.")
-  dt_coverage <- calc_completeness_all(data, year, reqs)
   
   CompletedScore <- 0
   CompletedScoreMax <- 0
