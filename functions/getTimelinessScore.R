@@ -20,6 +20,7 @@ getTimelinessScore <- function(state, year,
     deadline = ymd_hms(paste0(submission_deadline, ' 23:59:59'))
     
     sub_date = gTimeliness[State_Code == state & Year_Record == year, max(Submitted_On)]
+    sub_date = mdy_hm(sub_date)
     
     score = 1 * (sub_date < deadline)
     
