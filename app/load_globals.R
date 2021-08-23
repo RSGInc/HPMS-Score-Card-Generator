@@ -70,9 +70,14 @@ gState_Labels <- fread('resources/dat/state_labels.csv')
 
 gColors <- list(
   blank = 'white',
-  headings = 'slategray',
+  text = 'black',
+  dark = 'slategray',
+  light = 'gray75',
+  accent = 'steelblue4',
+  text_background = 'gray90',
   highlight = 'red'
 )
+
 # FHWA and DVC Logos
 gLogo  <- suppressWarnings(readPNG("resources/img/FHWA_vertical_2013.png"))
 gLogo2 <- suppressWarnings(readPNG("resources/img/DVC-Logo.png"))
@@ -102,6 +107,7 @@ gReqs <- fread("resources/dat/data_items_required_by_state.csv")
 gScoreWeights <- fread("resources/dat/scoringweights.csv")
 
 timeliness_file = file.path('data/timeliness_table.csv')
+
 
 if ( file.exists( timeliness_file )){
   gTimeliness = fread(timeliness_file)

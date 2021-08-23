@@ -15,12 +15,12 @@ create_table_grob <- function(result, variable_type){
 
   # Set the table theme
   thm <- ttheme_default(
-    core    = list(fg_params=list(col='black', fontsize=4.5, hjust=1, x=0.95),
+    core    = list(fg_params=list(col=gColors$text, fontsize=4.5, hjust=1, x=0.95),
                    bg_params=list(fill='grey95'),
                    padding=unit(c(0.1, 0.1), 'inches')),
-    colhead = list(fg_params=list(col='black', fontsize=4.0,
+    colhead = list(fg_params=list(col=gColors$text, fontsize=4.0,
                                   fontface='bold', hjust=1, x=0.95),
-                   bg_params=list(fill='grey90'),
+                   bg_params=list(fill=gColors$text_background),
                    padding=unit(c(0.1, 0.1), 'inches')))
   
   # Rename groupCat levels

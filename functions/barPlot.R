@@ -33,12 +33,12 @@ barPlot <- function(
     axis.ticks=element_blank(),
     axis.title.x=element_blank(),
     axis.title.y=element_blank(),
-    plot.title = element_text(size=6.1,face="bold",colour="slategray",hjust=0),
+    plot.title = element_text(size=6.1,face="bold",colour=gColors$dark,hjust=0),
     legend.position="none",
     panel.grid.minor = element_blank(),
     panel.border = element_blank(),
     panel.background = element_blank(),
-    axis.line = element_line(colour = "white"))
+    axis.line = element_line(colour = gColors$blank))
   
   # If data is NULL return a blank grob
   
@@ -62,7 +62,7 @@ barPlot <- function(
   
   dt <- dt[, type := factor(type)]
   
-  dt[is.na(V1), type := "white"]
+  dt[is.na(V1), type := gColors$blank]
   dt[is.na(V1), V1 := 0]
   
   dt <- dt[, value_numeric := factor(value_numeric, levels=rev(levels(value_numeric)))]
@@ -74,10 +74,10 @@ barPlot <- function(
   p <- p + scale_y_continuous("", limits=c(0, scale))
   p <- p + coord_flip()
   p <- p + ggtitle(title)
-  p <- p + scale_fill_manual("", values=c("slategray"="slategray",
-                                          "gray75"="gray75",
-                                          "black"="black",
-                                          "white"="white"))
+  p <- p + scale_fill_manual("", values=c("slategray"=gColors$dark,
+                                          "gray75"=gColors$light,
+                                          "black"=gColors$text,
+                                          "white"=gColors$blank))
   
   p <- p + theme_minimal() + 
     theme_adjustment +
@@ -87,13 +87,13 @@ barPlot <- function(
   
   if(showAxis) {
     p <- p + theme(axis.text.x=
-                     element_text(size=4.5, angle=90, hjust=0.5, colour="slategray"))  
+                     element_text(size=4.5, angle=90, hjust=0.5, colour=gColors$dark))  
   } else {
     p <- p + theme(axis.text.x=element_blank())
   }
   
   if(showLabel) {
-    p <- p + theme(axis.text.y=element_text(size=5, hjust = 1,colour="slategray"))
+    p <- p + theme(axis.text.y=element_text(size=5, hjust = 1,colour=gColors$dark))
   } else {
     p <- p + theme(axis.text.y=element_blank())
   }

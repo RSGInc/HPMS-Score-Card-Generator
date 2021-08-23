@@ -42,10 +42,10 @@ create_overall_report_byFSYSTEM <- function(
      setnames(result,"F_SYSTEM","Functional\nSystem")
      
      thm <- ttheme_default(
-       core    = list(fg_params=list(col='black', fontsize=6.5, hjust=1, x=0.95),
+       core    = list(fg_params=list(col=gColors$text, fontsize=6.5, hjust=1, x=0.95),
                       bg_params=list(fill='grey95'),
                       padding=unit(c(0.1, 0.1), 'inches')),
-       colhead = list(fg_params=list(col='black', fontsize=7.0,
+       colhead = list(fg_params=list(col=gColors$text, fontsize=7.0,
                                      fontface='bold', hjust=1, x=0.95),
                       bg_params=list(fill='grey90'),
                       padding=unit(c(0.1, 0.1), 'inches')))

@@ -61,12 +61,12 @@ create_pavement_summary <- function(data, state, year){
   tab[, group := gF_SYSTEM_levels[as.numeric(tab[, group])]]
     
   thm <- ttheme_default(
-    core    = list(fg_params=list(col='black', fontsize=5.5, hjust=1, x=0.95),
+    core    = list(fg_params=list(col=gColors$text, fontsize=5.5, hjust=1, x=0.95),
                    bg_params=list(fill='grey95'),
                    padding=unit(c(0.1, 0.1), 'inches')),
-    colhead = list(fg_params=list(col='black', fontsize=6.0,
+    colhead = list(fg_params=list(col=gColors$text, fontsize=6.0,
                                   fontface='bold', hjust=1, x=0.95),
-                   bg_params=list(fill='grey90'),
+                   bg_params=list(fill=gColors$text_background),
                    padding=unit(c(0.1, 0.1), 'inches')))
   
   setnames(tab,"group","Functional\nSystem")

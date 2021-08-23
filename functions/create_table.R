@@ -22,17 +22,17 @@ create_table <- function(result) {
   }
   
   thm <- ttheme_default(
-    core    = list(fg_params=list(col='black', fontsize=core_fontsize, hjust=1, x=0.95),
+    core    = list(fg_params=list(col=gColors$text, fontsize=core_fontsize, hjust=1, x=0.95),
                    bg_params=list(fill='grey95'),
                    padding=unit(c(0.1, 0.1), 'inches')),
-    colhead = list(fg_params=list(col='black', fontsize=col_fontsize,
+    colhead = list(fg_params=list(col=gColors$text, fontsize=col_fontsize,
                                   fontface='bold', hjust=1, x=0.95),
-                   bg_params=list(fill='grey90'),
+                   bg_params=list(fill=gColors$text_background),
                    padding=unit(c(0.1, 0.1), 'inches'))
   )
   
   if(is.null(result)) {
-    return(textGrob(NoDataString, gp = gpar(fontsize = 8, col = "red")))
+    return(textGrob(NoDataString, gp = gpar(fontsize = 8, col=gColors$highlight)))
   } else {
     # convert result object into tabular format
     tab <- dcast(data = result, formula = groupCat ~ variable)
@@ -51,7 +51,7 @@ create_table <- function(result) {
       idx <- find_cell(myTable, row=rc[i, 'row'] + 1, col=rc[i, 'col'])
       
       pars <- myTable$grobs[idx][[1]][['gp']]
-      pars$col <- 'red'
+      pars$col <- gColors$highlight
       myTable$grobs[idx][[1]][['gp']] <- pars
       
     }

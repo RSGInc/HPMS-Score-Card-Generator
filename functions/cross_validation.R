@@ -939,37 +939,39 @@ cross_validation_20 = function(data){
 cross_validation_60 = function(data){
   # Shoulder_Width_L Should be < Median_Width
   
-  #browser()
+  # browser()
   left_shoulder_width = data[data_item=="SHOULDER_WIDTH_L",
                              .(route_id,begin_point,end_point,SHOULDER_WIDTH_L=value_numeric, num_sections)]
   median_width = data[data_item=="MEDIAN_WIDTH",
                       .(route_id,begin_point,end_point,MEDIAN_WIDTH=value_numeric)]
   
-  if(left_shoulder_width[, .N] == 0|median_width[, .N] == 0){
+  if(left_shoulder_width[, .N] == 0 | median_width[, .N] == 0){
     warning("Not applicable - Sufficient data from the state are not available")
     return(list(results=NULL,comparison=NULL))  
   }
 
   # join the two together
-  comparison = median_width[left_shoulder_width,on=.(route_id,begin_point,end_point)]
+  comparison = median_width[
+    left_shoulder_width,
+    on = .(route_id,begin_point,end_point)]
 
   # apply the condition
   results = comparison[,
              .(
                .N,
-               num_sections = sum(num_sections,na.rm=TRUE),
-               mileage      = sum(end_point-begin_point)
+               num_sections = sum(num_sections, na.rm=TRUE),
+               mileage      = sum(end_point - begin_point)
               ),
-             .(applies = !is.na(SHOULDER_WIDTH_L), 
-               passes  = SHOULDER_WIDTH_L<MEDIAN_WIDTH)][order(applies,passes)]
+             .(applies = !is.na(SHOULDER_WIDTH_L) & !is.na(MEDIAN_WIDTH), 
+               passes  = SHOULDER_WIDTH_L < MEDIAN_WIDTH)][order(applies, passes)]
   
-  if(nrow(results[applies == TRUE])==0){
+  if( nrow(results[applies == TRUE]) == 0 ){
     warning("Not applicable - Sufficient data from the state are not available")
     return(list(results=NULL,comparison=NULL))  
   }
   
   
-  return(list(results=results,comparison=comparison))
+  return(list(results=results, comparison=comparison))
 
 }
 

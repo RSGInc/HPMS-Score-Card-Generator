@@ -194,6 +194,6 @@ create_summary_report <- function(
     ob <- create_table_grob(result, variable_type)
     return(ob)
   } else {
-    return(textGrob(NoDataString, gp=gpar(fontsize=8,  col="Red")))
+    return(textGrob(NoDataString, gp=gpar(fontsize=8,  col=gColors$highlight)))
   }
 }

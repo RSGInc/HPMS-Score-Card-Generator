@@ -140,19 +140,19 @@ create_travel_data_assessment <- function(
      if(nrow(faadt.compare[!is.na(mq),])> 0){
           p1 <- crossbarPlot(faadt.compare)
      } else {
-          p1 <- textGrob(NoDataString, gp = gpar(fontsize = 8, col = "red"))
+          p1 <- textGrob(NoDataString, gp = gpar(fontsize = 8, col = gColors$highlight))
      }
      
      if(nrow(aadt_combo.compare[!is.na(mq),])> 0){
           p2 <- crossbarPlot(aadt_combo.compare)
      } else {
-          p2 <- textGrob(NoDataString, gp = gpar(fontsize = 8, col = "red"))
+          p2 <- textGrob(NoDataString, gp = gpar(fontsize = 8, col = gColors$highlight))
      }
 
      if(nrow(aadt_su.compare[!is.na(mq),])> 0) {
           p3 <- crossbarPlot(aadt_su.compare)
      } else {
-          p3 <- textGrob(NoDataString, gp = gpar(fontsize = 8, col = "red"))
+          p3 <- textGrob(NoDataString, gp = gpar(fontsize = 8, col = gColors$highlight))
      }
 
      ob <- arrangeGrob(

@@ -466,18 +466,27 @@ FormatDataSet <- function(dat, state_abbr, year) {
     sp[, route_id := as.character(route_id)]
     
     
-    # # Checks ----------------------------------------------
-    # rid_sec = data_noFT6[, route_id] %>% unique() %>% sort()
-    # rid_sp = sp[, route_id] %>% unique() %>% sort()
-    # 
-    # # route_ID in samples but not in sections? (should be zero)
-    # length(setdiff(rid_sp, rid_sec))
-    # length(intersect(rid_sp, rid_sec)) == length(rid_sp)
-    # 
-    # # Check for data in sp that don't match anything in data_noFT6
-    # join_vars = c('year_record', 'route_id', 'begin_point', 'end_point')
-    # problems1 = dplyr::anti_join(sp, data_noFT6, by = join_vars)
-    
+    # Checks ----------------------------------------------
+    rid_sec = data_noFT6[, route_id] %>% unique() %>% sort()
+    rid_sp = sp[, route_id] %>% unique() %>% sort()
+
+    # route_ID in samples but not in sections? (should be zero)
+    if ( 
+      length(setdiff(rid_sp, rid_sec)) > 0 |
+      length(intersect(rid_sp, rid_sec)) < length(rid_sp)
+    ){ 
+      
+      browser() 
+      
+      compare_ids = data.table(sp = rid_sp, sec = rid_sec[1:length(rid_sp)])
+      
+      # Check for data in sp that don't match anything in data_noFT6
+      join_vars = c('year_record', 'route_id', 'begin_point', 'end_point')
+      
+      problems1 = data_noFT6[!sp, on=join_vars]
+      problems2 = sp[!data_noFT6, on=join_vars]
+      spmatch = data_noFT6[sp, on=join_vars, nomatch=NULL]
+    }
     
     data_exp = merge(data_noFT6, sp,
                      by = c('year_record', 'route_id', 'begin_point', 'end_point'),

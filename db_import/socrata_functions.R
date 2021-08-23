@@ -116,6 +116,7 @@ write_to_stage = function(cache_path, con, stage_table, chunk_size=100000){
     if ( str_length(dt[!is.na(value_date), value_date][1]) > 10 ){
       dt[, value_date := ymd_hms(value_date)]
     } else {
+      coltype_chk_dt[field == 'value_date', chk := 'Date']
       dt[, value_date := ymd(value_date)]
     }
   }
