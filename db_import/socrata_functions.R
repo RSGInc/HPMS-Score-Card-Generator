@@ -159,13 +159,32 @@ write_to_stage = function(cache_path, con, stage_table, chunk_size=100000){
     # Compare field names
     
     old_fields = dbListFields(con, stage_table)
-    old_fields = old_fields[!old_fields %in% c('natroute_id', 'StateYearKey', 'Section_Length')]
+    old_fields = str_to_lower(old_fields)
+    old_fields = old_fields[!old_fields %in% c('natroute_id', 'section_length')]
+    
+    if ( stage_table == 'rs_stage' ){
+      old_fields = setdiff(old_fields, 'stateyearkey') # this is computed in rs_stage
+    }
     
     new_fields = names(dt)
+    
+    # Create StateYearKey
+    if ( !'stateyearkey' %in% new_fields & stage_table == 'rss_stage'){
+      dt[, stateyearkey := paste0(state_code, str_sub(year_record, start=3, end=4))]
+      new_fields = c(new_fields, 'stateyearkey')
+    }
+
+    if ( !('value_text' %in% new_fields) & stage_table == 'rs_stage' ){
+      dt[, value_text := NA_character_]
+      new_fields = c(new_fields, 'value_text')
+    }    
     
     if ( length(setdiff(old_fields, new_fields)) > 0 |
          length(setdiff(new_fields, old_fields)) > 0 ){
       browser()
+      only_old = setdiff(old_fields, new_fields)
+      only_new = setdiff(new_fields, old_fields)
+      
     }
     
     dt = dt[, intersect(old_fields, new_fields), with=FALSE]

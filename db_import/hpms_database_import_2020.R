@@ -35,25 +35,43 @@ timeliness_url = 'https://datahub.transportation.gov/resource/cvaj-4fp2.json'
 # https://datahub.transportation.gov/Roadways-and-Bridges/HPMS-Review-Samples-2020/md8h-imnk
 # Click on API
 
-sample_urls = c(sample = 'https://datahub.transportation.gov/resource/md8h-imnk.json')
+sample_urls = c(
+  # sample = 'https://datahub.transportation.gov/resource/md8h-imnk.json'
+  sample_update = 'https://datahub.transportation.gov/resource/hatx-u24t.json'
+  )
 
 # Sections
 section_urls = c(
-  new_england = 'https://datahub.transportation.gov/resource/hbyg-7iey.json',
-  heartland = 'https://datahub.transportation.gov/resource/jh87-u8fg.json',
-  gulf = 'https://datahub.transportation.gov/resource/vjhv-he2m.json',
-  appalachia = 'https://datahub.transportation.gov/resource/5kg6-4nxs.json',
-  mid_atlantic = 'https://datahub.transportation.gov/resource/g4cy-ux2k.json',
-  lakes = 'https://datahub.transportation.gov/resource/uvrx-u32d.json',
-  desert = 'https://datahub.transportation.gov/resource/pa99-vcx4.json',
-  islands = 'https://datahub.transportation.gov/resource/mcd2-efbe.json',
-  west = 'https://datahub.transportation.gov/resource/cub3-t2sg.json',
-  badlands = 'https://datahub.transportation.gov/resource/act5-byyg.json'
+  # new_england = 'https://datahub.transportation.gov/resource/hbyg-7iey.json',
+  # heartland = 'https://datahub.transportation.gov/resource/jh87-u8fg.json',
+  # gulf = 'https://datahub.transportation.gov/resource/vjhv-he2m.json',
+  # appalachia = 'https://datahub.transportation.gov/resource/5kg6-4nxs.json',
+  # mid_atlantic = 'https://datahub.transportation.gov/resource/g4cy-ux2k.json',
+  # lakes = 'https://datahub.transportation.gov/resource/uvrx-u32d.json',
+  # desert = 'https://datahub.transportation.gov/resource/pa99-vcx4.json',
+  # islands = 'https://datahub.transportation.gov/resource/mcd2-efbe.json',
+  # west = 'https://datahub.transportation.gov/resource/cub3-t2sg.json',
+  # badlands = 'https://datahub.transportation.gov/resource/act5-byyg.json'
+  
+  # Resubmissions ---------------------------------------------------------
+
+  FL = 'https://datahub.transportation.gov/resource/jyug-rjx7.json',
+  GALA = 'https://datahub.transportation.gov/resource/ce8s-sd58.json',
+  NYPA = 'https://datahub.transportation.gov/resource/xvft-4wcn.json',
+  CAORWA = 'https://datahub.transportation.gov/resource/wuzj-sjt6.json',
+  IN = 'https://datahub.transportation.gov/resource/cm27-4cra.json',
+  MIOH = 'https://datahub.transportation.gov/resource/up53-htsc.json',
+  PR = 'https://datahub.transportation.gov/resource/3kmm-pfkb.json',
+  NE = 'https://datahub.transportation.gov/resource/qn8j-bvka.json',
+  HI = 'https://datahub.transportation.gov/resource/93xt-8hse.json',
+  TN = 'https://datahub.transportation.gov/resource/3u5b-a5n4.json'
+  
 )
 
 update_tt = FALSE
-update_samples = FALSE
+update_samples = TRUE
 update_sections = TRUE
+overwrite_cache = FALSE
 
 # Work ======================================================================
 
@@ -157,7 +175,8 @@ if ( update_samples ){
   for ( i in seq_along(sample_urls) ){
     url = sample_urls[i]
     message('Working on ', names(url))
-    counts_local = download_socrata(url, con, stage_table)
+    cache_path = download_socrata(url, overwrite=overwrite_cache)
+    counts_local = write_to_stage(cache_path, con, stage_table)
     copy_rows(con, stage_table, prod_table, counts_local)
   }
   
@@ -174,7 +193,7 @@ if ( update_sections ){
   for ( i in seq_along(section_urls) ){
     url = section_urls[i]
     if (url == '') next()
-    cache_path = download_socrata(url)
+    cache_path = download_socrata(url, overwrite=overwrite_cache)
     counts_local = write_to_stage(cache_path, con, stage_table)
     copy_rows(con, stage_table, prod_table, counts_local)
     
