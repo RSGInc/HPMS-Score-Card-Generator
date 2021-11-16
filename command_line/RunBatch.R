@@ -26,10 +26,12 @@ if ( length(args) < 1 ){
   stop('Please supply a comma-delimited list of states or specify "ALL"\nFor example: Rscript RunBatch.R PA,NY,NH,VT', call.=FALSE)
 }
 
+reimport = FALSE
+
+
 year_selection <- 2020
 year_compare <- 2019
 submission_deadline <- '2021-06-15'
-reimport = TRUE
 
 root <- rprojroot::find_rstudio_root_file()
 setwd(root)
