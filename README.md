@@ -7,7 +7,7 @@ A data pipeline QA/QC and visualization tool for FHWA to use with Highway Perfor
 
 Socrata is at https://datahub.transportation.gov/
 
-Copy each dataset API Endpoint (JSON) and paste into [db_import/hpms_database_import_2020.R]
+Copy each dataset API Endpoint (JSON) and paste into [db_import/hpms_database_import_2020.R](db_import/hpms_database_import_2020.R)
 
 This script downloads the data from Socrata to a local cache, then it writes the data to a stage table in MS SQL Server.  Finally, after checking the consistency of the data, it copies the data from the stage table to the production table.
 
