@@ -17,13 +17,13 @@ The scorecard generator runs off of data "imported" from MS SQL Server into loca
 
 There is one subfolder for each state and `+National` directory.  Each state has one `*.rds` file per year.  The national data is stored as one subfolder for each year, and one rds file per data item. 
 
-The data can be imported automatically for each state as part of the scorecard generation process in [command_line/RunBatch.R], or the interactive app in [_RunApp.R].  Both use the function `ImportData` defined in [app/import_from_db.R].
+The data can be imported automatically for each state as part of the scorecard generation process in [command_line/RunBatch.R](command_line/RunBatch.R), or the interactive app in [_RunApp.R](_RunApp.R).  Both use the function `ImportData` defined in [app/import_from_db.R](app/import_from_db.R).
 
 ### Update national data
 
 For each data item, the scorecard shows the distribution of the current year data, the previous year data, and the national distribution of the previous year data. 
 
-The national data can be recalculated from the previous years' imported state rds files as described above using the interactive app in [_RunApp.R] or the code below.
+The national data can be recalculated from the previous years' imported state rds files as described above using the interactive app in [_RunApp.R](_RunApp.R) or the code below.
 
 ```{r}
 # Load Code
@@ -36,7 +36,7 @@ updateNation(years = 2020) # should be 2 years prior to submission deadline
 
 ### Create scorecards
 
-The easiest way to create scorecards is to use [command_line/RunBatch.R].  It requires the following settings to manually applied in the code:
+The easiest way to create scorecards is to use [command_line/RunBatch.R](command_line/RunBatch.R).  It requires the following settings to manually applied in the code:
 
 ```
 reimport <- TRUE                    # Should data be re-imported from the server?
@@ -58,7 +58,7 @@ Rscript command_line/RunBatch.R PA,NY,NH,VT
 
 The PDF files are saved to the `output/` directory.
 
-When all states are completed, an HTML summary file can be created using [app/HPMS_score_summary.Rmd]
+When all states are completed, an HTML summary file can be created using [app/HPMS_score_summary.Rmd](app/HPMS_score_summary.Rmd).
 
 ```
 Rscript -e "rmarkdown::render(input = 'app/HPMS_score_summary.Rmd', output_dir='output', output_file='HPMS_summmary.html')"
