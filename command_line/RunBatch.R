@@ -15,6 +15,7 @@
 
 library('stringr')
 library('rprojroot')
+library('rmarkdown')
 
 options(warn=1)
 options(scipen=9999)
@@ -26,9 +27,7 @@ if ( length(args) < 1 ){
   stop('Please supply a comma-delimited list of states or specify "ALL"\nFor example: Rscript RunBatch.R PA,NY,NH,VT', call.=FALSE)
 }
 
-reimport = FALSE
-
-
+reimport <- TRUE
 year_selection <- 2020
 year_compare <- 2019
 submission_deadline <- '2021-06-15'
@@ -56,8 +55,6 @@ message('submission_deadline: ', submission_deadline)
 
 codefiles = c(Sys.glob('app/*.R'), Sys.glob('functions/*.R'))
 invisible(sapply(X =codefiles , FUN = source))
-
-# Increase the memory limit.  If above physical ram it will use virtual memory
 
 cat('Checking availability of states for', year_selection, '\n')
 

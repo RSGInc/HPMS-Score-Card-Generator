@@ -19,7 +19,7 @@ source('db_import/socrata_functions.R')
 source('functions/connect_to_db.R')
 
 email = 'matt.landis@rsginc.com'
-password = 'tX522b7Dz4xS'
+password = readRDS('db_import/socrata_pw.rds')
 
 # URLS ========================================================================
 

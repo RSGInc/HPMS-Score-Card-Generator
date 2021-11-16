@@ -35,7 +35,7 @@ invisible(sapply(X =codefiles , FUN = source))
 # updateNation(years = as.numeric(str_extract(submission_deadline, '^[0-9]{4}')) - 2)
 
 # Run scorecards via command line tool.
-# Rscript RunBatch.R ALL
+# Rscript command_line/RunBatch.R ALL
 
 debugmode = TRUE # Displays output to graphics device instead of PDF
 # debug(plot_completeness)

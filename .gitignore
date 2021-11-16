@@ -13,4 +13,5 @@ Thumbs.db
 resources/fss/*.RDS
 client_data
 download_cache
+db_import/socrata_pw.rds
 
