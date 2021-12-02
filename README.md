@@ -17,7 +17,7 @@ The scorecard generator runs off of data "imported" from MS SQL Server into loca
 
 There is one subfolder for each state and `+National` directory.  Each state has one `*.rds` file per year.  The national data is stored as one subfolder for each year, and one rds file per data item. 
 
-The data can be imported automatically for each state as part of the scorecard generation process in [command_line/RunBatch.R](command_line/RunBatch.R), or the interactive app in [_RunApp.R](_RunApp.R).  Both use the function `ImportData` defined in [app/import_from_db.R](app/import_from_db.R).
+The data can be imported automatically for each state as part of the scorecard generation process in [_RunBatch.R](_RunBatch.R), or the interactive app in [_RunApp.R](_RunApp.R).  Both use the function `ImportData` defined in [app/import_from_db.R](app/import_from_db.R).
 
 ### Update national data
 
@@ -36,7 +36,7 @@ updateNation(years = 2020) # should be 2 years prior to submission deadline
 
 ### Create scorecards
 
-The easiest way to create scorecards is to use [command_line/RunBatch.R](command_line/RunBatch.R).  It requires the following settings to manually applied in the code:
+The easiest way to create scorecards is to use [_RunBatch.R](_RunBatch.R).  It requires the following settings to manually applied in the code:
 
 ```
 reimport <- TRUE                    # Should data be re-imported from the server?
@@ -47,13 +47,13 @@ submission_deadline <- '2021-06-15' # Submission deadline for timeliness score
 
 The the script can be called for all states with 
 ```
-Rscript command_line/RunBatch.R ALL
+Rscript _RunBatch.R ALL
 ```
 
 Alternatively a subset of states can be imported with
 
 ```
-Rscript command_line/RunBatch.R PA,NY,NH,VT
+Rscript _RunBatch.R PA,NY,NH,VT
 ```
 
 The PDF files are saved to the `output/` directory.
