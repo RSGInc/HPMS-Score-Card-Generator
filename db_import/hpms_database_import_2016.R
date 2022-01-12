@@ -68,7 +68,7 @@ tbl <- tbl %>%
          Data_Item, Value_Numeric, Value_Text, Value_Date, StateYearKey)
 
 con <- odbcDriverConnect(connection=local_con)
-tbl_name <- 'Review_Sections'
+tbl_name <- 'ReviewSections'
 sqlSave(con, dat=tbl, tablename=tbl_name, nastring=NULL, append=TRUE,
         rownames=FALSE) 
 
@@ -78,7 +78,7 @@ odbcClose(con)
 wrj_con <- 'Driver={SQL Server Native Client 11.0}; server=wrjsqlvdw02;database=HPMS;trusted_connection=yes;'
 
 con <- odbcDriverConnect(connection=wrj_con)
-tbl_name <- 'Review_Sections'
+tbl_name <- 'ReviewSections'
 sqlSave(con, dat=tbl, tablename=tbl_name, nastring=NULL, append=TRUE,
         rownames=FALSE) 
 

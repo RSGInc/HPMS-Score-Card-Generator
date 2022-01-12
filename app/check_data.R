@@ -21,20 +21,16 @@ loadSummaryData <- function(state_code, year){
   st_yr_key = paste0(state_code, str_sub(year, start=3, end=4)) 
   
   query <- str_glue(
-  'SELECT Year_Record, State_Code, Data_Item,
+  'SELECT YearRecord as Year_Record, StateId as State_Code, DataItem as Data_Item,
   Count(*) AS Record_Count,
-  Sum(End_Point - Begin_Point) AS Miles,
-  Count(Distinct Route_ID) AS Route_ID_Count
+  Sum(EndPoint - BeginPoint) AS Miles,
+  Count(Distinct RouteID) AS Route_ID_Count
   FROM {sections_table} WHERE StateYearKey={st_yr_key} 
-  GROUP BY Year_Record, State_Code, Data_Item;'
+  GROUP BY YearRecord, StateId, DataItem;'
   )
-  
-  
   data <- sqlQuery(con, query)
   data <- cleanUpQuery(data)
-    
   odbcClose(con)
-  
   return(data)
 }
 

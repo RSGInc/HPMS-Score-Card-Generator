@@ -13,7 +13,7 @@ ReadData <- function(state_code, year) {
   cat('Fetching the data from the database...')
   con <- odbcConnect("HPMS")
   
-  query <- paste0('select * from Review_Sections where StateYearKey = ',
+  query <- paste0('select YearRecord AS Year_Record, StateId AS State_Code, RouteID AS Route_ID, BeginPoint AS Begin_Point, EndPoint AS End_Point, DataItem AS Data_Item, SectionLength AS Section_Length, ValueNumeric AS Value_Numeric, ValueText AS Value_Text, ValueDate AS Value_Date, StateYearKey from ReviewSections where StateYearKey = ',
                   state_code, as.numeric(year) %% 100)
   
   data <- sqlQuery(con, query, stringsAsFactors=FALSE)
@@ -66,7 +66,7 @@ state_code <- 49  # UT
 
 data_item <- 'URBAN_CODE'
 
-query <- str_c("select DISTINCT Route_ID from Review_Sections where Year_Record=2016 and State_Code=", state_code,
+query <- str_c("select DISTINCT Route_ID from ReviewSections where Year_Record=2016 and State_Code=", state_code,
                " and Data_Item='", data_item, "';")
 
 sql <- sqlQuery(con, query, stringsAsFactors=FALSE) %>% as_tibble()
@@ -87,7 +87,7 @@ state_code <- 56 # WY
 
 data_item_ <- 'RUTTING'
 
-query <- str_c("select DISTINCT Route_ID from Review_Sections where Year_Record=2016 and State_Code=", state_code,
+query <- str_c("select DISTINCT Route_ID from ReviewSections where Year_Record=2016 and State_Code=", state_code,
                " and Data_Item='", data_item_, "';")
 
 con <- odbcConnect('HPMS')
@@ -126,7 +126,7 @@ r[!r %in% sql]
 #                'COUNT(*) as record_count,',
 #                'SUM(Section_Length) as Miles,',
 #                'COUNT(DISTINCT Route_ID) as Route_ID_Count',
-#                'from Review_Sections',
+#                'from ReviewSections',
 #                'group by Year_Record, State_Code, Data_Item')
 # 
 # db <- sqlQuery(con, query, stringsAsFactors=FALSE) %>% as_tibble()

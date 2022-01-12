@@ -68,7 +68,8 @@ sink(file=file_con, append=FALSE, type='message')
 
 message('RunBatch.R started at ', Sys.time())
 message('submission_deadline: ', submission_deadline)
-
+message('year_selection: ', year_selection)
+message('year_compare: ', year_compare)
 
 # Load Code -------------------------------------------------------------------
 
@@ -77,11 +78,10 @@ invisible(sapply(X =codefiles , FUN = source))
 
 cat('Checking availability of states for', year_selection, '\n')
 
-con <- odbcConnect("HPMS")
+con <- odbcConnect("HPMS", uid = "hpms_app", pwd = "i5GLq2SYMK")
 
-query <- paste("select distinct state_code, year_record from", sections_table,
+query <- paste("select distinct stateid as state_code, yearrecord as year_record from", sections_table,
                "order by state_code, year_record")
-
 st_yr_table <- data.table(sqlQuery(con, query))
 
 odbcClose(con)

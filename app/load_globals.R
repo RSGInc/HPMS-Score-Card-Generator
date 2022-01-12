@@ -20,8 +20,8 @@ ggplot2::theme_update(plot.title=element_text(hjust=0.5))
 # these need to match FHWA's sql database structure
 #timelinesstable  <- "Table_mssql_m_HPMSAnalysis_HPMS_Submissions_log" 
 timelinesstable   <- "Timelinesstable"   # "2015SubmissionDates"
-sections_table    <- 'Review_Sections'
-samples_table     <- 'Review_Sample_Sections'
+sections_table    <- 'ReviewSections'
+samples_table     <- 'ReviewSampleSections'
 
 # These don't seem to be used anywhere...
 # datatable        <- "sections"

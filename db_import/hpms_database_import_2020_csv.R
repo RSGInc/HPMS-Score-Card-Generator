@@ -328,7 +328,7 @@ message('Success!')
 
 # Sections data ---------------------------------------------------
 
-prod_table = 'Review_Sections'
+prod_table = 'ReviewSections'
 stage_table = 'rs_stage'
 
 # urls = c(

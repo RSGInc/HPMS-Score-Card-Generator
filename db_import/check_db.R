@@ -21,7 +21,7 @@ state_code = gState_Labels[abbr == this_abbrev, index]
 
 con = connect_to_db('burmdlppw01', 'HPMS', intsecurity = TRUE)
 
-rs = tbl(con, from='Review_Sections')
+rs = tbl(con, from='ReviewSections')
 rss = tbl(con, from = 'Review_Sample_Sections')
 
 rs
