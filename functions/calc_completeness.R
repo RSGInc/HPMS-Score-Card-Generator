@@ -85,7 +85,7 @@ calc_completeness <- function(data, year, variable){
   # these variables just need to have something to be complete
   
   if( (variable %in% c(
-    "STRUCTURE_TYPE", "STRAHNET_TYPE", "NN", "FUTURE_FACILITY"))){
+    "STRUCTURE_TYPE", "STRAHNET_TYPE", "NN"))){
     score = 1
     return(score)
   } else
@@ -100,7 +100,7 @@ calc_completeness <- function(data, year, variable){
   if( variable %in% c(
     "AT_GRADE_OTHER", "DIR_FACTOR", "FUTURE_AADT", "K_FACTOR",
     "LANE_WIDTH", "LAST_OVERLAY_THICKNESS", "MEDIAN_TYPE", 
-    "PEAK_LANES", "PCT_PEAK_SINGLE", "PCT_PEAK_COMBINATION",
+    "PEAK_LANES", "PCT_DH_SINGLE_UNIT", "PCT_DH_COMBINATION",
     "SHOULDER_TYPE", "SPEED_LIMIT", "STOP_SIGNS", "SURFACE_TYPE", 
     "WIDENING_OBSTACLE", "WIDENING_POTENTIAL")){
 
@@ -369,7 +369,7 @@ calc_completeness <- function(data, year, variable){
   
     # hov_lanes ---------------------------------------------------------------
   
-  if(variable == "HOV_LANES"){
+  if(variable == "MANAGED_LANES"){
     
     dat.variable <- data[data_item == variable & year_record == year,]
     dat.MANAGED_LANES_TYPE <- data[data_item == "MANAGED_LANES_TYPE" & year_record == year,]
@@ -390,7 +390,7 @@ calc_completeness <- function(data, year, variable){
     coverage[, required := TRUE]
 
     
-  } else # end HOV_LANES
+  } else # end MANAGED_LANES
   
     
     # hov_type ----------------------------------------------------------------
@@ -398,19 +398,19 @@ calc_completeness <- function(data, year, variable){
   if(variable == "MANAGED_LANES_TYPE"){
     
     dat.variable <- data[data_item == variable & year_record == year,]
-    dat.HOV_LANES <- data[data_item == "HOV_LANES" & year_record == year,]
+    dat.MANAGED_LANES <- data[data_item == "MANAGED_LANES" & year_record == year,]
     
     coverage <- sqldf(
       "select 
-        A.route_id,A.begin_point,A.end_point,A.data_item,A.value_numeric as HOV_LANES, 
+        A.route_id,A.begin_point,A.end_point,A.data_item,A.value_numeric as MANAGED_LANES, 
         B.value_numeric as variable 
-        from [dat.HOV_LANES] A 
+        from [dat.MANAGED_LANES] A 
         left join [dat.variable] B on 
         A.route_id = B.route_id and (
         ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
         ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
         )")
-              # FIXME: how does HOV_LANES play into requirements?
+              # FIXME: how does MANAGED_LANES play into requirements?
     
     setDT(coverage)
     coverage[, required := TRUE]
@@ -469,7 +469,7 @@ calc_completeness <- function(data, year, variable){
     dat.F_SYSTEM <- data[data_item == "F_SYSTEM" & year_record == year,]
     dat.URBAN_ID <- data[data_item == "URBAN_ID" & year_record == year,]
     dat.NHS <- data[data_item == "NHS" & year_record == year,]
-    dat.TOLL_CHARGED <- data[data_item == "TOLL_CHARGED" & year_record == year,] 
+    dat.TOLL_ID <- data[data_item == "TOLL_ID" & year_record == year,] 
     
     coverage = coverage_join(
       dat.FACILITY_TYPE[, .(route_id, begin_point, end_point, FACILITY_TYPE = value_numeric)],
@@ -481,9 +481,9 @@ calc_completeness <- function(data, year, variable){
       coverage_join(
         dat.NHS[, .(route_id, begin_point, end_point, NHS = value_numeric)]) %>%
       coverage_join(
-        dat.TOLL_CHARGED[, .(route_id, begin_point, end_point, TOLL_CHARGED = value_numeric)])
+        dat.TOLL_ID[, .(route_id, begin_point, end_point, TOLL_ID = value_numeric)])
     
-    coverage[, required := !is.na(TOLL_CHARGED) &FACILITY_TYPE %in% c(1,2) &(F_SYSTEM %in% 1:5 | !is.na(NHS) | (F_SYSTEM == 6 & URBAN_ID<99999))]
+    coverage[, required := !is.na(TOLL_ID) &FACILITY_TYPE %in% c(1,2) &(F_SYSTEM %in% 1:5 | !is.na(NHS) | (F_SYSTEM == 6 & URBAN_ID<99999))]
     
   } else
   
@@ -863,7 +863,7 @@ calc_completeness <- function(data, year, variable){
   
   # toll_charged ------------------------------------------------------------
   
-  if(variable == "TOLL_CHARGED"){
+  if(variable == "TOLL_ID"){
     
     dat.variable <- data[data_item == variable & year_record == year,]
     dat.TOLL_TYPE <- data[data_item == "TOLL_TYPE" & year_record == year,]
@@ -882,20 +882,20 @@ calc_completeness <- function(data, year, variable){
     setDT(coverage)
     coverage[, required := TRUE]
 
-  } else # end TOLL_CHARGED
+  } else # end TOLL_ID
   
   # toll_type ---------------------------------------------------------------
   
   if(variable == "TOLL_TYPE"){
     
     dat.variable <- data[data_item == variable & year_record == year,]
-    dat.TOLL_CHARGED <- data[data_item == "TOLL_CHARGED" & year_record == year,]
+    dat.TOLL_ID <- data[data_item == "TOLL_ID" & year_record == year,]
     
     coverage <- sqldf(
       "select 
-        A.route_id,A.begin_point,A.end_point,A.data_item,A.value_numeric as TOLL_CHARGED, 
+        A.route_id,A.begin_point,A.end_point,A.data_item,A.value_numeric as TOLL_ID, 
         B.value_numeric as variable 
-        from [dat.TOLL_CHARGED] A 
+        from [dat.TOLL_ID] A 
         left join [dat.variable] B on 
         A.route_id = B.route_id and (
         ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
@@ -962,7 +962,7 @@ calc_completeness <- function(data, year, variable){
       
       # Year_last_improv ---------------------------------------------------------
   
-  if(variable %in% c("YEAR_LAST_IMPROVEMENT")){
+  if(variable %in% c("YEAR_LAST_IMPROVEMENTEMENT")){
     
     dat.variable <- data[data_item == variable & year_record == year,]
     dat.SURFACE_TYPE <- data[data_item == "SURFACE_TYPE" & year_record == year,]

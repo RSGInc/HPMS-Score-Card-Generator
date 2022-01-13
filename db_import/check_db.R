@@ -27,7 +27,7 @@ rss = tbl(con, from = 'Review_Sample_Sections')
 rs
 
 # Type queries below --------------------------------------------------------
-data_item = 'CAPACITY'
+data_item = 'BASE_TYPE'
 
 rs_dt = rs %>%
   filter(Year_Record == year, State_Code == state_code) %>%

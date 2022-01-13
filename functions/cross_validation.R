@@ -383,11 +383,11 @@ cross_validation_17 = function(data){
 
 cross_validation_42 = function(data){
   # (SU AADT x 0.04) < (AADT x Percent Peak SU) < (SU AADT x 0.4) 
-  # AADT * PCT_PEAK_SINGLE > (AADT_SINGLE_UNIT * 0.04) &
-  #  AADT * PCT_PEAK_SINGLE < (AADT_SINGLE_UNIT * 0.4)
+  # AADT * PCT_DH_SINGLE_UNIT > (AADT_SINGLE_UNIT * 0.04) &
+  #  AADT * PCT_DH_SINGLE_UNIT < (AADT_SINGLE_UNIT * 0.4)
   # browser()
-  pct_peak_single = data[data_item=="PCT_PEAK_SINGLE",
-                         .(route_id,begin_point,end_point,PCT_PEAK_SINGLE=value_numeric, num_sections)]
+  pct_peak_single = data[data_item=="PCT_DH_SINGLE_UNIT",
+                         .(route_id,begin_point,end_point,PCT_DH_SINGLE_UNIT=value_numeric, num_sections)]
   aadt_single_unit = data[data_item=="AADT_SINGLE_UNIT",
                           .(route_id,begin_point,end_point,AADT_SINGLE_UNIT=value_numeric)]
   aadt = data[data_item=="AADT",
@@ -413,9 +413,9 @@ cross_validation_42 = function(data){
                num_sections = sum(num_sections,na.rm=TRUE),
                mileage      = sum(end_point-begin_point)
               ),
-             .(applies = !is.na(PCT_PEAK_SINGLE), 
-               passes  = AADT * PCT_PEAK_SINGLE / 100 > (AADT_SINGLE_UNIT * 0.04) &
-                 AADT * PCT_PEAK_SINGLE / 100 < (AADT_SINGLE_UNIT * 0.4))
+             .(applies = !is.na(PCT_DH_SINGLE_UNIT), 
+               passes  = AADT * PCT_DH_SINGLE_UNIT / 100 > (AADT_SINGLE_UNIT * 0.04) &
+                 AADT * PCT_DH_SINGLE_UNIT / 100 < (AADT_SINGLE_UNIT * 0.4))
              ][order(applies,passes)]
   
   
@@ -435,8 +435,8 @@ cross_validation_57 = function(data){
   # PCT_Peak_Single >0 and < 25%
 
   #browser()
-  pct_peak_single = data[data_item=="PCT_PEAK_SINGLE",
-                         .(route_id,begin_point,end_point,PCT_PEAK_SINGLE=value_numeric, num_sections)]
+  pct_peak_single = data[data_item=="PCT_DH_SINGLE_UNIT",
+                         .(route_id,begin_point,end_point,PCT_DH_SINGLE_UNIT=value_numeric, num_sections)]
 
   if(pct_peak_single[, .N] == 0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -452,8 +452,8 @@ cross_validation_57 = function(data){
                num_sections = sum(num_sections,na.rm=TRUE),
                mileage      = sum(end_point-begin_point)
               ),
-             .(applies = !is.na(PCT_PEAK_SINGLE), 
-               passes  = PCT_PEAK_SINGLE > 0 & PCT_PEAK_SINGLE < 25)][order(applies,passes)]
+             .(applies = !is.na(PCT_DH_SINGLE_UNIT), 
+               passes  = PCT_DH_SINGLE_UNIT > 0 & PCT_DH_SINGLE_UNIT < 25)][order(applies,passes)]
   
   if(nrow(results[applies == TRUE])==0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -544,11 +544,11 @@ cross_validation_54 = function(data){
 
 cross_validation_43 = function(data){
   #(CU AADT x 0.04) < (AADT x Percent Peak CU) < (CU AADT x 0.4)
-  # (AADT * PCT_PEAK_COMBINATION) > (AADT_COMBINATION * 0.04) &
-  #   (AADT * PCT_PEAK_COMBINATION) < (AADT_COMBINATION * 0.4)
+  # (AADT * PCT_DH_COMBINATION) > (AADT_COMBINATION * 0.04) &
+  #   (AADT * PCT_DH_COMBINATION) < (AADT_COMBINATION * 0.4)
   # browser()
-  pct_combination = data[data_item=="PCT_PEAK_COMBINATION",
-                         .(route_id,begin_point,end_point,PCT_PEAK_COMBINATION=value_numeric, num_sections)]
+  pct_combination = data[data_item=="PCT_DH_COMBINATION",
+                         .(route_id,begin_point,end_point,PCT_DH_COMBINATION=value_numeric, num_sections)]
   aadt_combination = data[data_item=="AADT_COMBINATION",
                           .(route_id,begin_point,end_point,AADT_COMBINATION=value_numeric)]
   aadt = data[data_item=="AADT",
@@ -570,9 +570,9 @@ cross_validation_43 = function(data){
                num_sections = sum(num_sections,na.rm=TRUE),
                mileage      = sum(end_point-begin_point)
               ),
-             .(applies = !is.na(PCT_PEAK_COMBINATION), 
-               passes  = (AADT * PCT_PEAK_COMBINATION / 100) > (AADT_COMBINATION * 0.04) &
-                 (AADT * PCT_PEAK_COMBINATION / 100) < (AADT_COMBINATION * 0.4)
+             .(applies = !is.na(PCT_DH_COMBINATION), 
+               passes  = (AADT * PCT_DH_COMBINATION / 100) > (AADT_COMBINATION * 0.04) &
+                 (AADT * PCT_DH_COMBINATION / 100) < (AADT_COMBINATION * 0.4)
              )][order(applies,passes)]
   
   
@@ -592,8 +592,8 @@ cross_validation_56 = function(data){
   # PCT_Peak_Combination >0 and < 25%
   
   #browser()
-  pct_peak_combination = data[data_item=="PCT_PEAK_COMBINATION",
-                              .(route_id,begin_point,end_point,PCT_PEAK_COMBINATION=value_numeric, num_sections)]
+  pct_peak_combination = data[data_item=="PCT_DH_COMBINATION",
+                              .(route_id,begin_point,end_point,PCT_DH_COMBINATION=value_numeric, num_sections)]
   
   if(pct_peak_combination[, .N] == 0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -609,8 +609,8 @@ cross_validation_56 = function(data){
                num_sections = sum(num_sections,na.rm=TRUE),
                mileage      = sum(end_point-begin_point)
               ),
-             .(applies = !is.na(PCT_PEAK_COMBINATION), 
-               passes  = PCT_PEAK_COMBINATION > 0 & PCT_PEAK_COMBINATION < 25)][order(applies,passes)]
+             .(applies = !is.na(PCT_DH_COMBINATION), 
+               passes  = PCT_DH_COMBINATION > 0 & PCT_DH_COMBINATION < 25)][order(applies,passes)]
  
   if(nrow(results[applies == TRUE])==0){
     warning("Not applicable - Sufficient data from the state are not available")

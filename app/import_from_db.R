@@ -431,9 +431,10 @@ FormatDataSet <- function(dat, state_abbr, year) {
   # keeping only ramps for the ramp detail data items
   # ramp detail data items are "AADT","F_SYSTEM","FACILITY_TYPE","THROUGH_LANES","URBAN_ID"
   
-  data_noFT6 = data_noFT6[(FACILITY_TYPE == 4 & 
-                             data_item %in% c("AADT","F_SYSTEM","FACILITY_TYPE","THROUGH_LANES","URBAN_ID"))|
-                            (FACILITY_TYPE %in% c(1,2))]
+  data_noFT6 = data_noFT6[
+    (FACILITY_TYPE == 4 & 
+       data_item %in% c("AADT","F_SYSTEM","FACILITY_TYPE","THROUGH_LANES","URBAN_ID"))|
+      (FACILITY_TYPE %in% c(1,2))]
   
   # merge in expansion factors ---------------------------------------------
 
@@ -475,8 +476,6 @@ FormatDataSet <- function(dat, state_abbr, year) {
       length(setdiff(rid_sp, rid_sec)) > 0 |
       length(intersect(rid_sp, rid_sec)) < length(rid_sp)
     ){ 
-      
-      browser() 
       
       compare_ids = data.table(sp = rid_sp, sec = rid_sec[1:length(rid_sp)])
       

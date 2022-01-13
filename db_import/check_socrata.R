@@ -66,5 +66,5 @@ if ( which_url == 'mid_atlantic' ){
 
 # Queries below --------------------------------------------------------
 
-this_item = 'CAPACITY'
+this_item = 'BASE_TYPE'
 dt[data_item == this_item, .N]
