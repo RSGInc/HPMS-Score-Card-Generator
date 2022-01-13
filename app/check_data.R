@@ -15,8 +15,7 @@
 
 # Load summary data for state and year
 loadSummaryData <- function(state_code, year){
-
-  con <- odbcConnect("HPMS")
+  con <- odbcConnect("HPMS", uid = db_username, pwd = db_password)
   
   st_yr_key = paste0(state_code, str_sub(year, start=3, end=4)) 
   

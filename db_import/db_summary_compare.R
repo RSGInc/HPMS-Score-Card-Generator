@@ -11,7 +11,7 @@ library('data.table')
 ReadData <- function(state_code, year) {
   
   cat('Fetching the data from the database...')
-  con <- odbcConnect("HPMS")
+  con <- odbcConnect("HPMS", uid = db_username, pwd = db_password)
   
   query <- paste0('select YearRecord AS Year_Record, StateId AS State_Code, RouteID AS Route_ID, BeginPoint AS Begin_Point, EndPoint AS End_Point, DataItem AS Data_Item, SectionLength AS Section_Length, ValueNumeric AS Value_Numeric, ValueText AS Value_Text, ValueDate AS Value_Date, StateYearKey from ReviewSections where StateYearKey = ',
                   state_code, as.numeric(year) %% 100)
@@ -59,7 +59,7 @@ cleanUpQuery <- function(data){
 
 # Get distinct route_ids for a single state, year, data_item
 
-con <- odbcConnect('HPMS')
+con <- odbcConnect('HPMS', uid = db_username, pwd = db_password)
 
 # state_code <- 34    # NJ
 state_code <- 49  # UT

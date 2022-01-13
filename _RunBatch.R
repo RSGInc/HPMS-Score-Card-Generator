@@ -20,6 +20,10 @@ library('rmarkdown')
 options(warn=1)
 options(scipen=9999)
 
+# Load Code -------------------------------------------------------------------
+codefiles = c(Sys.glob('app/*.R'), Sys.glob('functions/*.R'))
+invisible(sapply(X =codefiles , FUN = source))
+
 # Read args from the command line ---------------------------------------------
 args <- commandArgs(trailingOnly = TRUE)
 
@@ -53,12 +57,14 @@ if(length(args) > 4) {
   db_username <- str_trim(args[5], side='both')
 }
 
-if(length(args) > 6) {
+if(length(args) > 5) {
   db_password <- str_trim(args[6], side='both')
 }
 
 submission_deadline <- paste(year_selection, '-06-15', sep="")
-cat('state_abbrev: ', state_abbrev, ' year_selection: ', year_selection, ' year_compare: ', year_compare, ' reimport: ', reimport, '\n')
+cat('state_abbrev: ', state_abbrev, ' year_selection: ', year_selection, 
+' year_compare: ', year_compare, ' reimport: ', reimport, 
+' db_username: ', db_username, ' db_password: ', db_password, '\n')
 
 root <- rprojroot::find_rstudio_root_file()
 setwd(root)
@@ -80,14 +86,9 @@ message('submission_deadline: ', submission_deadline)
 message('year_selection: ', year_selection)
 message('year_compare: ', year_compare)
 
-# Load Code -------------------------------------------------------------------
-
-codefiles = c(Sys.glob('app/*.R'), Sys.glob('functions/*.R'))
-invisible(sapply(X =codefiles , FUN = source))
-
 cat('Checking availability of states for', year_selection, '\n')
 
-con <- odbcConnect("HPMS", uid = "hpms_app", pwd = "i5GLq2SYMK")
+con <- odbcConnect("HPMS", uid = db_username, pwd = db_password)
 
 query <- paste("select distinct stateid as state_code, yearrecord as year_record from", sections_table,
                "order by state_code, year_record")

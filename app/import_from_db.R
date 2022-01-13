@@ -19,7 +19,7 @@ goverwrite <- ""
 showAvailableStatesYears <- function(){
   
   # Get states and years available for import -----------------------------
-  con <- odbcConnect("HPMS")
+  con <- odbcConnect("HPMS", uid = db_username, pwd = db_password)
   
   cat('Determining available states and years...\n')
   
@@ -308,7 +308,7 @@ cleanUpQuery <- function(data){
 ReadData <- function(state, year) {
 
   cat('Fetching the data from the database...')
-  con <- odbcConnect("HPMS")
+  con <- odbcConnect("HPMS", uid = db_username, pwd = db_password)
 
   query <- paste0('select YearRecord AS Year_Record, StateId AS State_Code, RouteID AS Route_ID, BeginPoint AS Begin_Point, EndPoint AS End_Point, DataItem AS Data_Item, SectionLength AS Section_Length, ValueNumeric AS Value_Numeric, ValueText AS Value_Text, ValueDate AS Value_Date, StateYearKey from ', sections_table, ' where StateYearKey = ',
                   getStateNumFromCode(state), as.numeric(year) %% 100)
