@@ -21,7 +21,7 @@ gState_Labels <- fread('resources/dat/state_labels.csv')
 
 con = connect_to_db('burmdlppw01', 'HPMS', intsecurity = TRUE)
 
-prod_name = 'ReviewSections'
+prod_name = 'Review_Sections'
 stage_name = 'rs_stage'
 
 # prod_name = 'Review_Sample_Sections'

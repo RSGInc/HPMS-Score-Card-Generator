@@ -31,7 +31,7 @@ local_con <- 'Driver={SQL Server Native Client 11.0}; server=10548L\\SQLEXPRESS;
 # Push the flat files for sections into a database
 
 choice <- menu(choices = c('Replace it', 'Stop'),
-               title='Replacing "ReviewSections" table takes ~ 4 hrs!!')
+               title='Replacing "Review_Sections" table takes ~ 4 hrs!!')
 
 if ( choice == 1 ){
 
@@ -105,7 +105,7 @@ if ( choice == 1 ){
 # Copied from Q:\Projects\_Federal\FHWA\15__ HPMS_DataVisualizationSupport\HPMS Files
 
 choice <- menu(choices = c('Replace it', 'Stop'),
-               title='Replacing "ReviewSections_2014" table takes ~3 hrs!!')
+               title='Replacing "Review_Sections_2014" table takes ~3 hrs!!')
 
 if ( choice == 1 ){
 
@@ -181,7 +181,7 @@ if ( choice == 1 ){
   dt[Value_Text == '', Value_Text := NA]
   dt[Value_Date == '', Value_Date := NA]
 
-  tablename <- 'ReviewSections_2014'
+  tablename <- 'Review_Sections_2014'
   var_types <- c(Year_Record='smallint',
                  State_Code='smallint',
                  Route_ID='varchar(120)',

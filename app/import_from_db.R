@@ -30,7 +30,7 @@ showAvailableStatesYears <- function(){
   
   #data <- rbind(data1,data2)#,data3)
 
-  query <- paste("select distinct StateId AS State_CodeYearRecord AS Year_Record,  from", sections_table,
+  query <- paste("select distinct state_code, year_record from", sections_table,
                  "order by state_code, year_record")
   
   data <- data.table(sqlQuery(con, query))
@@ -310,7 +310,7 @@ ReadData <- function(state, year) {
   cat('Fetching the data from the database...')
   con <- GetODBCConnection()
 
-  query <- paste0('select YearRecord AS Year_Record, StateId AS State_Code, RouteID AS Route_ID, BeginPoint AS Begin_Point, EndPoint AS End_Point, DataItem AS Data_Item, SectionLength AS Section_Length, ValueNumeric AS Value_Numeric, ValueText AS Value_Text, ValueDate AS Value_Date, StateYearKey from ', sections_table, ' where StateYearKey = ',
+  query <- paste0('select * from ', sections_table, ' where StateYearKey = ',
                   getStateNumFromCode(state), as.numeric(year) %% 100)
   
   data <- sqlQuery(con, query, stringsAsFactors=FALSE)
@@ -439,21 +439,7 @@ FormatDataSet <- function(dat, state_abbr, year) {
 
   con <- GetODBCConnection()
 
-  query <- paste0('select 
-    YearRecord AS Year_Record, 
-    StateId AS State_Code, 
-    RouteID AS Route_ID, 
-    BeginPoint AS Begin_Point, 
-    EndPoint AS End_Point, 
-    SectionLength AS Section_Length, 
-    SampleID AS Sample_ID, 
-    ExpansionFactor AS Expansion_Factor,
-    Comments,
-    LastModifiedOn AS Last_Modified_On,
-    LastModifiedBy AS Last_Modified_By,
-    Invalid, 
-    StateYearKey 
-    from ', samples_table, ' where StateYearKey = ',
+  query <- paste0('select * from ', samples_table, ' where StateYearKey = ',
                   getStateNumFromCode(state_abbr), as.numeric(year) %% 100)
  
   sp <- sqlQuery(con, query,stringsAsFactors=FALSE)

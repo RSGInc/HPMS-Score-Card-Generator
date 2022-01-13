@@ -187,7 +187,7 @@ if ( update_samples ){
 
 if ( update_sections ){
   
-  prod_table = 'ReviewSections'
+  prod_table = 'Review_Sections'
   stage_table = 'rs_stage'
   
   for ( i in seq_along(section_urls) ){

@@ -66,10 +66,10 @@ raw_dir <- file.path('C:/Users/matt.landis/shared_data/HPMS_download_20191014')
 # Load 2018 Sections data ---------------------------------------------------
 
 infile <- file.path(raw_dir, 'HPMS_Sections_2017-2018.csv')
-tbl_name <- 'ReviewSections'
+tbl_name <- 'Review_Sections'
 
-# infile = file.path(raw_dir, 'HPMS_ReviewSections.csv')
-# tbl_name <- 'ReviewSections'
+# infile = file.path(raw_dir, 'HPMS_Review_Sections.csv')
+# tbl_name <- 'Review_Sections'
 
 # Write file in chunks of 500k lines
 
@@ -119,10 +119,10 @@ read_csv_chunked(infile, callback=chunk_callback, chunk_size=inc_rows,
                  col_types = col_types, progress=show_progress())
 
 # Create StateYearKey
-sql = 'alter table ReviewSections add StateYearKey integer;'
+sql = 'alter table Review_Sections add StateYearKey integer;'
 dbExecute(con, sql)
 
-sql = 'update ReviewSections
+sql = 'update Review_Sections
        set StateYearKey = concat(State_Code, substring(Year_Record, 3, 2));'
 dbExecute(con, sql)
 
@@ -131,7 +131,7 @@ dbDisconnect(con)
 # Check the data
 con = connect_to_db('burmdlppw01', 'HPMS_2018', intsecurity = TRUE)
 
-tbl_name = 'ReviewSections'
+tbl_name = 'Review_Sections'
 rs = tbl(con, from=tbl_name)
 
 rs %>% 

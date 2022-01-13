@@ -90,7 +90,7 @@ cat('Checking availability of states for', year_selection, '\n')
 
 con <- GetODBCConnection()
 
-query <- paste("select distinct stateid as state_code, yearrecord as year_record from", sections_table,
+query <- paste("select distinct state_code, year_record from", sections_table,
                "order by state_code, year_record")
 st_yr_table <- data.table(sqlQuery(con, query))
 

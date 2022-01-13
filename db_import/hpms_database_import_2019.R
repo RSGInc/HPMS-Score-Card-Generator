@@ -255,7 +255,7 @@ url = 'https://datahub.transportation.gov/resource/w6jm-vtp5.json'
 
 # Sections data ---------------------------------------------------
 
-prod_table = 'ReviewSections'
+prod_table = 'Review_Sections'
 stage_table = 'rs_stage'
 
 urls = c(
