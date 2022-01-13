@@ -13,7 +13,7 @@ ReadData <- function(state_code, year) {
   cat('Fetching the data from the database...')
   con <- GetODBCConnection()
   
-  query <- paste0('select YearRecord AS Year_Record, StateId AS State_Code, RouteID AS Route_ID, BeginPoint AS Begin_Point, EndPoint AS End_Point, DataItem AS Data_Item, SectionLength AS Section_Length, ValueNumeric AS Value_Numeric, ValueText AS Value_Text, ValueDate AS Value_Date, StateYearKey from ReviewSections where StateYearKey = ',
+  query <- paste0('select * from Review_Sections where StateYearKey = ',
                   state_code, as.numeric(year) %% 100)
   
   data <- sqlQuery(con, query, stringsAsFactors=FALSE)
