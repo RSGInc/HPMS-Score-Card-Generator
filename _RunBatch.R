@@ -48,6 +48,15 @@ if(length(args) > 2) {
 if(length(args) > 3) {
   reimport <- str_trim(args[4], side='both')
 }
+
+if(length(args) > 4) {
+  db_username <- str_trim(args[5], side='both')
+}
+
+if(length(args) > 6) {
+  db_password <- str_trim(args[6], side='both')
+}
+
 submission_deadline <- paste(year_selection, '-06-15', sep="")
 cat('state_abbrev: ', state_abbrev, ' year_selection: ', year_selection, ' year_compare: ', year_compare, ' reimport: ', reimport, '\n')
 

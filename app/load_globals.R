@@ -22,6 +22,8 @@ ggplot2::theme_update(plot.title=element_text(hjust=0.5))
 timelinesstable   <- "Timelinesstable"   # "2015SubmissionDates"
 sections_table    <- 'ReviewSections'
 samples_table     <- 'ReviewSampleSections'
+db_username       <- ''
+db_password       <- ''
 
 # These don't seem to be used anywhere...
 # datatable        <- "sections"
