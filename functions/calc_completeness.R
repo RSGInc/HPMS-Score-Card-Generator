@@ -367,7 +367,7 @@ calc_completeness <- function(data, year, variable){
   } else
   
   
-    # hov_lanes ---------------------------------------------------------------
+    # managed_lanes ---------------------------------------------------------------
   
   if(variable == "MANAGED_LANES"){
     
@@ -387,13 +387,13 @@ calc_completeness <- function(data, year, variable){
     
     setDT(coverage)
     
-    coverage[, required := TRUE]
+    coverage[, required := !is.na(MANAGED_LANES_TYPE)]
 
     
   } else # end MANAGED_LANES
   
     
-    # hov_type ----------------------------------------------------------------
+    # managed_lanes_type ----------------------------------------------------------------
   
   if(variable == "MANAGED_LANES_TYPE"){
     
@@ -410,10 +410,10 @@ calc_completeness <- function(data, year, variable){
         ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
         ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
         )")
-              # FIXME: how does MANAGED_LANES play into requirements?
     
     setDT(coverage)
-    coverage[, required := TRUE]
+    
+    coverage[, required := !is.na(MANAGED_LANES)]
     
   } else # end MANAGED_LANES_TYPE
   
