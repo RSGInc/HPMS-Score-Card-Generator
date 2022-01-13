@@ -27,6 +27,7 @@ if ( length(args) < 1 ){
   stop('Please supply a comma-delimited list of states or specify "ALL"\nFor example: Rscript RunBatch.R PA,NY,NH,VT', call.=FALSE)
 }
 
+dbname <- 'HPMS9'
 reimport <- TRUE
 year_selection <- 2020
 year_compare <- 2019
@@ -58,7 +59,7 @@ invisible(sapply(X =codefiles , FUN = source))
 
 cat('Checking availability of states for', year_selection, '\n')
 
-con <- odbcConnect("HPMS")
+con <- odbcConnect(gDbname)
 
 query <- paste("select distinct state_code, year_record from", sections_table,
                "order by state_code, year_record")

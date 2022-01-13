@@ -49,7 +49,7 @@ if ( file.exists(dofile) ){
   
   cat(scriptname, 'Checking availability of states for', year_selection, '\n')
   
-  con <- odbcConnect("HPMS")
+  con <- odbcConnect(gDbname)
   
   query <- paste("select distinct state_code, year_record from", sections_table,
                  "order by state_code, year_record")

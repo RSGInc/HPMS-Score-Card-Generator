@@ -146,7 +146,7 @@ Run <- function(task=NA, ...) {
       #cat("Please use the windows dialog to select one or more data files to import.\n\n")
       #file <- choose.files(caption = "Select one file to import.",multi=FALSE)
       #stop('population is no longer needed for the pavement summary')
-      #con <- odbcConnect("HPMS")
+      #con <- odbcConnect(gDbname)
 
       #population <- sqlQuery(con,paste0("select * from ", poptable) )
   
@@ -154,9 +154,9 @@ Run <- function(task=NA, ...) {
       
       #population <- read.table(file,sep=",",header=TRUE,colClasses=)
       
-      #population <- data.table(urban_code=population[order(population[,"URBAN_CODE"]),"URBAN_CODE"],pop=population[order(population[,"URBAN_CODE"]),"POPULATION"])
+      #population <- data.table(urban_id=population[order(population[,"URBAN_ID"]),"URBAN_ID"],pop=population[order(population[,"URBAN_ID"]),"POPULATION"])
       
-      #population <- population[,.(pop=unique(pop)),by=urban_code]
+      #population <- population[,.(pop=unique(pop)),by=urban_id]
       
       #saveRDS(population,file=paste0("resources/dat/population.rds"))
       

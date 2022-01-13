@@ -2,9 +2,8 @@
 .Rproj.user
 HPMS_Scorecards_20191120
 data_20191118
-data
-output
-output_20200701
+data*
+output*
 *.zip
 *.html
 *.pdf
@@ -14,4 +13,5 @@ resources/fss/*.RDS
 client_data
 download_cache
 db_import/socrata_pw.rds
-
+*.7z
+*.zip
