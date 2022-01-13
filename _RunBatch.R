@@ -88,7 +88,7 @@ message('year_compare: ', year_compare)
 
 cat('Checking availability of states for', year_selection, '\n')
 
-con <- odbcConnect("HPMS", uid = db_username, pwd = db_password)
+con <- GetODBCConnection()
 
 query <- paste("select distinct stateid as state_code, yearrecord as year_record from", sections_table,
                "order by state_code, year_record")

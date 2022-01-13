@@ -31,6 +31,14 @@ db_password       <- ''
 # summary_table     <- 'Section_Summaries'
 # poptable          <- "codes_urban"
 
+GetODBCConnection <- function() {
+  if(db_username == '' | db_password == '') {
+    return(odbcConnect("HPMS"))
+  } else {
+    return(odbcConnect("HPMS", uid = db_username, pwd = db_password))
+  }
+}
+
 # this is the text included in the left side of the first page of the scorecard
 # carriage returns are necessary.
 title_text <- 
