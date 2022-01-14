@@ -25,16 +25,25 @@ if ( !exists('dbname') ){
 
 # SQL table names
 # these need to match FHWA's sql database structure
-#timelinesstable  <- "Table_mssql_m_HPMSAnalysis_HPMS_Submissions_log" 
-# timelinesstable   <- "Timelinesstable"   # "2015SubmissionDates"
-sections_table    <- 'Review_Sections'
-samples_table     <- 'Review_Sample_Sections'
+# timelinesstable   <- "Timelinesstable"   # Not using this table any more
+sections_table    <- 'ReviewSections'
+samples_table     <- 'ReviewSampleSections'
+db_username       <- ''
+db_password       <- ''
 
 # These don't seem to be used anywhere...
 # datatable        <- "sections"
 # sampletable      <- "samples"
 # summary_table     <- 'Section_Summaries'
 # poptable          <- "codes_urban"
+
+GetODBCConnection <- function() {
+  if(db_username == '' | db_password == '') {
+    return(odbcConnect("HPMS"))  
+  } else {
+    return(odbcConnect("HPMS", uid = db_username, pwd = db_password))
+  }
+}
 
 # this is the text included in the left side of the first page of the scorecard
 # carriage returns are necessary.

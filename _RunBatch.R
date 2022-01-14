@@ -20,6 +20,10 @@ library('rmarkdown')
 options(warn=1)
 options(scipen=9999)
 
+# Load Code -------------------------------------------------------------------
+codefiles = c(Sys.glob('app/*.R'), Sys.glob('functions/*.R'))
+invisible(sapply(X =codefiles , FUN = source))
+
 # Read args from the command line ---------------------------------------------
 args <- commandArgs(trailingOnly = TRUE)
 
@@ -31,7 +35,37 @@ dbname <- 'HPMS9'
 reimport <- TRUE
 year_selection <- 2020
 year_compare <- 2019
-submission_deadline <- '2021-06-15'
+
+if (length(args) > 0) {
+  if(!str_detect(tolower(args[1]), 'all')) {
+    state_abbrev <- str_split(args, ',')[[1]]
+  }
+}
+
+if (length(args) > 1) {
+  year_selection <- str_trim(args[2], side='both')
+}
+
+if(length(args) > 2) {
+  year_compare <- str_trim(args[3], side='both')
+}
+
+if(length(args) > 3) {
+  reimport <- str_trim(args[4], side='both')
+}
+
+if(length(args) > 4) {
+  db_username <- str_trim(args[5], side='both')
+}
+
+if(length(args) > 5) {
+  db_password <- str_trim(args[6], side='both')
+}
+
+submission_deadline <- paste(year_selection, '-06-15', sep="")
+cat('state_abbrev: ', state_abbrev, ' year_selection: ', year_selection, 
+' year_compare: ', year_compare, ' reimport: ', reimport, 
+' db_username: ', db_username, ' db_password: ', db_password, '\n')
 
 root <- rprojroot::find_rstudio_root_file()
 setwd(root)
@@ -50,60 +84,36 @@ sink(file=file_con, append=FALSE, type='message')
 
 message('RunBatch.R started at ', Sys.time())
 message('submission_deadline: ', submission_deadline)
-
-
-# Load Code -------------------------------------------------------------------
-
-codefiles = c(Sys.glob('app/*.R'), Sys.glob('functions/*.R'))
-invisible(sapply(X =codefiles , FUN = source))
+message('year_selection: ', year_selection)
+message('year_compare: ', year_compare)
 
 cat('Checking availability of states for', year_selection, '\n')
 
-con <- odbcConnect(gDbname)
+con <- GetODBCConnection()
 
 query <- paste("select distinct state_code, year_record from", sections_table,
                "order by state_code, year_record")
-
 st_yr_table <- data.table(sqlQuery(con, query))
 
 odbcClose(con)
 
 avail_states <- st_yr_table[year_record == year_selection]$state_code
 
-
-if ( length(args) == 1 && str_detect(tolower(args), 'all')){
-  
-  if ( length(avail_states) == 0 ) warning('No states available for ', year_selection, '\n')
-  state_codes <- avail_states
-  state_abbrev <- getStateAbbrFromNum(state_codes)
-  
-} else {
-  
-  if ( length(args) == 1 ){
-    
-    state_abbrev <- str_split(args, ',')[[1]]  
-  }
-  
-  if ( length(args) > 1){
-    state_abbrev <- str_replace(args, ',', '')
-    state_abbrev <- str_trim(state_abbrev, side='both')
-  }
-  
-  # Check to make sure all states are available
-  
-  state_codes <- getStateNumFromCode(state_abbrev)
-  
-  
-  which_na <- state_codes[!state_codes %in% avail_states] %>% getStateAbbrFromNum()
-  
-  if ( length(which_na) > 0 ){
-    warning('States not available in the database: ', paste(which_na, collapse=', '), '\n',
+if(str_detect(tolower(args[1]), 'all')) {
+    if ( length(avail_states) == 0 ) warning('No states available for ', year_selection, '\n')
+    state_codes <- avail_states
+    state_abbrev <- getStateAbbrFromNum(state_codes)
+  } else {
+    # Check to make sure all states are available
+    state_codes <- getStateNumFromCode(state_abbrev)
+    which_na <- state_codes[!state_codes %in% avail_states] %>% getStateAbbrFromNum()
+    if (length(which_na) > 0 ){
+      warning('States not available in the database: ', paste(which_na, collapse=', '), '\n',
             call. = FALSE, immediate. = FALSE)
+    }
+    state_codes <- state_codes[state_codes %in% avail_states]
+    state_abbrev <- getStateAbbrFromNum(state_codes)
   }
-  
-  state_codes <- state_codes[state_codes %in% avail_states]
-  state_abbrev <- getStateAbbrFromNum(state_codes)
-}
 
 cat('Running states:', state_abbrev, '\n\n')
 
