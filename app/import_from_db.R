@@ -19,7 +19,7 @@ goverwrite <- ""
 showAvailableStatesYears <- function(){
   
   # Get states and years available for import -----------------------------
-  con <- odbcConnect("HPMS")
+  con <- GetODBCConnection()
   
   cat('Determining available states and years...\n')
   
@@ -308,7 +308,7 @@ cleanUpQuery <- function(data){
 ReadData <- function(state, year) {
 
   cat('Fetching the data from the database...')
-  con <- odbcConnect("HPMS")
+  con <- GetODBCConnection()
 
   query <- paste0('select * from ', sections_table, ' where StateYearKey = ',
                   getStateNumFromCode(state), as.numeric(year) %% 100)
@@ -437,7 +437,7 @@ FormatDataSet <- function(dat, state_abbr, year) {
   
   # merge in expansion factors ---------------------------------------------
 
-  con <- odbcConnect("HPMS")
+  con <- GetODBCConnection()
 
   query <- paste0('select * from ', samples_table, ' where StateYearKey = ',
                   getStateNumFromCode(state_abbr), as.numeric(year) %% 100)

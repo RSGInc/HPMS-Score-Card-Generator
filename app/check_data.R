@@ -15,8 +15,7 @@
 
 # Load summary data for state and year
 loadSummaryData <- function(state_code, year){
-
-  con <- odbcConnect("HPMS")
+  con <- GetODBCConnection()
   
   st_yr_key = paste0(state_code, str_sub(year, start=3, end=4)) 
   
@@ -28,13 +27,9 @@ loadSummaryData <- function(state_code, year){
   FROM {sections_table} WHERE StateYearKey={st_yr_key} 
   GROUP BY Year_Record, State_Code, Data_Item;'
   )
-  
-  
   data <- sqlQuery(con, query)
   data <- cleanUpQuery(data)
-    
   odbcClose(con)
-  
   return(data)
 }
 

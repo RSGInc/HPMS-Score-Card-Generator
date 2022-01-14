@@ -31,7 +31,7 @@ LoadPackages <- function(packages) {
   notinstalled <- packages[!packages %in% .packages(all.available = TRUE)]
   if (length(notinstalled) > 0){
     install.packages(notinstalled,
-                     repos = "http://cloud.r-project.org/", dependencies = TRUE)
+                     repos = "http://cloud.r-project.org/", dependencies = TRUE, type="win.binary")
   }
   for (package in packages) {
     cat(".")
