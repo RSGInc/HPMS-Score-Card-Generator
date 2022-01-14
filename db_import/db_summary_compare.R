@@ -64,7 +64,7 @@ con <- GetODBCConnection()
 # state_code <- 34    # NJ
 state_code <- 49  # UT
 
-data_item <- 'URBAN_CODE'
+data_item <- 'URBAN_ID'
 
 query <- str_c("select DISTINCT Route_ID from Review_Sections where Year_Record=2016 and State_Code=", state_code,
                " and Data_Item='", data_item, "';")

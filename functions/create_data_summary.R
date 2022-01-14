@@ -17,7 +17,7 @@ create_data_summary <- function(data, state, year, year_compare){
   # Centerline Miles = (Total length for F_System (sum) where
   # F_System is in (1,2,3,4,5) and Facility_Type is in (1,2)) plus 
   # (total length for F_System where F_System is in (6) and
-  # Urban_Code <99999 and Facility_Type is in (1,2))
+  # URBAN_ID <99999 and Facility_Type is in (1,2))
   #
   # Lane Miles - 
   # Same as above but,  (Through_Lanes x F_System in (1,2,3,4,5)) plus
@@ -30,7 +30,7 @@ create_data_summary <- function(data, state, year, year_compare){
   # Generate an index to keep only certain rows that meet certain criteria
   idx_st_fsystem <- with(data, (state_code == state & data_item == 'F_SYSTEM'))
   idx_fs15 <- with(data, ((F_SYTEMorig %in% 1:5) & (FACILITY_TYPE %in% 1:2)) )
-  idx_fs6 <- with(data, ((F_SYTEMorig == 6) & (URBAN_CODE < 99999) & (FACILITY_TYPE %in% c(1, 2))) )
+  idx_fs6 <- with(data, ((F_SYTEMorig == 6) & (URBAN_ID < 99999) & (FACILITY_TYPE %in% c(1, 2))) )
   IDX <- idx_st_fsystem & (idx_fs15 | idx_fs6)
 
   # Centerline

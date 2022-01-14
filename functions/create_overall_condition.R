@@ -37,9 +37,9 @@ create_overall_condition <- function(data, state, year, population)
                      list(route_id, F_SYSTEM, Interstate, NHS, begin_point, end_point, value_numeric), ]
      setnames(surface, "value_numeric", "surface")
      
-     urban <- data[state_code == state & year_record == year & data_item == "URBAN_CODE" & FACILITY_TYPE!=4,
+     urban <- data[state_code == state & year_record == year & data_item == "URBAN_ID" & FACILITY_TYPE!=4,
                    list(route_id, begin_point, end_point, value_numeric), ]
-     setnames(urban, "value_numeric", "urban_code")
+     setnames(urban, "value_numeric", "urban_id")
      
      if(nrow(rutting) == 0 | 
         nrow(iri) == 0 | 
@@ -51,13 +51,13 @@ create_overall_condition <- function(data, state, year, population)
        return(textGrob(NoDataString, gp=gpar(fontsize=8,  col=gColors$highlight)))
      } else {
        urban[, rural:=0]
-       urban[urban_code == 99999, rural:=1]
-       urban[!is.na(urban_code) & is.na(rural), rural:=0]
+       urban[urban_id == 99999, rural:=1]
+       urban[!is.na(urban_id) & is.na(rural), rural:=0]
        
-       iri <- sqldf("select A.*, B.urban_code, B.rural from iri A left join urban B on A.route_id = B.route_id and A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point")
+       iri <- sqldf("select A.*, B.urban_id, B.rural from iri A left join urban B on A.route_id = B.route_id and A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point")
        iri <- data.table(iri)
        
-       iri <- merge(iri, population, by="urban_code", all.x=TRUE, all.y=FALSE)
+       iri <- merge(iri, population, by="urban_id", all.x=TRUE, all.y=FALSE)
        
        iri[rural == 1, threshold:=170]
        iri[(rural == 0)*(pop<1000000), threshold:=170]

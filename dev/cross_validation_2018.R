@@ -699,9 +699,9 @@ cross_validation_y = function(data){
   
   signal_type = data[Data_Item=="SIGNAL_TYPE",.(Route_ID,Begin_Point,End_Point,SIGNAL_TYPE=Value_Numeric)]
   f_system = data[Data_Item=="F_SYSTEM",.(Route_ID,Begin_Point,End_Point,F_SYSTEM=Value_Numeric)]
-  urban_code = data[Data_Item=="URBAN_CODE",.(Route_ID,Begin_Point,End_Point,URBAN_CODE=Value_Numeric)]
+  urban_id = data[Data_Item=="URBAN_ID",.(Route_ID,Begin_Point,End_Point,URBAN_ID=Value_Numeric)]
 
-  if(nrow(signal_type)==0|nrow(f_system)==0|nrow(urban_code)==0){
+  if(nrow(signal_type)==0|nrow(f_system)==0|nrow(urban_id)==0){
     warning("Not applicable - Sufficient data from the state are not available")
     return(list(results=NULL,comparison=NULL))  
   }
@@ -709,7 +709,7 @@ cross_validation_y = function(data){
   # expand to the 0.01
   dat1.expanded = expand(signal_type)
   dat2.expanded = expand(f_system)
-  dat3.expanded = expand(urban_code)
+  dat3.expanded = expand(urban_id)
   
   dat2.expanded[,num_sections:=NULL]
   dat3.expanded[,num_sections:=NULL]
@@ -725,7 +725,7 @@ cross_validation_y = function(data){
                num_sections = sum(num_sections,na.rm=TRUE),
                mileage      = sum(End_Point-Begin_Point)
               ),
-             .(Applies = F_SYSTEM == 1 & URBAN_CODE != 99999 , 
+             .(Applies = F_SYSTEM == 1 & URBAN_ID != 99999 , 
                Passes  = SIGNAL_TYPE==5 | is.na(SIGNAL_TYPE) )][order(Applies,Passes)]
   
   return(list(results=results,comparison=comparison))

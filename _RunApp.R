@@ -23,8 +23,8 @@
 
 options(scipen=9999)  # Make sure numbers are not converted to sci notation
 
-submission_deadline = '2021-06-15'   # Deadline
-# submission_deadline = '2020-06-15' # Usual deadline
+# Database to use (set up in ODBC Data Sources app)
+dbname = 'HPMS9'
 
 # Load Code
 codefiles = c(Sys.glob('app/*.R'), Sys.glob('functions/*.R'))
@@ -32,7 +32,7 @@ invisible(sapply(X =codefiles , FUN = source))
 
 # Run Tool
 # Run()  # Import all states
-# updateNation(years = as.numeric(str_extract(submission_deadline, '^[0-9]{4}')) - 2)
+# updateNation(years = 2020)
 
 # Run scorecards via command line tool.
 # Rscript _RunBatch.R ALL

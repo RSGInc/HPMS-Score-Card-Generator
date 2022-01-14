@@ -399,14 +399,14 @@ FormatDataSet <- function(dat, state_abbr, year) {
   data.formatted = append_column(data.formatted,"NHS")
   data.formatted = append_column(data.formatted,"FACILITY_TYPE")
   data.formatted = append_column(data.formatted,"THROUGH_LANES")
-  data.formatted = append_column(data.formatted,"URBAN_CODE")
+  data.formatted = append_column(data.formatted,"URBAN_ID")
 
   # THROUGH_LANES needs to be smarter
   # Lane Miles - 
   # (Through_Lanes x F_System in (1,2,3,4,5,6-Urban)) plus
   # (total length for Rural Minor Collectors x 2)
   
-  data.formatted[F_SYSTEM >= 6 & URBAN_CODE == 99999 & FACILITY_TYPE < 6 &
+  data.formatted[F_SYSTEM >= 6 & URBAN_ID == 99999 & FACILITY_TYPE < 6 &
                    is.na(THROUGH_LANES), THROUGH_LANES:=2]
   
   #F_SYSTEM Codes
@@ -429,11 +429,12 @@ FormatDataSet <- function(dat, state_abbr, year) {
   data_noFT6 <- data.formatted[!FACILITY_TYPE %in% c(5,6,7), ] # keeping 1,2,4. 3 is not a code in the field guide
   
   # keeping only ramps for the ramp detail data items
-  # ramp detail data items are "AADT","F_SYSTEM","FACILITY_TYPE","THROUGH_LANES","URBAN_CODE"
+  # ramp detail data items are "AADT","F_SYSTEM","FACILITY_TYPE","THROUGH_LANES","URBAN_ID"
   
-  data_noFT6 = data_noFT6[(FACILITY_TYPE == 4 & 
-                             data_item %in% c("AADT","F_SYSTEM","FACILITY_TYPE","THROUGH_LANES","URBAN_CODE"))|
-                            (FACILITY_TYPE %in% c(1,2))]
+  data_noFT6 = data_noFT6[
+    (FACILITY_TYPE == 4 & 
+       data_item %in% c("AADT","F_SYSTEM","FACILITY_TYPE","THROUGH_LANES","URBAN_ID"))|
+      (FACILITY_TYPE %in% c(1,2))]
   
   # merge in expansion factors ---------------------------------------------
 
@@ -476,8 +477,6 @@ FormatDataSet <- function(dat, state_abbr, year) {
       length(intersect(rid_sp, rid_sec)) < length(rid_sp)
     ){ 
       
-      browser() 
-      
       compare_ids = data.table(sp = rid_sp, sec = rid_sec[1:length(rid_sp)])
       
       # Check for data in sp that don't match anything in data_noFT6
@@ -502,7 +501,7 @@ FormatDataSet <- function(dat, state_abbr, year) {
   
   rm(data.formatted)
   
-  data_exp[, rural_urban := c("Urban","Rural")[1 + 1 * (URBAN_CODE == 99999)]]
+  data_exp[, rural_urban := c("Urban","Rural")[1 + 1 * (URBAN_ID == 99999)]]
   
   data_exp = merge(
     data_exp,

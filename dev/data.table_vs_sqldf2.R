@@ -18,7 +18,7 @@ dat.variable[, .(route_id, begin_point, end_point, variable = value_numeric)]
 
 dat.FACILITY_TYPE[, .(route_id, begin_point, end_point, FACILITY_TYPE = value_numeric)]
 dat.F_SYSTEM[, .(route_id, begin_point, end_point, F_SYSTEM = value_numeric)]
-dat.URBAN_CODE[, .(route_id, begin_point, end_point, URBAN_CODE = value_numeric)]
+dat.URBAN_ID[, .(route_id, begin_point, end_point, URBAN_ID = value_numeric)]
 dat.NHS[, .(route_id, begin_point, end_point, NHS = value_numeric)]
 
 dat.THROUGH_LANES[, .(route_id, begin_point, end_point, THROUGH_LANES = value_numeric)]
@@ -60,7 +60,7 @@ coverage[, .N, keyby = .(required, i.required)]
 # Priority variables
 # OWNERSHIP
 # THROUGH_LANES
-# URBAN_CODE
+# URBAN_ID
 # AADT
 # AADT_COMBINATION
 # AADT_SINGLE_UNIT
@@ -72,10 +72,10 @@ coverage[, .N, keyby = .(required, i.required)]
 
 # FACILITY_TYPE
 # THROUGH_LANES
-# URBAN_CODE
+# URBAN_ID
 # F_SYSTEM
 # NHS
-# COUNTY_CODE
+# COUNTY_ID
 # IRI
 # SURFACE_TYPE
 # MAINTENANCE_OPERATIONS

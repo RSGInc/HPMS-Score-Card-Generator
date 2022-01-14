@@ -16,10 +16,16 @@
 # Change the ggplot theme
 ggplot2::theme_update(plot.title=element_text(hjust=0.5))
 
+# Set the database name
+if ( !exists('dbname') ){
+  gDbname <- "HPMS9"
+} else {
+  gDbname <- dbname
+}
+
 # SQL table names
 # these need to match FHWA's sql database structure
-#timelinesstable  <- "Table_mssql_m_HPMSAnalysis_HPMS_Submissions_log" 
-timelinesstable   <- "Timelinesstable"   # "2015SubmissionDates"
+# timelinesstable   <- "Timelinesstable"   # Not using this table any more
 sections_table    <- 'ReviewSections'
 samples_table     <- 'ReviewSampleSections'
 db_username       <- ''
@@ -33,7 +39,7 @@ db_password       <- ''
 
 GetODBCConnection <- function() {
   if(db_username == '' | db_password == '') {
-    return(odbcConnect("HPMS"))
+    return(odbcConnect("HPMS"))  
   } else {
     return(odbcConnect("HPMS", uid = db_username, pwd = db_password))
   }

@@ -154,9 +154,9 @@ Run <- function(task=NA, ...) {
       
       #population <- read.table(file,sep=",",header=TRUE,colClasses=)
       
-      #population <- data.table(urban_code=population[order(population[,"URBAN_CODE"]),"URBAN_CODE"],pop=population[order(population[,"URBAN_CODE"]),"POPULATION"])
+      #population <- data.table(urban_id=population[order(population[,"URBAN_ID"]),"URBAN_ID"],pop=population[order(population[,"URBAN_ID"]),"POPULATION"])
       
-      #population <- population[,.(pop=unique(pop)),by=urban_code]
+      #population <- population[,.(pop=unique(pop)),by=urban_id]
       
       #saveRDS(population,file=paste0("resources/dat/population.rds"))
       

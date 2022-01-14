@@ -27,7 +27,7 @@ create_travel_yoy_density <- function(
   col_national = gColors$text
   col_noplot = gColors$blank
   
-  #if ( variable %in% c('YEAR_LAST_CONSTRUCTION', 'YEAR_LAST_IMPROV') ) browser()
+  #if ( variable %in% c('YEAR_LAST_CONSTRUCTION', 'YEAR_LAST_IMPROVEMENTEMENT') ) browser()
   
   # What data type?
   type <- gVariables[Name == variable, Data_Type]

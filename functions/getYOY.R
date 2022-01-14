@@ -22,7 +22,7 @@ getYOY <- function(data, year, yearcomparison, variable, yoy_change){
   var.2    <- data[year_record == yearcomparison & data_item==variable,
                    list(route_id, begin_point, end_point, value_numeric, value_text, value_date)]
   
-  if ( variable %in% c('YEAR_LAST_IMPROV', 'YEAR_LAST_CONSTRUCTION') ){
+  if ( variable %in% c('YEAR_LAST_IMPROVEMENTEMENT', 'YEAR_LAST_CONSTRUCTION') ){
     var.1[is.na(value_numeric) | value_numeric == 0, value_numeric := year(value_date)]
     var.2[is.na(value_numeric) | value_numeric == 0, value_numeric := year(value_date)]
   }

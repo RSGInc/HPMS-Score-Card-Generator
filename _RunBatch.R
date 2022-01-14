@@ -31,6 +31,7 @@ if ( length(args) < 1 ){
   stop('Please supply a comma-delimited list of states or specify "ALL"\nFor example: Rscript RunBatch.R PA,NY,NH,VT', call.=FALSE)
 }
 
+dbname <- 'HPMS9'
 reimport <- TRUE
 year_selection <- 2020
 year_compare <- 2019
