@@ -23,9 +23,6 @@
 
 options(scipen=9999)  # Make sure numbers are not converted to sci notation
 
-# Database to use (set up in ODBC Data Sources app)
-dbname = 'HPMS9'
-
 # Load Code
 codefiles = c(Sys.glob('app/*.R'), Sys.glob('functions/*.R'))
 invisible(sapply(X =codefiles , FUN = source))
