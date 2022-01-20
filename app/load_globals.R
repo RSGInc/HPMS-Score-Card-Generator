@@ -18,7 +18,7 @@ ggplot2::theme_update(plot.title=element_text(hjust=0.5))
 
 # Set the database name
 if ( !exists('dbname') ){
-  gDbname <- "HPMS9"
+  gDbname <- "HPMS"
 } else {
   gDbname <- dbname
 }
@@ -26,10 +26,8 @@ if ( !exists('dbname') ){
 # SQL table names
 # these need to match FHWA's sql database structure
 # timelinesstable   <- "Timelinesstable"   # Not using this table any more
-sections_table    <- 'ReviewSections'
-samples_table     <- 'ReviewSampleSections'
-db_username       <- ''
-db_password       <- ''
+sections_table    <- 'Review_Sections'
+samples_table     <- 'Review_SampleSections'
 
 # These don't seem to be used anywhere...
 # datatable        <- "sections"
@@ -38,10 +36,11 @@ db_password       <- ''
 # poptable          <- "codes_urban"
 
 GetODBCConnection <- function() {
-  if(db_username == '' | db_password == '') {
-    return(odbcConnect("HPMS"))  
+
+  if( exists('db_username') & exists('db_password') ) {
+    return(odbcConnect(gDbname, uid = db_username, pwd = db_password))
   } else {
-    return(odbcConnect("HPMS", uid = db_username, pwd = db_password))
+    return(odbcConnect(gDbname))  
   }
 }
 
@@ -115,48 +114,11 @@ gF_SYSTEM_levels <- c("Interstate",
 
 # tables of variables (data items) and labels used in the output
 gVariables       <- fread("resources/dat/data_elements.csv")
-gVariablesLabels <- fread("resources/dat/data_labels.csv")
 gCrossLabels     <- fread('resources/dat/cross_validation_labels.csv')
 gCrossLabels$Description <- str_replace(gCrossLabels$Description, '[(][0-9xy]*[)]$', '')
 gExtentDetail    <- fread('resources/dat/extent_detail.csv')
 gReqs <- fread("resources/dat/data_items_required_by_state.csv")
 gScoreWeights <- fread("resources/dat/scoringweights.csv")
-
-timeliness_file = file.path('data/timeliness_table.csv')
-
-
-if ( file.exists( timeliness_file )){
-  gTimeliness = fread(timeliness_file)
-}
-
-# reformatting the labels
-gVariablesLabels[
-  Name=="F_SYSTEM", 
-  Code2:="Principal Arterial -\nOther Freeways and Expressways"]
-
-gVariablesLabels[
-  Name=="F_SYSTEM",
-  Code3:="Principal Arterial -\nOther"]
-
-gVariablesLabels[
-  Name=="F_SYSTEM",
-  Code4:="Minor\nArterial"]
-
-gVariablesLabels[
-  Name=="F_SYSTEM",
-  Code5:="Major\nCollector"]
-
-gVariablesLabels[Name=="F_SYSTEM",
-  Code6:="Minor\nCollector"]
-
-gVariablesLabels[Name=="ACCESS_CONTROL",
-  Code1:="Full\nAccess\nControl"]
-
-gVariablesLabels[Name=="ACCESS_CONTROL",
-  Code2:="Partial\nAccess\nControl"]
-
-gVariablesLabels[Name=="ACCESS_CONTROL",
-  Code3:="No\nAccess\nControl"]
 
 # track page number
 gPageNumber <- 1

@@ -33,7 +33,7 @@ create_travel_yoy_density <- function(
   type <- gVariables[Name == variable, Data_Type]
   
   # Is this a categorical (labeled) variable?
-  cont_variable = gVariablesLabels[Name == variable, NumLevels] == 0
+  cont_variable = gVariables[Name == variable, Continuous_variable] == 0
   
   # For non-categorical, should we use a density plot or bar plot?
   density_type = gVariables[Name == variable, Density_Type]
@@ -193,10 +193,7 @@ create_travel_yoy_density <- function(
     } else {  # Make bar plots
       
       # get labels for bars
-      
-      # gVariablesLabels[Name==variable, NumLevels]
-      # labels <- 1:7
-      
+            
       labels <- sort(
         unique(
           c(var1[, value_numeric],

@@ -962,7 +962,7 @@ calc_completeness <- function(data, year, variable){
       
       # Year_last_improv ---------------------------------------------------------
   
-  if(variable %in% c("YEAR_LAST_IMPROVEMENTEMENT")){
+  if(variable %in% c("YEAR_LAST_IMPROVEMENT")){
     
     dat.variable <- data[data_item == variable & year_record == year,]
     dat.SURFACE_TYPE <- data[data_item == "SURFACE_TYPE" & year_record == year,]
