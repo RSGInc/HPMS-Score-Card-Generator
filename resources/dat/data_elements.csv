@@ -28,7 +28,7 @@ GRADES_D,45,Grade Classification D,G,Y,numeric,1,density,1,SP*,0,0,Inf,,N,N,,,,N
 GRADES_E,45,Grade Classification E,G,Y,numeric,1,density,1,SP*,0,0,Inf,,N,N,,,,N,1,1
 GRADES_F,45,Grade Classification F,G,Y,numeric,1,density,1,SP*,0,0,Inf,,N,N,,,,N,1,1
 IRI,47,International Roughness Index,P,Y,numeric,1,density,1,FE*,4,30,400,Y,Y,Y,1,5,5,N,1,1
-IS_RESTRICTED,73,Is Restricted ,,,,,,,,,,,,,,,,,,,
+IS_RESTRICTED,73,Is Restricted,,,,,,,,,,,,,,,,,,,
 K_FACTOR,26,K-factor,T,Y,numeric,1,density,1,SP,0,4,20,,Y,Y,,,,N,1,1
 LANE_WIDTH,34,Lane Width,G,Y,numeric,1,bar,2,SP,0,5,19,,N,N,,,,N,1,1
 LAST_OVERLAY_THICKNESS,56,Last Overlay Thickness,P,Y,numeric,1,density,1,SP,0,0.5,Inf,,N,N,,,,N,1,1
@@ -42,8 +42,8 @@ NHS,64,National Highway System,SN,Y,numeric,1,bar,2,FE**,0,1,9,,N,N,,,,N,1,1
 NN,66,National Truck Network,SN,Y,numeric,0,,2,FE**,0,1,2,,N,N,,,,N,1,1
 NUMBER_SIGNALS,31,Number of Signalized Intersections,T,Y,numeric,1,bar,2,SP,0,0,Inf,,N,N,,,,N,1,1
 OWNERSHIP,6,Ownership,I,Y,numeric,1,density,2,FE,0,,,,N,N,,,,N,1,1
-PCT_DH_COMBINATION,25,Percent Design Hour Combination Trucks,T,Y,numeric,1,density,1,SP,0,0,20,,,Y,,,,N,1,1
-PCT_DH_SINGLE_UNIT,23,Percent Design Hour Single-Unit Trucks and Buses,T,Y,numeric,1,density,1,SP,0,0,20,,,Y,,,,N,1,1
+PCT_DH_COMBINATION,25,Percent Design Hour Combination Trucks,T,Y,numeric,1,density,1,SP,0,0,25,,,Y,,,,N,1,1
+PCT_DH_SINGLE_UNIT,23,Percent Design Hour Single-Unit Trucks and Buses,T,Y,numeric,1,density,1,SP,0,0,25,,,Y,,,,N,1,1
 PCT_GREEN_TIME,30,Percent Green Time,T,Y,numeric,1,density,1,SP*,0,0,100,,N,N,,,,N,1,1
 PCT_PASS_SIGHT,46,Percent Passing Sight Distance,G,Y,numeric,1,density,1,SP,0,0,100,,N,N,,,,N,1,1
 PEAK_LANES,10,Peak Lanes,I,Y,numeric,0,,1,SP,0,,,,N,N,,,,N,1,1
