@@ -51,7 +51,6 @@ SummarizeNation <- function(year) {
   RDSfiles <- getStatePaths(year)
   
   # variables
-  #variables <- gVariables[National_Data_Comparison=="Y",Name]
   variables <- gVariables[,Name]
   
   # create a folder

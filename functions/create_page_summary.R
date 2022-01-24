@@ -29,13 +29,20 @@ create_page_summary <- function(
   
   show2 <- show3 <- TRUE
   
-  if(is.null(x2)){
+  if( is.null(x2) ){
     show2 <- FALSE
+  } else if ( is.na(x2) ){
+    show2 <- FALSE
+    x2 <- NULL
   }
   
   if(is.null(x3)){
     show3 <- FALSE
+  } else if ( is.na(x3) ){
+    show3 <- FALSE
+    x3 <- NULL
   }
+  
   
   # Create graphics for each row of the column.
   
@@ -77,10 +84,21 @@ create_page_summary <- function(
     nrow=1, ncol=8, widths=width
   )
   
+  
+  if ( any( is.na( gVariables[c(x1, x2, x3), Data_Type]) ) & debugmode ) browser()
+  
   # Row of three tables (row 5)
-  tab51 <- create_summary_report(data, state, year, gVariables[x1,Name],
-                                 gVariables[x1, Data_Type], gVariables[x1,Extent],
-                                 gVariables[x1,Extent_FS], ramps=ramps)
+
+  tab51 <- create_summary_report(
+    data = data,
+    state = state,
+    year = year,
+    variable = gVariables[x1,Name],
+    variable_type = gVariables[x1, Data_Type],
+    variable_extent = gVariables[x1,Extent],
+    variable_extent_fs = gVariables[x1,Extent_FS],
+    ramps = ramps)
+
   if(show2){
     tab52 <- create_summary_report(data, state, year, gVariables[x2,Name],
                           gVariables[x2, Data_Type], gVariables[x2,Extent],
@@ -111,15 +129,18 @@ create_page_summary <- function(
   
   # Row of density plots (each plot 3x2) (Row 6)
   plt61 <- suppressWarnings(
-    create_travel_yoy_density(data, state, year, year_compare,
-                              gVariables[x1,Name],
-                              gVariables[x1,National_Data_Comparison], ramps=ramps))
+    create_travel_yoy_density(
+      data = data,
+      state = state,
+      year = year,
+      yearcomparison = year_compare,
+      variable = gVariables[x1,Name],
+      ramps=ramps))
   
   if(show2){
     plt62 <- suppressWarnings(
       create_travel_yoy_density(data, state, year, year_compare,
                                 gVariables[x2,Name],
-                                gVariables[x2,National_Data_Comparison],
                                 ramps=ramps))
   } else {
     plt62 <- rectGrob(gp=gpar(fill=gColors$blank, col = gColors$blank))
@@ -129,7 +150,6 @@ create_page_summary <- function(
     plt63 <- suppressWarnings(
       create_travel_yoy_density(data, state, year, year_compare,
                                 gVariables[x3,Name], 
-                                gVariables[x3,National_Data_Comparison],
                                 ramps=ramps))
   } else {
     plt63 <- rectGrob(gp=gpar(fill=gColors$blank, col = gColors$blank))

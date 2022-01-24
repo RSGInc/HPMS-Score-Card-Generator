@@ -15,7 +15,8 @@ create_summary_report <- function(
   data, state, year,
   variable, variable_type, variable_extent, variable_extent_fs, ramps){
 
-  
+  if ( is.na( variable_type ) ) browser()
+
   # functional system aggregation (groupCat = 3, 4, NA) ------------------------
   # groupCat 3,4, NA = Other/Minor Arterials, Collectors + Locals, ?
   # F_SYSTEM = 1, 2?

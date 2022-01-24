@@ -72,7 +72,7 @@ calc_completeness <- function(data, year, variable){
   
   ts <- Sys.time()
   on.exit(expr = {
-    cat(paste0("\n\t",variable,": ",round(difftime(Sys.time(),ts,units="secs"),2)," secs"))
+    message(paste0("\t",variable,": ",round(difftime(Sys.time(),ts,units="secs"),2)," secs"))
     })
   
   # If item is not present, return 0

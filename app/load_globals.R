@@ -16,18 +16,11 @@
 # Change the ggplot theme
 ggplot2::theme_update(plot.title=element_text(hjust=0.5))
 
-# Set the database name
-if ( !exists('dbname') ){
-  gDbname <- "HPMS"
-} else {
-  gDbname <- dbname
-}
-
 # SQL table names
 # these need to match FHWA's sql database structure
 # timelinesstable   <- "Timelinesstable"   # Not using this table any more
 sections_table    <- 'Review_Sections'
-samples_table     <- 'Review_SampleSections'
+samples_table     <- 'Review_Sample_Sections'
 
 # These don't seem to be used anywhere...
 # datatable        <- "sections"
@@ -37,10 +30,13 @@ samples_table     <- 'Review_SampleSections'
 
 GetODBCConnection <- function() {
 
+  dsn = 'HPMS'
+  
   if( exists('db_username') & exists('db_password') ) {
-    return(odbcConnect(gDbname, uid = db_username, pwd = db_password))
+    
+    return(odbcConnect(dsn, uid = db_username, pwd = db_password))
   } else {
-    return(odbcConnect(gDbname))  
+    return(odbcConnect(dsn))
   }
 }
 
@@ -114,10 +110,16 @@ gF_SYSTEM_levels <- c("Interstate",
 
 # tables of variables (data items) and labels used in the output
 gVariables       <- fread("resources/dat/data_elements.csv")
+gVariables <- gVariables[!is.na(Grouping) & Grouping != '']
+
+
 gCrossLabels     <- fread('resources/dat/cross_validation_labels.csv')
 gCrossLabels$Description <- str_replace(gCrossLabels$Description, '[(][0-9xy]*[)]$', '')
 gExtentDetail    <- fread('resources/dat/extent_detail.csv')
+
 gReqs <- fread("resources/dat/data_items_required_by_state.csv")
+gReqs <- gReqs[Name %in% gVariables[, Name]]
+
 gScoreWeights <- fread("resources/dat/scoringweights.csv")
 
 # track page number

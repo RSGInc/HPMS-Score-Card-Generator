@@ -42,7 +42,7 @@ create_pdf <- function(data, state, year, year_compare, path) {
   # showtext.begin() # this controls the issues with the fonts
 
   # Create title page -------------------------------------------------------
-  
+
   message("Title page...")
   ts <- Sys.time()
   scores_list <- create_title_page(data, state, year, year_compare)
@@ -100,7 +100,9 @@ create_pdf <- function(data, state, year, year_compare, path) {
   todo_vec <- (1:nrow(gVariables))[gVariables[, RampAnalysis] == "Y"]
   todo_vec <- c(todo_vec, rep(NA, 3 - (length(todo_vec) %% 3)))
   todo <- matrix(todo_vec, ncol = 3, byrow = TRUE)
-  for (i in 1:1) {
+  todo <- todo[rowSums(!is.na(todo)) > 0, , drop = FALSE]
+  
+  for (i in 1:nrow(todo)) {
     x1 <- todo[i, 1]
     x2 <- todo[i, 2]
     x3 <- todo[i, 3]
@@ -115,11 +117,6 @@ create_pdf <- function(data, state, year, year_compare, path) {
     cat(".")
   }
 
-  gPageNumber <<- gPageNumber + 1
-  create_page_summary(data, state, year, year_compare,
-                      x1 = todo[i + 1, 1], x2 = todo[i + 1, 2],
-                      title = "ramps: detailed review", icontext = "r",
-                      page = gPageNumber, ramps = TRUE)
   message(paste0(" completed in: ",
              round(difftime(Sys.time(), ts, units = "secs"), 2), " seconds!\n"))
   # cat('\tMemory used: ', round(mem_used() / 1e9, 3), 'GB \n')
@@ -133,8 +130,9 @@ create_pdf <- function(data, state, year, year_compare, path) {
   todo_vec <- (1:nrow(gVariables))[gVariables[, Grouping] == "I"]
   todo_vec <- c(todo_vec, rep(NA, 3 - (length(todo_vec) %% 3)))
   todo <- matrix(todo_vec, ncol = 3, byrow = TRUE)
-
-  for (i in 1:6) {
+  todo <- todo[rowSums(!is.na(todo)) > 0, , drop = FALSE]
+  
+  for (i in 1:nrow(todo)) {
     
     x1 <- todo[i, 1]
     x2 <- todo[i, 2]
@@ -158,7 +156,9 @@ create_pdf <- function(data, state, year, year_compare, path) {
   todo_vec <- (1:nrow(gVariables))[gVariables[, Grouping] == "P"]
   todo_vec <- c(todo_vec, rep(NA, 3 - (length(todo_vec) %% 3)))
   todo <- matrix(todo_vec, ncol = 3, byrow = TRUE)
-  for (i in 1:4) {
+  todo <- todo[rowSums(!is.na(todo)) > 0, , drop = FALSE]
+  
+  for (i in 1:nrow(todo)) {
     x1 <- todo[i, 1]
     x2 <- todo[i, 2]
     x3 <- todo[i, 3]
@@ -169,12 +169,9 @@ create_pdf <- function(data, state, year, year_compare, path) {
                         icontext = "p", page = gPageNumber)
     cat(".")
   }
-  gPageNumber <<- gPageNumber + 1
-  create_page_summary(data, state, year, year_compare,
-                      x1 = todo[i + 1, 1], title = "pavement", icontext = "p",
-                      page = gPageNumber)
+
   message(paste0(" completed in: ",
-             round(difftime(Sys.time(), ts, units = "secs"), 2), " seconds!\n"))
+                 round(difftime(Sys.time(), ts, units = "secs"), 2), " seconds!\n"))
   # cat('\tMemory used: ', round(mem_used() / 1e9, 3), 'GB \n')
 
 
@@ -185,8 +182,9 @@ create_pdf <- function(data, state, year, year_compare, path) {
   todo_vec <- (1:nrow(gVariables))[gVariables[, Grouping] == "T"]
   todo_vec <- c(todo_vec, rep(NA, 3 - (length(todo_vec) %% 3)))
   todo <- matrix(todo_vec, ncol = 3, byrow = TRUE)
-
-  for (i in 1:4) {
+  todo <- todo[rowSums(!is.na(todo)) > 0, , drop = FALSE]
+  
+  for (i in 1:nrow(todo)) {
     x1 <- todo[i, 1]
     x2 <- todo[i, 2]
     x3 <- todo[i, 3]
@@ -198,11 +196,6 @@ create_pdf <- function(data, state, year, year_compare, path) {
     cat(".")
   }
 
-  gPageNumber <<- gPageNumber + 1
-  create_page_summary(data, state, year, year_compare,
-                      x1 = todo[i +  1, 1],
-                      #x2 = todo[i + 1, 2],
-                      title = "traffic", icontext = "t", page = gPageNumber)
   message(paste0(" completed in: ", round(difftime(Sys.time(), ts, units = "secs"),
                                       2), " seconds!\n"))
   # cat('\tMemory used: ', round(mem_used() / 1e9, 3), 'GB \n')
@@ -216,7 +209,9 @@ create_pdf <- function(data, state, year, year_compare, path) {
   todo_vec <- (1:nrow(gVariables))[gVariables[, Grouping] == "G"]
   todo_vec <- c(todo_vec, rep(NA, 3 - (length(todo_vec) %% 3)))
   todo <- matrix(todo_vec, ncol = 3, byrow = TRUE)
-  for (i in 1:7) {
+  todo <- todo[rowSums(!is.na(todo)) > 0, , drop = FALSE]
+  
+  for (i in 1:nrow(todo)) {
     x1 <- todo[i, 1]
     x2 <- todo[i, 2]
     x3 <- todo[i, 3]
@@ -228,10 +223,6 @@ create_pdf <- function(data, state, year, year_compare, path) {
     cat(".")
   }
 
-  gPageNumber <<- gPageNumber + 1
-  create_page_summary(data, state, year, year_compare,
-                      x1 = todo[i + 1, 1], x2 = todo[i + 1, 2],
-                      title = "geometric", icontext = "g", page = gPageNumber)
   message(paste0(" completed in: ",
              round(difftime(Sys.time(), ts, units = "secs"), 2), " seconds!\n"))
 
@@ -243,7 +234,9 @@ create_pdf <- function(data, state, year, year_compare, path) {
   todo_vec <- (1:nrow(gVariables))[gVariables[, Grouping] == "R"]
   todo_vec <- c(todo_vec, rep(NA, 3 - (length(todo_vec) %% 3)))
   todo <- matrix(todo_vec, ncol = 3, byrow = TRUE)
-  for (i in 1:1) {
+  todo <- todo[rowSums(!is.na(todo)) > 0, , drop = FALSE]
+  
+  for (i in 1:nrow(todo)) {
     x1 <- todo[i, 1]
     x2 <- todo[i, 2]
     x3 <- todo[i, 3]
@@ -266,7 +259,9 @@ create_pdf <- function(data, state, year, year_compare, path) {
   todo_vec <- (1:nrow(gVariables))[gVariables[, Grouping] == "SN"]
   todo_vec <- c(todo_vec, rep(NA, 3 - (length(todo_vec) %% 3)))
   todo <- matrix(todo_vec, ncol = 3, byrow = TRUE)
-  for (i in 1:1) {
+  todo <- todo[rowSums(!is.na(todo)) > 0, , drop = FALSE]
+  
+  for (i in 1:nrow(todo) ) {
     x1 <- todo[i, 1]
     x2 <- todo[i, 2]
     x3 <- todo[i, 3]
@@ -279,10 +274,6 @@ create_pdf <- function(data, state, year, year_compare, path) {
     cat(".")
   }
 
-  gPageNumber <<- gPageNumber + 1
-  create_page_summary(data, state, year, year_compare,
-                      x1 = todo[i + 1, 1], title = "special network", icontext = "sn",
-                      page = gPageNumber)
   message(paste0(" completed in: ",
              round(difftime(Sys.time(), ts, units = "secs"), 2), " seconds!\n"))
   # cat('\tMemory used: ', round(mem_used() / 1e9, 3), 'GB \n')

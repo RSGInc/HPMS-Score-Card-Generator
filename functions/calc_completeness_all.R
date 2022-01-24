@@ -17,10 +17,12 @@ calc_completeness_all <- function(data, year, reqs){
   complete_threshold = 0.99
   
   dt_output = merge(
-    gVariables[, .(Name)],
+    gVariables[!is.na(Completeness_Weight), .(Name)],
     reqs,
     by = 'Name',
     all=TRUE)
+  
+  dt_output = dt_output[!is.na(dt_output[, required])]
   
   data = data[!(F_SYTEMorig == 7 & NHS != 1)]
 
@@ -38,5 +40,7 @@ calc_completeness_all <- function(data, year, reqs){
   dt_output[coverage_score >= complete_threshold, coverage_type := 3]    # Submitted and complete
   dt_output[, coverage_type := coverage_type * required] # 0 = not required
   
+  message('-----------------------')
+
   return(dt_output)
 }

@@ -73,13 +73,15 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
     all.x=TRUE
   )
   
-  stopifnot((dt_coverage[, .N] - dt_coverage2[, .N]) == 10)
+  # Account for collapse of CURVES and GRADES into a single row
+  stopifnot((dt_coverage[, .N] - dt_coverage2[, .N]) == 2 * 5)
   
   submittedN = dt_coverage2[coverage_type >= 2, .N]
   CompletedScore = dt_coverage2[, sum(card_score * Completeness_Weight, na.rm=TRUE)]
   CompletedScoreMax = dt_coverage2[, sum(CompleteHigh * (!is.na(card_score)) * Completeness_Weight)]
   
   # FIXME: items not required should not count towards top level score
+  dt_quality[reqs, required := i.required, on = 'Name']
   QualityScore    <- dt_quality[, sum(Quality_Score * Quality_Weight, na.rm=TRUE)]
   QualityScoreMax <- dt_quality[, sum(!is.na(Quality_Score) * Quality_Weight) * 100]
   qMean <- QualityScore / QualityScoreMax
@@ -105,6 +107,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
   
   # Write scores ---------------------------------------------------
   
+  # These are read in and used for individual pages, e.g. in create_page_summary
   dt_scores = merge(
     dt_quality,
     dt_coverage,
