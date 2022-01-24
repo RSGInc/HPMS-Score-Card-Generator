@@ -5,15 +5,49 @@ calc_cross_validation = function(data, year){
   # filter ramps (facility type == 4) 
   data = data[year_record == year & FACILITY_TYPE %in% c(1,2)]
   
-  # Tests commented out are evaluated as outliers
   results = list()
 
+  # Tests not used here: evaluated as outliers
+
   # results[["1"]]  = summarize_validation(cross_validation_1(data))
+  # results[["14"]] = summarize_validation(cross_validation_14(data))
+  # results[["47"]] = summarize_validation(cross_validation_47(data))
+  # results[["49"]] = summarize_validation(cross_validation_49(data))
+  # results[["52"]] = summarize_validation(cross_validation_52(data))
+  # results[["54"]] = summarize_validation(cross_validation_54(data))
+  # results[["55"]] = summarize_validation(cross_validation_55(data))
+  # results[["56"]] = summarize_validation(cross_validation_56(data))
+  # results[["57"]] = summarize_validation(cross_validation_57(data))
+
+
+  # Tests not used for HPMS 9
+  # results[["23"]] = summarize_validation(cross_validation_23(data))  
+
+  # results[["46.1"]] = summarize_validation(cross_validation_46(data, 'IRI'))
+  # results[["46.2"]] = summarize_validation(cross_validation_46(data, 'RUTTING'))
+  # results[["46.3"]] = summarize_validation(cross_validation_46(data, 'FAULTING'))
+  # results[["46.4"]] = summarize_validation(cross_validation_46(data, 'CRACKING_PERCENT'))
+
+  # results[["61.1"]] = summarize_validation(cross_validation_61(data, 'IRI'))
+  # results[["61.2"]] = summarize_validation(cross_validation_61(data, 'RUTTING'))
+  # results[["61.3"]] = summarize_validation(cross_validation_61(data, 'FAULTING'))
+  # results[["61.4"]] = summarize_validation(cross_validation_61(data, 'CRACKING_PERCENT'))
+
+  # results[["64.1"]] = summarize_validation(cross_validation_64(data, 'IRI'))
+  # results[["64.2"]] = summarize_validation(cross_validation_64(data, 'RUTTING'))
+  # results[["64.3"]] = summarize_validation(cross_validation_64(data, 'FAULTING'))
+  # results[["64.4"]] = summarize_validation(cross_validation_64(data, 'CRACKING_PERCENT'))
+
+  # results[["65"]] = summarize_validation(cross_validation_65(data))
+  # results[["66"]] = summarize_validation(cross_validation_66(data))
+
+
+
+  # Tests used for HPMS 9
   results[["2"]]  = summarize_validation(cross_validation_2(data))
 
   results[["9"]]  = summarize_validation(cross_validation_9(data))
   
-  # results[["14"]] = summarize_validation(cross_validation_14(data))
   results[["15"]] = summarize_validation(cross_validation_15(data))
   results[["16"]] = summarize_validation(cross_validation_16(data))
   results[["17"]] = summarize_validation(cross_validation_17(data))
@@ -21,7 +55,6 @@ calc_cross_validation = function(data, year){
   results[["20"]] = summarize_validation(cross_validation_20(data))
   
   results[["22"]] = summarize_validation(cross_validation_22(data))
-  results[["23"]] = summarize_validation(cross_validation_23(data))  
 
   results[["39"]] = summarize_validation(cross_validation_39(data))
   results[["40"]] = summarize_validation(cross_validation_40(data))
@@ -32,39 +65,14 @@ calc_cross_validation = function(data, year){
   results[["44"]] = summarize_validation(cross_validation_44(data))
   results[["45"]] = summarize_validation(cross_validation_45(data))
 
-  results[["46.1"]] = summarize_validation(cross_validation_46(data, 'IRI'))
-  results[["46.2"]] = summarize_validation(cross_validation_46(data, 'RUTTING'))
-  results[["46.3"]] = summarize_validation(cross_validation_46(data, 'FAULTING'))
-  results[["46.4"]] = summarize_validation(cross_validation_46(data, 'CRACKING_PERCENT'))
-  # results[["47"]] = summarize_validation(cross_validation_47(data))
-
-  # results[["49"]] = summarize_validation(cross_validation_49(data))
-
   results[["51"]] = summarize_validation(cross_validation_51(data))
-  # results[["52"]] = summarize_validation(cross_validation_52(data))
 
   results[["53"]] = summarize_validation(cross_validation_53(data))
-  # results[["54"]] = summarize_validation(cross_validation_54(data))
-  # results[["55"]] = summarize_validation(cross_validation_55(data))
-  # results[["56"]] = summarize_validation(cross_validation_56(data))
-  # results[["57"]] = summarize_validation(cross_validation_57(data))
 
   results[["60"]] = summarize_validation(cross_validation_60(data))
-  results[["61.1"]] = summarize_validation(cross_validation_61(data, 'IRI'))
-  results[["61.2"]] = summarize_validation(cross_validation_61(data, 'RUTTING'))
-  results[["61.3"]] = summarize_validation(cross_validation_61(data, 'FAULTING'))
-  results[["61.4"]] = summarize_validation(cross_validation_61(data, 'CRACKING_PERCENT'))
 
   results[["62"]] = summarize_validation(cross_validation_62(data))
   results[["63"]] = summarize_validation(cross_validation_63(data))
-
-  results[["64.1"]] = summarize_validation(cross_validation_64(data, 'IRI'))
-  results[["64.2"]] = summarize_validation(cross_validation_64(data, 'RUTTING'))
-  results[["64.3"]] = summarize_validation(cross_validation_64(data, 'FAULTING'))
-  results[["64.4"]] = summarize_validation(cross_validation_64(data, 'CRACKING_PERCENT'))
-
-  results[["65"]] = summarize_validation(cross_validation_65(data))
-  results[["66"]] = summarize_validation(cross_validation_66(data))
 
   results[["x"]]  = summarize_validation(cross_validation_x(data))
   results[["y"]]  = summarize_validation(cross_validation_y(data))
