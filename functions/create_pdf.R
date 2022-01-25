@@ -114,7 +114,7 @@ create_pdf <- function(data, state, year, year_compare, path) {
                         title = "ramps: detailed review", icontext = "r",
                         page = gPageNumber, ramps = TRUE)
 
-    cat(".")
+    
   }
 
   message(paste0(" completed in: ",
@@ -142,7 +142,6 @@ create_pdf <- function(data, state, year, year_compare, path) {
     create_page_summary(data, state, year, year_compare,
                         x1 = x1, x2 = x2, x3 = x3,
                         title = "inventory", icontext = "i", page = gPageNumber)
-    cat(".")
   }
   message(paste0(" completed in: ", round(difftime(Sys.time(), ts, units = "secs"),
                                       2), " seconds!\n"))
@@ -167,7 +166,6 @@ create_pdf <- function(data, state, year, year_compare, path) {
     create_page_summary(data, state, year, year_compare,
                         x1 = x1, x2 = x2, x3 = x3, title = "pavement",
                         icontext = "p", page = gPageNumber)
-    cat(".")
   }
 
   message(paste0(" completed in: ",
@@ -193,7 +191,7 @@ create_pdf <- function(data, state, year, year_compare, path) {
     create_page_summary(data, state, year, year_compare,
                         x1 = x1, x2 = x2,  x3 = x3,
                         title = "traffic", icontext = "t", page = gPageNumber)
-    cat(".")
+    
   }
 
   message(paste0(" completed in: ", round(difftime(Sys.time(), ts, units = "secs"),
@@ -220,7 +218,7 @@ create_pdf <- function(data, state, year, year_compare, path) {
     create_page_summary(data, state, year, year_compare,
                         x1 = x1, x2 = x2, x3 = x3, title = "geometric",
                         icontext = "g", page = gPageNumber)
-    cat(".")
+    
   }
 
   message(paste0(" completed in: ",
@@ -245,7 +243,7 @@ create_pdf <- function(data, state, year, year_compare, path) {
     create_page_summary(data, state, year, year_compare,
                         x1 = x1, x2 = x2, x3 = x3,
                         title = "route", icontext = "r", page = gPageNumber)
-    cat(".")
+    
   }
   message(paste0(" completed in: ",
              round(difftime(Sys.time(), ts, units = "secs"), 2), " seconds!\n"))
@@ -271,7 +269,7 @@ create_pdf <- function(data, state, year, year_compare, path) {
                         x1 = x1, x2 = x2, x3 = x3,
                         title = "special network", icontext = "sn",
                         page = gPageNumber)
-    cat(".")
+    
   }
 
   message(paste0(" completed in: ",
