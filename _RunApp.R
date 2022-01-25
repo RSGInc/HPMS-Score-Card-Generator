@@ -39,7 +39,6 @@ invisible(sapply(X =codefiles , FUN = source))
 # Run(task = 1, state = 'DE', year = 2019)
 
 # debugmode = TRUE # Displays output to graphics device instead of PDF
-# debug(create_page_summary)
 
 # Run scorecard
 Run(task = 2, state = 'DE', year = 2020, year_compare = 2019)

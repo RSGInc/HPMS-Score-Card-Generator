@@ -36,17 +36,9 @@ calc_quality_all <- function(data, year, year_compare){
   data = data[FACILITY_TYPE%in%c(1,2)]
   
   for ( i in 1:nrow(dt_output)){
-    
+
     variable <- dt_output$Name[i]
 
-    # if ( variable %in% c('PSR') ){ browser() }
-    # if ( variable %in% c('COUNTER_PEAK_LANES', 'PCT_PASS_SIGHT',
-    #   'YEAR_LAST_CONSTRUCTION', 'WIDENING_OBSTACLE', 'ROUTE_NUMBER') ){
-    #   browser()
-    # } else {
-    #   next()
-    # }
-    
     message('\t', variable)
     
     if (nrow(data[year_record == year & data_item == variable]) == 0){

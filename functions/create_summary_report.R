@@ -180,14 +180,14 @@ create_summary_report <- function(
 
   
   if(variable_type %in% c('numeric', 'date') &
-     !variable %in% c('YEAR_LAST_CONSTRUCTION', 'YEAR_LAST_IMPROVEMENTEMENT') ){
+     !variable %in% c('YEAR_LAST_CONSTRUCTION', 'YEAR_LAST_IMPROVEMENT') ){
     result[, min := string_format(min)]    
     result[, mean := string_format(mean)]
     result[, median := string_format(median)]
     result[, max := string_format(max)]
   }
   
-  if(variable %in% c('YEAR_LAST_CONSTRUCTION', 'YEAR_LAST_IMPROVEMENTEMENT')){
+  if(variable %in% c('YEAR_LAST_CONSTRUCTION', 'YEAR_LAST_IMPROVEMENT')){
     result[, mean := round(mean)]
   }
   
