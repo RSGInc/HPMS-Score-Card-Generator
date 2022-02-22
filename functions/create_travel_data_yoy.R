@@ -103,7 +103,12 @@ create_travel_data_yoy <- function(
                    list(route_id,begin_point,end_point,value.2 = value_text,F_SYSTEM)]       
     }
   }
-  expectedChange <- gVariables[Name == variable, YOY_Change]
+
+  if ( yearcomparison <= 2020 ){
+    expectedChange <- gVariables[Name == variable, Expect_YOY_change_2020]
+  } else {
+    expectedChange <- gVariables[Name == variable, Expect_YOY_change]
+  }
   
   if(expectedChange == "Y"){
     ff1 <- "*"

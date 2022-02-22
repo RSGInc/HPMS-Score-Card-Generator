@@ -17,23 +17,35 @@ create_travel_yoy_density <- function(
   year,
   yearcomparison,
   variable,
-  includeNational,
   ramps,
   nvalues_bar = 11
 ){
+  
+  if ( yearcomparison <= 2020 ){
+    expectedChange <- gVariables[Name == variable, Expect_YOY_change_2020]
+
+    # If expectedChange is missing, then don't load yearcomparsion or national data
+    include_previous_year = !is.na(expectedChange)
+    
+    if (!include_previous_year & debugmode) browser()
+
+  } else {
+    include_previous_year = TRUE
+  }
   
   col_year1 = gColors$dark
   col_year2 = gColors$light
   col_national = gColors$text
   col_noplot = gColors$blank
   
-  #if ( variable %in% c('YEAR_LAST_CONSTRUCTION', 'YEAR_LAST_IMPROVEMENTEMENT') ) browser()
+  #if ( variable %in% c('YEAR_LAST_CONSTRUCTION', 'YEAR_LAST_IMPROVEMENT') ) browser()
   
   # What data type?
   type <- gVariables[Name == variable, Data_Type]
   
+  
   # Is this a categorical (labeled) variable?
-  cont_variable = gVariablesLabels[Name == variable, NumLevels] == 0
+  cont_variable = gVariables[Name == variable, Continuous_variable] == 1
   
   # For non-categorical, should we use a density plot or bar plot?
   density_type = gVariables[Name == variable, Density_Type]
@@ -79,10 +91,18 @@ create_travel_yoy_density <- function(
   # we have something to report (density plots require at least 3 points to draw)
   if( nrow(var1) > 2 | nrow(var2) > 2 ) {
     
-    # message('Loading national data for ', variable)
+    message('Loading national data for ', variable)
     
-    national  <- readRDS(paste0("data\\+National\\", yearcomparison, "\\",
-                                variable, ".rds"))
+    national_file = file.path(
+      'data', '+National', yearcomparison, paste0(variable, '.rds'))
+    
+    if ( file.exists(national_file) ){
+      national  <- readRDS(national_file)
+    } else {
+      national <- NULL
+      if ( debugmode ) browser()
+    }
+    
     if ( type == 'date'){
       national[is.na(value_numeric) | value_numeric == 0, 
                value_numeric := year(value_date)]
@@ -193,10 +213,7 @@ create_travel_yoy_density <- function(
     } else {  # Make bar plots
       
       # get labels for bars
-      
-      # gVariablesLabels[Name==variable, NumLevels]
-      # labels <- 1:7
-      
+            
       labels <- sort(
         unique(
           c(var1[, value_numeric],

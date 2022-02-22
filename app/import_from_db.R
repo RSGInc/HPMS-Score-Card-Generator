@@ -578,7 +578,7 @@ FormatDataSet <- function(dat, state_abbr, year) {
   
   setkeyv(data_exp, c("state_code","year_record","route_id","data_item","begin_point","end_point"))
 
-  # if ( nrow(data_exp) == 0 ){browser()}
+  if ( nrow(data_exp) == 0 & debugmode ){browser()}
   return(data_exp)
   
 }

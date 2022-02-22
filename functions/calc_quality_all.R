@@ -12,10 +12,17 @@
 
 calc_quality_all <- function(data, year, year_compare){
   
-  dt_output <- gVariables[, .(Name, Item_Number, Label, Grouping, Extent,
-                              Outlier_Min, Outlier_Max,
-                              Adjacency_Change, YOY_Change,
-                              Quality_Weight, Completeness_Weight)]
+  dt_output <- gVariables[, .(
+    Name, Item_Number, Label, Grouping, Extent, Outlier_Min, Outlier_Max,
+    Expect_adjacency_change, Expect_YOY_change_2020, Expect_YOY_change,
+    Quality_Weight, Completeness_Weight)]
+
+  if ( year_compare <= 2020 ){
+    dt_output[, Expect_YOY_change := NULL]
+    setnames(dt_output, 'Expect_YOY_change_2020', 'Expect_YOY_change')
+  } else {
+    dt_output[, Expect_YOY_change_2020 := NULL]
+  }
 
   dt_output$Outlier_Score <- NA
   dt_output$Adjacency_Score <- NA
@@ -29,18 +36,10 @@ calc_quality_all <- function(data, year, year_compare){
   data = data[FACILITY_TYPE%in%c(1,2)]
   
   for ( i in 1:nrow(dt_output)){
-    
+
     variable <- dt_output$Name[i]
 
-    # if ( variable %in% c('PSR') ){ browser() }
-    # if ( variable %in% c('COUNTER_PEAK_LANES', 'PCT_PASS_SIGHT',
-    #   'YEAR_LAST_CONSTRUCTION', 'WIDENING_OBSTACLE', 'ROUTE_NUMBER') ){
-    #   browser()
-    # } else {
-    #   next()
-    # }
-    
-    cat('\t', variable, '\n')
+    message('\t', variable)
     
     if (nrow(data[year_record == year & data_item == variable]) == 0){
       
@@ -63,7 +62,7 @@ calc_quality_all <- function(data, year, year_compare){
       dt_output$Outlier_Score[i] <- round(outlier_mean)
       
       # Check if adjacency change is set for this variable
-      adjacency_change <- toupper(gVariables[Name == variable, Adjacency_Change])
+      adjacency_change <- toupper(gVariables[Name == variable, Expect_adjacency_change])
       
       if ( adjacency_change %in% c('Y', 'N')){
         adjacency <- getAdjacency(data, year, variable, adjacency_change)
@@ -76,9 +75,9 @@ calc_quality_all <- function(data, year, year_compare){
       dt_output$Adjacency_Score[i] <- round(adj_mean)
       
       # Check if yoy direction is set
-      yoy_change <- toupper(gVariables[Name == variable, YOY_Change])
+      yoy_change <- toupper(dt_output[Name == variable, Expect_YOY_change])
       
-      if (yoy_change %in% c('Y', 'N')){
+      if (!is.na(yoy_change) && yoy_change %in% c('Y', 'N')){
         yoy <- getYOY(data, year, year_compare, variable, yoy_change)
         yoy_mean <- sum(as.numeric(yoy$perc_miles) * weights, na.rm=TRUE) /
           sum(weights[!(is.na(yoy$perc_miles) | is.nan(yoy$perc_miles))])
