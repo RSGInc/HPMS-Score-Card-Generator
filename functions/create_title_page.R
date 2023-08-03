@@ -21,7 +21,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
   state_num = data$state_code[1]
   state_name = getStateLabelFromNum(state_num)
   state_abb = getStateAbbrFromNum(state_num)
-  
+    
   time_weight     <- gScoreWeights[1, timeliness]
   complete_weight <- gScoreWeights[1, completeness]
   quality_weight  <- gScoreWeights[1, quality]

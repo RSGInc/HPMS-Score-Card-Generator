@@ -34,6 +34,9 @@ if ( length(args) < 1 ){
 reimport <- TRUE
 year_selection <- 2020
 year_compare <- 2019
+# state_abbrev <- c('VT', 'MN', 'IL', 'CA')
+
+# FIXME: Use named arguments with argparse package
 
 if (length(args) > 0) {
   if(!str_detect(tolower(args[1]), 'all')) {
@@ -41,38 +44,46 @@ if (length(args) > 0) {
   }
 }
 
-if (length(args) > 1) {
-  year_selection <- str_trim(args[2], side='both')
-}
+# if (length(args) > 1) {
+#   year_selection <- str_trim(args[2], side='both')
+# }
 
-if(length(args) > 2) {
-  year_compare <- str_trim(args[3], side='both')
-}
+# if(length(args) > 2) {
+#   year_compare <- str_trim(args[3], side='both')
+# }
 
-if(length(args) > 3) {
-  reimport <- str_trim(args[4], side='both')
-}
+# if(length(args) > 3) {
+#   reimport <- str_trim(args[4], side='both')
+# }
 
-if(length(args) > 4) {
-  db_username <- str_trim(args[5], side='both')
-}
+# if(length(args) > 4) {
+#   db_username <- str_trim(args[5], side='both')
+# }
 
-if(length(args) > 5) {
-  db_password <- str_trim(args[6], side='both')
-}
+# if(length(args) > 5) {
+#   db_password <- str_trim(args[6], side='both')
+# }
 
 submission_deadline <- paste(year_selection, '-06-15', sep="")
-cat('state_abbrev: ', state_abbrev, ' year_selection: ', year_selection, 
-' year_compare: ', year_compare, ' reimport: ', reimport, 
-' db_username: ', db_username, ' db_password: ', db_password, '\n')
 
-root <- rprojroot::find_rstudio_root_file()
+message(
+  'state_abbrev: ', state_abbrev, 
+  ' year_selection: ', year_selection, 
+  ' year_compare: ', year_compare, 
+  ' reimport: ', reimport, 
+  ' db_username: ', db_username, 
+  ' db_password: ', db_password
+)
+
+root <- find_root(is_git_root)
 setwd(root)
 
-msg_file <- file.path('output', paste0('_RunBatch_messages_',
-format(Sys.time(), '%Y%m%d_%H%M%S.txt')))
+msg_file <- file.path(
+  'output', 
+  paste0('_RunBatch_messages_', format(Sys.time(), '%Y%m%d_%H%M%S.txt'))
+)
 
-cat('Saving messages to', msg_file, '\n')
+message('Saving messages to', msg_file)
 
 if ( !dir.exists('output') ){
   dir.create('output')
@@ -90,8 +101,12 @@ cat('Checking availability of states for', year_selection, '\n')
 
 con <- GetODBCConnection()
 
-query <- paste("select distinct state_code, year_record from", sections_table,
-               "order by state_code, year_record")
+query <- paste(
+  "select distinct state_code, year_record from", 
+  sections_table,
+  "order by state_code, year_record"
+)
+
 st_yr_table <- data.table(sqlQuery(con, query))
 
 odbcClose(con)
@@ -114,7 +129,7 @@ if(str_detect(tolower(args[1]), 'all')) {
     state_abbrev <- getStateAbbrFromNum(state_codes)
   }
 
-cat('Running states:', state_abbrev, '\n\n')
+message('Running states:', state_abbrev, '\n\n')
 
 # Create PDF ----------------------------------------------------------------
 savepath <- "output/"
@@ -122,7 +137,6 @@ savepath <- "output/"
 for(state in state_abbrev){
   
   msg <- paste('Started scorecard for', state, 'at', format(Sys.time(), '%H:%M:%S'))
-  cat(msg, '\n')
   message(msg)
   
   gc()
@@ -165,7 +179,6 @@ for(state in state_abbrev){
     
   )  # end tryCatch
   msg <- paste('Finished', state, 'at',  format(Sys.time(), '%H:%M:%S\n'))
-  cat(msg)    
   message(msg)
   message('===================================================================')
 }
