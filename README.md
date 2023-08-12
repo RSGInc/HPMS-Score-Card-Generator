@@ -3,15 +3,15 @@ A data pipeline QA/QC and visualization tool for FHWA to use with Highway Perfor
 
 ## How to create scorecards
 
-### Import data from Socrata
+### Import data from Datahub
 
-Socrata is at https://datahub.transportation.gov/
+The DOT Datahub is at https://datahub.transportation.gov/
 
 Find the each dataset's JSON Endpoint by clicking the "Export" button on the right side of the page, and then the SODA API option.  The API Endpoint is shown in a box. 
 
 Copy each dataset API Endpoint (JSON) and paste into [db_import/hpms_database_import_2020.R](db_import/hpms_database_import_2020.R)
 
-This script downloads the data from Socrata to a local cache, then it writes the data to a stage table in MS SQL Server.  Finally, after checking the consistency of the data, it copies the data from the stage table to the production table.
+This script downloads the data from Datahub to a local cache, then it writes the data to a stage table in MS SQL Server.  Finally, after checking the consistency of the data, it copies the data from the stage table to the production table.
 
 ### Import data from MS SQL Server
 
