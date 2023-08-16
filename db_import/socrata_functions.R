@@ -1,7 +1,13 @@
 
 
-read.socrata2 = function (url, app_token = NULL, email = NULL, password = NULL, 
-                          stringsAsFactors = FALSE) {
+read.socrata2 = function (
+  url, 
+  app_token = NULL, 
+  email = NULL, 
+  password = NULL, 
+  stringsAsFactors = FALSE
+) {
+
   validUrl <- validateUrl(url, app_token)
   parsedUrl <- httr::parse_url(validUrl)
   mimeType <- mime::guess_type(parsedUrl$path)
@@ -28,7 +34,7 @@ read.socrata2 = function (url, app_token = NULL, email = NULL, password = NULL,
   return(result)
 }
 
-make_cache_name = function(url, dir='db_import/download_cache'){
+make_cache_path = function(url, dir='db_import/download_cache'){
   dir.create(dir, showWarnings=FALSE)
   
   fname = names(url)
@@ -46,7 +52,7 @@ make_cache_name = function(url, dir='db_import/download_cache'){
 
 download_socrata = function(url, overwrite=FALSE){
 
-  cache_path = make_cache_name(url)  
+  cache_path = make_cache_path(url)  
 
   if ( !file.exists(cache_path) | overwrite ){
     
@@ -54,25 +60,29 @@ download_socrata = function(url, overwrite=FALSE){
       stop('Only .json based URLs please')
     }
     
+    # Get counts for checking 
+
     query = paste0(
       url,
-      '?$query=SELECT state_code,year_record,count(state_code) ',
-      'GROUP BY state_code, year_record ',
-      'ORDER BY state_code, year_record'
+      '?$query=SELECT StateId,DataYear,count(StateId) ',
+      'GROUP BY StateId, DataYear ',
+      'ORDER BY StateId, DataYear'
     )
     
     counts_remote = read.socrata2(query, email=email, password=password)
-    setnames(counts_remote, 'count_state_code', 'n_remote')
+    names(counts_remote) = str_to_lower(names(counts_remote))
+    setnames(counts_remote, 'count_stateid', 'n_remote')
     
     message('Downloading ', sum(as.numeric(counts_remote[, 'n_remote'])), ' rows from ', names(url))
     
     dt = read.socrata(url=url, email=email, password=password)
     setDT(dt)
+    names(dt) = str_to_lower(names(dt))
     
-    counts_local = dt[, .(n_local = .N), by=.(state_code, year_record)]
+    counts_local = dt[, .(n_local = .N), by=.(stateid, datayear)]
     
     counts_check = merge(counts_remote, counts_local,
-                         by = c('state_code', 'year_record'), all=TRUE)
+                         by = c('stateid', 'datayear'), all=TRUE)
     setDT(counts_check)
     
     stopifnot(counts_check[n_local != n_remote, .N] == 0)
@@ -93,10 +103,11 @@ write_to_stage = function(cache_path, con, stage_table, chunk_size=100000){
   
   dt = readRDS(cache_path)
   
+  # FIXME: update for 2022, and add rename from camelCase to snake_case
   # For checking column types
   col_type_chk = c(
-    year_record = 'integer',
-    state_code = 'integer',
+    datayear = 'integer',
+    stateid = 'integer',
     route_id = 'character',
     begin_point = 'numeric',
     end_point = 'numeric',
@@ -111,7 +122,6 @@ write_to_stage = function(cache_path, con, stage_table, chunk_size=100000){
   
   message('Updating data types')
   
-  #if ( names(url) %in% c('mid_atlantic', 'SC', 'AZ', 'TN') ){
   if ( class(dt$value_date)[1] == 'character' ){
     if ( str_length(dt[!is.na(value_date), value_date][1]) > 10 ){
       dt[, value_date := ymd_hms(value_date)]
@@ -121,8 +131,8 @@ write_to_stage = function(cache_path, con, stage_table, chunk_size=100000){
     }
   }
   
-  dt[, year_record := as.integer(year_record)]
-  dt[, state_code := as.integer(state_code)]
+  dt[, datayear := as.integer(datayear)]
+  dt[, stateid := as.integer(stateid)]
   dt[, begin_point := as.numeric(begin_point)]
   dt[, end_point := as.numeric(end_point)]
   
@@ -146,14 +156,14 @@ write_to_stage = function(cache_path, con, stage_table, chunk_size=100000){
   
   message('Dropping old values from stage table')
   
-  states = unique(dt[, state_code])
-  years = unique(dt[, year_record])
+  states = unique(dt[, stateid])
+  years = unique(dt[, datayear])
   
   if ( stage_table %in% dbListTables(conn = con) ){
     sql = paste0(
       'DELETE FROM ', stage_table,
-      ' WHERE state_code in (', paste(states, collapse=', '), ')',
-      ' AND year_record in (', paste(years, collapse=', '), ')')
+      ' WHERE stateid in (', paste(states, collapse=', '), ')',
+      ' AND datayear in (', paste(years, collapse=', '), ')')
     dbExecute(con, sql)
     
     # Compare field names
@@ -170,7 +180,7 @@ write_to_stage = function(cache_path, con, stage_table, chunk_size=100000){
     
     # Create StateYearKey
     if ( !'stateyearkey' %in% new_fields & stage_table == 'rss_stage'){
-      dt[, stateyearkey := paste0(state_code, str_sub(year_record, start=3, end=4))]
+      dt[, stateyearkey := paste0(stateid, str_sub(datayear, start=3, end=4))]
       new_fields = c(new_fields, 'stateyearkey')
     }
 
@@ -214,17 +224,17 @@ write_to_stage = function(cache_path, con, stage_table, chunk_size=100000){
   
   
   # Check that we have the right number of rows for each state.
-  counts_cache = dt[, .(n_cache = .N), by=.(state_code, year_record)]
+  counts_cache = dt[, .(n_cache = .N), by=.(stateid, datayear)]
   
   dt_stage = tbl(con, from=stage_table)
   
   counts_stage = dt_stage %>%
-    count(state_code, year_record) %>%
+    count(stateid, datayear) %>%
     collect() %>%
     rename(n_stage = n)
   
   counts_check = merge(counts_cache, counts_stage,
-                       by = c('state_code', 'year_record'), all=TRUE)
+                       by = c('stateid', 'datayear'), all=TRUE)
   setDT(counts_check)
   
   stopifnot(counts_check[n_cache != n_stage, .N] == 0)
@@ -238,17 +248,17 @@ copy_rows = function(con, stage_table, prod_table, counts_local){
   
   # Compare counts ----------------------------------------------------------
   
-  # years = unique(counts_stage$year_record)
-  # states = unique(counts_stage$state_code)
+  # years = unique(counts_stage$datayear)
+  # states = unique(counts_stage$stateid)
   stage = tbl(con, from=stage_table)
   
   counts_stage = stage %>%
-    count(year_record, state_code) %>%
+    count(datayear, stateid) %>%
     collect() %>%
     rename(n_stage = n)
   
-  years = unique(counts_stage$year_record)
-  states = unique(counts_stage$state_code)
+  years = unique(counts_stage$datayear)
+  states = unique(counts_stage$stateid)
   
   # Compare fields -------------------------------------------------------
   
@@ -260,7 +270,7 @@ copy_rows = function(con, stage_table, prod_table, counts_local){
   # Create StateYearKey
   if ( !'stateyearkey' %in% str_to_lower(new_fields) ){
     sql = paste0('alter table ', stage_table,
-                 ' add StateYearKey as (state_code * 100 + year_record % 1000)')
+                 ' add StateYearKey as (stateid * 100 + datayear % 1000)')
     dbExecute(con, sql)
     new_fields = c(new_fields, 'StateYearKey')
   }
@@ -289,8 +299,8 @@ copy_rows = function(con, stage_table, prod_table, counts_local){
   
   sql = paste0(
     'DELETE FROM ', prod_table,
-    ' WHERE state_code in (', paste(states, collapse=', '), ')',
-    ' AND year_record in (', paste(years, collapse=', '), ')')
+    ' WHERE stateid in (', paste(states, collapse=', '), ')',
+    ' AND datayear in (', paste(years, collapse=', '), ')')
   dbExecute(con, sql)
   
   message('Copying from stage to production')
@@ -302,21 +312,21 @@ copy_rows = function(con, stage_table, prod_table, counts_local){
   # Get counts in production table
   prod = tbl(con, from = prod_table)
   counts_prod = prod %>%
-    filter(Year_Record %in% years,
-           State_Code %in% states) %>%
-    count(State_Code, Year_Record) %>%
+    filter(datayear %in% years,
+           stateid %in% states) %>%
+    count(stateid, datayear) %>%
     collect() %>%
-    rename(state_code = State_Code, year_record = Year_Record, n_prod = n)
+    rename(stateid = stateid, datayear = datayear, n_prod = n)
   
-  counts_check = merge(counts_stage, counts_prod, by = c('state_code', 'year_record'))
+  counts_check = merge(counts_stage, counts_prod, by = c('stateid', 'datayear'))
   setDT(counts_check)
   
   stopifnot(counts_check[n_stage != n_prod, .N] == 0)
   
   sql = paste0(
     'DELETE FROM ', stage_table,
-    ' WHERE state_code in (', paste(states, collapse=', '), ')',
-    ' AND year_record in (', paste(years, collapse=', '), ')')
+    ' WHERE stateid in (', paste(states, collapse=', '), ')',
+    ' AND datayear in (', paste(years, collapse=', '), ')')
   dbExecute(con, sql)
   
 }
