@@ -89,14 +89,14 @@
     },
     "RODBC": {
       "Package": "RODBC",
-      "Version": "1.3-20",
+      "Version": "1.3-21",
       "Source": "Repository",
       "Repository": "RSPM",
       "Requirements": [
         "R",
         "stats"
       ],
-      "Hash": "75c854adfa6ba1d57e05355867cb077b"
+      "Hash": "59854b66fa0cb7b0f1771eb60194cdf4"
     },
     "RSocrata": {
       "Package": "RSocrata",
