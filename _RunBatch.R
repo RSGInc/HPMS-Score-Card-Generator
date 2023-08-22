@@ -25,24 +25,27 @@ codefiles = c(Sys.glob('app/*.R'), Sys.glob('functions/*.R'))
 invisible(sapply(X =codefiles , FUN = source))
 
 # Read args from the command line ---------------------------------------------
-args <- commandArgs(trailingOnly = TRUE)
-
-if ( length(args) < 1 ){
-  stop('Please supply a comma-delimited list of states or specify "ALL"\nFor example: Rscript RunBatch.R PA,NY,NH,VT', call.=FALSE)
-}
-
-reimport <- TRUE
-year_selection <- 2020
-year_compare <- 2019
-# state_abbrev <- c('VT', 'MN', 'IL', 'CA')
+# args = commandArgs(trailingOnly = TRUE)
+# 
+# if ( length(args) < 1 ){
+#   stop('Please supply a comma-delimited list of states or specify "ALL"\nFor example: Rscript RunBatch.R PA,NY,NH,VT', call.=FALSE)
+# }
 
 # FIXME: Use named arguments with argparse package
+reimport       = TRUE
+year_selection = 2020
+year_compare   = 2019
+state_abbrev   = 'DE' #c('VT','CA')
 
-if (length(args) > 0) {
-  if(!str_detect(tolower(args[1]), 'all')) {
-    state_abbrev <- str_split(args, ',')[[1]]
-  }
-}
+db_username = 'joseph.trost@rsginc.com'
+db_password = readRDS('db_import/socrata_pw.rds')
+
+
+# if (length(args) > 0) {
+#   if(!str_detect(tolower(args[1]), 'all')) {
+#     state_abbrev <- str_split(args, ',')[[1]]
+#   }
+# }
 
 # if (length(args) > 1) {
 #   year_selection <- str_trim(args[2], side='both')
@@ -113,21 +116,29 @@ odbcClose(con)
 
 avail_states <- st_yr_table[year_record == year_selection]$state_code
 
-if(str_detect(tolower(args[1]), 'all')) {
-    if ( length(avail_states) == 0 ) warning('No states available for ', year_selection, '\n')
-    state_codes <- avail_states
-    state_abbrev <- getStateAbbrFromNum(state_codes)
-  } else {
+# if ( str_detect(tolower(args[1] ), 'all') ) {
+#   
+#     if ( length(avail_states) == 0 ) warning('No states available for ', year_selection, '\n')
+#   
+#     state_codes  = avail_states
+#     state_abbrev = getStateAbbrFromNum(state_codes)
+#     
+# } else {
+  
     # Check to make sure all states are available
-    state_codes <- getStateNumFromCode(state_abbrev)
-    which_na <- state_codes[!state_codes %in% avail_states] %>% getStateAbbrFromNum()
+    state_codes = getStateNumFromCode(state_abbrev)
+    which_na    = state_codes[!state_codes %in% avail_states] %>% getStateAbbrFromNum()
+    
     if (length(which_na) > 0 ){
+      
       warning('States not available in the database: ', paste(which_na, collapse=', '), '\n',
             call. = FALSE, immediate. = FALSE)
+      
     }
-    state_codes <- state_codes[state_codes %in% avail_states]
-    state_abbrev <- getStateAbbrFromNum(state_codes)
-  }
+    
+    state_codes  = state_codes[state_codes %in% avail_states]
+    state_abbrev = getStateAbbrFromNum(state_codes)
+# }
 
 message('Running states:', state_abbrev, '\n\n')
 
