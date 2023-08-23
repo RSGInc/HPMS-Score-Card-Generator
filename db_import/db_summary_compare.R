@@ -11,14 +11,12 @@ library('data.table')
 ReadData <- function(state_code, year) {
   
   cat('Fetching the data from the database...')
-  con <- GetODBCConnection()
-  
+  con <- connect_to_db()
+  on.exit(odbcClose(con)
   query <- paste0('select * from Review_Sections where StateYearKey = ',
                   state_code, as.numeric(year) %% 100)
   
   data <- sqlQuery(con, query, stringsAsFactors=FALSE)
-  
-  odbcClose(con)
   
   data <- cleanUpQuery(data)
   
@@ -59,7 +57,7 @@ cleanUpQuery <- function(data){
 
 # Get distinct route_ids for a single state, year, data_item
 
-con <- GetODBCConnection()
+con <- connect_to_db()
 
 # state_code <- 34    # NJ
 state_code <- 49  # UT
@@ -90,7 +88,7 @@ data_item_ <- 'RUTTING'
 query <- str_c("select DISTINCT Route_ID from Review_Sections where Year_Record=2016 and State_Code=", state_code,
                " and Data_Item='", data_item_, "';")
 
-con <- GetODBCConnection()
+con <- connect_to_db()
 sql <- sqlQuery(con, query, stringsAsFactors=FALSE) %>% as_tibble()
 names(sql) <- tolower(names(sql))
 odbcClose(con)

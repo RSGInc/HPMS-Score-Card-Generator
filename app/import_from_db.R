@@ -19,8 +19,9 @@ goverwrite <- ""
 showAvailableStatesYears <- function(){
   
   # Get states and years available for import -----------------------------
-  con <- GetODBCConnection()
-  
+  con <- connect_to_db()
+  on.exit({odbcClose(con)})
+
   cat('Determining available states and years...\n')
   
   # FHWA
@@ -34,8 +35,6 @@ showAvailableStatesYears <- function(){
                  "order by state_code, year_record")
   
   data <- data.table(sqlQuery(con, query))
-  
-  odbcClose(con)
   
   # Print available states and years
   
@@ -308,7 +307,7 @@ cleanUpQuery <- function(data){
 ReadData <- function(state, year) {
 
   cat('Fetching the data from the database...')
-  con <- GetODBCConnection()
+  con <- connect_to_db()
 
   query <- paste0('select * from ', sections_table, ' where StateYearKey = ',
                   getStateNumFromCode(state), as.numeric(year) %% 100)
@@ -438,7 +437,7 @@ FormatDataSet <- function(dat, state_abbr, year) {
   
   # merge in expansion factors ---------------------------------------------
 
-  con <- GetODBCConnection()
+  con <- connect_to_db()
 
   query <- paste0('select * from ', samples_table, ' where StateYearKey = ',
                   getStateNumFromCode(state_abbr), as.numeric(year) %% 100)

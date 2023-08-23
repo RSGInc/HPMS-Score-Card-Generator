@@ -25,84 +25,59 @@ codefiles = c(Sys.glob('app/*.R'), Sys.glob('functions/*.R'))
 invisible(sapply(X =codefiles , FUN = source))
 
 # Read args from the command line ---------------------------------------------
-# args = commandArgs(trailingOnly = TRUE)
-# 
-# if ( length(args) < 1 ){
-#   stop('Please supply a comma-delimited list of states or specify "ALL"\nFor example: Rscript RunBatch.R PA,NY,NH,VT', call.=FALSE)
-# }
-
 # FIXME: Use named arguments with argparse package
-reimport       = TRUE
+# states, year_selection, year_compare, reimport
+
+cargs = commandArgs(trailingOnly = TRUE)
+
+if (!interactive() & (length(cargs) < 1) ){
+  stop('Please supply a comma-delimited list of states or specify "ALL"\nFor example: Rscript RunBatch.R PA,NY,NH,VT', call.=FALSE)
+} else {
+  states <- cargs[1]
+  year_selection <- cargs[2]
+  year_compare <- cargs[3]
+  reimport <- cargs[4]
+}
+
+reimport = TRUE
 year_selection = 2020
-year_compare   = 2019
-state_abbrev   = 'DE' #c('VT','CA')
-
-db_username = 'joseph.trost@rsginc.com'
-db_password = readRDS('db_import/socrata_pw.rds')
-
-
-# if (length(args) > 0) {
-#   if(!str_detect(tolower(args[1]), 'all')) {
-#     state_abbrev <- str_split(args, ',')[[1]]
-#   }
-# }
-
-# if (length(args) > 1) {
-#   year_selection <- str_trim(args[2], side='both')
-# }
-
-# if(length(args) > 2) {
-#   year_compare <- str_trim(args[3], side='both')
-# }
-
-# if(length(args) > 3) {
-#   reimport <- str_trim(args[4], side='both')
-# }
-
-# if(length(args) > 4) {
-#   db_username <- str_trim(args[5], side='both')
-# }
-
-# if(length(args) > 5) {
-#   db_password <- str_trim(args[6], side='both')
-# }
+year_compare = 2019
+states = 'DE' #c('VT','CA')
 
 submission_deadline <- paste(year_selection, '-06-15', sep="")
 
 message(
-  'state_abbrev: ', state_abbrev, 
+  'states: ', states, 
   ' year_selection: ', year_selection, 
   ' year_compare: ', year_compare, 
-  ' reimport: ', reimport, 
-  ' db_username: ', db_username, 
-  ' db_password: ', db_password
+  ' reimport: ', reimport
 )
 
 root <- find_root(is_git_root)
 setwd(root)
 
-msg_file <- file.path(
-  'output', 
-  paste0('_RunBatch_messages_', format(Sys.time(), '%Y%m%d_%H%M%S.txt'))
-)
+dir.create('output', showWarnings = FALSE)
 
-message('Saving messages to', msg_file)
+if ( !interactive() ){
+  msg_file <- file.path(
+    'output', 
+    paste0('_RunBatch_messages_', format(Sys.time(), '%Y%m%d_%H%M%S.txt'))
+  )
 
-if ( !dir.exists('output') ){
-  dir.create('output')
+  message('Saving messages to', msg_file)
+
+  file_con <- file(msg_file, open='wt')
+  sink(file=file_con, append=FALSE, type='message')
 }
 
-file_con <- file(msg_file, open='wt')
-sink(file=file_con, append=FALSE, type='message')
-
-message('RunBatch.R started at ', Sys.time())
+message('_RunBatch.R started at ', Sys.time())
 message('submission_deadline: ', submission_deadline)
 message('year_selection: ', year_selection)
 message('year_compare: ', year_compare)
 
 cat('Checking availability of states for', year_selection, '\n')
 
-con <- GetODBCConnection()
+con <- connect_to_db()
 
 query <- paste(
   "select distinct state_code, year_record from", 
@@ -116,31 +91,41 @@ odbcClose(con)
 
 avail_states <- st_yr_table[year_record == year_selection]$state_code
 
-# if ( str_detect(tolower(args[1] ), 'all') ) {
-#   
-#     if ( length(avail_states) == 0 ) warning('No states available for ', year_selection, '\n')
-#   
-#     state_codes  = avail_states
-#     state_abbrev = getStateAbbrFromNum(state_codes)
-#     
-# } else {
+if ( length(states) == 1 && str_detect(tolower(states), 'all')){
   
-    # Check to make sure all states are available
-    state_codes = getStateNumFromCode(state_abbrev)
-    which_na    = state_codes[!state_codes %in% avail_states] %>% getStateAbbrFromNum()
+  if ( length(avail_states) == 0 ) warning('No states available for ', year_selection, '\n')
+  state_codes <- avail_states
+  state_abbrev <- getStateAbbrFromNum(state_codes)
+  
+} else {
+  
+  if ( length(states) == 1 ){
     
-    if (length(which_na) > 0 ){
-      
-      warning('States not available in the database: ', paste(which_na, collapse=', '), '\n',
+    state_abbrev <- str_split(states, ',')[[1]]  
+  }
+  
+  if ( length(states) > 1){
+    state_abbrev <- str_replace(states, ',', '')
+    state_abbrev <- str_trim(state_abbrev, side='both')
+  }
+  
+  # Check to make sure all states are available
+  
+  state_codes <- getStateNumFromCode(state_abbrev)
+  
+  which_na <- state_codes[!state_codes %in% avail_states] %>% getStateAbbrFromNum()
+  
+  if ( length(which_na) > 0 ){
+    warning('States not available in the database: ', paste(which_na, collapse=', '), '\n',
             call. = FALSE, immediate. = FALSE)
-      
-    }
-    
-    state_codes  = state_codes[state_codes %in% avail_states]
-    state_abbrev = getStateAbbrFromNum(state_codes)
-# }
+  }
+  
+  state_codes <- state_codes[state_codes %in% avail_states]
+  state_abbrev <- getStateAbbrFromNum(state_codes)
+}
 
 message('Running states:', state_abbrev, '\n\n')
+
 
 # Create PDF ----------------------------------------------------------------
 savepath <- "output/"
@@ -150,7 +135,6 @@ for(state in state_abbrev){
   msg <- paste('Started scorecard for', state, 'at', format(Sys.time(), '%H:%M:%S'))
   message(msg)
   
-  gc()
   tryCatch(
     expr = {
 
@@ -164,24 +148,31 @@ for(state in state_abbrev){
         goverwrite = 'ALL N'
       }
       
-      success <- ImportData(state_selection=state,
-                            year_selection=year_selection)
+      success <- ImportData(
+        state_selection=state,
+        year_selection=year_selection
+      )
       
+      # Get year compare data if it hasn't been imported yet
       goverwrite = 'ALL N'
-      success <- ImportData(state_selection=state,
-                            year_selection=year_compare)
-      cat('Import complete!\n')
+      success <- ImportData(
+        state_selection=state,
+        year_selection=year_compare
+      )
+
       message('Finished importing ', state, ' at ', format(Sys.time(), '%H:%M:%S\n'))
       
       data.list <- getStateDataSets(state, year_selection, year_compare)
 
-      create_pdf(data = data.list[["dat"]],
-                 state = data.list[["state_code"]],
-                 year = data.list[["year_selection"]],
-                 year_compare = data.list[["year_compare"]],
-                 # population = population,
-                 # national = national,
-                 path = savepath)
+      create_pdf(
+        data = data.list[["dat"]],
+        state = data.list[["state_code"]],
+        year = data.list[["year_selection"]],
+        year_compare = data.list[["year_compare"]],
+        # population = population,
+        # national = national,
+        path = savepath
+      )
       
     }, error = function(cond){
       message('Error! ', conditionMessage(cond), '\n\nScorecard for ', state, ' not made\n')
@@ -195,8 +186,12 @@ for(state in state_abbrev){
 }
 
 #warnings()
-sink(type='message')
-close(file_con)
+if (!interactive()){
+  sink(type='message')
+  close(file_con)
 
-cat('RunBatch finished.  Check log file for warnings and errors at\n', msg_file, '\n')
+  message('RunBatch finished.  Check log file for warnings and errors at\n', msg_file, '\n')
+} 
+
+message('_RunBatch.R finished at ', format(Sys.time(), '%H:%M:%S\n'))
 

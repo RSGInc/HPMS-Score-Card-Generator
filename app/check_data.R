@@ -16,7 +16,8 @@
 # Load summary data for state and year
 loadSummaryData <- function(state_code, year){
   
-  con <- GetODBCConnection()
+  con <- connect_to_db()
+  on.exit({odbcClose(con)})
   
   st_yr_key = paste0(state_code, str_sub(year, start=3, end=4)) 
   
@@ -30,7 +31,7 @@ loadSummaryData <- function(state_code, year){
   )
   data <- sqlQuery(con, query)
   data <- cleanUpQuery(data)
-  odbcClose(con)
+
   return(data)
 }
 

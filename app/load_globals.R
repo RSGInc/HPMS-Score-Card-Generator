@@ -28,18 +28,6 @@ samples_table     <- 'Review_Sample_Sections'
 # summary_table     <- 'Section_Summaries'
 # poptable          <- "codes_urban"
 
-GetODBCConnection <- function() {
-
-  dsn = 'HPMS'
-  
-  if( exists('db_username') & exists('db_password') ) {
-    
-    return(odbcConnect(dsn, uid = db_username, pwd = db_password))
-  } else {
-    return(odbcConnect(dsn))
-  }
-}
-
 # this is the text included in the left side of the first page of the scorecard
 # carriage returns are necessary.
 title_text <- 

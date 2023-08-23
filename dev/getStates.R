@@ -49,15 +49,14 @@ if ( file.exists(dofile) ){
   
   cat(scriptname, 'Checking availability of states for', year_selection, '\n')
   
-  con <- GetODBCConnection()
+  con <- connect_to_db()
+  on.exit({odbcClose(con)})
   
   query <- paste("select distinct state_code, year_record from", sections_table,
                  "order by state_code, year_record")
   
   st_yr_table <- data.table(sqlQuery(con, query))
-  
-  odbcClose(con)
-  
+    
   avail_states <- st_yr_table[year_record == year_selection]$state_code
   
   
