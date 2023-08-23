@@ -19,7 +19,7 @@ goverwrite <- ""
 showAvailableStatesYears <- function(){
   
   # Get states and years available for import -----------------------------
-  con <- odbcConnect("HPMS")
+  con <- odbcConnect("HPMS8")
   
   cat('Determining available states and years...\n')
   
@@ -308,7 +308,7 @@ cleanUpQuery <- function(data){
 ReadData <- function(state, year) {
 
   cat('Fetching the data from the database...')
-  con <- odbcConnect("HPMS")
+  con <- odbcConnect("HPMS8")
 
   query <- paste0('select * from ', sections_table, ' where StateYearKey = ',
                   getStateNumFromCode(state), as.numeric(year) %% 100)
@@ -437,7 +437,7 @@ FormatDataSet <- function(dat, state_abbr, year) {
   
   # merge in expansion factors ---------------------------------------------
 
-  con <- odbcConnect("HPMS")
+  con <- odbcConnect("HPMS8")
 
   query <- paste0('select * from ', samples_table, ' where StateYearKey = ',
                   getStateNumFromCode(state_abbr), as.numeric(year) %% 100)
@@ -475,8 +475,6 @@ FormatDataSet <- function(dat, state_abbr, year) {
       length(setdiff(rid_sp, rid_sec)) > 0 |
       length(intersect(rid_sp, rid_sec)) < length(rid_sp)
     ){ 
-      
-      browser() 
       
       compare_ids = data.table(sp = rid_sp, sec = rid_sec[1:length(rid_sp)])
       

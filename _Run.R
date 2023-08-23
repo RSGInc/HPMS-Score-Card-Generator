@@ -41,8 +41,9 @@ debugmode = TRUE # Displays output to graphics device instead of PDF
 # debug(plot_completeness)
 
 # Import data
-# Run(task = 1, state = 'DC', year = 2020)
+Run(task = 1, state = 'DE', year = 2020)
+Run(task = 1, state = "DE", year = 2019)
 
 # Run scorecard
-Run(task = 2, state = 'TX', year = 2020, year_compare = 2019)
+Run(task = 2, state = 'DE', year = 2020, year_compare = 2019)
 

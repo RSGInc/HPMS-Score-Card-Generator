@@ -146,7 +146,7 @@ Run <- function(task=NA, ...) {
       #cat("Please use the windows dialog to select one or more data files to import.\n\n")
       #file <- choose.files(caption = "Select one file to import.",multi=FALSE)
       #stop('population is no longer needed for the pavement summary')
-      #con <- odbcConnect("HPMS")
+      #con <- odbcConnect("HPMS8")
 
       #population <- sqlQuery(con,paste0("select * from ", poptable) )
   

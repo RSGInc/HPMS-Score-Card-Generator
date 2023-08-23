@@ -11,7 +11,7 @@ library('data.table')
 ReadData <- function(state_code, year) {
   
   cat('Fetching the data from the database...')
-  con <- odbcConnect("HPMS")
+  con <- odbcConnect("HPMS8")
   
   query <- paste0('select * from Review_Sections where StateYearKey = ',
                   state_code, as.numeric(year) %% 100)

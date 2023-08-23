@@ -27,7 +27,7 @@ getTimelinessScore <- function(state, year,
     
     deadline = format(ymd(submission_deadline), '%m/%d/%Y 23:59:59')
     
-    con <- odbcConnect("HPMS")
+    con <- odbcConnect("HPMS8")
     
     score <- sqlQuery(con,
       paste0("select case when max(submitted_on) > '", deadline,

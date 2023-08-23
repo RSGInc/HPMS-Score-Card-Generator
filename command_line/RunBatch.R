@@ -59,7 +59,7 @@ invisible(sapply(X =codefiles , FUN = source))
 
 cat('Checking availability of states for', year_selection, '\n')
 
-con <- odbcConnect("HPMS")
+con <- odbcConnect("HPMS8")
 
 query <- paste("select distinct state_code, year_record from", sections_table,
                "order by state_code, year_record")
