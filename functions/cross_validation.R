@@ -290,7 +290,7 @@ cross_validation_15 = function(data){
                mileage      = sum(end_point-begin_point)
               ),
              .(applies = !is.na(SPEED_LIMIT), 
-               passes  = (SPEED_LIMIT==999)|(SPEED_LIMIT%%5==0&SPEED_LIMIT<90))][order(applies,passes)]
+               passes  = (SPEED_LIMIT == 999) | (SPEED_LIMIT %% 5 == 0 & SPEED_LIMIT < 90))][order(applies,passes)]
   
   if(nrow(results[applies == TRUE])==0){
     warning("Not applicable - Sufficient data from the state are not available")

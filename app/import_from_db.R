@@ -154,7 +154,7 @@ ImportData <- function(state_selection, year_selection) {
   
   # Load the data -----------------------------------------------------------
   
-  if ( debugmode ) browser()
+  # if ( debugmode ) browser()
   
   for (state in states) {
     
@@ -393,6 +393,8 @@ FormatDataSet <- function(dat, state_abbr, year) {
   
   data.formatted = expand(dat,0.1)
   
+  # browser()
+
   # Merge data on itself to convert rows to columns
   data.formatted = append_column(data.formatted,"F_SYSTEM")
   data.formatted = append_column(data.formatted,"NHS")
@@ -405,8 +407,10 @@ FormatDataSet <- function(dat, state_abbr, year) {
   # (Through_Lanes x F_System in (1,2,3,4,5,6-Urban)) plus
   # (total length for Rural Minor Collectors x 2)
   
-  data.formatted[F_SYSTEM >= 6 & URBAN_ID == 99999 & FACILITY_TYPE < 6 &
-                   is.na(THROUGH_LANES), THROUGH_LANES:=2]
+  data.formatted[
+    F_SYSTEM >= 6 & URBAN_ID == 99999 & FACILITY_TYPE < 6 & is.na(THROUGH_LANES),
+    THROUGH_LANES := 2
+  ]
   
   #F_SYSTEM Codes
   # 1 Interstate
