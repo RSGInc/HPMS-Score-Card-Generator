@@ -101,23 +101,17 @@ write_to_stage = function(cache_path, con, stage_table, chunk_size=100000){
   
   message('Reading from ', cache_path)
   
-  dt = readRDS(cache_path)
-  
-  # FIXME: update for 2022, and add rename from camelCase to snake_case
-  # For checking column types
+  # if ( datayear == '2022' ) use these below
   col_type_chk = c(
-    datayear = 'integer',
-    stateid = 'integer',
-    route_id = 'character',
-    begin_point = 'numeric',
-    end_point = 'numeric',
-    data_item = 'character',
-    value_numeric = 'numeric',
-    value_text = 'character',
-    value_date = 'POSIXct',
-    natroute_id = 'character'
+    datayear        = 'character',
+    stateid         = 'character',
+    routeid         = 'character',
+    sampleid        = 'character',
+    beginpoint      = 'character',
+    endpoint        = 'character',
+    expansionfactor = 'character',
+    comments        = 'character'
   )
-  
   coltype_chk_dt = data.table(field = names(col_type_chk), chk = col_type_chk)
   
   message('Updating data types')
@@ -131,10 +125,14 @@ write_to_stage = function(cache_path, con, stage_table, chunk_size=100000){
     }
   }
   
-  dt[, datayear := as.integer(datayear)]
-  dt[, stateid := as.integer(stateid)]
-  dt[, begin_point := as.numeric(begin_point)]
-  dt[, end_point := as.numeric(end_point)]
+  # dt[, datayear := as.integer(datayear)]
+  # dt[, stateid := as.integer(stateid)]
+  # dt[, begin_point := as.numeric(begin_point)]
+  # dt[, end_point := as.numeric(end_point)]
+  dt[, datayear   := as.character(datayear)]
+  dt[, stateid    := as.character(stateid)]
+  dt[, beginpoint := as.character(beginpoint)]
+  dt[, endpoint   := as.character(endpoint)]
   
   if ( 'value_numeric' %in% names(dt) ){
     dt[, value_numeric := as.numeric(value_numeric)]

@@ -18,9 +18,10 @@ library('RSocrata')
 source('db_import/socrata_functions.R')
 source('functions/connect_to_db.R')
 
-email = 'matt.landis@rsginc.com'
+email = 'joseph.trost@rsginc.com'
 password = readRDS('db_import/datahub_pw.rds')
 
+datafields_map = fread('db_import/data_field_changes.csv')
 
 # URLS ========================================================================
 
@@ -43,7 +44,7 @@ timeliness_url = 'https://datahub.transportation.gov/resource/8fiq-jstx.json'
 sample_urls = c(
   sample_de = 'https://datahub.transportation.gov/resource/wrs8-irpx.json',
   sample_wy = "https://datahub.transportation.gov/resource/u49a-f2t2.json"
-  )
+)
 
 # Designations
 
@@ -120,7 +121,8 @@ if ( update_tt ){
     tt = tbl(con, from=prod_table)
     
     yr_count = tt %>%
-      filter(Year_Record == data_yr) %>%
+      # filter(Year_Record == data_yr) %>%
+      filter(year_record == data_yr) %>%
       count() %>%
       pull(n)
     
@@ -177,13 +179,15 @@ if ( update_samples ){
     message('Working on ', names(url))
     cache_path = download_socrata(url, overwrite=overwrite_cache)
     counts_local = write_to_stage(cache_path, con, stage_table)
-    copy_rows(con, stage_table, prod_table, counts_local)
+    #copy_rows(con, stage_table, prod_table, counts_local)
   }
   
 }
 
 
 # Sections data ---------------------------------------------------
+
+# NOTE: old (<2022) sections table is concatenation of Events and Designations
 
 if ( update_sections ){
   
@@ -195,7 +199,7 @@ if ( update_sections ){
     if (url == '') next()
     cache_path = download_socrata(url, overwrite=overwrite_cache)
     counts_local = write_to_stage(cache_path, con, stage_table)
-    copy_rows(con, stage_table, prod_table, counts_local)
+    #copy_rows(con, stage_table, prod_table, counts_local)
     
   }
 }
