@@ -54,7 +54,7 @@ ROUTE_SIGNING,FE**,25,"coverage[, required := FACILITY_TYPE %in% c(1,2) & (F_SYS
 RUTTING,SP,26,"coverage[, required := !is.na(expansion_factor) & SURFACE_TYPE%in%c(2,6,7,8)]"
 SHOULDER_WIDTH_L,SP,27,"coverage[, required := SHOULDER_TYPE %in% 2:6 & MEDIAN_TYPE %in% 2:7 & (!is.na(expansion_factor))]"
 SHOULDER_WIDTH_R,SP,27,"coverage[, required := SHOULDER_TYPE %in% 2:6 & MEDIAN_TYPE %in% 2:7 & (!is.na(expansion_factor))]"
-SIGNAL_TYPE,SP,28,"coverage[, required :=  (URBAN_ID != 99999 &ACCESS_CONTROL == 1 &!is.na(expansion_factor))]"
+SIGNAL_TYPE,SP,28,"coverage[, required :=  (URBAN_ID != 99999 & ACCESS_CONTROL == 1 &!is.na(expansion_factor))]"
 TERRAIN_TYPE,SP,29,"coverage[, required := !is.na(expansion_factor) & URBAN_ID<99999]"
 THICKNESS_FLEXIBLE,SP,30,"coverage[, required := !is.na(expansion_factor) & SURFACE_TYPE %in% c(2,6,7,8)]"
 THICKNESS_RIGID,SP,31,"coverage[, required := !is.na(expansion_factor) & SURFACE_TYPE %in% 3:10]"

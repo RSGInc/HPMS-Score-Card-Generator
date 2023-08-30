@@ -161,6 +161,8 @@ create_travel_yoy_density <- function(
       }
       
       # Interstate
+      if (debugmode) browser()
+      
       p1 <- densityPlot(d1=var1[Interstate==1],
                         d2=var2[Interstate==1],
                         d3=national[Interstate==1],

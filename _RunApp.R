@@ -21,24 +21,27 @@
 #
 ###########################################################################
 
-options(scipen=9999)  # Make sure numbers are not converted to sci notation
+options(scipen = 9999)  # Make sure numbers are not converted to sci notation
 
 # Load Code
 codefiles = c(Sys.glob('app/*.R'), Sys.glob('functions/*.R'))
 invisible(sapply(X =codefiles , FUN = source))
 
-# Run Tool
-# Run()  # Import all states
+# Update the National data -----------------------------------------------------
+
+# goverwrite = FALSE
+# Run(task = 1)  # Import all states
 # updateNation(years = 2020)
 
-# Run scorecards via command line tool.
+# Run scorecards via command line tool. ----------------------------------------
 # Rscript _RunBatch.R ALL
 
-# Import data
-# Run(task = 1, state = 'DE', year = 2020)
-# Run(task = 1, state = 'DE', year = 2019)
+# Import data for a single state -----------------------------------------------
+Run(task = 1, state = 'DE', year = 2020)
+Run(task = 1, state = 'DE', year = 2019)
 
-# debugmode = TRUE # Displays output to graphics device instead of PDF
+# Run scorecard for a single state ---------------------------------------------
+debugmode = TRUE # Displays output to graphics device instead of PDF
 
 # Run scorecard
 Run(task = 2, state = 'DE', year = 2020, year_compare = 2019)
