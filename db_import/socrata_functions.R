@@ -101,6 +101,7 @@ write_to_stage = function(cache_path, con, stage_table, chunk_size=100000){
   
   message('Reading from ', cache_path)
   
+  dt = readRDS(cache_path)
   # if ( datayear == '2022' ) use these below
   col_type_chk = c(
     datayear        = 'character',
@@ -111,6 +112,11 @@ write_to_stage = function(cache_path, con, stage_table, chunk_size=100000){
     endpoint        = 'character',
     expansionfactor = 'character',
     comments        = 'character'
+    #data_item = 'character',
+    #value_numeric = 'numeric',
+    # value_text = 'character',
+    # value_date = 'POSIXct',
+    # natroute_id = 'character'
   )
   coltype_chk_dt = data.table(field = names(col_type_chk), chk = col_type_chk)
   
@@ -134,8 +140,8 @@ write_to_stage = function(cache_path, con, stage_table, chunk_size=100000){
   dt[, beginpoint := as.character(beginpoint)]
   dt[, endpoint   := as.character(endpoint)]
   
-  if ( 'value_numeric' %in% names(dt) ){
-    dt[, value_numeric := as.numeric(value_numeric)]
+  if ( 'valuenumeric' %in% names(dt) ){
+    dt[, value_numeric := as.numeric(valuenumeric)] # FIXME: num or char? (seems silly, yes)
   }
   
   message('Checking data types')
