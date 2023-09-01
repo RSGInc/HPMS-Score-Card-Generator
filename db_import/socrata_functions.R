@@ -1,5 +1,67 @@
 
 
+create_sections_tables = function(
+  events_url,
+  designation_url,
+  overwrite = FALSE
+) {
+  
+  # FIXME: put into make_cache_path ?
+  ## Make path -----------------------------------------------------------------
+  # Get state abbreviation, ensure both urls are for same state
+  state_suffix = substr( names(events_url), 
+                         nchar( names(events_url) ) - 3 + 1, 
+                         nchar( names(events_url) ))
+  
+  state_check = substr( names(designation_url), 
+                        nchar( names(designation_url) ) - 3 + 1, 
+                        nchar( names(designation_url) ))
+  
+  if( state_suffix != state_check ) browser()
+  
+  temp_url = c( sections = 'dummy_var')
+  names(temp_url) = paste0( names(temp_url), state_suffix)
+  # ----------------------------------------------------------------------------
+  
+  cache_path = make_cache_path( temp_url )
+  
+  events_path      = download_socrata(events_url, overwrite = overwrite)
+  designation_path = download_socrata(designation_url, overwrite = overwrite)
+  
+  events_tbl      = readRDS(events_path)
+  designation_tbl = readRDS(designation_path)
+  
+  # FIXME: unequal number of fields
+  # valuedate missing from designations
+  if ( !'valuedate' %in% tolower(names(designation_tbl)) ) {
+    
+    designation_tbl[, valuedate := as.character('NULL') ]
+    
+  }
+  
+  # Check fields now match
+  events_only = setdiff(names(events_tbl), names(designation_tbl))
+  desigs_only = setdiff(names(designation_tbl), names(events_tbl))
+  
+  if ( length(events_only) > 0 |
+       length(desigs_only) > 0 ){
+    
+    browser()
+    
+  }
+  
+  # Bind to create final table
+  setcolorder(designation_tbl, neworder = names(events_tbl))
+  sections_tbl = rbind(events_tbl, designation_tbl)
+  
+  message('...saving to ', cache_path)
+  
+  saveRDS(sections_tbl, cache_path)
+
+  return(cache_path)
+  
+}
+
 read.socrata2 = function (
   url, 
   app_token = NULL, 
@@ -111,12 +173,11 @@ write_to_stage = function(cache_path, con, stage_table, chunk_size=100000){
     beginpoint      = 'character',
     endpoint        = 'character',
     expansionfactor = 'character',
-    comments        = 'character'
-    #data_item = 'character',
-    #value_numeric = 'numeric',
-    # value_text = 'character',
-    # value_date = 'POSIXct',
-    # natroute_id = 'character'
+    comments        = 'character',
+    dataitem        = 'character',
+    valuenumeric    = 'numeric',
+    valuetext       = 'character',
+    begindate       = 'character'
   )
   coltype_chk_dt = data.table(field = names(col_type_chk), chk = col_type_chk)
   
@@ -141,7 +202,7 @@ write_to_stage = function(cache_path, con, stage_table, chunk_size=100000){
   dt[, endpoint   := as.character(endpoint)]
   
   if ( 'valuenumeric' %in% names(dt) ){
-    dt[, value_numeric := as.numeric(valuenumeric)] # FIXME: num or char? (seems silly, yes)
+    dt[, valuenumeric := as.numeric(valuenumeric)] # FIXME: num or char? (seems silly, yes)
   }
   
   message('Checking data types')
@@ -174,7 +235,8 @@ write_to_stage = function(cache_path, con, stage_table, chunk_size=100000){
     
     old_fields = dbListFields(con, stage_table)
     old_fields = str_to_lower(old_fields)
-    old_fields = old_fields[!old_fields %in% c('natroute_id', 'section_length')]
+    # FIXME: it seems like sectionlength should be in the table
+    #old_fields = old_fields[!old_fields %in% c('natroute_id', 'sectionlength')]
     
     if ( stage_table == 'rs_stage' ){
       old_fields = setdiff(old_fields, 'stateyearkey') # this is computed in rs_stage
@@ -188,9 +250,9 @@ write_to_stage = function(cache_path, con, stage_table, chunk_size=100000){
       new_fields = c(new_fields, 'stateyearkey')
     }
 
-    if ( !('value_text' %in% new_fields) & stage_table == 'rs_stage' ){
-      dt[, value_text := NA_character_]
-      new_fields = c(new_fields, 'value_text')
+    if ( !('valuetext' %in% new_fields) & stage_table == 'rs_stage' ){
+      dt[, valuetext := NA_character_]
+      new_fields = c(new_fields, 'valuetext')
     }    
     
     if ( length(setdiff(old_fields, new_fields)) > 0 |

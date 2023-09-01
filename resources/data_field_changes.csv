@@ -1,0 +1,9 @@
+tab_set,old_field,new_field
+sample,state_code,stateid
+sample,year_record,datayear
+sample,sample_id,sampleid
+sample,route_id,routeid
+sample,begin_point,beginpoint
+sample,end_point,endpoint
+sample,expansion_factor,expansionfactor
+sample,NA,comments
