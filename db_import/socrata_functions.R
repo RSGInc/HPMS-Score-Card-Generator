@@ -39,6 +39,8 @@ create_sections_tables = function(
     
   }
   
+  # FIXME
+  # can assume the data is okay from here, skip to rbind -----------------------
   # Check fields now match
   events_only = setdiff(names(events_tbl), names(designation_tbl))
   desigs_only = setdiff(names(designation_tbl), names(events_tbl))
@@ -53,7 +55,7 @@ create_sections_tables = function(
   # Bind to create final table
   setcolorder(designation_tbl, neworder = names(events_tbl))
   sections_tbl = rbind(events_tbl, designation_tbl)
-  
+  #-----------------------------------------------------------------------------
   message('...saving to ', cache_path)
   
   saveRDS(sections_tbl, cache_path)
@@ -166,18 +168,18 @@ write_to_stage = function(cache_path, con, stage_table, chunk_size=100000){
   dt = readRDS(cache_path)
   # if ( datayear == '2022' ) use these below
   col_type_chk = c(
-    datayear        = 'character',
-    stateid         = 'character',
+    datayear        = 'integer',
+    stateid         = 'integer',
     routeid         = 'character',
     sampleid        = 'character',
-    beginpoint      = 'character',
-    endpoint        = 'character',
-    expansionfactor = 'character',
+    beginpoint      = 'numeric',
+    endpoint        = 'numeric',
+    expansionfactor = 'numeric',
     comments        = 'character',
     dataitem        = 'character',
     valuenumeric    = 'numeric',
     valuetext       = 'character',
-    begindate       = 'character'
+    begindate       = 'POSIXct'
   )
   coltype_chk_dt = data.table(field = names(col_type_chk), chk = col_type_chk)
   

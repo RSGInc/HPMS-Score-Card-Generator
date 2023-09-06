@@ -21,7 +21,7 @@ source('functions/connect_to_db.R')
 email = 'joseph.trost@rsginc.com'
 password = readRDS('db_import/datahub_pw.rds')
 
-datafields_map = fread('db_import/data_field_changes.csv')
+datafields_map = fread('resources/data_field_changes.csv')
 
 # URLS ========================================================================
 
