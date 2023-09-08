@@ -21,7 +21,7 @@ source('functions/connect_to_db.R')
 email = 'joseph.trost@rsginc.com'
 password = readRDS('db_import/datahub_pw.rds')
 
-datafields_map = fread('resources/data_field_changes.csv')
+# datafields_map = fread('resources/data_field_changes.csv')
 
 # URLS ========================================================================
 
@@ -179,7 +179,7 @@ if ( update_samples ){
     message('Working on ', names(url))
     cache_path = download_socrata(url, overwrite=overwrite_cache)
     counts_local = write_to_stage(cache_path, con, stage_table)
-    #copy_rows(con, stage_table, prod_table, counts_local)
+    copy_rows(con, stage_table, prod_table, counts_local)
   }
   
 }

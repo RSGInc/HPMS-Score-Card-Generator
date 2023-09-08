@@ -198,13 +198,26 @@ write_to_stage = function(cache_path, con, stage_table, chunk_size=100000){
   # dt[, stateid := as.integer(stateid)]
   # dt[, begin_point := as.numeric(begin_point)]
   # dt[, end_point := as.numeric(end_point)]
-  dt[, datayear   := as.character(datayear)]
-  dt[, stateid    := as.character(stateid)]
-  dt[, beginpoint := as.character(beginpoint)]
-  dt[, endpoint   := as.character(endpoint)]
+  dt[, datayear   := as.integer(datayear)]
+  dt[, stateid    := as.integer(stateid)]
+  dt[, beginpoint := as.numeric(beginpoint)]
+  dt[, endpoint   := as.numeric(endpoint)]
+  
   
   if ( 'valuenumeric' %in% names(dt) ){
-    dt[, valuenumeric := as.numeric(valuenumeric)] # FIXME: num or char? (seems silly, yes)
+    dt[, valuenumeric := as.numeric(valuenumeric)]
+  }
+  
+  if( 'expansionfactor' %in% names(dt) ){
+    
+    dt[, expansionfactor := as.numeric(expansionfactor) ]
+    
+  }
+  
+  if( 'begindate' %in% names(dt) ){
+    
+    dt[, begindate := as.POSIXct(begindate)]
+    
   }
   
   message('Checking data types')
