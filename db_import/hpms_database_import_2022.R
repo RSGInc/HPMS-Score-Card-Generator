@@ -121,7 +121,7 @@ if ( update_tt ){
     tt = tbl(con, from=prod_table)
     
     yr_count = tt %>%
-      # filter(Year_Record == data_yr) %>%
+      # filter(DataYear == data_yr) %>%
       filter(year_record == data_yr) %>%
       count() %>%
       pull(n)
@@ -204,11 +204,12 @@ if ( update_sections ){
     url_ev  = event_urls[i]
     url_des = designation_urls[i]
     
-    if (url == '') next()
+    # FIXME
+    #if (url == '') next()
     # cache_path = download_socrata(url, overwrite=overwrite_cache)
     cache_path = create_sections_tables(url_ev, url_des, overwrite=overwrite_cache)
     counts_local = write_to_stage(cache_path, con, stage_table)
-    #copy_rows(con, stage_table, prod_table, counts_local)
+    copy_rows(con, stage_table, prod_table, counts_local)
     
   }
 }

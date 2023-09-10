@@ -2,7 +2,7 @@
 1,IRI: >= 30 and <= 400 (1)
 2,"Sample: only where Facility_Type IN 1,2 and (F_System = 1-5 or F_System = 6 and Urban Code <99999) (2)"
 4,TOPS Not Found: No TOPS record was created for a given section of the network.  One or more of the five TOPS data items is likely missing from this section. (4)
-9,Year_Last_Construction: <= Year_Record or NULL (9)
+9,Year_Last_Construction: <= DataYear or NULL (9)
 14,Lane Width: > 5 and <19 (14)
 15,Speed Limit: Divisible by 5 and < 90 OR = 999 (15)
 16,Counter Peak Lanes: NULL if FACILITY_TYPE is 1 (16)
@@ -17,10 +17,10 @@
 43,PCT_DH_COMBINATION: (CU AADT x 0.025) < (AADT x PCT_DH_COMBINATION / 100) < (CU AADT x 0.4) (43)
 44,AADT Combination: < AADT * 0.4 (44)
 45,AADT_Single_Unit :  < AADT * 0.4 (45)
-46.1,IRI: Value_Date >= Year_Record � 1 where Sample OR (Value_Text Null AND F_System >1 and NHS in 1-9 ) (46)
-46.2,Rutting: Value_Date >= Year_Record � 1 where Sample OR (Value_Text Null AND F_System >1 and NHS in 1-9 ) (46)
-46.3,Faulting: Value_Date >= Year_Record � 1 where Sample OR (Value_Text Null AND F_System >1 and NHS in 1-9 ) (46)
-46.4,Cracking_Percent: Value_Date >= Year_Record � 1 where Sample OR (Value_Text Null AND F_System >1 and NHS in 1-9 ) (46)
+46.1,IRI: BeginDate >= DataYear � 1 where Sample OR (ValueText Null AND F_System >1 and NHS in 1-9 ) (46)
+46.2,Rutting: BeginDate >= DataYear � 1 where Sample OR (ValueText Null AND F_System >1 and NHS in 1-9 ) (46)
+46.3,Faulting: BeginDate >= DataYear � 1 where Sample OR (ValueText Null AND F_System >1 and NHS in 1-9 ) (46)
+46.4,Cracking_Percent: BeginDate >= DataYear � 1 where Sample OR (ValueText Null AND F_System >1 and NHS in 1-9 ) (46)
 47,Faulting: <=1 (47)
 49,K_Factor : > 4 and <20  (49)
 51,"Cracking_Percent: < 75 Where Surface Type is in (3,4,5,9,10)  (51)"
@@ -31,18 +31,18 @@
 56,PCT_DH_COMBINATION: >0 and < 25% (56)
 57,PCT_DH_SINGLE_UNIT: >0 and < 25% (57)
 60,Left Shoulder Width:  < Median_Width (60)
-61.1,IRI: Value_Date = Year Record where Value_Text is Null AND F_System =1  (61)
-61.2,Rutting: Value_Date = Year Record where Value_Text is Null AND F_System =1  (61)
-61.3,Faulting: Value_Date = Year Record where Value_Text is Null AND F_System =1  (61)
-61.4,Cracking_Percent: Value_Date = Year Record where Value_Text is Null AND F_System =1  (61)
-62,PSR: PSR Value_Numeric > 0 and PSR Value_Text = A where F_System =1 and IRI is Null (62)
+61.1,IRI: BeginDate = Year Record where ValueText is Null AND F_System =1  (61)
+61.2,Rutting: BeginDate = Year Record where ValueText is Null AND F_System =1  (61)
+61.3,Faulting: BeginDate = Year Record where ValueText is Null AND F_System =1  (61)
+61.4,Cracking_Percent: BeginDate = Year Record where ValueText is Null AND F_System =1  (61)
+62,PSR: PSR ValueNumeric > 0 and PSR ValueText = A where F_System =1 and IRI is Null (62)
 63,"Cracking_Percent: Should be < X where Surface Type is in (2,6,7,8) (63)"
-64.1,"IRI: Value_Text In (A,B,C,D,E)�where Value_Date <> Year Record and F_Sytem = 1 OR (Value_Date < Year Record -1 on NHS) (64)"
-64.2,"Rutting: Value_Text In (A,B,C,D,E)�where Value_Date <> Year Record and F_Sytem = 1 OR (Value_Date < Year Record -1 on NHS) (64)"
-64.3,"Faulting: Value_Text In (A,B,C,D,E)�where Value_Date <> Year Record and F_Sytem = 1 OR (Value_Date < Year Record -1 on NHS) (64)"
-64.4,"Cracking_Percent: Value_Text In (A,B,C,D,E)�where Value_Date <> Year Record and F_Sytem = 1 OR (Value_Date < Year Record -1 on NHS) (64)"
-65,"PSR: Value_Date >= Year_Record � 1 where Sample OR F_System >1 and NHS in (1,2,3,4,5,6,7,8,9) (65)"
-66,"PSR: Value_Date = Year Record  where Value_Text = ""A"" AND F_System =1  (66)"
+64.1,"IRI: ValueText In (A,B,C,D,E)�where BeginDate <> Year Record and F_Sytem = 1 OR (BeginDate < Year Record -1 on NHS) (64)"
+64.2,"Rutting: ValueText In (A,B,C,D,E)�where BeginDate <> Year Record and F_Sytem = 1 OR (BeginDate < Year Record -1 on NHS) (64)"
+64.3,"Faulting: ValueText In (A,B,C,D,E)�where BeginDate <> Year Record and F_Sytem = 1 OR (BeginDate < Year Record -1 on NHS) (64)"
+64.4,"Cracking_Percent: ValueText In (A,B,C,D,E)�where BeginDate <> Year Record and F_Sytem = 1 OR (BeginDate < Year Record -1 on NHS) (64)"
+65,"PSR: BeginDate >= DataYear � 1 where Sample OR F_System >1 and NHS in (1,2,3,4,5,6,7,8,9) (65)"
+66,"PSR: BeginDate = Year Record  where ValueText = ""A"" AND F_System =1  (66)"
 129,IRI: Section Length <= 0.11 Miles (129)
 129,PSR: Section Length <=  0.11 Miles (129)
 129,Rutting: Section Length <=  0.11 Miles (129)

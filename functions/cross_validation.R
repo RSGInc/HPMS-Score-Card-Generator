@@ -198,7 +198,7 @@ cross_validation_2 = function(data){
 
 ###################################################################
 cross_validation_9 = function(data){
-  # Year_Last_Construction	<= Year_Record or NULL
+  # Year_Last_Construction	<= DataYear or NULL
   
   #browser()
   year_last_construction = data[data_item=="YEAR_LAST_CONSTRUCTION",
@@ -794,7 +794,7 @@ cross_validation_45 = function(data){
 ###################################################################
 cross_validation_46 = function(data, variable){
 
-  # Value_Date must >= Year_Record - 1 where (sample | (Value_Text is NULL and F_System > 1 and
+  # BeginDate must >= DataYear - 1 where (sample | (ValueText is NULL and F_System > 1 and
   # NHS in (1,2,3,4,5,6,7,8,9))
 
   # variable %in% c('IRI', 'RUTTING', 'FAULTING', 'CRACKING_PERCENT')
@@ -1197,7 +1197,7 @@ cross_validation_60 = function(data){
 }
 
 ###################################################################
-# Value_Date Must = Year Record  Where Value_Text is Null AND F_System =1 
+# BeginDate Must = Year Record  Where ValueText is Null AND F_System =1 
 cross_validation_61 = function(data, variable){
   # variable %in% c('IRI', 'RUTTING', 'FAULTING', 'CRACKING_PERCENT')
   
@@ -1235,7 +1235,7 @@ cross_validation_61 = function(data, variable){
 cross_validation_62 = function(data){
 
   # Where F_System =1, and IRI is Null, 
-  # PSR Value_Numeric Must be >0 and PSR Value_Text must = A
+  # PSR ValueNumeric Must be >0 and PSR ValueText must = A
 
   psr = data[data_item == "PSR",
                     .(route_id, begin_point, end_point,
@@ -1323,8 +1323,8 @@ cross_validation_63 = function(data){
 ###################################################################
 cross_validation_64 = function(data, variable){
 
-  # Value_Text Must Be In (A,B,C,D,E) Where Value_Date <> Year Record and
-  # F_Sytem = 1 OR if Value_Date < Year Record -1 on NHS
+  # ValueText Must Be In (A,B,C,D,E) Where BeginDate <> Year Record and
+  # F_Sytem = 1 OR if BeginDate < Year Record -1 on NHS
 
   # variable %in% c('IRI', 'RUTTING', 'FAULTING', 'CRACKING_PERCENT')
   # browser()
@@ -1362,7 +1362,7 @@ cross_validation_64 = function(data, variable){
 
 ###################################################################
 cross_validation_65 = function(data){
-    # Value_Date Must Must >= Year_Record - 1 Where Sample OR F_System >1 and 
+    # BeginDate Must Must >= DataYear - 1 Where Sample OR F_System >1 and 
     # NHS in (1,2,3,4,5,6,7,8,9)
 
   comparison = data[data_item == "PSR",
@@ -1399,7 +1399,7 @@ cross_validation_65 = function(data){
 ###################################################################
 cross_validation_66 = function(data){
 
-  # Value_Date Must = Year Record  Where Value_Text is "A" AND F_System =1 
+  # BeginDate Must = Year Record  Where ValueText is "A" AND F_System =1 
 
 
   comparison = data[data_item == "PSR",

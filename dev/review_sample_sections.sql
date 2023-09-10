@@ -9,17 +9,17 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 CREATE TABLE [dbo].[Review_Sample_Sections](
-	[Year_Record] [int] NULL,
-	[State_Code] [int] NULL,
-	[Route_ID] [varchar](255) NULL,
-	[Begin_Point] [float] NULL,
-	[End_Point] [float] NULL,
-	[Section_Length] [float] NULL,
-	[Sample_ID] [varchar](255) NULL,
-	[Expansion_Factor] [float] NULL,
+	[DataYear] [int] NULL,
+	[StateId] [int] NULL,
+	[RouteId] [varchar](255) NULL,
+	[BeginPoint] [float] NULL,
+	[EndPoint] [float] NULL,
+	[SectionLength] [float] NULL,
+	[SampleId] [varchar](255) NULL,
+	[ExpansionFactor] [float] NULL,
 	[Comments] [varchar](255) NULL,
-	[Last_Modified_On] [varchar](255) NULL,
-	[Last_Modified_By] [varchar](255) NULL,
+	[LastModifiedOn] [varchar](255) NULL,
+	[LastModifiedBy] [varchar](255) NULL,
 	[Invalid] [int] NULL,
 	[StateYearKey] [int] NULL
 ) ON [PRIMARY]

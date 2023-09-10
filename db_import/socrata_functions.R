@@ -32,12 +32,12 @@ create_sections_tables = function(
   designation_tbl = readRDS(designation_path)
   
   # FIXME: unequal number of fields
-  # valuedate missing from designations
-  if ( !'valuedate' %in% tolower(names(designation_tbl)) ) {
-    
-    designation_tbl[, valuedate := as.character('NULL') ]
-    
-  }
+  # valuedate missing from designations -- it shouldn't be in there :P!
+  # if ( !'valuedate' %in% tolower(names(designation_tbl)) ) {
+  #   
+  #   designation_tbl[, valuedate := as.character('NULL') ]
+  #   
+  # }
   
   # FIXME
   # can assume the data is okay from here, skip to rbind -----------------------
@@ -357,12 +357,12 @@ copy_rows = function(con, stage_table, prod_table, counts_local){
   }
   
   # Create section_length
-  if ( !'section_length' %in% str_to_lower(new_fields) ){
+  if ( !'sectionlength' %in% str_to_lower(new_fields) ){
     sql = str_glue(
       'alter table {stage_table} ',
-      'add Section_Length as (End_Point - Begin_Point)')
+      'add SectionLength as (EndPoint - BeginPoint)')
     dbExecute(con, sql)
-    new_fields = c(new_fields, 'Section_Length')
+    new_fields = c(new_fields, 'SectionLength')
   }
   
   # setdiff(tolower(new_fields), tolower(old_fields))

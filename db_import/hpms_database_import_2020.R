@@ -120,7 +120,7 @@ if ( update_tt ){
   tt = tbl(con, from=prod_table)
   
   yr_count = tt %>%
-    filter(Year_Record == data_yr) %>%
+    filter(DataYear == data_yr) %>%
     count() %>%
     pull(n)
   

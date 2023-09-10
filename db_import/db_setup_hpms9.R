@@ -20,7 +20,7 @@ sample_tbl = tbl(src = con, 'Review_Sample_Sections')
 section_tbl = tbl(src = con, 'Review_Sections')
 
 # section_tbl %>%
-#   count(Year_Record)
+#   count(DataYear)
 
 # read renames
 rename_tbl = read_csv(file = 'db_import/data_item_rename_8_9.csv')
@@ -39,8 +39,8 @@ for ( i in 1:nrow(rename_tbl) ){
   
   sql = str_glue(
     "update Review_Sections\n",
-    "\tset Data_Item = '{name_9}'\n",
-    "\twhere Year_Record = 2019 and Data_Item = '{name_8}'")
+    "\tset DataItem = '{name_9}'\n",
+    "\twhere DataYear = 2019 and DataItem = '{name_8}'")
   
   nrows = dbExecute(con, sql)
   message('Modified ', nrows, ' rows')
@@ -57,8 +57,8 @@ for ( i in 1:nrow(rename_tbl) ){
   
   sql = str_glue(
     "update Review_Sections\n",
-    "\tset Data_Item = '{to}'\n",
-    "\twhere Year_Record = 2020 and Data_Item = '{from}'")
+    "\tset DataItem = '{to}'\n",
+    "\twhere DataYear = 2020 and DataItem = '{from}'")
   
   sql
   nrows = dbExecute(con, sql)
@@ -73,13 +73,13 @@ i = 6
 # from = 'TOLL_CHARGED'
 
 section_tbl %>%
-  filter(Data_Item == !!from) %>%
-  count(Year_Record, State_Code) %>%
-  count(Year_Record)
+  filter(DataItem == !!from) %>%
+  count(DataYear, StateId) %>%
+  count(DataYear)
   
 section_tbl %>%
-  filter(Data_Item == !!to) %>%
-  count(Year_Record, State_Code) %>%
-  count(Year_Record)
+  filter(DataItem == !!to) %>%
+  count(DataYear, StateId) %>%
+  count(DataYear)
 
 dbDisconnect(con)

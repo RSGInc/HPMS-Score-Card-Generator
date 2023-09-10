@@ -1,6 +1,6 @@
 # fix_IN_route_id.R
 
-# A script to fix the Route_ID field for Indiana.  
+# A script to fix the RouteId field for Indiana.  
 # It was read initially as numeric and converted to scientific notation.
 
 
@@ -31,21 +31,21 @@ prod_tbl = tbl(con, from=prod_name)
 
 prod_tbl
 
-# How many Route_ID are as scientific notation?
+# How many RouteId are as scientific notation?
 state_code = gState_Labels[abbr == 'IN', index]
 fixed = prod_tbl %>% 
-  # filter(State_Code == state_code) %>%
-  filter(Route_ID %like% '%[e][+][0-9]%') %>%
+  # filter(StateId == state_code) %>%
+  filter(RouteId %like% '%[e][+][0-9]%') %>%
   collect() %>%
-  # filter(str_detect(Route_ID, 'e[+][0-9]')) %>%
-  mutate(Route_ID_old = Route_ID,
-         Route_ID = Route_ID_old %>%
+  # filter(str_detect(RouteId, 'e[+][0-9]')) %>%
+  mutate(RouteId_old = RouteId,
+         RouteId = RouteId_old %>%
            as.numeric() %>%
            as.character())  
 
 # Check conversion
 fixed %>%
-  select(Route_ID_old, Route_ID) %>%
+  select(RouteId_old, RouteId) %>%
   distinct() #%>%
   #View()
 
@@ -59,7 +59,7 @@ message('writing to database')
 dbWriteTable(con, stage_name, fixed, overwrite=TRUE)
 
 count_stage = stage_tbl %>%
-  count(Year_Record, State_Code) %>%
+  count(DataYear, StateId) %>%
   collect()
 
 count_stage
@@ -69,11 +69,11 @@ count_stage
 # Verify query returns right number of rows
 
 sql = paste0(
-  "SELECT State_Code, Year_Record, COUNT(*) FROM ",
+  "SELECT StateId, DataYear, COUNT(*) FROM ",
   prod_name,
-  " WHERE State_Code in (", paste(count_stage$State_Code, collapse=', '), ")",
-  " AND year_record in (", paste(count_stage$Year_Record, collapse=', '), ")",
-  " AND Route_ID like '%[e][+][0-9]%'",
+  " WHERE StateId in (", paste(count_stage$StateId, collapse=', '), ")",
+  " AND year_record in (", paste(count_stage$DataYear, collapse=', '), ")",
+  " AND RouteId like '%[e][+][0-9]%'",
   " GROUP BY state_code, year_record")
 
 count_prod = dbGetQuery(con, sql)
@@ -83,9 +83,9 @@ count_stage
 sql = paste0(
   "DELETE FROM ",
   prod_name,
-  " WHERE state_code in (", paste(count_stage$State_Code, collapse=', '), ")",
-  " AND year_record in (", paste(count_stage$Year_Record, collapse=', '), ")",
-  " AND Route_ID like '%[e][+][0-9]%'")
+  " WHERE state_code in (", paste(count_stage$StateId, collapse=', '), ")",
+  " AND year_record in (", paste(count_stage$DataYear, collapse=', '), ")",
+  " AND RouteId like '%[e][+][0-9]%'")
 
 dbExecute(con, sql)
 
@@ -97,7 +97,7 @@ old_fields = dbListFields(con, prod_name)
 new_fields = dbListFields(con, stage_name)
 
 setdiff(tolower(new_fields), tolower(old_fields))
-new_fields = new_fields[new_fields != 'Route_ID_old']
+new_fields = new_fields[new_fields != 'RouteId_old']
 
 sql = paste0(
   'insert into ', prod_name, '(', paste(new_fields, collapse=', '),

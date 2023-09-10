@@ -22,12 +22,12 @@ loadSummaryData <- function(state_code, year){
   st_yr_key = paste0(state_code, str_sub(year, start=3, end=4)) 
   
   query <- str_glue(
-  'SELECT Year_Record, State_Code, Data_Item,
+  'SELECT DataYear, StateId, DataItem,
   Count(*) AS Record_Count,
-  Sum(End_Point - Begin_Point) AS Miles,
-  Count(Distinct Route_ID) AS Route_ID_Count
+  Sum(EndPoint - BeginPoint) AS Miles,
+  Count(Distinct RouteId) AS RouteId_Count
   FROM {sections_table} WHERE StateYearKey={st_yr_key} 
-  GROUP BY Year_Record, State_Code, Data_Item;'
+  GROUP BY DataYear, StateId, DataItem;'
   )
   data <- sqlQuery(con, query)
   data <- cleanUpQuery(data)

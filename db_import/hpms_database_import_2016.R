@@ -34,10 +34,10 @@ header <- read_lines(infile, n_max=1)
 ##                  colClasses='character', fill=FALSE, skipNul=FALSE, nrows=Inf) %>%
 ## as_tibble()
 ## tbl <- tbl %>%
-##   mutate(Begin_Point = as.numeric(Begin_Point),
-##          End_Point = as.numeric(End_Point),
-##          Value_Numeric = as.numeric(Value_Numeric),
-##          Value_Date = parse_date_time(Value_Date, orders='ymdHMS'))
+##   mutate(BeginPoint = as.numeric(BeginPoint),
+##          EndPoint = as.numeric(EndPoint),
+##          ValueNumeric = as.numeric(ValueNumeric),
+##          BeginDate = parse_date_time(BeginDate, orders='ymdHMS'))
 
 tbl <- read_delim(infile, delim='|')
 # View(tbl)
@@ -45,27 +45,27 @@ tail(tbl)
 
 
 # List and range checks
-with(tbl, table(Year_Record, useNA='always'))
-with(tbl, table(State_Code, useNA='always'))
-sort(unique(tbl$Route_ID))
+with(tbl, table(DataYear, useNA='always'))
+with(tbl, table(StateId, useNA='always'))
+sort(unique(tbl$RouteId))
 
-with(tbl, summary(Begin_Point))
-with(tbl, summary(End_Point))
-with(tbl, summary(as.numeric(Section_Length)))
-tbl2 <- mutate(tbl, section_length_o = as.numeric(Section_Length),
-               Section_Length = End_Point - Begin_Point)
+with(tbl, summary(BeginPoint))
+with(tbl, summary(EndPoint))
+with(tbl, summary(as.numeric(SectionLength)))
+tbl2 <- mutate(tbl, section_length_o = as.numeric(SectionLength),
+               SectionLength = EndPoint - BeginPoint)
 
-#qplot(x=section_length_o, y=Section_Length, data=tbl2)
+#qplot(x=section_length_o, y=SectionLength, data=tbl2)
 
 filter(tbl2, is.na(section_length_o)) %>%
-  select(section_length_o, Section_Length, Begin_Point, End_Point)
+  select(section_length_o, SectionLength, BeginPoint, EndPoint)
 
-with(tbl, summary(Value_Numeric))
-with(tbl, summary(Value_Date))
+with(tbl, summary(ValueNumeric))
+with(tbl, summary(BeginDate))
 
 tbl <- tbl %>%
-  select(Year_Record, State_Code, Route_ID, Begin_Point, End_Point, Section_Length,
-         Data_Item, Value_Numeric, Value_Text, Value_Date, StateYearKey)
+  select(DataYear, StateId, RouteId, BeginPoint, EndPoint, SectionLength,
+         DataItem, ValueNumeric, ValueText, BeginDate, StateYearKey)
 
 con <- odbcDriverConnect(connection=local_con)
 tbl_name <- 'Review_Sections'
@@ -107,22 +107,22 @@ tail(sample_id)
 with(tbl, summary(expansion_factor))
 with(tbl, table(invalid))
 
-# var_types <- c(Year_Record='smallint',
-#                State_Code='smallint',
-#                Route_ID='varchar(120)',
-#                Begin_Point='decimal(8,3)',
-#                End_Point='decimal(8,3)',
-#                Section_Length='decimal(8,3)',
-#                Sample_ID='varchar(12)',
-#                Expansion_Factor='decimal(8,3)',
+# var_types <- c(DataYear='smallint',
+#                StateId='smallint',
+#                RouteId='varchar(120)',
+#                BeginPoint='decimal(8,3)',
+#                EndPoint='decimal(8,3)',
+#                SectionLength='decimal(8,3)',
+#                SampleId='varchar(12)',
+#                ExpansionFactor='decimal(8,3)',
 #                Invalid='smallint',
 #                StateYearKey='integer')
   
 # Prepare data to write
 names(tbl) <- names_orig
 tbl <- tbl %>%
-  mutate(Section_Length = End_Point - Begin_Point,
-         StateYearKey = str_c(State_Code, Year_Record %% 100))
+  mutate(SectionLength = EndPoint - BeginPoint,
+         StateYearKey = str_c(StateId, DataYear %% 100))
 
 con <- odbcDriverConnect(connection=local_con)
 sm_tbl_name <- 'Review_Sample_Sections'

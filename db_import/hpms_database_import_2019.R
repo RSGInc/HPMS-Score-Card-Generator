@@ -178,11 +178,11 @@ copy_rows = function(con, prod_table, stage_table){
   
   # Get counts in production table
   counts_prod = prod %>%
-    filter(Year_Record %in% years,
-           State_Code %in% states) %>%
-    count(State_Code, Year_Record) %>%
+    filter(DataYear %in% years,
+           StateId %in% states) %>%
+    count(StateId, DataYear) %>%
     collect() %>%
-    rename(state_code = State_Code, year_record = Year_Record, n_prod = n)
+    rename(state_code = StateId, year_record = DataYear, n_prod = n)
   
   counts_check = merge(counts_local, counts_prod, by = c('state_code', 'year_record'))
   setDT(counts_check)
@@ -331,11 +331,11 @@ dbDisconnect(con)
 # tt = tbl(con, from=stage_table)
 # glimpse(tt)
 # tt %>%
-#   count(State_Code) %>%
+#   count(StateId) %>%
 #   print(n=Inf)
 # 
 # tt %>%
-#   count(Year_Record) %>%
+#   count(DataYear) %>%
 #   print(n=Inf)
 # 
 # # Update production table ---------------------------------------------

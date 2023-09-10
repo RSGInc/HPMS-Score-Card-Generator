@@ -64,8 +64,8 @@ state_code <- 49  # UT
 
 data_item <- 'URBAN_ID'
 
-query <- str_c("select DISTINCT Route_ID from Review_Sections where Year_Record=2016 and State_Code=", state_code,
-               " and Data_Item='", data_item, "';")
+query <- str_c("select DISTINCT RouteId from Review_Sections where DataYear=2016 and StateId=", state_code,
+               " and DataItem='", data_item, "';")
 
 sql <- sqlQuery(con, query, stringsAsFactors=FALSE) %>% as_tibble()
 names(sql) <- tolower(names(sql))
@@ -85,8 +85,8 @@ state_code <- 56 # WY
 
 data_item_ <- 'RUTTING'
 
-query <- str_c("select DISTINCT Route_ID from Review_Sections where Year_Record=2016 and State_Code=", state_code,
-               " and Data_Item='", data_item_, "';")
+query <- str_c("select DISTINCT RouteId from Review_Sections where DataYear=2016 and StateId=", state_code,
+               " and DataItem='", data_item_, "';")
 
 con <- connect_to_db()
 sql <- sqlQuery(con, query, stringsAsFactors=FALSE) %>% as_tibble()
@@ -120,12 +120,12 @@ r[!r %in% sql]
 # names(fhwa) <- tolower(names(fhwa))
 
 # Summarize the database
-# query <- paste('select Year_Record, State_Code, Data_Item,',
+# query <- paste('select DataYear, StateId, DataItem,',
 #                'COUNT(*) as record_count,',
-#                'SUM(Section_Length) as Miles,',
-#                'COUNT(DISTINCT Route_ID) as Route_ID_Count',
+#                'SUM(SectionLength) as Miles,',
+#                'COUNT(DISTINCT RouteId) as RouteId_Count',
 #                'from Review_Sections',
-#                'group by Year_Record, State_Code, Data_Item')
+#                'group by DataYear, StateId, DataItem')
 # 
 # db <- sqlQuery(con, query, stringsAsFactors=FALSE) %>% as_tibble()
 # names(db) <- tolower(names(db))

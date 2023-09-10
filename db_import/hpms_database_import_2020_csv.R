@@ -257,7 +257,7 @@ copy_rows = function(con, prod_table, stage_table){
   counts_prod = prod %>%
     filter(year_record %in% years,
            state_code %in% states) %>%
-    count(State_Code, Year_Record) %>%
+    count(StateId, DataYear) %>%
     collect() %>%
     rename(n_prod = n)
   
@@ -410,8 +410,8 @@ dbDisconnect(con)
 # tbl = fread('data/2020 Submission Times.csv')
 # str(tbl)
 # 
-# tbl[, Year_Record := as.integer(Year_Record)]
-# tbl[, State_Code := as.integer(State_Code)]
+# tbl[, DataYear := as.integer(DataYear)]
+# tbl[, StateId := as.integer(StateId)]
 # tbl[, Submitted_On := mdy_hm(Submitted_On)]
 # 
 # stage_table = 'tt_stage'
@@ -421,11 +421,11 @@ dbDisconnect(con)
 # tt = tbl(con, from=stage_table)
 # glimpse(tt)
 # tt %>%
-#   count(State_Code) %>%
+#   count(StateId) %>%
 #   print()
 # 
 # tt %>%
-#   count(Year_Record) %>%
+#   count(DataYear) %>%
 #   print(n)
 # 
 # 

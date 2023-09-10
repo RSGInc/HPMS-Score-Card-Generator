@@ -30,11 +30,11 @@ rs
 data_item = 'BASE_TYPE'
 
 rs_dt = rs %>%
-  filter(Year_Record == year, State_Code == state_code) %>%
+  filter(DataYear == year, StateId == state_code) %>%
   collect() %>%
   data.table()
 
-rs_dt[Data_Item == data_item, .N]
+rs_dt[DataItem == data_item, .N]
 
 
 
