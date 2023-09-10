@@ -52,7 +52,7 @@ if ( choice == 1 ){
                  DataItem='varchar(25)',
                  ValueNumeric='decimal(10,3)',
                  ValueText='varchar(50)',
-                 BeginDate='datetime',
+                 ValueDate='datetime',
                  StateYearKey='integer')
   
   
@@ -146,7 +146,7 @@ if ( choice == 1 ){
   df$ValueNumeric[is.na(as.numeric(df$ValueNumeric)) & !is.na(df$ValueNumeric) &
                      df$ValueNumeric != '']
   range(df$ValueText, na.rm=TRUE)
-  range(df$BeginDate, na.rm=TRUE)
+  range(df$ValueDate, na.rm=TRUE)
 
   # Prepare to write to the database
 
@@ -179,7 +179,7 @@ if ( choice == 1 ){
 
   dt[ValueNumeric == '', ValueNumeric := NA]
   dt[ValueText == '', ValueText := NA]
-  dt[BeginDate == '', BeginDate := NA]
+  dt[ValueDate == '', ValueDate := NA]
 
   tablename <- 'Review_Sections_2014'
   var_types <- c(DataYear='smallint',
@@ -191,7 +191,7 @@ if ( choice == 1 ){
                  DataItem='varchar(25)',
                  ValueNumeric='decimal(10,3)',
                  ValueText='varchar(50)',
-                 BeginDate='datetime',
+                 ValueDate='datetime',
                  StateYearKey='integer')
 
   con <- odbcDriverConnect(connection=local_con)

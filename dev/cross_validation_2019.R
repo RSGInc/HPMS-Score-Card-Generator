@@ -921,30 +921,30 @@ cross_validation_23 = function(data){
 ###################################################################
 
 cross_validation_46 = function(data){
-  # BeginDate Must Must >= DataYear - 1 Where Sample OR ValueText is Null AND F_System >1 and NHS in (1,2,3,4,5,6,7,8,9)
+  # ValueDate Must Must >= DataYear - 1 Where Sample OR ValueText is Null AND F_System >1 and NHS in (1,2,3,4,5,6,7,8,9)
 }
 
 ###################################################################
 
 cross_validation_61 = function(data){
-  # BeginDate Must = Year Record  Where ValueText is Null AND F_System =1 
+  # ValueDate Must = Year Record  Where ValueText is Null AND F_System =1 
 }
 
 ###################################################################
 
 cross_validation_64 = function(data){
-  # ValueText Must Be In (A,B,C,D,E) Where BeginDate <> Year Record and F_Sytem = 1 OR if BeginDate < Year Record -1 on NHS
+  # ValueText Must Be In (A,B,C,D,E) Where ValueDate <> Year Record and F_Sytem = 1 OR if ValueDate < Year Record -1 on NHS
 }
 
 ###################################################################
 
 cross_validation_65 = function(data){
-  # BeginDate Must Must >= DataYear - 1 Where Sample OR F_System >1 and NHS in (1,2,3,4,5,6,7,8,9)
+  # ValueDate Must Must >= DataYear - 1 Where Sample OR F_System >1 and NHS in (1,2,3,4,5,6,7,8,9)
 }
 
 ###################################################################
 cross_validation_66 = function(data){
-  # BeginDate Must = Year Record  Where ValueText is "A" AND F_System =1 
+  # ValueDate Must = Year Record  Where ValueText is "A" AND F_System =1 
 
 }
 
@@ -1137,7 +1137,7 @@ cross_validation_9 = function(data){
   # Year_Last_Construction	<= DataYear or NULL
   
   #browser()
-  year_last_construction = data[DataItem=="YEAR_LAST_CONSTRUCTION", .(RouteId,BeginPoint,EndPoint,YEAR_LAST_CONSTRUCTION=BeginDate,DataYear)]
+  year_last_construction = data[DataItem=="YEAR_LAST_CONSTRUCTION", .(RouteId,BeginPoint,EndPoint,YEAR_LAST_CONSTRUCTION=ValueDate,DataYear)]
 
   if(nrow(year_last_construction)==0){
     warning("Not applicable - Sufficient data from the state are not available")

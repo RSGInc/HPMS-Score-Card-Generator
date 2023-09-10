@@ -18,7 +18,7 @@ CREATE TABLE [dbo].[Review_Sections](
 	[SectionLength] [float] NULL,
 	[ValueNumeric] [float] NULL,
 	[ValueText] [varchar](255) NULL,
-	[BeginDate] [datetime] NULL,
+	[ValueDate] [datetime] NULL,
 	[StateYearKey] [int] NULL
 ) ON [PRIMARY]
 GO

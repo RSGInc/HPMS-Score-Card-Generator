@@ -1102,7 +1102,7 @@ cross_validation_51 = function(data){
 cross_validation_9 = function(data){
   
   #browser()
-  year_last_construction = data[DataItem=="YEAR_LAST_CONSTRUCTION", .(RouteId,BeginPoint,EndPoint,YEAR_LAST_CONSTRUCTION=BeginDate,DataYear)]
+  year_last_construction = data[DataItem=="YEAR_LAST_CONSTRUCTION", .(RouteId,BeginPoint,EndPoint,YEAR_LAST_CONSTRUCTION=ValueDate,DataYear)]
 
   if(nrow(year_last_construction)==0){
     warning("Not applicable - Sufficient data from the state are not available")

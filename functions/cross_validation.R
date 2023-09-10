@@ -794,7 +794,7 @@ cross_validation_45 = function(data){
 ###################################################################
 cross_validation_46 = function(data, variable){
 
-  # BeginDate must >= DataYear - 1 where (sample | (ValueText is NULL and F_System > 1 and
+  # ValueDate must >= DataYear - 1 where (sample | (ValueText is NULL and F_System > 1 and
   # NHS in (1,2,3,4,5,6,7,8,9))
 
   # variable %in% c('IRI', 'RUTTING', 'FAULTING', 'CRACKING_PERCENT')
@@ -1197,7 +1197,7 @@ cross_validation_60 = function(data){
 }
 
 ###################################################################
-# BeginDate Must = Year Record  Where ValueText is Null AND F_System =1 
+# ValueDate Must = Year Record  Where ValueText is Null AND F_System =1 
 cross_validation_61 = function(data, variable){
   # variable %in% c('IRI', 'RUTTING', 'FAULTING', 'CRACKING_PERCENT')
   
@@ -1323,8 +1323,8 @@ cross_validation_63 = function(data){
 ###################################################################
 cross_validation_64 = function(data, variable){
 
-  # ValueText Must Be In (A,B,C,D,E) Where BeginDate <> Year Record and
-  # F_Sytem = 1 OR if BeginDate < Year Record -1 on NHS
+  # ValueText Must Be In (A,B,C,D,E) Where ValueDate <> Year Record and
+  # F_Sytem = 1 OR if ValueDate < Year Record -1 on NHS
 
   # variable %in% c('IRI', 'RUTTING', 'FAULTING', 'CRACKING_PERCENT')
   # browser()
@@ -1362,7 +1362,7 @@ cross_validation_64 = function(data, variable){
 
 ###################################################################
 cross_validation_65 = function(data){
-    # BeginDate Must Must >= DataYear - 1 Where Sample OR F_System >1 and 
+    # ValueDate Must Must >= DataYear - 1 Where Sample OR F_System >1 and 
     # NHS in (1,2,3,4,5,6,7,8,9)
 
   comparison = data[data_item == "PSR",
@@ -1399,7 +1399,7 @@ cross_validation_65 = function(data){
 ###################################################################
 cross_validation_66 = function(data){
 
-  # BeginDate Must = Year Record  Where ValueText is "A" AND F_System =1 
+  # ValueDate Must = Year Record  Where ValueText is "A" AND F_System =1 
 
 
   comparison = data[data_item == "PSR",

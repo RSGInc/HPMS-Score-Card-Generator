@@ -37,7 +37,7 @@ header <- read_lines(infile, n_max=1)
 ##   mutate(BeginPoint = as.numeric(BeginPoint),
 ##          EndPoint = as.numeric(EndPoint),
 ##          ValueNumeric = as.numeric(ValueNumeric),
-##          BeginDate = parse_date_time(BeginDate, orders='ymdHMS'))
+##          ValueDate = parse_date_time(ValueDate, orders='ymdHMS'))
 
 tbl <- read_delim(infile, delim='|')
 # View(tbl)
@@ -61,11 +61,11 @@ filter(tbl2, is.na(section_length_o)) %>%
   select(section_length_o, SectionLength, BeginPoint, EndPoint)
 
 with(tbl, summary(ValueNumeric))
-with(tbl, summary(BeginDate))
+with(tbl, summary(ValueDate))
 
 tbl <- tbl %>%
   select(DataYear, StateId, RouteId, BeginPoint, EndPoint, SectionLength,
-         DataItem, ValueNumeric, ValueText, BeginDate, StateYearKey)
+         DataItem, ValueNumeric, ValueText, ValueDate, StateYearKey)
 
 con <- odbcDriverConnect(connection=local_con)
 tbl_name <- 'Review_Sections'

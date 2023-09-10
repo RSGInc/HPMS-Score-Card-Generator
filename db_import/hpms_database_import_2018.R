@@ -88,7 +88,7 @@ col_types = cols(
   SectionLength = col_double(),
   ValueNumeric = col_double(),
   ValueText = col_character(),
-  BeginDate = col_datetime(format='%m/%d/%Y %H:%M:%S %p'),
+  ValueDate = col_datetime(format='%m/%d/%Y %H:%M:%S %p'),
   # Comments = col_character(),
   # LastModifiedBy = col_skip(),
   # LastModifiedOn = col_skip(),
