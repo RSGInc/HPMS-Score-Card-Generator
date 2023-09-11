@@ -32,12 +32,12 @@ create_sections_tables = function(
   designation_tbl = readRDS(designation_path)
   
   # FIXME: unequal number of fields
-  # valuedate missing from designations -- it shouldn't be in there :P!
-  # if ( !'valuedate' %in% tolower(names(designation_tbl)) ) {
-  #   
-  #   designation_tbl[, valuedate := as.character('NULL') ]
-  #   
-  # }
+  # valuedate missing from designations 
+  if ( !'valuedate' %in% tolower(names(designation_tbl)) ) {
+
+    designation_tbl[, valuedate := as.character('NULL') ]
+
+  }
   
   # FIXME
   # can assume the data is okay from here, skip to rbind -----------------------
@@ -185,12 +185,12 @@ write_to_stage = function(cache_path, con, stage_table, chunk_size=100000){
   
   message('Updating data types')
   
-  if ( class(dt$value_date)[1] == 'character' ){
-    if ( str_length(dt[!is.na(value_date), value_date][1]) > 10 ){
-      dt[, value_date := ymd_hms(value_date)]
+  if ( class(dt$valuedate)[1] == 'character' ){
+    if ( str_length(dt[!is.na(valuedate), valuedate][1]) > 10 ){
+      dt[, valuedate := ymd_hms(valuedate)]
     } else {
-      coltype_chk_dt[field == 'value_date', chk := 'Date']
-      dt[, value_date := ymd(value_date)]
+      coltype_chk_dt[field == 'valuedate', chk := 'Date']
+      dt[, valuedate := ymd(valuedate)]
     }
   }
   
@@ -393,11 +393,11 @@ copy_rows = function(con, stage_table, prod_table, counts_local){
   # Get counts in production table
   prod = tbl(con, from = prod_table)
   counts_prod = prod %>%
-    filter(datayear %in% years,
-           stateid %in% states) %>%
-    count(stateid, datayear) %>%
+    filter(DataYear %in% years,
+           StateId %in% states) %>%
+    count(StateId, DataYear) %>%
     collect() %>%
-    rename(stateid = stateid, datayear = datayear, n_prod = n)
+    rename(stateid = StateId, datayear = DataYear, n_prod = n)
   
   counts_check = merge(counts_stage, counts_prod, by = c('stateid', 'datayear'))
   setDT(counts_check)
