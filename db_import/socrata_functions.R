@@ -35,7 +35,7 @@ create_sections_tables = function(
   # valuedate missing from designations 
   if ( !'valuedate' %in% tolower(names(designation_tbl)) ) {
 
-    designation_tbl[, valuedate := as.character('NULL') ]
+    designation_tbl[, valuedate := as.character(NA) ]
 
   }
   
@@ -57,6 +57,13 @@ create_sections_tables = function(
   sections_tbl = rbind(events_tbl, designation_tbl)
   #-----------------------------------------------------------------------------
   message('...saving to ', cache_path)
+  
+  # TODO: is this the right place for this?
+  # The data come in with many "NULL" entries, but they are literally interpreted as
+  # a string reading "NULL" instead of NA's
+  
+  # Replace 'NULL' with NA's
+  lapply( names(sections_tbl), function(x) { sections_tbl[get(x) == "NULL", (x) := NA] } )
   
   saveRDS(sections_tbl, cache_path)
 
@@ -188,9 +195,11 @@ write_to_stage = function(cache_path, con, stage_table, chunk_size=100000){
   if ( class(dt$valuedate)[1] == 'character' ){
     if ( str_length(dt[!is.na(valuedate), valuedate][1]) > 10 ){
       dt[, valuedate := ymd_hms(valuedate)]
+      # dt[, valuedate := as.POSIXct(ymd_hms(valuedate))]
     } else {
       coltype_chk_dt[field == 'valuedate', chk := 'Date']
       dt[, valuedate := ymd(valuedate)]
+      # dt[, valuedate := as.POSIXct(ymd(valuedate))]
     }
   }
   
