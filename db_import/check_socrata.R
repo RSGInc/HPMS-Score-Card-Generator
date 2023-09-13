@@ -44,12 +44,12 @@ urls = c(
 
 # State Labels & Codes
 gState_Labels <- fread('resources/dat/state_labels.csv')
-state_code = gState_Labels[abbr == this_abbrev, index]
+stateid = gState_Labels[abbr == this_abbrev, index]
 
 # Sample Sections
 rss = read.socrata(url=urls['rss'], email=email, password=password)
 setDT(rss)
-rss = rss[state_code == state_code & datayear == year]
+rss = rss[stateid == stateid & datayear == year]
 rss[, .N]
 
 # Load Review Sections
@@ -57,7 +57,7 @@ rss[, .N]
 which_url = 'mid_atlantic'
 
 message('Downloading ', which_url)
-dt = read.socrata(url=paste0(urls[which_url], '?state_code=', state_code), email=email, password=password)
+dt = read.socrata(url=paste0(urls[which_url], '?stateid=', stateid), email=email, password=password)
 setDT(dt)
 
 if ( which_url == 'mid_atlantic' ){

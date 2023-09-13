@@ -23,7 +23,7 @@ csv_to_stage = function(file, con, stage_table){
   # For checking column types
   col_type_chk = c(
     datayear = 'integer',
-    state_code = 'integer',
+    stateid = 'integer',
     route_id = 'character',
     begin_point = 'numeric',
     end_point = 'numeric',
@@ -39,7 +39,7 @@ csv_to_stage = function(file, con, stage_table){
   dt = fread(file)
   names(dt) = str_to_lower(names(dt))
   
-  counts_remote = dt[, .(n_remote = .N), keyby=.(state_code, datayear)]
+  counts_remote = dt[, .(n_remote = .N), keyby=.(stateid, datayear)]
   
   # Compare datatypes ------------
   
@@ -75,7 +75,7 @@ csv_to_stage = function(file, con, stage_table){
   
   message('writing to database')
   
-  states = unique(dt[, state_code])
+  states = unique(dt[, stateid])
   years = unique(dt[, datayear])
   
   message('States = ', paste(states, collapse=', '))
@@ -84,7 +84,7 @@ csv_to_stage = function(file, con, stage_table){
   if (stage_table %in% dbListTables(conn = con) ){
     sql = paste0(
       'DELETE FROM ', stage_table,
-      ' WHERE state_code in (', paste(states, collapse=', '), ')',
+      ' WHERE stateid in (', paste(states, collapse=', '), ')',
       ' AND datayear in (', paste(years, collapse=', '), ')')
     dbExecute(con, sql)
   }
@@ -101,12 +101,12 @@ csv_to_stage = function(file, con, stage_table){
   # Check that we have the right number of rows for each state.
   
   counts_local = dt_stage %>%
-    count(state_code, datayear) %>%
+    count(stateid, datayear) %>%
     collect() %>%
     rename(n_local = n)
   
   counts_check = merge(counts_remote, counts_local,
-                       by = c('state_code', 'datayear'), all=TRUE)
+                       by = c('stateid', 'datayear'), all=TRUE)
   setDT(counts_check)
   stopifnot(counts_check[n_local != n_remote, .N] == 0)
   
@@ -119,7 +119,7 @@ socrata_to_stage = function(url, con, stage_table){
   # For checking column types
   col_type_chk = c(
     datayear = 'integer',
-    state_code = 'integer',
+    stateid = 'integer',
     route_id = 'character',
     begin_point = 'numeric',
     end_point = 'numeric',
@@ -135,12 +135,12 @@ socrata_to_stage = function(url, con, stage_table){
   
   query = paste0(
     url,
-    '?$query=SELECT state_code,datayear,count(state_code) ',
-    'GROUP BY state_code, datayear ',
-    'ORDER BY state_code, datayear')
+    '?$query=SELECT stateid,datayear,count(stateid) ',
+    'GROUP BY stateid, datayear ',
+    'ORDER BY stateid, datayear')
   
   counts_remote = read.socrata2(query, email=email, password=password)
-  setnames(counts_remote, 'count_state_code', 'n_remote')
+  setnames(counts_remote, 'count_stateid', 'n_remote')
   
   # if (!str_detect(url, 'json$|csv$')){
   #   url = str_c(url, '.json')
@@ -173,13 +173,13 @@ socrata_to_stage = function(url, con, stage_table){
     
   message('writing to database')
   
-  states = unique(dt[, 'state_code'])
+  states = unique(dt[, 'stateid'])
   years = unique(dt[, 'datayear'])
   
   if (stage_table %in% dbListTables(conn = con) ){
     sql = paste0(
       'DELETE FROM ', stage_table,
-      ' WHERE state_code in (', paste(states, collapse=', '), ')',
+      ' WHERE stateid in (', paste(states, collapse=', '), ')',
       ' AND datayear in (', paste(years, collapse=', '), ')')
     dbExecute(con, sql)
   }
@@ -196,12 +196,12 @@ socrata_to_stage = function(url, con, stage_table){
   # Check that we have the right number of rows for each state.
   
   counts_local = dt_stage %>%
-    count(state_code, datayear) %>%
+    count(stateid, datayear) %>%
     collect() %>%
     rename(n_local = n)
   
   counts_check = merge(counts_remote, counts_local,
-                       by = c('state_code', 'datayear'), all=TRUE)
+                       by = c('stateid', 'datayear'), all=TRUE)
   setDT(counts_check)
   stopifnot(counts_check[n_local != n_remote, .N] == 0)
   
@@ -215,10 +215,10 @@ copy_rows = function(con, prod_table, stage_table){
   stage = tbl(con, from=stage_table)
   
   counts_stage = stage %>%
-    count(datayear, state_code)
+    count(datayear, stateid)
   
   years = unique(counts_stage$datayear)
-  states = unique(countes_stage$state_code)
+  states = unique(countes_stage$stateid)
   
   old_fields = dbListFields(con, prod_table)
   new_fields = dbListFields(con, stage_table)
@@ -226,7 +226,7 @@ copy_rows = function(con, prod_table, stage_table){
   # Create StateYearKey
   if ( !'StateYearKey' %in% new_fields ){
     sql = paste0('alter table ', stage_table,
-                 ' add StateYearKey as (state_code * 100 + datayear % 1000)')
+                 ' add StateYearKey as (stateid * 100 + datayear % 1000)')
     dbExecute(con, sql)
     new_fields = c(new_fields, 'StateYearKey')
   }
@@ -243,7 +243,7 @@ copy_rows = function(con, prod_table, stage_table){
   
   sql = paste0(
     'DELETE FROM ', prod_table,
-    ' WHERE state_code in (', paste(states, collapse=', '), ')',
+    ' WHERE stateid in (', paste(states, collapse=', '), ')',
     ' AND datayear in (', paste(years, collapse=', '), ')')
   dbExecute(con, sql)
   
@@ -256,21 +256,21 @@ copy_rows = function(con, prod_table, stage_table){
   # Get counts in production table
   counts_prod = prod %>%
     filter(datayear %in% years,
-           state_code %in% states) %>%
+           stateid %in% states) %>%
     count(StateId, DataYear) %>%
     collect() %>%
     rename(n_prod = n)
   
   names(counts_prod) = str_to_lower(names(counts_prod))
   
-  counts_check = merge(counts_local, counts_prod, by = c('state_code', 'datayear'))
+  counts_check = merge(counts_local, counts_prod, by = c('stateid', 'datayear'))
   setDT(counts_check)
   
   stopifnot(counts_check[n_local != n_prod, .N] == 0)
   
   sql = paste0(
     'DELETE FROM ', stage_table,
-    ' WHERE state_code in (', paste(states, collapse=', '), ')',
+    ' WHERE stateid in (', paste(states, collapse=', '), ')',
     ' AND datayear in (', paste(years, collapse=', '), ')')
   dbExecute(con, sql)
   

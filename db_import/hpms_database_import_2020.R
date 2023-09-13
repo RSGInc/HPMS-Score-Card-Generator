@@ -95,7 +95,7 @@ if ( update_tt ){
   str(tbl)
   
   tbl[, datayear := as.integer(datayear)]
-  tbl[, state_code := as.integer(state_code)]
+  tbl[, stateid := as.integer(stateid)]
   tbl[, submitted_on := mdy_hm(submitted_on)]
   
   dbWriteTable(con, name=stage_table, value=tbl, overwrite=TRUE)
@@ -104,7 +104,7 @@ if ( update_tt ){
   tt = tbl(con, from=stage_table)
   glimpse(tt)
   tt %>%
-    count(state_code) %>%
+    count(stateid) %>%
     print(n=52)
   
   tt %>%

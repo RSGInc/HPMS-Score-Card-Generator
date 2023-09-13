@@ -90,7 +90,7 @@ Run <- function(task=NA, ...) {
         whitespace(gSpaces)
         
         create_pdf(data = data.list[["dat"]],
-                   state = data.list[["state_code"]],
+                   state = data.list[["stateid"]],
                    year = data.list[["year_selection"]],
                    year_compare = data.list[["year_compare"]],
                    # population = population,
@@ -129,7 +129,7 @@ Run <- function(task=NA, ...) {
         data.list = getStateDataSets(getStateCode(state),year,as.character(as.numeric(year)-1))
         
         tryCatch(expr = {suppressWarnings(create_pdf(data = data.list[["dat"]],
-                                                     state = data.list[["state_code"]],
+                                                     state = data.list[["stateid"]],
                                                      year = data.list[["year_selection"]],
                                                      year_compare = data.list[["year_compare"]],
                                                      #population = population,
@@ -180,7 +180,7 @@ getStateDataSets <- function(state_selection, year_selection, year_compare) {
     
     # Get states for which there is data available
     states <- getSavedStates()
-    state_codes <- getStateCode(states)
+    stateids <- getStateCode(states)
     
     whitespace(gSpaces)
     
@@ -189,11 +189,11 @@ getStateDataSets <- function(state_selection, year_selection, year_compare) {
     
     # Print the options to the user
     cat("State Data Sets Available:\n\n")
-    cat(paste0("(", state_codes, ") ", states, collapse = "\n"))
+    cat(paste0("(", stateids, ") ", states, collapse = "\n"))
     cat("\n\n")
     
     # Get the user's state selection
-    state_selection <- getUserInput(valid = c(state_codes, tolower(state_codes)), prompt = "For which state in the above list would you like to generate a score card?\nEnter the associated state code (e.g., NY for New York): ")
+    state_selection <- getUserInput(valid = c(stateids, tolower(stateids)), prompt = "For which state in the above list would you like to generate a score card?\nEnter the associated state code (e.g., NY for New York): ")
     state_selection <- toupper(state_selection)
   }
 
@@ -267,12 +267,12 @@ getStateDataSets <- function(state_selection, year_selection, year_compare) {
   dat.prev <- do.call(rbind, dat.prev)
   dat <- rbind(dat, dat.prev, fill = TRUE)
   
-  setkeyv(dat, c("state_code","datayear","route_id","data_item","begin_point","end_point"))
+  setkeyv(dat, c("stateid","datayear","route_id","data_item","begin_point","end_point"))
   
   return(list(dat = dat,
               year_selection = as.numeric(year_selection),
               year_compare = as.numeric(year_compare),
-              state_code = getStateNumFromCode(state_selection)))
+              stateid = getStateNumFromCode(state_selection)))
   
 }
 

@@ -25,14 +25,14 @@ showAvailableStatesYears <- function(){
   cat('Determining available states and years...\n')
   
   # FHWA
-  #data1 <- data.table(sqlQuery(con,paste0("select distinct state_code, datayear from sections2015 order by state_code,datayear")))
-  #data2 <- data.table(sqlQuery(con,paste0("select distinct state_code, datayear from sections2014 order by state_code,datayear")))
-  #data3 <- data.table(sqlQuery(con,paste0("select distinct state_code, datayear from sections2013 order by state_code,datayear")))
+  #data1 <- data.table(sqlQuery(con,paste0("select distinct stateid, datayear from sections2015 order by stateid,datayear")))
+  #data2 <- data.table(sqlQuery(con,paste0("select distinct stateid, datayear from sections2014 order by stateid,datayear")))
+  #data3 <- data.table(sqlQuery(con,paste0("select distinct stateid, datayear from sections2013 order by stateid,datayear")))
   
   #data <- rbind(data1,data2)#,data3)
 
-  query <- paste("select distinct state_code, datayear from", sections_table,
-                 "order by state_code, datayear")
+  query <- paste("select distinct stateid, datayear from", sections_table,
+                 "order by stateid, datayear")
   
   data <- data.table(sqlQuery(con, query))
   
@@ -40,11 +40,11 @@ showAvailableStatesYears <- function(){
   
   cat("Data available for import include:\n")
   
-  for(state in unique(data[,state_code])){
+  for(state in unique(data[,stateid])){
     
     cat(paste0(getStateAbbrFromNum(state),": "))
     
-    for(year in data[state_code==state,unique(datayear)]){
+    for(year in data[stateid==state,unique(datayear)]){
       
       cat(paste0(year," "))  
       
@@ -69,7 +69,7 @@ askStates <- function(data){
     
     for(st in strsplit(state,",")[[1]]){
       
-      if(!(st %in% c("ALL",sapply(unique(data[,state_code]),getStateAbbrFromNum)))){
+      if(!(st %in% c("ALL",sapply(unique(data[,stateid]),getStateAbbrFromNum)))){
         invalidresponse = TRUE
       }
     }
@@ -81,7 +81,7 @@ askStates <- function(data){
   }
   
   if(state=="ALL")  {
-    codes <- unique(data[,state_code])
+    codes <- unique(data[,stateid])
     states <- c()
     
     for(code in codes){
@@ -163,7 +163,7 @@ ImportData <- function(state_selection, year_selection) {
       # Create filename to save to
 
       state_name <- getStateLabel(state)
-      state_code <- getStateNumFromCode(state)
+      stateid <- getStateNumFromCode(state)
       
       path <- file.path("data", state_name)
       file <- paste0(year, ".rds")
@@ -217,7 +217,7 @@ ImportData <- function(state_selection, year_selection) {
  
         cat("Checking imported data ...")
         
-        passedChecks <- CheckImport(year=year, state_code=state_code, dat=data)
+        passedChecks <- CheckImport(year=year, stateid=stateid, dat=data)
         
         if ( !passedChecks ){
           warning(state, '(', year, ') failed check.  Not imported.\n')
@@ -331,17 +331,17 @@ ReadData <- function(state, year) {
 SegmentDataSet <- function(dat) {
   
   dat.list <- list()
-  datasets <- unique(dat[, .(datayear, state_code)])
+  datasets <- unique(dat[, .(datayear, stateid)])
   
   cc <- 1
   
   for (i in 1:datasets[, .N]) {
     
     year <- datasets[i, datayear]
-    state <- datasets[i, state_code]
+    state <- datasets[i, stateid]
     dat.list[[cc]] <- list("year" = year,
                            "state" = state,
-                           "data" = dat[datayear == year & state_code == state])
+                           "data" = dat[datayear == year & stateid == state])
     
     cc <- cc + 1
     
@@ -358,7 +358,7 @@ transposeItem <- function(dfname, data_item){
                'from [', dfname, '] A ',
                'left join [', dfname, '] B on A.route_id = B.route_id and ',
                'A.datayear = B.datayear and ',
-               'A.state_code = B.state_code and ',
+               'A.stateid = B.stateid and ',
                'A.begin_point <= B.end_point and ',
                'A.begin_point >= B.begin_point and ',
                'A.end_point <= B.end_point and ',
@@ -464,7 +464,7 @@ FormatDataSet <- function(dat, state_abbr, year) {
     sp[,num_sections:=NULL]
     sp[,section_length:=NULL]
     sp[,stateyearkey:=NULL]
-    sp[,state_code:=NULL]
+    sp[,stateid:=NULL]
     
     data_noFT6[, route_id := as.character(route_id)]
     sp[, route_id := as.character(route_id)]
@@ -579,7 +579,7 @@ FormatDataSet <- function(dat, state_abbr, year) {
   
   data_exp[, (drop_cols) := NULL]
   
-  setkeyv(data_exp, c("state_code","datayear","route_id","data_item","begin_point","end_point"))
+  setkeyv(data_exp, c("stateid","datayear","route_id","data_item","begin_point","end_point"))
 
   if ( nrow(data_exp) == 0 & debugmode ){browser()}
   return(data_exp)

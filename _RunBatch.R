@@ -80,22 +80,22 @@ cat('Checking availability of states for', year_selection, '\n')
 con <- connect_to_db()
 
 query <- paste(
-  "select distinct state_code, datayear from", 
+  "select distinct stateid, datayear from", 
   sections_table,
-  "order by state_code, datayear"
+  "order by stateid, datayear"
 )
 
 st_yr_table <- data.table(sqlQuery(con, query))
 
 odbcClose(con)
 
-avail_states <- st_yr_table[datayear == year_selection]$state_code
+avail_states <- st_yr_table[datayear == year_selection]$stateid
 
 if ( length(states) == 1 && str_detect(tolower(states), 'all')){
   
   if ( length(avail_states) == 0 ) warning('No states available for ', year_selection, '\n')
-  state_codes <- avail_states
-  state_abbrev <- getStateAbbrFromNum(state_codes)
+  stateids <- avail_states
+  state_abbrev <- getStateAbbrFromNum(stateids)
   
 } else {
   
@@ -111,17 +111,17 @@ if ( length(states) == 1 && str_detect(tolower(states), 'all')){
   
   # Check to make sure all states are available
   
-  state_codes <- getStateNumFromCode(state_abbrev)
+  stateids <- getStateNumFromCode(state_abbrev)
   
-  which_na <- state_codes[!state_codes %in% avail_states] %>% getStateAbbrFromNum()
+  which_na <- stateids[!stateids %in% avail_states] %>% getStateAbbrFromNum()
   
   if ( length(which_na) > 0 ){
     warning('States not available in the database: ', paste(which_na, collapse=', '), '\n',
             call. = FALSE, immediate. = FALSE)
   }
   
-  state_codes <- state_codes[state_codes %in% avail_states]
-  state_abbrev <- getStateAbbrFromNum(state_codes)
+  stateids <- stateids[stateids %in% avail_states]
+  state_abbrev <- getStateAbbrFromNum(stateids)
 }
 
 message('Running states:', state_abbrev, '\n\n')
@@ -166,7 +166,7 @@ for(state in state_abbrev){
 
       create_pdf(
         data = data.list[["dat"]],
-        state = data.list[["state_code"]],
+        state = data.list[["stateid"]],
         year = data.list[["year_selection"]],
         year_compare = data.list[["year_compare"]],
         # population = population,

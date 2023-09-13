@@ -24,11 +24,11 @@ create_data_summary <- function(data, state, year, year_compare){
   # (total length for Rural Minor Collectors x 2)
   
 
-  n_Records.1   <- data[state_code == state & datayear == year, sum(num_sections), ]        
-  n_Records.2   <- data[state_code == state & datayear == year_compare, sum(num_sections), ]
+  n_Records.1   <- data[stateid == state & datayear == year, sum(num_sections), ]        
+  n_Records.2   <- data[stateid == state & datayear == year_compare, sum(num_sections), ]
 
   # Generate an index to keep only certain rows that meet certain criteria
-  idx_st_fsystem <- with(data, (state_code == state & data_item == 'F_SYSTEM'))
+  idx_st_fsystem <- with(data, (stateid == state & data_item == 'F_SYSTEM'))
   idx_fs15 <- with(data, ((F_SYTEMorig %in% 1:5) & (FACILITY_TYPE %in% 1:2)) )
   idx_fs6 <- with(data, ((F_SYTEMorig == 6) & (URBAN_ID < 99999) & (FACILITY_TYPE %in% c(1, 2))) )
   IDX <- idx_st_fsystem & (idx_fs15 | idx_fs6)
@@ -45,8 +45,8 @@ create_data_summary <- function(data, state, year, year_compare){
                         sum(THROUGH_LANES * (end_point - begin_point), na.rm = TRUE), ]
 
   # Data items
-  n_Variables.1 <- length(data[state_code == state & datayear == year, unique(data_item), ])
-  n_Variables.2 <- length(data[state_code == state & datayear == year_compare, unique(data_item), ])
+  n_Variables.1 <- length(data[stateid == state & datayear == year, unique(data_item), ])
+  n_Variables.2 <- length(data[stateid == state & datayear == year_compare, unique(data_item), ])
   
   # Route ids
   route_id.1 <- unique(data[IDX & datayear == year]$route_id)

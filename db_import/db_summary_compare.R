@@ -8,13 +8,13 @@ library('data.table')
 # Get all the rows and then find unique route ids.
 
 # Attempt to import a data file specified by the user
-ReadData <- function(state_code, year) {
+ReadData <- function(stateid, year) {
   
   cat('Fetching the data from the database...')
   con <- connect_to_db()
   on.exit(odbcClose(con)
   query <- paste0('select * from Review_Sections where StateYearKey = ',
-                  state_code, as.numeric(year) %% 100)
+                  stateid, as.numeric(year) %% 100)
   
   data <- sqlQuery(con, query, stringsAsFactors=FALSE)
   
@@ -59,12 +59,12 @@ cleanUpQuery <- function(data){
 
 con <- connect_to_db()
 
-# state_code <- 34    # NJ
-state_code <- 49  # UT
+# stateid <- 34    # NJ
+stateid <- 49  # UT
 
 data_item <- 'URBAN_ID'
 
-query <- str_c("select DISTINCT RouteId from Review_Sections where DataYear=2016 and StateId=", state_code,
+query <- str_c("select DISTINCT RouteId from Review_Sections where DataYear=2016 and StateId=", stateid,
                " and DataItem='", data_item, "';")
 
 sql <- sqlQuery(con, query, stringsAsFactors=FALSE) %>% as_tibble()
@@ -79,13 +79,13 @@ names(sql) <- tolower(names(sql))
 # Get distinct route_ids for a single state, year, data_item
 
 
-# state_code <- 34    # NJ
-# state_code <- 49  # UT
-state_code <- 56 # WY
+# stateid <- 34    # NJ
+# stateid <- 49  # UT
+stateid <- 56 # WY
 
 data_item_ <- 'RUTTING'
 
-query <- str_c("select DISTINCT RouteId from Review_Sections where DataYear=2016 and StateId=", state_code,
+query <- str_c("select DISTINCT RouteId from Review_Sections where DataYear=2016 and StateId=", stateid,
                " and DataItem='", data_item_, "';")
 
 con <- connect_to_db()
@@ -93,7 +93,7 @@ sql <- sqlQuery(con, query, stringsAsFactors=FALSE) %>% as_tibble()
 names(sql) <- tolower(names(sql))
 odbcClose(con)
 
-r <- ReadData(state_code, 2016) %>% as.data.frame()
+r <- ReadData(stateid, 2016) %>% as.data.frame()
 r <- r %>% 
   filter(data_item == data_item_) %>% 
   select(route_id) %>% 
@@ -143,14 +143,14 @@ r[!r %in% sql]
 #   filter(datayear == 2015) %>%
 #   gather(key='measure', value='from_db', record_count, miles, route_id_count)
 # 
-# by_vars <- c('datayear', 'state_code', 'data_item')
+# by_vars <- c('datayear', 'stateid', 'data_item')
 # 
 # no_db <- anti_join(fhwa1, db1, by=by_vars)
-# count(no_db, state_code)
+# count(no_db, stateid)
 # 
 # no_fhwa <- anti_join(db1, fhwa1, by=by_vars)
 # 
-# diffs <- inner_join(fhwa1, db1, by=c('datayear', 'state_code', 'data_item', 'measure')) %>%
+# diffs <- inner_join(fhwa1, db1, by=c('datayear', 'stateid', 'data_item', 'measure')) %>%
 #   mutate(diff = from_db - fhwa)
 # 
 # count(diffs, diff != 0)

@@ -16,7 +16,7 @@ gState_Labels <- fread('resources/dat/state_labels.csv')
 
 year = 2019
 this_abbrev = 'DC'
-state_code = gState_Labels[abbr == this_abbrev, index]
+stateid = gState_Labels[abbr == this_abbrev, index]
 
 
 con = connect_to_db('burmdlppw01', 'HPMS', intsecurity = TRUE)
@@ -30,7 +30,7 @@ rs
 data_item = 'BASE_TYPE'
 
 rs_dt = rs %>%
-  filter(DataYear == year, StateId == state_code) %>%
+  filter(DataYear == year, StateId == stateid) %>%
   collect() %>%
   data.table()
 

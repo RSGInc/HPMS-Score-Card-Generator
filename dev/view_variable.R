@@ -24,7 +24,7 @@ view_variable = function(data.list, variable = NULL, var.label = NULL){
   
   x1 = which(gVariables[, Name] == variable)
   create_page_summary(data = data.list$dat,
-                      state = data.list$state_code,
+                      state = data.list$stateid,
                       year = data.list$year_selection,
                       year_compare = data.list$year_compare,
                       x1 = x1,

@@ -19,10 +19,10 @@ create_overall_report_byFSYSTEM <- function(
      year_compare
 )
 {
-     numberOfRecords   <- data[state_code==state&datayear==year,.N,by=list(F_SYSTEM)]     
-     numberOfVariables <- data[state_code==state&datayear==year,length(unique(data_item)),by=list(F_SYSTEM)]
-     numberRoutes      <- unique(data[state_code==state&datayear==year,list(route_id,F_SYSTEM)])[,.N,by=list(F_SYSTEM)]
-     numberSegments    <- unique(data[state_code==state&datayear==year,list(route_id,begin_point,end_point,F_SYSTEM),])[,.N,by=list(F_SYSTEM)]
+     numberOfRecords   <- data[stateid==state&datayear==year,.N,by=list(F_SYSTEM)]     
+     numberOfVariables <- data[stateid==state&datayear==year,length(unique(data_item)),by=list(F_SYSTEM)]
+     numberRoutes      <- unique(data[stateid==state&datayear==year,list(route_id,F_SYSTEM)])[,.N,by=list(F_SYSTEM)]
+     numberSegments    <- unique(data[stateid==state&datayear==year,list(route_id,begin_point,end_point,F_SYSTEM),])[,.N,by=list(F_SYSTEM)]
      
      result <- merge(numberOfRecords,numberOfVariables,by=c("F_SYSTEM"))
      result[,N:=string_format(N)]

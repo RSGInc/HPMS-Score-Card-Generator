@@ -16,7 +16,7 @@ create_pavement_summary <- function(data, state, year){
   #browser()
   
   # Subset the data
-  dt <- data[state_code == state & 
+  dt <- data[stateid == state & 
              datayear == year &
              data_item %in% c('THROUGH_LANES', 'SURFACE_TYPE'),]
   

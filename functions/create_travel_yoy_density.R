@@ -55,11 +55,11 @@ create_travel_yoy_density <- function(
                 'F_SYSTEM', 'Interstate', 'NHS', 'num_sections')
   
   # get common indices to increase readability
-  idx_var1 <- data[, state_code == state &
+  idx_var1 <- data[, stateid == state &
                      datayear == year &
                      data_item == variable ] 
   
-  idx_var2 <- data[, state_code == state &
+  idx_var2 <- data[, stateid == state &
                      datayear == yearcomparison &
                      data_item == variable ]
   

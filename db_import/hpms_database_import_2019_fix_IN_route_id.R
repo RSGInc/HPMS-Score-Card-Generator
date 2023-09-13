@@ -32,9 +32,9 @@ prod_tbl = tbl(con, from=prod_name)
 prod_tbl
 
 # How many RouteId are as scientific notation?
-state_code = gState_Labels[abbr == 'IN', index]
+stateid = gState_Labels[abbr == 'IN', index]
 fixed = prod_tbl %>% 
-  # filter(StateId == state_code) %>%
+  # filter(StateId == stateid) %>%
   filter(RouteId %like% '%[e][+][0-9]%') %>%
   collect() %>%
   # filter(str_detect(RouteId, 'e[+][0-9]')) %>%
@@ -53,7 +53,7 @@ fixed %>%
 
 stage_tbl = tbl(con, from=stage_name)
 stage_tbl %>%
-  count(state_code, datayear)
+  count(stateid, datayear)
 
 message('writing to database')
 dbWriteTable(con, stage_name, fixed, overwrite=TRUE)
@@ -74,7 +74,7 @@ sql = paste0(
   " WHERE StateId in (", paste(count_stage$StateId, collapse=', '), ")",
   " AND datayear in (", paste(count_stage$DataYear, collapse=', '), ")",
   " AND RouteId like '%[e][+][0-9]%'",
-  " GROUP BY state_code, datayear")
+  " GROUP BY stateid, datayear")
 
 count_prod = dbGetQuery(con, sql)
 count_prod
@@ -83,7 +83,7 @@ count_stage
 sql = paste0(
   "DELETE FROM ",
   prod_name,
-  " WHERE state_code in (", paste(count_stage$StateId, collapse=', '), ")",
+  " WHERE stateid in (", paste(count_stage$StateId, collapse=', '), ")",
   " AND datayear in (", paste(count_stage$DataYear, collapse=', '), ")",
   " AND RouteId like '%[e][+][0-9]%'")
 
