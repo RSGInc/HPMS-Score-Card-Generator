@@ -28,7 +28,7 @@ download_socrata = function(url, con, stage_table){
     datayear = 'integer',
     stateid = 'integer',
     routeid = 'character',
-    begin_point = 'numeric',
+    beginpoint = 'numeric',
     end_point = 'numeric',
     data_item = 'character',
     value_numeric = 'numeric',
@@ -67,7 +67,7 @@ download_socrata = function(url, con, stage_table){
   
   dt[, datayear := as.integer(datayear)]
   dt[, stateid := as.integer(stateid)]
-  dt[, begin_point := as.numeric(begin_point)]
+  dt[, beginpoint := as.numeric(beginpoint)]
   dt[, end_point := as.numeric(end_point)]
   
   col_type_obs = sapply(dt, function(x) class(x)[1])

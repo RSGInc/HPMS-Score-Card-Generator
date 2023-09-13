@@ -205,7 +205,7 @@ write_to_stage = function(cache_path, con, stage_table, chunk_size=100000){
   
   # dt[, datayear := as.integer(datayear)]
   # dt[, stateid := as.integer(stateid)]
-  # dt[, begin_point := as.numeric(begin_point)]
+  # dt[, beginpoint := as.numeric(beginpoint)]
   # dt[, end_point := as.numeric(end_point)]
   dt[, datayear   := as.integer(datayear)]
   dt[, stateid    := as.integer(stateid)]

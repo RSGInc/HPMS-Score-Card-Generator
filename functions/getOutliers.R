@@ -30,12 +30,12 @@ getOutliers <- function(data, year, variable){
   } else {
     
     total.1 <- d.l[ ,
-                    list(totalmiles = round(sum(end_point-begin_point), 2)),
+                    list(totalmiles = round(sum(end_point-beginpoint), 2)),
                     by=list(F_SYSTEM)]
     
     result.1 <- d.l[(value_numeric > outlier_threshold_high | 
                        value_numeric < outlier_threshold_low),
-                    list(miles = round(sum(end_point - begin_point, na.rm=TRUE), 2), N=sum(num_sections)),
+                    list(miles = round(sum(end_point - beginpoint, na.rm=TRUE), 2), N=sum(num_sections)),
                     by=list(F_SYSTEM)
                     ]
     
@@ -62,10 +62,10 @@ getOutliers <- function(data, year, variable){
     
     result.2 <- d.l[(value_numeric > outlier_threshold_high |
                        value_numeric < outlier_threshold_low),
-                    list(miles=round(sum(end_point-begin_point,na.rm=TRUE),2),N=sum(num_sections)),
+                    list(miles=round(sum(end_point-beginpoint,na.rm=TRUE),2),N=sum(num_sections)),
                     ]
     
-    total.2 <- d.l[, list(totalmiles = round(sum(end_point - begin_point), 2)), ]
+    total.2 <- d.l[, list(totalmiles = round(sum(end_point - beginpoint), 2)), ]
     
     if(nrow(result.2) == 0){
       result.2 <- data.table(miles=0, N=0)
@@ -91,13 +91,13 @@ getOutliers <- function(data, year, variable){
     
     result.3 <- d.l[(value_numeric > outlier_threshold_high |
                        value_numeric < outlier_threshold_low),
-                    list(miles=round(sum(end_point-begin_point,na.rm=TRUE),2),N=sum(num_sections)),]
+                    list(miles=round(sum(end_point-beginpoint,na.rm=TRUE),2),N=sum(num_sections)),]
     
     if(nrow(result.3)==0){
       result.3 <- data.table(miles=c(0), N=c(0))
     }
     
-    total.3 <- d.l[ ,list(totalmiles=round(sum(end_point-begin_point),2)),]
+    total.3 <- d.l[ ,list(totalmiles=round(sum(end_point-beginpoint),2)),]
     
     report.3 <- data.table(result.3,total.3)
     #report.3[is.na(miles),miles:=0] # setting values to 0 where there are no merges. this mean that the state had no lane miles outside the thresholds set

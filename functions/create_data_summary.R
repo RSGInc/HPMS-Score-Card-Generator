@@ -34,15 +34,15 @@ create_data_summary <- function(data, state, year, year_compare){
   IDX <- idx_st_fsystem & (idx_fs15 | idx_fs6)
 
   # Centerline
-  n_CtrLine.1 <- data[IDX & datayear == year,         sum(end_point-begin_point,na.rm = TRUE),]
-  n_CtrLine.2 <- data[IDX & datayear == year_compare, sum(end_point-begin_point,na.rm = TRUE),]
+  n_CtrLine.1 <- data[IDX & datayear == year,         sum(end_point-beginpoint,na.rm = TRUE),]
+  n_CtrLine.2 <- data[IDX & datayear == year_compare, sum(end_point-beginpoint,na.rm = TRUE),]
 
   # Lane miles
   n_LaneMiles.1 <- data[IDX & datayear==year,
-                        sum(THROUGH_LANES * (end_point - begin_point), na.rm = TRUE), ]
+                        sum(THROUGH_LANES * (end_point - beginpoint), na.rm = TRUE), ]
   
   n_LaneMiles.2 <- data[IDX & datayear == year_compare,
-                        sum(THROUGH_LANES * (end_point - begin_point), na.rm = TRUE), ]
+                        sum(THROUGH_LANES * (end_point - beginpoint), na.rm = TRUE), ]
 
   # Data items
   n_Variables.1 <- length(data[stateid == state & datayear == year, unique(data_item), ])
@@ -64,10 +64,10 @@ create_data_summary <- function(data, state, year, year_compare){
 
   # Get n_sections  
   dt_sections.1 <- data[IDX & datayear == year,
-                       list(routeid, begin_point, end_point, num_sections)]
+                       list(routeid, beginpoint, end_point, num_sections)]
   
   dt_sections.2 <- data[IDX & datayear == year_compare,
-                       list(routeid, begin_point, end_point, num_sections)]
+                       list(routeid, beginpoint, end_point, num_sections)]
 
   # Add an id column so we can easily pull out the unmatched rows later
   dt_sections.1[, id_1 := 1:nrow(dt_sections.1)]
@@ -78,7 +78,7 @@ create_data_summary <- function(data, state, year, year_compare){
 
   # Match sections, then get counts of unmatched sections
 
-  dt_sections_j = dt_sections.2[dt_sections.1,on=.(routeid,begin_point,end_point)]
+  dt_sections_j = dt_sections.2[dt_sections.1,on=.(routeid,beginpoint,end_point)]
   
   dt_sec_nomatch.1 <- dt_sections_j[is.na(id_2)]
   dt_sec_nomatch.2 <- dt_sections.2[!id_2 %in% dt_sections_j$id_2]

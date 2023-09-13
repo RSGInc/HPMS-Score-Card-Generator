@@ -60,7 +60,7 @@ checkSummary <- function(year, stateid, data){
     # Copy the data first to avoid changing by reference!
     r_sum <- copy(data)
     r_sum <- r_sum[, .(record_count = as.numeric(.N),
-                           miles = sum(end_point-begin_point),
+                           miles = sum(end_point-beginpoint),
                            routeid_count = as.numeric(length(unique(routeid)))),
                        by=list(datayear, stateid, data_item)]
     
@@ -100,7 +100,7 @@ CheckImport <- function(year, stateid, dat) {
   if (nrow(dat)==0) passedChecks <- FALSE
 
   # All begin points should be before the end points
-  if (!all(dat[, begin_point <= end_point])) passedChecks <- FALSE
+  if (!all(dat[, beginpoint <= end_point])) passedChecks <- FALSE
   
   # Check imported data against summary table -------------------------------
   

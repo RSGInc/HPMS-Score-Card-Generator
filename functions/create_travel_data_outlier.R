@@ -28,23 +28,23 @@ create_travel_data_outlier <- function(
   # FUTURE_AADT
   
   aadt    <- data[stateid==state&datayear==year&data_item=="AADT",
-                  list(routeid, begin_point, end_point, value_numeric, F_SYSTEM, NHS, Interstate)]
+                  list(routeid, beginpoint, end_point, value_numeric, F_SYSTEM, NHS, Interstate)]
   faadt   <- data[stateid==state&datayear==year&data_item=="FUTURE_AADT",
-                  list(routeid, begin_point, end_point, value_numeric, F_SYSTEM, NHS, Interstate)]
+                  list(routeid, beginpoint, end_point, value_numeric, F_SYSTEM, NHS, Interstate)]
   
   comparison <- merge(aadt, faadt,
-                      by=c("routeid", "begin_point", "end_point", "F_SYSTEM", "NHS", "Interstate"), all.y=TRUE, all.x=FALSE)
+                      by=c("routeid", "beginpoint", "end_point", "F_SYSTEM", "NHS", "Interstate"), all.y=TRUE, all.x=FALSE)
   setnames(comparison, "value_numeric.x", "AADT")
   setnames(comparison, "value_numeric.y", "FUTURE_AADT")
   
   result.1 <- comparison[Interstate == 1 & ((FUTURE_AADT > 3 * AADT) | (FUTURE_AADT < AADT)),
-                         list(miles=sum(end_point - begin_point))]
+                         list(miles=sum(end_point - beginpoint))]
   result.2 <- comparison[NHS == 1 & ((FUTURE_AADT > 3 * AADT) | (FUTURE_AADT < AADT)),
-                         list(miles=sum(end_point - begin_point))]
+                         list(miles=sum(end_point - beginpoint))]
   result.3 <- comparison[F_SYSTEM == 1 & ((FUTURE_AADT > 3 * AADT) | (FUTURE_AADT < AADT)),
-                         list(miles=sum(end_point - begin_point))]
+                         list(miles=sum(end_point - beginpoint))]
   result.4 <- comparison[F_SYSTEM == 2 & ((FUTURE_AADT > 3 * AADT) | (FUTURE_AADT < AADT)),
-                         list(miles=sum(end_point - begin_point))]
+                         list(miles=sum(end_point - beginpoint))]
   
   # Replace NAs with zeros if there are none that meet the criteria
   if ( result.1[, .N] == 0 ) result.1 <- 0
@@ -53,13 +53,13 @@ create_travel_data_outlier <- function(
   if ( result.4[, .N] == 0 ) result.4 <- 0
   
   total.1 <- aadt[Interstate == 1,
-                  list(totalmiles=round(sum(end_point-begin_point), 2)), ]
+                  list(totalmiles=round(sum(end_point-beginpoint), 2)), ]
   total.2 <- aadt[NHS == 1,
-                  list(totalmiles=round(sum(end_point-begin_point), 2)), ]
+                  list(totalmiles=round(sum(end_point-beginpoint), 2)), ]
   total.3 <- aadt[F_SYSTEM == 1,
-                  list(totalmiles=round(sum(end_point-begin_point), 2)), ]
+                  list(totalmiles=round(sum(end_point-beginpoint), 2)), ]
   total.4 <- aadt[F_SYSTEM == 2,
-                  list(totalmiles=round(sum(end_point-begin_point), 2)), ]
+                  list(totalmiles=round(sum(end_point-beginpoint), 2)), ]
   
   report <- data.table(groupCat=1:4,
                        miles=as.numeric(c(result.1, result.2, result.3, result.4)),

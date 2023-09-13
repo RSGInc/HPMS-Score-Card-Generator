@@ -124,7 +124,7 @@ cross_validation_1 = function(data){
   # IRI >= 30 and <= 400
   #browser()
   iri = data[data_item=="IRI",
-             .(routeid, begin_point, end_point, IRI=value_numeric, num_sections)]
+             .(routeid, beginpoint, end_point, IRI=value_numeric, num_sections)]
   
   if(iri[, .N] == 0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -139,7 +139,7 @@ cross_validation_1 = function(data){
              .(
                .N,
                num_sections = sum(num_sections,na.rm=TRUE),
-               mileage      = sum(end_point-begin_point)
+               mileage      = sum(end_point-beginpoint)
               ),
              .(applies = !is.na(IRI), 
                passes  = !is.na(IRI)&IRI>=30&IRI<=400)][order(applies,passes)]
@@ -165,7 +165,7 @@ cross_validation_2 = function(data){
   # mileage and number of sections are much higher than the total mileage
   
   comparison = data[, 
-                    .(routeid, begin_point, end_point, num_sections,
+                    .(routeid, beginpoint, end_point, num_sections,
                       sample = !is.na(expansion_factor), F_SYTEMorig, 
                       URBAN_ID, FACILITY_TYPE)]
   
@@ -180,7 +180,7 @@ cross_validation_2 = function(data){
                        .(
                          .N,
                          num_sections = sum(num_sections,na.rm=TRUE),
-                         mileage      = sum(end_point-begin_point)
+                         mileage      = sum(end_point-beginpoint)
                        ),
                        .(applies = !(FACILITY_TYPE %in% c(1, 2) &
                                        (F_SYTEMorig %in% 1:5 | (F_SYTEMorig == 6 & URBAN_ID < 99999)))  , 
@@ -202,7 +202,7 @@ cross_validation_9 = function(data){
   
   #browser()
   year_last_construction = data[data_item=="YEAR_LAST_CONSTRUCTION",
-                                .(routeid,begin_point,end_point,YEAR_LAST_CONSTRUCTION=value_date, datayear, num_sections)]
+                                .(routeid,beginpoint,end_point,YEAR_LAST_CONSTRUCTION=value_date, datayear, num_sections)]
 
   if(year_last_construction[, .N] == 0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -217,7 +217,7 @@ cross_validation_9 = function(data){
              .(
                .N,
                num_sections = sum(num_sections,na.rm=TRUE),
-               mileage      = sum(end_point-begin_point)
+               mileage      = sum(end_point-beginpoint)
               ),
              .(applies = !is.na(YEAR_LAST_CONSTRUCTION), 
                passes  = !is.na(YEAR_LAST_CONSTRUCTION)&year(YEAR_LAST_CONSTRUCTION)<=datayear)][order(applies,passes)]
@@ -238,7 +238,7 @@ cross_validation_14 = function(data){
   
   #browser()
   lane_width = data[data_item=="LANE_WIDTH",
-                    .(routeid,begin_point,end_point,LANE_WIDTH=value_numeric, num_sections)]
+                    .(routeid,beginpoint,end_point,LANE_WIDTH=value_numeric, num_sections)]
   
   if(lane_width[, .N] == 0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -252,7 +252,7 @@ cross_validation_14 = function(data){
              .(
                .N,
                num_sections = sum(num_sections,na.rm=TRUE),
-               mileage      = sum(end_point-begin_point)
+               mileage      = sum(end_point-beginpoint)
               ),
              .(applies = !is.na(LANE_WIDTH), 
                passes  = LANE_WIDTH > 5 & LANE_WIDTH < 19)][order(applies,passes)]
@@ -273,7 +273,7 @@ cross_validation_15 = function(data){
   # should it include a check of 0?
   
   #browser()
-  speed_limit = data[data_item=="SPEED_LIMIT",.(routeid,begin_point,end_point,SPEED_LIMIT=value_numeric, num_sections)]
+  speed_limit = data[data_item=="SPEED_LIMIT",.(routeid,beginpoint,end_point,SPEED_LIMIT=value_numeric, num_sections)]
   
   if(speed_limit[, .N] == 0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -287,7 +287,7 @@ cross_validation_15 = function(data){
              .(
                .N,
                num_sections = sum(num_sections,na.rm=TRUE),
-               mileage      = sum(end_point-begin_point)
+               mileage      = sum(end_point-beginpoint)
               ),
              .(applies = !is.na(SPEED_LIMIT), 
                passes  = (SPEED_LIMIT == 999) | (SPEED_LIMIT %% 5 == 0 & SPEED_LIMIT < 90))][order(applies,passes)]
@@ -308,9 +308,9 @@ cross_validation_16 = function(data){
   # Counter_Peak_Lanes is NULL if FACILITY_TYPE is 1
   
   facility_type      = data[data_item=="FACILITY_TYPE",
-                            .(routeid,begin_point,end_point,FACILITY_TYPE=value_numeric,num_sections)]
+                            .(routeid,beginpoint,end_point,FACILITY_TYPE=value_numeric,num_sections)]
   counter_peak_lanes = data[data_item=="COUNTER_PEAK_LANES",
-                            .(routeid,begin_point,end_point,COUNTER_PEAK_LANES=value_numeric)]
+                            .(routeid,beginpoint,end_point,COUNTER_PEAK_LANES=value_numeric)]
   
   if(facility_type[, .N] == 0 | counter_peak_lanes[, .N] == 0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -318,14 +318,14 @@ cross_validation_16 = function(data){
   }
   
   # join the two together
-  comparison = counter_peak_lanes[facility_type,on=.(routeid,begin_point,end_point)]
+  comparison = counter_peak_lanes[facility_type,on=.(routeid,beginpoint,end_point)]
 
   # apply the condition
   results = comparison[,
              .(
                .N,
                num_sections = sum(num_sections,na.rm=TRUE),
-               mileage      = sum(end_point-begin_point)
+               mileage      = sum(end_point-beginpoint)
               ),
              .(applies = FACILITY_TYPE==1, 
                passes  = is.na(COUNTER_PEAK_LANES))][order(applies,passes)]
@@ -347,11 +347,11 @@ cross_validation_17 = function(data){
   
   #browser()
   aadt_single_unit = data[data_item=="AADT_SINGLE_UNIT",
-                          .(routeid,begin_point,end_point,AADT_SINGLE_UNIT=value_numeric, num_sections)]
+                          .(routeid,beginpoint,end_point,AADT_SINGLE_UNIT=value_numeric, num_sections)]
   aadt_combination = data[data_item=="AADT_COMBINATION",
-                          .(routeid,begin_point,end_point,AADT_COMBINATION=value_numeric)]
+                          .(routeid,beginpoint,end_point,AADT_COMBINATION=value_numeric)]
   aadt = data[data_item=="AADT",
-              .(routeid,begin_point,end_point,AADT=value_numeric)]
+              .(routeid,beginpoint,end_point,AADT=value_numeric)]
   
   if(aadt_single_unit[, .N] == 0 | aadt_combination[, .N] == 0 | aadt[, .N] == 0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -359,8 +359,8 @@ cross_validation_17 = function(data){
   }
   
   # join the two together
-  comparison = aadt_combination[aadt_single_unit,on=.(routeid,begin_point,end_point)]
-  comparison = aadt[comparison,   on=.(routeid,begin_point,end_point)]
+  comparison = aadt_combination[aadt_single_unit,on=.(routeid,beginpoint,end_point)]
+  comparison = aadt[comparison,   on=.(routeid,beginpoint,end_point)]
   
   # setting NAs to 0
   comparison[is.na(AADT_SINGLE_UNIT)&!is.na(AADT_COMBINATION),AADT_SINGLE_UNIT:=0]
@@ -371,7 +371,7 @@ cross_validation_17 = function(data){
              .(
                .N,
                num_sections = sum(num_sections,na.rm=TRUE),
-               mileage      = sum(end_point-begin_point)
+               mileage      = sum(end_point-beginpoint)
               ),
              .(applies = !is.na(AADT_COMBINATION), # always applies if through_lanes exists
                passes  = AADT_SINGLE_UNIT + AADT_COMBINATION < (0.8*AADT) )][order(applies,passes)]
@@ -393,11 +393,11 @@ cross_validation_20 = function(data){
   
   #browser()
   median_width = data[data_item=="MEDIAN_TYPE",
-                      .(routeid,begin_point,end_point,MEDIAN_TYPE=value_numeric, num_sections)]
+                      .(routeid,beginpoint,end_point,MEDIAN_TYPE=value_numeric, num_sections)]
   median_type = data[data_item=="MEDIAN_WIDTH",
-                     .(routeid,begin_point,end_point,MEDIAN_WIDTH=value_numeric)]
+                     .(routeid,beginpoint,end_point,MEDIAN_WIDTH=value_numeric)]
   facility_type = data[data_item=="FACILITY_TYPE",
-                       .(routeid,begin_point,end_point,FACILITY_TYPE=value_numeric)]
+                       .(routeid,beginpoint,end_point,FACILITY_TYPE=value_numeric)]
 
   if(median_width[, .N] == 0|median_type[, .N] == 0|facility_type[, .N] == 0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -405,15 +405,15 @@ cross_validation_20 = function(data){
   }
 
   # join the two together
-  comparison = median_type[median_width,on=.(routeid,begin_point,end_point)]
-  comparison = facility_type[comparison,on=.(routeid,begin_point,end_point)]
+  comparison = median_type[median_width,on=.(routeid,beginpoint,end_point)]
+  comparison = facility_type[comparison,on=.(routeid,beginpoint,end_point)]
 
   # apply the condition
   results = comparison[,
              .(
                .N,
                num_sections = sum(num_sections,na.rm=TRUE),
-               mileage      = sum(end_point-begin_point)
+               mileage      = sum(end_point-beginpoint)
               ),
              .(applies = MEDIAN_TYPE<1|FACILITY_TYPE%in%c(1,4), 
                passes  = is.na(MEDIAN_WIDTH))][order(applies,passes)]
@@ -434,9 +434,9 @@ cross_validation_22 = function(data){
   
   #browser()
   median_width = data[data_item=="MEDIAN_TYPE",
-                      .(routeid,begin_point,end_point,MEDIAN_TYPE=value_numeric, num_sections)]
+                      .(routeid,beginpoint,end_point,MEDIAN_TYPE=value_numeric, num_sections)]
   median_type = data[data_item=="MEDIAN_WIDTH",
-                     .(routeid,begin_point,end_point,MEDIAN_WIDTH=value_numeric)]
+                     .(routeid,beginpoint,end_point,MEDIAN_WIDTH=value_numeric)]
 
   if(median_width[, .N] == 0|median_type[, .N] == 0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -444,14 +444,14 @@ cross_validation_22 = function(data){
   }
 
   # join the two together
-  comparison = median_type[median_width,on=.(routeid,begin_point,end_point)]
+  comparison = median_type[median_width,on=.(routeid,beginpoint,end_point)]
 
   # apply the condition
   results = comparison[,
              .(
                .N,
                num_sections = sum(num_sections,na.rm=TRUE),
-               mileage      = sum(end_point-begin_point)
+               mileage      = sum(end_point-beginpoint)
               ),
              .(applies = MEDIAN_TYPE%in%2:7, 
                passes  = MEDIAN_WIDTH>0)][order(applies,passes)]
@@ -472,9 +472,9 @@ cross_validation_23 = function(data){
   
   #browser()
   widening_obstacle = data[data_item=="WIDENING_OBSTACLE", 
-                           .(routeid,begin_point,end_point,WIDENING_OBSTACLE=value_text, num_sections)]
+                           .(routeid,beginpoint,end_point,WIDENING_OBSTACLE=value_text, num_sections)]
   widening_potential = data[data_item=="WIDENING_POTENTIAL",
-                            .(routeid,begin_point,end_point,WIDENING_POTENTIAL=value_numeric)]
+                            .(routeid,beginpoint,end_point,WIDENING_POTENTIAL=value_numeric)]
   
   if(widening_obstacle[, .N] == 0 | widening_potential[, .N] == 0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -482,14 +482,14 @@ cross_validation_23 = function(data){
   }
 
   # join the two together
-  comparison = widening_potential[widening_obstacle,on=.(routeid,begin_point,end_point)]
+  comparison = widening_potential[widening_obstacle,on=.(routeid,beginpoint,end_point)]
 
   # apply the condition
   results = comparison[,
              .(
                .N,
                num_sections = sum(num_sections,na.rm=TRUE),
-               mileage      = sum(end_point-begin_point)
+               mileage      = sum(end_point-beginpoint)
               ),
              .(applies = WIDENING_POTENTIAL<9, 
                passes  = grepl("[a-gA-G]+",WIDENING_OBSTACLE)&WIDENING_POTENTIAL<9)][order(applies,passes)]
@@ -510,9 +510,9 @@ cross_validation_39 = function(data){
   
   #browser()
   facility_type = data[data_item=="FACILITY_TYPE",
-                       .(routeid,begin_point,end_point,FACILITY_TYPE=value_numeric, num_sections)]
+                       .(routeid,beginpoint,end_point,FACILITY_TYPE=value_numeric, num_sections)]
   dir_factor = data[data_item=="DIR_FACTOR",
-                    .(routeid,begin_point,end_point,DIR_FACTOR=value_numeric)]
+                    .(routeid,beginpoint,end_point,DIR_FACTOR=value_numeric)]
   
   if(facility_type[, .N] == 0 | dir_factor[, .N] == 0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -520,14 +520,14 @@ cross_validation_39 = function(data){
   }
  
   # join the two together
-  comparison = dir_factor[facility_type,on=.(routeid,begin_point,end_point)]
+  comparison = dir_factor[facility_type,on=.(routeid,beginpoint,end_point)]
 
   # apply the condition
   results = comparison[,
              .(
                .N,
                num_sections = sum(num_sections,na.rm=TRUE),
-               mileage      = sum(end_point-begin_point)
+               mileage      = sum(end_point-beginpoint)
               ),
              .(applies = FACILITY_TYPE==1&!is.na(DIR_FACTOR), # DIR_FACTOR is SP 
                passes  = DIR_FACTOR==100)][order(applies,passes)]
@@ -548,9 +548,9 @@ cross_validation_40 = function(data){
   
   #browser()
   facility_type = data[data_item=="FACILITY_TYPE",
-                       .(routeid,begin_point,end_point,FACILITY_TYPE=value_numeric, num_sections)]
+                       .(routeid,beginpoint,end_point,FACILITY_TYPE=value_numeric, num_sections)]
   dir_factor = data[data_item=="DIR_FACTOR",
-                    .(routeid,begin_point,end_point,DIR_FACTOR=value_numeric)]
+                    .(routeid,beginpoint,end_point,DIR_FACTOR=value_numeric)]
   
   if(facility_type[, .N] == 0|dir_factor[, .N] == 0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -558,14 +558,14 @@ cross_validation_40 = function(data){
   }
   
   # join the two together
-  comparison = dir_factor[facility_type,on=.(routeid,begin_point,end_point)]
+  comparison = dir_factor[facility_type,on=.(routeid,beginpoint,end_point)]
 
   # apply the condition
   results = comparison[,
              .(
                .N,
                num_sections = sum(num_sections,na.rm=TRUE),
-               mileage      = sum(end_point-begin_point)
+               mileage      = sum(end_point-beginpoint)
               ),
              .(applies = FACILITY_TYPE==2&!is.na(DIR_FACTOR), # DIR_FACTOR is SP
                passes  = DIR_FACTOR>=50&DIR_FACTOR<=70)][order(applies,passes)]
@@ -587,9 +587,9 @@ cross_validation_41 = function(data){
   
   #browser()
   future_aadt = data[data_item=="FUTURE_AADT",
-                     .(routeid, begin_point, end_point, FUTURE_AADT=value_numeric, num_sections)]
+                     .(routeid, beginpoint, end_point, FUTURE_AADT=value_numeric, num_sections)]
   aadt = data[data_item=="AADT",
-              .(routeid,begin_point,end_point,AADT=value_numeric)]
+              .(routeid,beginpoint,end_point,AADT=value_numeric)]
 
   if(future_aadt[, .N] == 0|aadt[, .N] == 0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -597,14 +597,14 @@ cross_validation_41 = function(data){
   }
 
   # join the two together
-  comparison = aadt[future_aadt,on=.(routeid,begin_point,end_point)]
+  comparison = aadt[future_aadt,on=.(routeid,beginpoint,end_point)]
 
   # apply the condition
   results = comparison[,
              .(
                .N,
                num_sections = sum(num_sections,na.rm=TRUE),
-               mileage      = sum(end_point-begin_point)
+               mileage      = sum(end_point-beginpoint)
               ),
              .(applies = !is.na(FUTURE_AADT), 
                passes  = FUTURE_AADT > AADT  & FUTURE_AADT < 4 * AADT)][order(applies,passes)] 
@@ -626,15 +626,15 @@ cross_validation_42 = function(data){
   # browser()
   pct_peak_single = data[
     data_item=="PCT_DH_SINGLE_UNIT",
-    .(routeid,begin_point,end_point,PCT_DH_SINGLE_UNIT=value_numeric, num_sections)]
+    .(routeid,beginpoint,end_point,PCT_DH_SINGLE_UNIT=value_numeric, num_sections)]
 
   aadt_single_unit = data[
     data_item=="AADT_SINGLE_UNIT",
-    .(routeid,begin_point,end_point,AADT_SINGLE_UNIT=value_numeric)]
+    .(routeid,beginpoint,end_point,AADT_SINGLE_UNIT=value_numeric)]
   
   aadt = data[
     data_item=="AADT",
-    .(routeid,begin_point,end_point,AADT=value_numeric)]
+    .(routeid,beginpoint,end_point,AADT=value_numeric)]
   
   if(pct_peak_single[, .N] == 0 | aadt_single_unit[, .N] == 0 | aadt[, .N] == 0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -642,8 +642,8 @@ cross_validation_42 = function(data){
   }
   
   # join the two together
-  comparison = aadt_single_unit[pct_peak_single, on = .(routeid,begin_point,end_point)]
-  comparison = aadt[comparison, on = .(routeid,begin_point,end_point)]
+  comparison = aadt_single_unit[pct_peak_single, on = .(routeid,beginpoint,end_point)]
+  comparison = aadt[comparison, on = .(routeid,beginpoint,end_point)]
   
   # setting NAs to 0
   #comparison[is.na(AADT_SINGLE_UNIT)&!is.na(AADT_COMBINATION),AADT_SINGLE_UNIT:=0]
@@ -654,7 +654,7 @@ cross_validation_42 = function(data){
     .(
       .N,
       num_sections = sum(num_sections,na.rm=TRUE),
-      mileage      = sum(end_point-begin_point)
+      mileage      = sum(end_point-beginpoint)
     ),
     .(
       applies = !is.na(PCT_DH_SINGLE_UNIT), 
@@ -679,11 +679,11 @@ cross_validation_43 = function(data){
   # (AADT_COMBINATION x 0.025) < (AADT x (PCT_DH_COMBINATION/100)) < (AADT_COMBINATION x 0.4)  
 
   pct_combination = data[data_item=="PCT_DH_COMBINATION",
-                         .(routeid,begin_point,end_point,PCT_DH_COMBINATION=value_numeric, num_sections)]
+                         .(routeid,beginpoint,end_point,PCT_DH_COMBINATION=value_numeric, num_sections)]
   aadt_combination = data[data_item=="AADT_COMBINATION",
-                          .(routeid,begin_point,end_point,AADT_COMBINATION=value_numeric)]
+                          .(routeid,beginpoint,end_point,AADT_COMBINATION=value_numeric)]
   aadt = data[data_item=="AADT",
-              .(routeid,begin_point,end_point,AADT=value_numeric)]
+              .(routeid,beginpoint,end_point,AADT=value_numeric)]
 
   if(pct_combination[, .N] == 0 | aadt_combination[, .N] == 0 | aadt[, .N] == 0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -691,15 +691,15 @@ cross_validation_43 = function(data){
   }
   
   # join the two together
-  comparison = aadt_combination[pct_combination,on=.(routeid,begin_point,end_point)]
-  comparison = aadt[comparison,   on=.(routeid,begin_point,end_point)]
+  comparison = aadt_combination[pct_combination,on=.(routeid,beginpoint,end_point)]
+  comparison = aadt[comparison,   on=.(routeid,beginpoint,end_point)]
   
   # apply the condition
   results = comparison[,
              .(
                .N,
                num_sections = sum(num_sections,na.rm=TRUE),
-               mileage      = sum(end_point-begin_point)
+               mileage      = sum(end_point-beginpoint)
               ),
              .(applies = !is.na(PCT_DH_COMBINATION), 
                passes  = (AADT * PCT_DH_COMBINATION / 100) > (AADT_COMBINATION * 0.025) &
@@ -723,9 +723,9 @@ cross_validation_44 = function(data){
 
   #browser()
   aadt_combination = data[data_item=="AADT_COMBINATION",
-                          .(routeid,begin_point,end_point,AADT_COMBINATION=value_numeric, num_sections)]
+                          .(routeid,beginpoint,end_point,AADT_COMBINATION=value_numeric, num_sections)]
   aadt = data[data_item=="AADT",
-              .(routeid,begin_point,end_point,AADT=value_numeric)]
+              .(routeid,beginpoint,end_point,AADT=value_numeric)]
   
   if(aadt_combination[, .N] == 0 | aadt[, .N] == 0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -733,14 +733,14 @@ cross_validation_44 = function(data){
   }
   
   # join the two together
-  comparison = aadt[aadt_combination,on=.(routeid,begin_point,end_point)]
+  comparison = aadt[aadt_combination,on=.(routeid,beginpoint,end_point)]
   
   # apply the condition
   results = comparison[,
              .(
                .N,
                num_sections = sum(num_sections,na.rm=TRUE),
-               mileage      = sum(end_point-begin_point)
+               mileage      = sum(end_point-beginpoint)
               ),
              .(applies = !is.na(AADT_COMBINATION), # always applies if through_lanes exists
                passes  = AADT_COMBINATION < (AADT * 0.4) )][order(applies,passes)]
@@ -760,8 +760,8 @@ cross_validation_45 = function(data){
   # AADT_Single_Unit < AADT * 0.4
   
   #browser()
-  aadt_single_unit = data[data_item=="AADT_SINGLE_UNIT",.(routeid,begin_point,end_point,AADT_SINGLE_UNIT=value_numeric, num_sections)]
-  aadt = data[data_item=="AADT",.(routeid,begin_point,end_point,AADT=value_numeric)]
+  aadt_single_unit = data[data_item=="AADT_SINGLE_UNIT",.(routeid,beginpoint,end_point,AADT_SINGLE_UNIT=value_numeric, num_sections)]
+  aadt = data[data_item=="AADT",.(routeid,beginpoint,end_point,AADT=value_numeric)]
   
   if(aadt_single_unit[, .N] == 0 | aadt[, .N] == 0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -769,14 +769,14 @@ cross_validation_45 = function(data){
   }
   
   # join the two together
-  comparison = aadt[aadt_single_unit,on=.(routeid,begin_point,end_point)]
+  comparison = aadt[aadt_single_unit,on=.(routeid,beginpoint,end_point)]
 
   # apply the condition
   results = comparison[,
              .(
                .N,
                num_sections = sum(num_sections,na.rm=TRUE),
-               mileage      = sum(end_point-begin_point)
+               mileage      = sum(end_point-beginpoint)
               ),
              .(applies = !is.na(AADT_SINGLE_UNIT), 
                passes  = AADT_SINGLE_UNIT < AADT * 0.4)][order(applies,passes)]
@@ -802,7 +802,7 @@ cross_validation_46 = function(data, variable){
   # browser()
   
   comparison = data[data_item == variable,
-               .(routeid, begin_point, end_point, datayear, F_SYTEMorig, NHS,
+               .(routeid, beginpoint, end_point, datayear, F_SYTEMorig, NHS,
                  value_date, value_text, sample = !is.na(expansion_factor), num_sections)]
   
   if(comparison[, .N] == 0){
@@ -816,7 +816,7 @@ cross_validation_46 = function(data, variable){
                        .(
                          .N,
                          num_sections = sum(num_sections,na.rm=TRUE),
-                         mileage      = sum(end_point-begin_point)
+                         mileage      = sum(end_point-beginpoint)
                        ),
                        .(applies = sample | (is.na(value_text) & F_SYTEMorig > 1 & NHS %in% 1:9), 
                          passes  = year(value_date) >= datayear - 1)][order(applies,passes)]
@@ -837,7 +837,7 @@ cross_validation_47 = function(data){
   
   #browser()
   faulting = data[data_item=="FAULTING",
-                  .(routeid,begin_point,end_point,FAULTING=value_numeric, num_sections)]
+                  .(routeid,beginpoint,end_point,FAULTING=value_numeric, num_sections)]
   
   if(faulting[, .N] == 0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -852,7 +852,7 @@ cross_validation_47 = function(data){
              .(
                .N,
                num_sections = sum(num_sections,na.rm=TRUE),
-               mileage      = sum(end_point-begin_point)
+               mileage      = sum(end_point-beginpoint)
               ),
              .(applies = !is.na(FAULTING), 
                passes  = !is.na(FAULTING)&FAULTING<=1)][order(applies,passes)]
@@ -878,7 +878,7 @@ cross_validation_49 = function(data){
   
   #browser()
   k_factor = data[data_item=="K_FACTOR",
-                  .(routeid,begin_point,end_point,K_FACTOR=value_numeric, num_sections)]
+                  .(routeid,beginpoint,end_point,K_FACTOR=value_numeric, num_sections)]
 
   if(k_factor[, .N] == 0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -892,7 +892,7 @@ cross_validation_49 = function(data){
              .(
                .N,
                num_sections = sum(num_sections,na.rm=TRUE),
-               mileage      = sum(end_point-begin_point)
+               mileage      = sum(end_point-beginpoint)
               ),
              .(applies = !is.na(K_FACTOR), 
                passes  = K_FACTOR > 4 & K_FACTOR < 20)][order(applies,passes)]
@@ -913,9 +913,9 @@ cross_validation_51 = function(data){
   
   #browser()
   cracking_percent = data[data_item=="CRACKING_PERCENT", 
-                          .(routeid,begin_point,end_point,CRACKING_PERCENT=value_numeric, num_sections)]
+                          .(routeid,beginpoint,end_point,CRACKING_PERCENT=value_numeric, num_sections)]
   surface_type = data[data_item=="SURFACE_TYPE",
-                      .(routeid,begin_point,end_point,SURFACE_TYPE=value_numeric)]
+                      .(routeid,beginpoint,end_point,SURFACE_TYPE=value_numeric)]
   
   if(cracking_percent[, .N] == 0 | surface_type[, .N] == 0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -923,14 +923,14 @@ cross_validation_51 = function(data){
   }
 
   # join the two together
-  comparison = surface_type[cracking_percent,on=.(routeid,begin_point,end_point)]
+  comparison = surface_type[cracking_percent,on=.(routeid,beginpoint,end_point)]
 
   # apply the condition
   results = comparison[,
              .(
                .N,
                num_sections = sum(num_sections,na.rm=TRUE),
-               mileage      = sum(end_point-begin_point)
+               mileage      = sum(end_point-beginpoint)
               ),
              .(applies = SURFACE_TYPE%in%c(3,4,5,9,10), 
                passes  = SURFACE_TYPE%in%c(3,4,5,9,10)&CRACKING_PERCENT<=75)][order(applies,passes)]
@@ -951,7 +951,7 @@ cross_validation_52 = function(data){
   
   #browser()
   rutting = data[data_item=="RUTTING",
-                 .(routeid,begin_point,end_point,RUTTING=value_numeric, num_sections)]
+                 .(routeid,beginpoint,end_point,RUTTING=value_numeric, num_sections)]
   
   if(rutting[, .N] ==0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -966,7 +966,7 @@ cross_validation_52 = function(data){
              .(
                .N,
                num_sections = sum(num_sections,na.rm=TRUE),
-               mileage      = sum(end_point-begin_point)
+               mileage      = sum(end_point-beginpoint)
               ),
              .(applies = !is.na(RUTTING), 
                passes  = !is.na(RUTTING)&RUTTING<1)][order(applies,passes)]
@@ -985,8 +985,8 @@ cross_validation_52 = function(data){
 cross_validation_53 = function(data){
   # Through_Lanes>1 when Facility_Type = 2
   
-  through_lanes = data[data_item=="THROUGH_LANES",.(routeid,begin_point,end_point,THROUGH_LANES=value_numeric,num_sections)]
-  facility_type = data[data_item=="FACILITY_TYPE",.(routeid,begin_point,end_point,FACILITY_TYPE=value_numeric)]
+  through_lanes = data[data_item=="THROUGH_LANES",.(routeid,beginpoint,end_point,THROUGH_LANES=value_numeric,num_sections)]
+  facility_type = data[data_item=="FACILITY_TYPE",.(routeid,beginpoint,end_point,FACILITY_TYPE=value_numeric)]
 
   if(through_lanes[, .N] == 0 | facility_type[, .N] == 0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -994,14 +994,14 @@ cross_validation_53 = function(data){
   }
 
   # join the two together
-  comparison = facility_type[through_lanes,on=.(routeid,begin_point,end_point)]
+  comparison = facility_type[through_lanes,on=.(routeid,beginpoint,end_point)]
   
   # apply the condition
   results = comparison[,
              .(
                .N,
                num_sections = sum(num_sections,na.rm=TRUE),
-               mileage      = sum(end_point-begin_point)
+               mileage      = sum(end_point-beginpoint)
               ),
              .(applies = FACILITY_TYPE==2,
                passes  = FACILITY_TYPE==2&THROUGH_LANES > 1 )][order(applies,passes)]
@@ -1022,7 +1022,7 @@ cross_validation_54 = function(data){
   
   #browser()
   aadt_combination = data[data_item=="AADT_COMBINATION",
-                          .(routeid, begin_point, end_point, AADT_COMBINATION=value_numeric, num_sections)]
+                          .(routeid, beginpoint, end_point, AADT_COMBINATION=value_numeric, num_sections)]
   
   if(aadt_combination[, .N] == 0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -1036,7 +1036,7 @@ cross_validation_54 = function(data){
              .(
                .N,
                num_sections = sum(num_sections,na.rm=TRUE),
-               mileage      = sum(end_point-begin_point)
+               mileage      = sum(end_point-beginpoint)
               ),
              .(applies = !is.na(AADT_COMBINATION), # always applies if through_lanes exists
                passes  = AADT_COMBINATION > 0 )][order(applies,passes)]
@@ -1057,7 +1057,7 @@ cross_validation_55 = function(data){
   
   #browser()
   aadt_single_unit = data[data_item=="AADT_SINGLE_UNIT",
-                          .(routeid,begin_point,end_point,AADT_SINGLE_UNIT=value_numeric, num_sections)]
+                          .(routeid,beginpoint,end_point,AADT_SINGLE_UNIT=value_numeric, num_sections)]
   
   if(aadt_single_unit[, .N] == 0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -1071,7 +1071,7 @@ cross_validation_55 = function(data){
              .(
                .N,
                num_sections = sum(num_sections,na.rm=TRUE),
-               mileage      = sum(end_point-begin_point)
+               mileage      = sum(end_point-beginpoint)
               ),
              .(applies = !is.na(AADT_SINGLE_UNIT), 
                passes  = AADT_SINGLE_UNIT >0 )][order(applies,passes)]
@@ -1092,7 +1092,7 @@ cross_validation_56 = function(data){
   
   #browser()
   pct_peak_combination = data[data_item=="PCT_DH_COMBINATION",
-                              .(routeid,begin_point,end_point,PCT_DH_COMBINATION=value_numeric, num_sections)]
+                              .(routeid,beginpoint,end_point,PCT_DH_COMBINATION=value_numeric, num_sections)]
   
   if(pct_peak_combination[, .N] == 0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -1106,7 +1106,7 @@ cross_validation_56 = function(data){
              .(
                .N,
                num_sections = sum(num_sections,na.rm=TRUE),
-               mileage      = sum(end_point-begin_point)
+               mileage      = sum(end_point-beginpoint)
               ),
              .(applies = !is.na(PCT_DH_COMBINATION), 
                passes  = PCT_DH_COMBINATION > 0 & PCT_DH_COMBINATION < 25)][order(applies,passes)]
@@ -1127,7 +1127,7 @@ cross_validation_57 = function(data){
 
   #browser()
   pct_peak_single = data[data_item=="PCT_DH_SINGLE_UNIT",
-                         .(routeid,begin_point,end_point,PCT_DH_SINGLE_UNIT=value_numeric, num_sections)]
+                         .(routeid,beginpoint,end_point,PCT_DH_SINGLE_UNIT=value_numeric, num_sections)]
 
   if(pct_peak_single[, .N] == 0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -1141,7 +1141,7 @@ cross_validation_57 = function(data){
              .(
                .N,
                num_sections = sum(num_sections,na.rm=TRUE),
-               mileage      = sum(end_point-begin_point)
+               mileage      = sum(end_point-beginpoint)
               ),
              .(applies = !is.na(PCT_DH_SINGLE_UNIT), 
                passes  = PCT_DH_SINGLE_UNIT > 0 & PCT_DH_SINGLE_UNIT < 25)][order(applies,passes)]
@@ -1162,9 +1162,9 @@ cross_validation_60 = function(data){
   
   # browser()
   left_shoulder_width = data[data_item=="SHOULDER_WIDTH_L",
-                             .(routeid,begin_point,end_point,SHOULDER_WIDTH_L=value_numeric, num_sections)]
+                             .(routeid,beginpoint,end_point,SHOULDER_WIDTH_L=value_numeric, num_sections)]
   median_width = data[data_item=="MEDIAN_WIDTH",
-                      .(routeid,begin_point,end_point,MEDIAN_WIDTH=value_numeric)]
+                      .(routeid,beginpoint,end_point,MEDIAN_WIDTH=value_numeric)]
   
   if(left_shoulder_width[, .N] == 0 | median_width[, .N] == 0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -1174,14 +1174,14 @@ cross_validation_60 = function(data){
   # join the two together
   comparison = median_width[
     left_shoulder_width,
-    on = .(routeid,begin_point,end_point)]
+    on = .(routeid,beginpoint,end_point)]
 
   # apply the condition
   results = comparison[,
              .(
                .N,
                num_sections = sum(num_sections, na.rm=TRUE),
-               mileage      = sum(end_point - begin_point)
+               mileage      = sum(end_point - beginpoint)
               ),
              .(applies = !is.na(SHOULDER_WIDTH_L) & !is.na(MEDIAN_WIDTH), 
                passes  = SHOULDER_WIDTH_L < MEDIAN_WIDTH)][order(applies, passes)]
@@ -1202,7 +1202,7 @@ cross_validation_61 = function(data, variable){
   # variable %in% c('IRI', 'RUTTING', 'FAULTING', 'CRACKING_PERCENT')
   
   comparison = data[data_item == variable,
-                    .(routeid, begin_point, end_point, datayear, F_SYTEMorig,
+                    .(routeid, beginpoint, end_point, datayear, F_SYTEMorig,
                       value_date, value_text, num_sections)]
   
   if(comparison[, .N] == 0){
@@ -1216,7 +1216,7 @@ cross_validation_61 = function(data, variable){
                        .(
                          .N,
                          num_sections = sum(num_sections,na.rm=TRUE),
-                         mileage      = sum(end_point-begin_point)
+                         mileage      = sum(end_point-beginpoint)
                        ),
                        .(applies = (is.na(value_text) | value_text == '') & F_SYTEMorig == 1, 
                          passes  = year(value_date) >= datayear - 2)][order(applies,passes)]
@@ -1238,25 +1238,25 @@ cross_validation_62 = function(data){
   # PSR ValueNumeric Must be >0 and PSR ValueText must = A
 
   psr = data[data_item == "PSR",
-                    .(routeid, begin_point, end_point,
+                    .(routeid, beginpoint, end_point,
                       F_SYTEMorig, value_text, value_numeric, num_sections)]
   
   iri = data[data_item == 'IRI',
-             .(routeid, begin_point, end_point, IRI = value_numeric)]
+             .(routeid, beginpoint, end_point, IRI = value_numeric)]
   
   if(psr[, .N] == 0 | iri[, .N] == 0){
     warning("Not applicable - Sufficient data from the state are not available")
     return(list(results=NULL, comparison=NULL))  
   }
   
-  comparison = iri[psr, on=.(routeid, begin_point, end_point)]
+  comparison = iri[psr, on=.(routeid, beginpoint, end_point)]
   
   # apply the condition
   results = comparison[,
                        .(
                          .N,
                          num_sections = sum(num_sections,na.rm=TRUE),
-                         mileage      = sum(end_point-begin_point)
+                         mileage      = sum(end_point-beginpoint)
                        ),
                        .(applies = is.na(IRI) & F_SYTEMorig == 1, 
                          passes  = value_numeric > 0 & value_text == 'A')][order(applies,passes)]
@@ -1279,11 +1279,11 @@ cross_validation_63 = function(data){
   
   #browser()
   cracking_percent = data[data_item=="CRACKING_PERCENT", 
-                          .(routeid,begin_point,end_point,CRACKING_PERCENT=value_numeric, num_sections)]
+                          .(routeid,beginpoint,end_point,CRACKING_PERCENT=value_numeric, num_sections)]
   lane_width = data[data_item=="SURFACE_TYPE",
-                    .(routeid,begin_point,end_point,SURFACE_TYPE=value_numeric)]
+                    .(routeid,beginpoint,end_point,SURFACE_TYPE=value_numeric)]
   surface_type = data[data_item=="LANE_WIDTH",
-                      .(routeid,begin_point,end_point,LANE_WIDTH=value_numeric)]
+                      .(routeid,beginpoint,end_point,LANE_WIDTH=value_numeric)]
   
   if(cracking_percent[, .N] ==0 | lane_width[, .N] == 0 | surface_type[, .N] == 0 ){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -1291,8 +1291,8 @@ cross_validation_63 = function(data){
   }
 
   # join the two together
-  comparison = lane_width[cracking_percent, on=.(routeid,begin_point,end_point)]
-  comparison = surface_type[comparison,on=.(routeid,begin_point,end_point)]
+  comparison = lane_width[cracking_percent, on=.(routeid,beginpoint,end_point)]
+  comparison = surface_type[comparison,on=.(routeid,beginpoint,end_point)]
 
   # The max cracking percent based on the table on AC Cracking Validation tab
   max_cracking_pct <- c(rep(NA, 9),
@@ -1304,7 +1304,7 @@ cross_validation_63 = function(data){
              .(
                .N,
                num_sections = sum(num_sections,na.rm=TRUE),
-               mileage      = sum(end_point-begin_point)
+               mileage      = sum(end_point-beginpoint)
               ),
              .(applies = SURFACE_TYPE %in% c(2,6,7,8), 
                passes  = SURFACE_TYPE %in% c(2,6,7,8) & 
@@ -1330,7 +1330,7 @@ cross_validation_64 = function(data, variable){
   # browser()
   
   comparison = data[data_item == variable,
-                    .(routeid, begin_point, end_point, datayear, F_SYTEMorig, NHS,
+                    .(routeid, beginpoint, end_point, datayear, F_SYTEMorig, NHS,
                       value_date, value_text, num_sections)]
   
   if(comparison[, .N] == 0){
@@ -1344,7 +1344,7 @@ cross_validation_64 = function(data, variable){
                        .(
                          .N,
                          num_sections = sum(num_sections,na.rm=TRUE),
-                         mileage      = sum(end_point-begin_point)
+                         mileage      = sum(end_point-beginpoint)
                        ),
                        .(applies = (year(value_date) != datayear & F_SYTEMorig == 1) | (year(value_date) < datayear - 1 & NHS > 1), 
                          passes  = value_text %in% c('A', 'B', 'C', 'D', 'E'))][order(applies,passes)]
@@ -1366,7 +1366,7 @@ cross_validation_65 = function(data){
     # NHS in (1,2,3,4,5,6,7,8,9)
 
   comparison = data[data_item == "PSR",
-                    .(routeid, begin_point, end_point, datayear,
+                    .(routeid, beginpoint, end_point, datayear,
                       F_SYTEMorig, NHS,
                       value_date, sample = !is.na(expansion_factor), num_sections)]
   
@@ -1381,7 +1381,7 @@ cross_validation_65 = function(data){
                        .(
                          .N,
                          num_sections = sum(num_sections,na.rm=TRUE),
-                         mileage      = sum(end_point-begin_point)
+                         mileage      = sum(end_point-beginpoint)
                        ),
                        .(applies = sample | (F_SYTEMorig > 1 & NHS %in% 1:9), 
                          passes  = year(value_date) >= datayear - 1)][order(applies,passes)]
@@ -1403,7 +1403,7 @@ cross_validation_66 = function(data){
 
 
   comparison = data[data_item == "PSR",
-                    .(routeid, begin_point, end_point, datayear,
+                    .(routeid, beginpoint, end_point, datayear,
                       F_SYTEMorig, value_text, value_date, num_sections)]
   
   if(comparison[, .N] == 0){
@@ -1417,7 +1417,7 @@ cross_validation_66 = function(data){
                        .(
                          .N,
                          num_sections = sum(num_sections,na.rm=TRUE),
-                         mileage      = sum(end_point-begin_point)
+                         mileage      = sum(end_point-beginpoint)
                        ),
                        .(applies = value_text == 'A' & F_SYTEMorig == 1, 
                          passes  = year(value_date) == datayear)][order(applies,passes)]
@@ -1440,11 +1440,11 @@ cross_validation_x = function(data){
   
   # Counter_Peak_Lanes and Peak_Lanes are SP
   through_lanes      = data[data_item=="THROUGH_LANES",
-                            .(routeid,begin_point,end_point,THROUGH_LANES=value_numeric,num_sections)]
+                            .(routeid,beginpoint,end_point,THROUGH_LANES=value_numeric,num_sections)]
   counter_peak_lanes = data[data_item=="COUNTER_PEAK_LANES",
-                            .(routeid,begin_point,end_point,COUNTER_PEAK_LANES=value_numeric)]
+                            .(routeid,beginpoint,end_point,COUNTER_PEAK_LANES=value_numeric)]
   peak_lanes         = data[data_item=="PEAK_LANES",
-                            .(routeid,begin_point,end_point,PEAK_LANES=value_numeric)]
+                            .(routeid,beginpoint,end_point,PEAK_LANES=value_numeric)]
 
   if(through_lanes[, .N] == 0 | (counter_peak_lanes[, .N] + peak_lanes[, .N]) == 0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -1452,8 +1452,8 @@ cross_validation_x = function(data){
   }
   
   # join the two together
-  comparison = counter_peak_lanes[through_lanes,on=.(routeid,begin_point,end_point)]
-  comparison =         peak_lanes[comparison,   on=.(routeid,begin_point,end_point)]
+  comparison = counter_peak_lanes[through_lanes,on=.(routeid,beginpoint,end_point)]
+  comparison =         peak_lanes[comparison,   on=.(routeid,beginpoint,end_point)]
   
   # setting NAs to 0
   comparison[is.na(COUNTER_PEAK_LANES)&!is.na(PEAK_LANES),COUNTER_PEAK_LANES:=0]
@@ -1467,7 +1467,7 @@ cross_validation_x = function(data){
              .(
                .N,
                num_sections = sum(num_sections,na.rm=TRUE),
-               mileage      = sum(end_point-begin_point)
+               mileage      = sum(end_point-beginpoint)
               ),
              .(applies = !is.na(THROUGH_LANES), # always applies if through_lanes exists
                passes  = COUNTER_PEAK_LANES + PEAK_LANES >= THROUGH_LANES )][order(applies,passes)]
@@ -1487,11 +1487,11 @@ cross_validation_x = function(data){
 cross_validation_y = function(data){
   
   signal_type = data[data_item=="SIGNAL_TYPE",
-                     .(routeid,begin_point,end_point,SIGNAL_TYPE=value_numeric, num_sections)]
+                     .(routeid,beginpoint,end_point,SIGNAL_TYPE=value_numeric, num_sections)]
   f_system = data[data_item=="F_SYSTEM",
-                  .(routeid,begin_point,end_point,F_SYSTEM=value_numeric)]
+                  .(routeid,beginpoint,end_point,F_SYSTEM=value_numeric)]
   urban_id = data[data_item=="URBAN_ID", 
-                    .(routeid,begin_point,end_point,URBAN_ID=value_numeric)]
+                    .(routeid,beginpoint,end_point,URBAN_ID=value_numeric)]
 
   if(signal_type[, .N] == 0|f_system[, .N] == 0|urban_id[, .N] == 0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -1499,15 +1499,15 @@ cross_validation_y = function(data){
   }
   
   # join the two together
-  comparison = f_system[signal_type,on=.(routeid,begin_point,end_point)]
-  comparison = urban_id[comparison,   on=.(routeid,begin_point,end_point)]
+  comparison = f_system[signal_type,on=.(routeid,beginpoint,end_point)]
+  comparison = urban_id[comparison,   on=.(routeid,beginpoint,end_point)]
   
   # apply the condition
   results = comparison[,
              .(
                .N,
                num_sections = sum(num_sections,na.rm=TRUE),
-               mileage      = sum(end_point-begin_point)
+               mileage      = sum(end_point-beginpoint)
               ),
              .(applies = F_SYSTEM == 1 & URBAN_ID != 99999 , 
                passes  = SIGNAL_TYPE == 5 )][order(applies,passes)]
@@ -1536,9 +1536,9 @@ cross_validation_y = function(data){
 measurement_checks = function(data){
 
   comparison = data[data_item %in% c("IRI", "PSR", "RUTTING", "FAULTING", "CRACKING_PERCENT"),
-                    .(routeid, section_id, begin_point_og, end_point_og, data_item)]
+                    .(routeid, section_id, beginpoint_og, end_point_og, data_item)]
   comparison <- unique(comparison)
-  comparison[, section_length := end_point_og - begin_point_og]
+  comparison[, section_length := end_point_og - beginpoint_og]
   
   results = comparison[, .(num_sections = .N, mileage = sum(section_length)),
                        .(data_item, passes = section_length <= 0.11)][order(data_item,passes)]

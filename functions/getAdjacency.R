@@ -17,10 +17,10 @@ getAdjacency <- function(data, year, variable, adjacency_change){
   
   # Retain only one row per section_id
   data <- unique(data[data_item == variable & datayear == year,
-                      .(routeid, section_id, begin_point_og, end_point_og,
+                      .(routeid, section_id, beginpoint_og, end_point_og,
                         value_numeric, F_SYSTEM, Interstate, NHS)])
   
-  d.l <- data[order(routeid, begin_point_og)]
+  d.l <- data[order(routeid, beginpoint_og)]
   
   if ( nrow(d.l) == 0 ){
     report.1 <- data.table(groupCat = c(3, 4), N = NA, miles = NA, perc_miles = NA)
@@ -34,13 +34,13 @@ getAdjacency <- function(data, year, variable, adjacency_change){
     
     if ( adjacency_change == 'N' ){
       result <- d.adj[value_numeric == value_numeric_lag,
-                      list(miles=round(sum(end_point_og - begin_point_og), 2), .N),
+                      list(miles=round(sum(end_point_og - beginpoint_og), 2), .N),
                       by = list(F_SYSTEM)]
     }
     
     if (adjacency_change == 'Y' ){
       result <- d.adj[value_numeric != value_numeric_lag,
-                      list(miles = round(sum(end_point_og - begin_point_og), 2), .N),
+                      list(miles = round(sum(end_point_og - beginpoint_og), 2), .N),
                       by = list(F_SYSTEM)]
     }  
     
@@ -49,7 +49,7 @@ getAdjacency <- function(data, year, variable, adjacency_change){
     result[is.na(miles),miles:=0]
     result[is.na(N),N:=0]
     
-    total <- d.adj[ ,list(totalmiles=round(sum(end_point_og-begin_point_og),2)),
+    total <- d.adj[ ,list(totalmiles=round(sum(end_point_og-beginpoint_og),2)),
                     by=list(F_SYSTEM)]
     
     report.1 <- merge(total,
@@ -69,7 +69,7 @@ getAdjacency <- function(data, year, variable, adjacency_change){
     report.1[,F_SYSTEM := NULL]
   }
   
-  d.l = data[Interstate == 1][order(routeid, begin_point_og)]
+  d.l = data[Interstate == 1][order(routeid, beginpoint_og)]
   
   if ( nrow(d.l) == 0 ){
     report.2 <- data.table(groupCat = 1, N = NA, miles = NA, perc_miles = NA)
@@ -82,16 +82,16 @@ getAdjacency <- function(data, year, variable, adjacency_change){
     
     if ( adjacency_change == 'N'){
       result <- d.adj[value_numeric == value_numeric_lag,
-                      list(miles=round(sum(end_point_og - begin_point_og), 2), .N),]
+                      list(miles=round(sum(end_point_og - beginpoint_og), 2), .N),]
       
     }
     
     if ( adjacency_change == 'Y'){
       result <- d.adj[value_numeric != value_numeric_lag,
-                      list(miles=round(sum(end_point_og - begin_point_og), 2), .N),]
+                      list(miles=round(sum(end_point_og - beginpoint_og), 2), .N),]
       
     }
-    total <- d.adj[, list(totalmiles=round(sum(end_point_og - begin_point_og),2)),]
+    total <- d.adj[, list(totalmiles=round(sum(end_point_og - beginpoint_og),2)),]
     
     if(nrow(result)==0){
       result <- data.table(miles=0,N=0)
@@ -108,7 +108,7 @@ getAdjacency <- function(data, year, variable, adjacency_change){
   }
   
   
-  d.l = data[NHS == 1][order(routeid, begin_point_og)]
+  d.l = data[NHS == 1][order(routeid, beginpoint_og)]
   
   if ( nrow(d.l) == 0 ){
     report.3 <- data.table(groupCat = 2, N = NA, miles = NA, perc_miles = NA)
@@ -120,16 +120,16 @@ getAdjacency <- function(data, year, variable, adjacency_change){
     
     if ( adjacency_change == 'N'){
       result <- d.adj[value_numeric == value_numeric_lag,
-                      list(miles=round(sum(end_point_og-begin_point_og),2), .N),]
+                      list(miles=round(sum(end_point_og-beginpoint_og),2), .N),]
     }
     
     if ( adjacency_change == 'Y'){
       result <- d.adj[value_numeric != value_numeric_lag,
-                      list(miles=round(sum(end_point_og-begin_point_og),2), .N),]
+                      list(miles=round(sum(end_point_og-beginpoint_og),2), .N),]
     }
     
     
-    total <- d.adj[ , list(totalmiles = round(sum(end_point_og - begin_point_og), 2)),]
+    total <- d.adj[ , list(totalmiles = round(sum(end_point_og - beginpoint_og), 2)),]
     
     if(nrow(result) == 0){
       result <- data.table(miles=0, N=0)
