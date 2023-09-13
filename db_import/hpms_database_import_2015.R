@@ -69,7 +69,7 @@ if ( choice == 1 ){
       rename(DataYear = Year_record,
              RouteId = route_ID,
              BeginPoint = begin_Point,
-             EndPoint = end_point,
+             EndPoint = endpoint,
              DataItem = data_item) %>%
       mutate(SectionLength = as.numeric(EndPoint) - as.numeric(BeginPoint),
              StateYearKey = str_c(StateId, str_sub(DataYear, start = 3, end=4)))

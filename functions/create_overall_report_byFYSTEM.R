@@ -22,7 +22,7 @@ create_overall_report_byFSYSTEM <- function(
      numberOfRecords   <- data[stateid==state&datayear==year,.N,by=list(F_SYSTEM)]     
      numberOfVariables <- data[stateid==state&datayear==year,length(unique(data_item)),by=list(F_SYSTEM)]
      numberRoutes      <- unique(data[stateid==state&datayear==year,list(routeid,F_SYSTEM)])[,.N,by=list(F_SYSTEM)]
-     numberSegments    <- unique(data[stateid==state&datayear==year,list(routeid,beginpoint,end_point,F_SYSTEM),])[,.N,by=list(F_SYSTEM)]
+     numberSegments    <- unique(data[stateid==state&datayear==year,list(routeid,beginpoint,endpoint,F_SYSTEM),])[,.N,by=list(F_SYSTEM)]
      
      result <- merge(numberOfRecords,numberOfVariables,by=c("F_SYSTEM"))
      result[,N:=string_format(N)]

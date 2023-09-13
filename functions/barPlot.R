@@ -52,7 +52,7 @@ barPlot <- function(
   dt[, value_numeric := factor(value_numeric, levels=levels)]
   dt[, value_numeric := factor(value_numeric, levels=rev(levels(value_numeric)))]
   
-  dt <- dt[, sum(end_point - beginpoint), by=list(value_numeric)]
+  dt <- dt[, sum(endpoint - beginpoint), by=list(value_numeric)]
   
   dt <- merge(data.table(value_numeric=factor(rev(levels))), 
              dt,

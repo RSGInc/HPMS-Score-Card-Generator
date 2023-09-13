@@ -51,7 +51,7 @@ create_travel_yoy_density <- function(
   density_type = gVariables[Name == variable, Density_Type]
   
   # Which columns to keep from data?
-  keep_cols = c('routeid', 'beginpoint', 'end_point', 'value_numeric',
+  keep_cols = c('routeid', 'beginpoint', 'endpoint', 'value_numeric',
                 'F_SYSTEM', 'Interstate', 'NHS', 'num_sections')
   
   # get common indices to increase readability
@@ -228,40 +228,40 @@ create_travel_yoy_density <- function(
       # Scale the national data to the state data
       scale <- max(
         c(
-          var1[F_SYSTEM == 1, sum(end_point - beginpoint),
+          var1[F_SYSTEM == 1, sum(endpoint - beginpoint),
                by=list(value_numeric)][, max(V1)],
-          var1[F_SYSTEM == 2, sum(end_point - beginpoint),
+          var1[F_SYSTEM == 2, sum(endpoint - beginpoint),
                by = list(value_numeric)][, max(V1)],
-          var1[Interstate == 1, sum(end_point - beginpoint),
+          var1[Interstate == 1, sum(endpoint - beginpoint),
                by=list(value_numeric)][, max(V1)],
-          var1[NHS == 2, sum(end_point - beginpoint),
+          var1[NHS == 2, sum(endpoint - beginpoint),
                by = list(value_numeric)][, max(V1)],
-          var2[F_SYSTEM == 1, sum(end_point - beginpoint),
+          var2[F_SYSTEM == 1, sum(endpoint - beginpoint),
                by=list(value_numeric)][, max(V1)],
-          var2[F_SYSTEM == 2, sum(end_point - beginpoint),
+          var2[F_SYSTEM == 2, sum(endpoint - beginpoint),
                by = list(value_numeric)][, max(V1)],
-          var2[Interstate == 1, sum(end_point - beginpoint),
+          var2[Interstate == 1, sum(endpoint - beginpoint),
                by=list(value_numeric)][, max(V1)],
-          var2[NHS == 2, sum(end_point - beginpoint),
+          var2[NHS == 2, sum(endpoint - beginpoint),
                by = list(value_numeric)][, max(V1)]
         ))
       
       natscale <- max(
         c(
-          national[F_SYSTEM == 1, sum(end_point - beginpoint),
+          national[F_SYSTEM == 1, sum(endpoint - beginpoint),
                by=list(value_numeric)][, max(V1)],
-          national[F_SYSTEM == 2, sum(end_point - beginpoint),
+          national[F_SYSTEM == 2, sum(endpoint - beginpoint),
                by = list(value_numeric)][, max(V1)],
-          national[Interstate == 1, sum(end_point - beginpoint),
+          national[Interstate == 1, sum(endpoint - beginpoint),
                by=list(value_numeric)][, max(V1)],
-          national[NHS == 2, sum(end_point - beginpoint),
+          national[NHS == 2, sum(endpoint - beginpoint),
                by = list(value_numeric)][, max(V1)]
         )
       )
       
       natWeight <- scale / natscale
 
-      national[, end_point := natWeight * end_point]
+      national[, endpoint := natWeight * endpoint]
       national[, beginpoint := natWeight * beginpoint]
       
       # Pad scale slightly so we don't have problems with the bar plots

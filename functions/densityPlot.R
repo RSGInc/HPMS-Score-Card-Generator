@@ -33,7 +33,7 @@ getLimits <- function(dt, trim=TRUE){
     
     # Get max y by fitting a weighted density
     x <- dt[, value_numeric]
-    w <- dt[, (end_point - beginpoint) / sum(end_point - beginpoint)]
+    w <- dt[, (endpoint - beginpoint) / sum(endpoint - beginpoint)]
     w <- w[!is.na(x)]
     ymax <- max(density(x, weights=w, na.rm=TRUE)$y)
     
@@ -136,11 +136,11 @@ densityPlot <- function(
     # if we have something to report (density plots require at least 3 points to draw)
     
     p1 <- ggplot(data = d1, aes(x = value_numeric,
-                                weight=(end_point - beginpoint) / sum(end_point - beginpoint)))
+                                weight=(endpoint - beginpoint) / sum(endpoint - beginpoint)))
     p2 <- ggplot(data = d1, aes(x = value_numeric,
-                                weight=(end_point - beginpoint) / sum(end_point - beginpoint)))
+                                weight=(endpoint - beginpoint) / sum(endpoint - beginpoint)))
     p3 <- ggplot(data = d1, aes(x = value_numeric,
-                                weight=(end_point - beginpoint) / sum(end_point - beginpoint)))
+                                weight=(endpoint - beginpoint) / sum(endpoint - beginpoint)))
     
     if(nrow(d1) > 2){
       nunique = length(unique(d1[, value_numeric]))

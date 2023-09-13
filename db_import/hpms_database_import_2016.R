@@ -100,7 +100,7 @@ with(tbl, table(stateid, useNA='always'))
 sort(unique(tbl$routeid))
 
 with(tbl, summary(beginpoint))
-with(tbl, summary(end_point))
+with(tbl, summary(endpoint))
 sample_id <- tbl$sample_id %>% sort %>% unique
 head(sample_id)
 tail(sample_id)

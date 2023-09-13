@@ -38,22 +38,22 @@ create_travel_data_yoy <- function(
     if(ramps){
       var.1 = data[stateid == state & datayear == year &
                      data_item == variable & FACILITY_TYPE == 4,
-                   list(routeid, beginpoint, end_point,
+                   list(routeid, beginpoint, endpoint,
                         value.1 = value_numeric, F_SYSTEM)]
       
       var.2 = data[stateid == state & datayear == yearcomparison &
                      data_item == variable & FACILITY_TYPE == 4,
-                   list(routeid,beginpoint,end_point,
+                   list(routeid,beginpoint,endpoint,
                         value.2 = value_numeric, F_SYSTEM)]
     } else {
       var.1 = data[stateid == state & datayear == year &
                      data_item == variable & FACILITY_TYPE != 4,
-                   list(routeid,beginpoint,end_point,
+                   list(routeid,beginpoint,endpoint,
                         value.1 = value_numeric, F_SYSTEM)]
       
       var.2 = data[stateid == state & datayear == yearcomparison &
                      data_item == variable & FACILITY_TYPE != 4,
-                   list(routeid,beginpoint,end_point,
+                   list(routeid,beginpoint,endpoint,
                         value.2 = value_numeric, F_SYSTEM)]       
     }   
   }
@@ -62,23 +62,23 @@ create_travel_data_yoy <- function(
     if(ramps){
       var.1 = data[stateid == state&datayear == year &
                      data_item == variable & FACILITY_TYPE == 4 & !is.na(value_date),
-                   list(routeid,beginpoint,end_point,
+                   list(routeid,beginpoint,endpoint,
                         value.1 = year(value_date),F_SYSTEM)]
       
       var.2 = data[stateid == state&datayear == yearcomparison &
                      data_item == variable & FACILITY_TYPE == 4 & !is.na(value_date),
-                   list(routeid,beginpoint,end_point,
+                   list(routeid,beginpoint,endpoint,
                         value.2 = year(value_date),F_SYSTEM)]
       
     } else {
       var.1 = data[stateid == state & datayear == year &
                      data_item == variable & FACILITY_TYPE != 4 & !is.na(value_date),
-                   list(routeid,beginpoint,end_point,
+                   list(routeid,beginpoint,endpoint,
                         value.1 = year(value_date),F_SYSTEM)]
       
       var.2 = data[stateid == state & datayear == yearcomparison &
                      data_item == variable & FACILITY_TYPE != 4 & !is.na(value_date),
-                   list(routeid,beginpoint,end_point,
+                   list(routeid,beginpoint,endpoint,
                         value.2 = year(value_date),F_SYSTEM)]       
     }
   }
@@ -87,20 +87,20 @@ create_travel_data_yoy <- function(
     if(ramps){
       var.1 = data[stateid == state & datayear == year &
                      data_item == variable & FACILITY_TYPE == 4 & !is.na(value_text),
-                   list(routeid,beginpoint,end_point,value.1 = value_text,F_SYSTEM)]
+                   list(routeid,beginpoint,endpoint,value.1 = value_text,F_SYSTEM)]
       
       var.2 = data[stateid == state&datayear == yearcomparison &
                      data_item == variable & FACILITY_TYPE == 4 & !is.na(value_text),
-                   list(routeid,beginpoint,end_point,value.2 = value_text,F_SYSTEM)]
+                   list(routeid,beginpoint,endpoint,value.2 = value_text,F_SYSTEM)]
       
     } else {
       var.1 = data[stateid == state & datayear == year &
                      data_item == variable & FACILITY_TYPE != 4 & !is.na(value_text),
-                   list(routeid,beginpoint,end_point, value.1 = value_text,F_SYSTEM)]
+                   list(routeid,beginpoint,endpoint, value.1 = value_text,F_SYSTEM)]
       
       var.2 = data[stateid == state & datayear == yearcomparison &
                      data_item == variable & FACILITY_TYPE != 4 & !is.na(value_text),
-                   list(routeid,beginpoint,end_point,value.2 = value_text,F_SYSTEM)]       
+                   list(routeid,beginpoint,endpoint,value.2 = value_text,F_SYSTEM)]       
     }
   }
 
@@ -120,7 +120,7 @@ create_travel_data_yoy <- function(
   
   # this does the merge at the most disaggregate level
   # keep mismatches of yr1 but not yr2
-  var.yoy = merge(var.1, var.2, by = c('routeid', 'beginpoint', 'end_point'),
+  var.yoy = merge(var.1, var.2, by = c('routeid', 'beginpoint', 'endpoint'),
                   all.x=TRUE, all.y=FALSE)
   
   if(nrow(var.yoy) > 0){ # we have something to report
@@ -133,8 +133,8 @@ create_travel_data_yoy <- function(
       
       # need to use geom_bar and construct a custom histogram
       report[, bin2 := cut_custom(change)] # using custom function to have more control
-      totalmiles <- report[, sum(end_point - beginpoint)]
-      report <- report[, end_point := end_point / totalmiles]
+      totalmiles <- report[, sum(endpoint - beginpoint)]
+      report <- report[, endpoint := endpoint / totalmiles]
       report <- report[, beginpoint := beginpoint / totalmiles]
       report[change < -1e-3, color := factor("Reduction")]
       report[change >= -1e-3 & change <= 1e3, color := factor("Same")]
@@ -149,7 +149,7 @@ create_travel_data_yoy <- function(
       report[as.numeric(bin2) == 2, color := "Yes"]
       report[is.na(bin2), color := "NA"]
       report$color <- factor(report$color, levels=c('NA', 'Yes', 'No'))
-      report <- report[, .(V1 = sum(end_point - beginpoint)), by=.(color)]
+      report <- report[, .(V1 = sum(endpoint - beginpoint)), by=.(color)]
       totalmiles <- report[, sum(V1)]
       report <- report[, V1 := V1 / totalmiles]
       report[, color2 := color]
@@ -163,7 +163,7 @@ create_travel_data_yoy <- function(
     
     # custom axis labels
     if(histtype == 1){
-      p <- ggplot(report, aes(x=bin2,fill=color,weight=end_point-beginpoint)) +
+      p <- ggplot(report, aes(x=bin2,fill=color,weight=endpoint-beginpoint)) +
         geom_bar(width=0.75)
       
       p <- p + scale_x_discrete(
