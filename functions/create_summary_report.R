@@ -57,7 +57,7 @@ create_summary_report <- function(
   }
 
   if ( variable_type == 'date' ){
-    result1[is.na(valuenumeric) | valuenumeric == 0, valuenumeric := year(value_date)]
+    result1[is.na(valuenumeric) | valuenumeric == 0, valuenumeric := year(valuedate)]
   }
   
   result1 <- switch(variable_type,
@@ -100,7 +100,7 @@ create_summary_report <- function(
   }
 
   if ( variable_type == 'date' ){
-    result2[is.na(valuenumeric) | valuenumeric == 0, valuenumeric := year(value_date)]
+    result2[is.na(valuenumeric) | valuenumeric == 0, valuenumeric := year(valuedate)]
   }
   
   result2 <- switch(variable_type,
@@ -147,7 +147,7 @@ create_summary_report <- function(
   }
   
   if ( variable_type == 'date' ){
-    result3[is.na(valuenumeric) | valuenumeric == 0, valuenumeric := year(value_date)]
+    result3[is.na(valuenumeric) | valuenumeric == 0, valuenumeric := year(valuedate)]
   }
   
   result3 <- switch(variable_type,

@@ -33,7 +33,7 @@ download_socrata = function(url, con, stage_table){
     dataitem = 'character',
     valuenumeric = 'numeric',
     valuetext = 'character',
-    value_date = 'POSIXct',
+    valuedate = 'POSIXct',
     natrouteid = 'character'
   )
   
@@ -61,8 +61,8 @@ download_socrata = function(url, con, stage_table){
   message('Downloaded...')
   
   #if ( names(url) %in% c('mid_atlantic', 'SC', 'AZ', 'TN') ){
-  if (class(dt$value_date) == 'character'){
-    dt[, value_date := ymd_hms(value_date)]
+  if (class(dt$valuedate) == 'character'){
+    dt[, valuedate := ymd_hms(valuedate)]
   }
   
   dt[, datayear := as.integer(datayear)]

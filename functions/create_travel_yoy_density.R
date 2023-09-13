@@ -78,7 +78,7 @@ create_travel_yoy_density <- function(
   if ( type == 'date' ){ # DATE
     
     data[(idx_var1 | idx_var2) & (is.na(valuenumeric) | valuenumeric == 0),
-         valuenumeric := year(value_date)]
+         valuenumeric := year(valuedate)]
     
   }
   
@@ -105,7 +105,7 @@ create_travel_yoy_density <- function(
     
     if ( type == 'date'){
       national[is.na(valuenumeric) | valuenumeric == 0, 
-               valuenumeric := year(value_date)]
+               valuenumeric := year(valuedate)]
     }
     
     if(ramps){

@@ -30,7 +30,7 @@ csv_to_stage = function(file, con, stage_table){
     dataitem = 'character',
     valuenumeric = 'numeric',
     valuetext = 'character',
-    value_date = 'POSIXct',
+    valuedate = 'POSIXct',
     natrouteid = 'character'
   )
   
@@ -45,8 +45,8 @@ csv_to_stage = function(file, con, stage_table){
   
   dt[, routeid := as.character(routeid)]
   
-  if (class(dt$value_date)[1] == 'character'){
-    dt[, value_date := ymd_hms(value_date)]
+  if (class(dt$valuedate)[1] == 'character'){
+    dt[, valuedate := ymd_hms(valuedate)]
   }
   
   col_type_obs = sapply(dt, function(x) class(x)[1])
@@ -126,7 +126,7 @@ socrata_to_stage = function(url, con, stage_table){
     dataitem = 'character',
     valuenumeric = 'numeric',
     valuetext = 'character',
-    value_date = 'POSIXct',
+    valuedate = 'POSIXct',
     natrouteid = 'character'
   )
   
@@ -154,8 +154,8 @@ socrata_to_stage = function(url, con, stage_table){
   message('Downloaded...')
   
   #if ( names(url) %in% c('mid_atlantic', 'SC', 'AZ', 'TN') ){
-  if (class(dt$value_date) == 'character'){
-    dt[, value_date := ymd_hms(value_date)]
+  if (class(dt$valuedate) == 'character'){
+    dt[, valuedate := ymd_hms(valuedate)]
   }
   
   col_type_obs = sapply(dt, function(x) class(x)[1])

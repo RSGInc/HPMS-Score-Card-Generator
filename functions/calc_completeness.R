@@ -72,15 +72,15 @@ get_coverage_data = function(
   year,
   variable,
   dataitems,
-  value_date = c('YEAR_LAST_IMPROVEMENT', 'YEAR_LAST_CONSTRUCTION'),
+  valuedate = c('YEAR_LAST_IMPROVEMENT', 'YEAR_LAST_CONSTRUCTION'),
   valuetext = c()){
   
   coverage_list = list()
   
   # List cols to keep
   
-  if ( variable %in% value_date ){
-    value_var = 'value_date'
+  if ( variable %in% valuedate ){
+    value_var = 'valuedate'
     # } else if ( variable %in% valuetext ){  # Assume target variable is not valuetext
     #   value_var = 'valuetext'
   } else {
@@ -99,8 +99,8 @@ get_coverage_data = function(
   for ( di in dataitems ){
     
     # List cols to keep
-    if ( di %in% value_date ){
-      value_var = 'value_date'
+    if ( di %in% valuedate ){
+      value_var = 'valuedate'
     } else if ( di %in% valuetext ){
       value_var = 'valuetext'
     } else {
@@ -533,7 +533,7 @@ calc_completeness <- function(data, year, variable){
     
     # dat_YEAR_LAST_CONSTRUCTION = data[
     #   dataitem == 'YEAR_LAST_CONSTRUCTION' & datayear == year,
-    #   .(routeid, beginpoint, endpoint, YEAR_LAST_CONSTRUCTION == value_date)]
+    #   .(routeid, beginpoint, endpoint, YEAR_LAST_CONSTRUCTION == valuedate)]
     
     # coverage = coverage_join(dat_variable, dat_YEAR_LAST_CONSTRUCTION)
     
@@ -1194,7 +1194,7 @@ calc_completeness <- function(data, year, variable){
     
     coverage = dat.SURFACE_TYPE[, .(routeid, beginpoint, endpoint, SURFACE_TYPE = valuenumeric)] %>%
       coverage_join(
-        dat.variable[, .(routeid, beginpoint, endpoint, expansion_factor, variable = value_date)])
+        dat.variable[, .(routeid, beginpoint, endpoint, expansion_factor, variable = valuedate)])
     
     coverage[, required := !is.na(expansion_factor) & SURFACE_TYPE %in% 2:10]
     
@@ -1210,8 +1210,8 @@ calc_completeness <- function(data, year, variable){
     dat.YEAR_LAST_CONSTRUCTION <- data[dataitem == "YEAR_LAST_CONSTRUCTION" & datayear == year,]
     
     coverage = dat.SURFACE_TYPE[, .(routeid, beginpoint, endpoint, SURFACE_TYPE = valuenumeric)] %>%
-      coverage_join(dat.variable[, .(routeid, beginpoint, endpoint, variable = value_date, expansion_factor)]) %>%
-      coverage_join(dat.YEAR_LAST_CONSTRUCTION[, .(routeid, beginpoint, endpoint, YEAR_LAST_CONSTRUCTION = value_date)])
+      coverage_join(dat.variable[, .(routeid, beginpoint, endpoint, variable = valuedate, expansion_factor)]) %>%
+      coverage_join(dat.YEAR_LAST_CONSTRUCTION[, .(routeid, beginpoint, endpoint, YEAR_LAST_CONSTRUCTION = valuedate)])
     
     coverage[, required := (!is.na(expansion_factor) & SURFACE_TYPE %in% 2:10) ]
     

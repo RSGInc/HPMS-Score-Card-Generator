@@ -61,7 +61,7 @@ dt = read.socrata(url=paste0(urls[which_url], '?stateid=', stateid), email=email
 setDT(dt)
 
 if ( which_url == 'mid_atlantic' ){
-  dt[, value_date := ymd_hms(value_date)]
+  dt[, valuedate := ymd_hms(valuedate)]
 }
 
 # Queries below --------------------------------------------------------

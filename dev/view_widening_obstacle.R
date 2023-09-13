@@ -38,7 +38,7 @@ for (variable in vars){
   dt_list[[variable]] = 
     dt[, .(nona_pct_numeric = sum(!is.na(valuenumeric)) / .N,
            nona_pct_text = sum(!is.na(valuetext) & valuetext != '') / .N,
-           nona_pct_date = sum(!is.na(value_date)) / .N), stateid]
+           nona_pct_date = sum(!is.na(valuedate)) / .N), stateid]
 }
 
 dt_nas = rbindlist(dt_list, idcol='variable')

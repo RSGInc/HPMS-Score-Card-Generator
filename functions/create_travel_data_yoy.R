@@ -61,25 +61,25 @@ create_travel_data_yoy <- function(
   if(type == 'date'){
     if(ramps){
       var.1 = data[stateid == state&datayear == year &
-                     dataitem == variable & FACILITY_TYPE == 4 & !is.na(value_date),
+                     dataitem == variable & FACILITY_TYPE == 4 & !is.na(valuedate),
                    list(routeid,beginpoint,endpoint,
-                        value.1 = year(value_date),F_SYSTEM)]
+                        value.1 = year(valuedate),F_SYSTEM)]
       
       var.2 = data[stateid == state&datayear == yearcomparison &
-                     dataitem == variable & FACILITY_TYPE == 4 & !is.na(value_date),
+                     dataitem == variable & FACILITY_TYPE == 4 & !is.na(valuedate),
                    list(routeid,beginpoint,endpoint,
-                        value.2 = year(value_date),F_SYSTEM)]
+                        value.2 = year(valuedate),F_SYSTEM)]
       
     } else {
       var.1 = data[stateid == state & datayear == year &
-                     dataitem == variable & FACILITY_TYPE != 4 & !is.na(value_date),
+                     dataitem == variable & FACILITY_TYPE != 4 & !is.na(valuedate),
                    list(routeid,beginpoint,endpoint,
-                        value.1 = year(value_date),F_SYSTEM)]
+                        value.1 = year(valuedate),F_SYSTEM)]
       
       var.2 = data[stateid == state & datayear == yearcomparison &
-                     dataitem == variable & FACILITY_TYPE != 4 & !is.na(value_date),
+                     dataitem == variable & FACILITY_TYPE != 4 & !is.na(valuedate),
                    list(routeid,beginpoint,endpoint,
-                        value.2 = year(value_date),F_SYSTEM)]       
+                        value.2 = year(valuedate),F_SYSTEM)]       
     }
   }
   
