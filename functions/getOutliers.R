@@ -33,8 +33,8 @@ getOutliers <- function(data, year, variable){
                     list(totalmiles = round(sum(endpoint-beginpoint), 2)),
                     by=list(F_SYSTEM)]
     
-    result.1 <- d.l[(value_numeric > outlier_threshold_high | 
-                       value_numeric < outlier_threshold_low),
+    result.1 <- d.l[(valuenumeric > outlier_threshold_high | 
+                       valuenumeric < outlier_threshold_low),
                     list(miles = round(sum(endpoint - beginpoint, na.rm=TRUE), 2), N=sum(num_sections)),
                     by=list(F_SYSTEM)
                     ]
@@ -60,8 +60,8 @@ getOutliers <- function(data, year, variable){
     report.2 <- data.table(totalmiles = NA, miles = NA, N = NA, perc_miles = NA)  
   } else {
     
-    result.2 <- d.l[(value_numeric > outlier_threshold_high |
-                       value_numeric < outlier_threshold_low),
+    result.2 <- d.l[(valuenumeric > outlier_threshold_high |
+                       valuenumeric < outlier_threshold_low),
                     list(miles=round(sum(endpoint-beginpoint,na.rm=TRUE),2),N=sum(num_sections)),
                     ]
     
@@ -89,8 +89,8 @@ getOutliers <- function(data, year, variable){
     report.3 <- data.table(totalmiles = NA, miles = NA, N = NA, perc_miles = NA)    
   } else {
     
-    result.3 <- d.l[(value_numeric > outlier_threshold_high |
-                       value_numeric < outlier_threshold_low),
+    result.3 <- d.l[(valuenumeric > outlier_threshold_high |
+                       valuenumeric < outlier_threshold_low),
                     list(miles=round(sum(endpoint-beginpoint,na.rm=TRUE),2),N=sum(num_sections)),]
     
     if(nrow(result.3)==0){

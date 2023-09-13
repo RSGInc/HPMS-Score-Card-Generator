@@ -51,7 +51,7 @@ create_travel_yoy_density <- function(
   density_type = gVariables[Name == variable, Density_Type]
   
   # Which columns to keep from data?
-  keep_cols = c('routeid', 'beginpoint', 'endpoint', 'value_numeric',
+  keep_cols = c('routeid', 'beginpoint', 'endpoint', 'valuenumeric',
                 'F_SYSTEM', 'Interstate', 'NHS', 'num_sections')
   
   # get common indices to increase readability
@@ -77,13 +77,13 @@ create_travel_yoy_density <- function(
 
   if ( type == 'date' ){ # DATE
     
-    data[(idx_var1 | idx_var2) & (is.na(value_numeric) | value_numeric == 0),
-         value_numeric := year(value_date)]
+    data[(idx_var1 | idx_var2) & (is.na(valuenumeric) | valuenumeric == 0),
+         valuenumeric := year(value_date)]
     
   }
   
-  idx_var1 = idx_var1 & data[, !is.na(value_numeric)]
-  idx_var2 = idx_var2 & data[, !is.na(value_numeric)]
+  idx_var1 = idx_var1 & data[, !is.na(valuenumeric)]
+  idx_var2 = idx_var2 & data[, !is.na(valuenumeric)]
   
   var1 <- data[idx_var1, keep_cols, with=FALSE]
   var2 <- data[idx_var2, keep_cols, with=FALSE]
@@ -104,8 +104,8 @@ create_travel_yoy_density <- function(
     }
     
     if ( type == 'date'){
-      national[is.na(value_numeric) | value_numeric == 0, 
-               value_numeric := year(value_date)]
+      national[is.na(valuenumeric) | valuenumeric == 0, 
+               valuenumeric := year(value_date)]
     }
     
     if(ramps){
@@ -114,7 +114,7 @@ create_travel_yoy_density <- function(
       national <- national[FACILITY_TYPE != 4,]
     }
     
-    national <- national[!is.na(value_numeric)]
+    national <- national[!is.na(valuenumeric)]
     national <- national[, keep_cols, with=FALSE]
     
     if(cont_variable){ 
@@ -125,36 +125,36 @@ create_travel_yoy_density <- function(
         
         
         vals_p1 = sort(
-          unique(c(var1[Interstate == 1, value_numeric],
-                   var2[Interstate == 1, value_numeric],
-                   national[Interstate == 1, value_numeric]))
+          unique(c(var1[Interstate == 1, valuenumeric],
+                   var2[Interstate == 1, valuenumeric],
+                   national[Interstate == 1, valuenumeric]))
         )
         
         vals_p2 = sort(
           unique(
-            c(var1[NHS == 1, value_numeric],
-              var2[NHS == 1, value_numeric],
-              national[NHS == 1, value_numeric])
+            c(var1[NHS == 1, valuenumeric],
+              var2[NHS == 1, valuenumeric],
+              national[NHS == 1, valuenumeric])
           )
         )
         
         vals_p3 = sort(
           unique(
-            c(var1[F_SYSTEM == 1, value_numeric],
-              var2[F_SYSTEM == 1, value_numeric],
-              national[F_SYSTEM == 1, value_numeric])
+            c(var1[F_SYSTEM == 1, valuenumeric],
+              var2[F_SYSTEM == 1, valuenumeric],
+              national[F_SYSTEM == 1, valuenumeric])
           )
         )
         
         vals_p4 = sort(
           unique(
-            c(var1[F_SYSTEM == 2, value_numeric],
-              var2[F_SYSTEM == 2, value_numeric],
-              national[F_SYSTEM == 1, value_numeric])
+            c(var1[F_SYSTEM == 2, valuenumeric],
+              var2[F_SYSTEM == 2, valuenumeric],
+              national[F_SYSTEM == 1, valuenumeric])
           )
         )
         
-        unique_vals = sort(unique(c(var1$value_numeric, var2$value_numeric)))
+        unique_vals = sort(unique(c(var1$valuenumeric, var2$valuenumeric)))
         nvalues <- max(c(length(vals_p1), length(vals_p2), length(vals_p3), length(vals_p4)))
         
         density_type = ifelse(nvalues <= nvalues_bar, 'bar', 'density')
@@ -218,9 +218,9 @@ create_travel_yoy_density <- function(
             
       labels <- sort(
         unique(
-          c(var1[, value_numeric],
-            var2[, value_numeric],
-            national[, value_numeric])
+          c(var1[, valuenumeric],
+            var2[, valuenumeric],
+            national[, valuenumeric])
         )
       )
       
@@ -229,33 +229,33 @@ create_travel_yoy_density <- function(
       scale <- max(
         c(
           var1[F_SYSTEM == 1, sum(endpoint - beginpoint),
-               by=list(value_numeric)][, max(V1)],
+               by=list(valuenumeric)][, max(V1)],
           var1[F_SYSTEM == 2, sum(endpoint - beginpoint),
-               by = list(value_numeric)][, max(V1)],
+               by = list(valuenumeric)][, max(V1)],
           var1[Interstate == 1, sum(endpoint - beginpoint),
-               by=list(value_numeric)][, max(V1)],
+               by=list(valuenumeric)][, max(V1)],
           var1[NHS == 2, sum(endpoint - beginpoint),
-               by = list(value_numeric)][, max(V1)],
+               by = list(valuenumeric)][, max(V1)],
           var2[F_SYSTEM == 1, sum(endpoint - beginpoint),
-               by=list(value_numeric)][, max(V1)],
+               by=list(valuenumeric)][, max(V1)],
           var2[F_SYSTEM == 2, sum(endpoint - beginpoint),
-               by = list(value_numeric)][, max(V1)],
+               by = list(valuenumeric)][, max(V1)],
           var2[Interstate == 1, sum(endpoint - beginpoint),
-               by=list(value_numeric)][, max(V1)],
+               by=list(valuenumeric)][, max(V1)],
           var2[NHS == 2, sum(endpoint - beginpoint),
-               by = list(value_numeric)][, max(V1)]
+               by = list(valuenumeric)][, max(V1)]
         ))
       
       natscale <- max(
         c(
           national[F_SYSTEM == 1, sum(endpoint - beginpoint),
-               by=list(value_numeric)][, max(V1)],
+               by=list(valuenumeric)][, max(V1)],
           national[F_SYSTEM == 2, sum(endpoint - beginpoint),
-               by = list(value_numeric)][, max(V1)],
+               by = list(valuenumeric)][, max(V1)],
           national[Interstate == 1, sum(endpoint - beginpoint),
-               by=list(value_numeric)][, max(V1)],
+               by=list(valuenumeric)][, max(V1)],
           national[NHS == 2, sum(endpoint - beginpoint),
-               by = list(value_numeric)][, max(V1)]
+               by = list(valuenumeric)][, max(V1)]
         )
       )
       

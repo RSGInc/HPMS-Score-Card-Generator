@@ -39,18 +39,18 @@ create_pavement_summary <- function(data, state, year){
   # Missing through lanes
   dt_through_lanes <- 
     dt[dataitem == "THROUGH_LANES",
-       list(n_missing = sum(num_sections * ( is.na(value_numeric) | is.null(value_numeric)))),
+       list(n_missing = sum(num_sections * ( is.na(valuenumeric) | is.null(valuenumeric)))),
        by=group]
   
   dt_through_lanes = merge(data.table(group=1:length(gF_SYSTEM_levels)),dt_through_lanes,by="group",all.x=T)
   
   # Summarize surface type
   dt_surftype <- unique(dt[dataitem == 'SURFACE_TYPE',
-                        .(dataitem, routeid, section_id, beginpoint_og, endpoint_og, value_numeric, group)])
+                        .(dataitem, routeid, section_id, beginpoint_og, endpoint_og, valuenumeric, group)])
   dt_surf_sum <- dt_surftype[,
-            list(n_missing = sum((is.na(value_numeric) | is.null(value_numeric))),
-            n_1 =  sum((value_numeric == 1 & !is.na(value_numeric))),
-            n_11 = sum((value_numeric == 11 & !is.na(value_numeric))),
+            list(n_missing = sum((is.na(valuenumeric) | is.null(valuenumeric))),
+            n_1 =  sum((valuenumeric == 1 & !is.na(valuenumeric))),
+            n_11 = sum((valuenumeric == 11 & !is.na(valuenumeric))),
             n_sec_gt_011 = sum(((endpoint_og - beginpoint_og) >= 0.11))),
        by=group]
   
@@ -80,7 +80,7 @@ create_pavement_summary <- function(data, state, year){
   
   return(obj)
   
-  #tab <- table(dt_surftype$value_numeric, useNA='always')
+  #tab <- table(dt_surftype$valuenumeric, useNA='always')
   
   #stop('need to create a table or graphic for inclusion in grid.arrange')
 }

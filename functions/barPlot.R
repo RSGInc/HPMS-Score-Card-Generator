@@ -49,14 +49,14 @@ barPlot <- function(
   # Define the dataset
 
   dt <- copy(d1)
-  dt[, value_numeric := factor(value_numeric, levels=levels)]
-  dt[, value_numeric := factor(value_numeric, levels=rev(levels(value_numeric)))]
+  dt[, valuenumeric := factor(valuenumeric, levels=levels)]
+  dt[, valuenumeric := factor(valuenumeric, levels=rev(levels(valuenumeric)))]
   
-  dt <- dt[, sum(endpoint - beginpoint), by=list(value_numeric)]
+  dt <- dt[, sum(endpoint - beginpoint), by=list(valuenumeric)]
   
-  dt <- merge(data.table(value_numeric=factor(rev(levels))), 
+  dt <- merge(data.table(valuenumeric=factor(rev(levels))), 
              dt,
-             by="value_numeric", all.x=TRUE)
+             by="valuenumeric", all.x=TRUE)
   
   dt <- cbind(type=barcolor, dt)
   
@@ -65,11 +65,11 @@ barPlot <- function(
   dt[is.na(V1), type := gColors$blank]
   dt[is.na(V1), V1 := 0]
   
-  dt <- dt[, value_numeric := factor(value_numeric, levels=rev(levels(value_numeric)))]
+  dt <- dt[, valuenumeric := factor(valuenumeric, levels=rev(levels(valuenumeric)))]
   
   dt[is.na(V1), V1 := 0]
   
-  p <- ggplot(dt, aes(x=value_numeric, y=V1, fill=type))
+  p <- ggplot(dt, aes(x=valuenumeric, y=V1, fill=type))
   p <- p + geom_bar(width=0.8, stat="identity",position=position_dodge(0.0))
   p <- p + scale_y_continuous("", limits=c(0, scale))
   p <- p + coord_flip()

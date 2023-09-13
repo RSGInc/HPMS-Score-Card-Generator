@@ -124,7 +124,7 @@ cross_validation_1 = function(data){
   # IRI >= 30 and <= 400
   #browser()
   iri = data[dataitem=="IRI",
-             .(routeid, beginpoint, endpoint, IRI=value_numeric, num_sections)]
+             .(routeid, beginpoint, endpoint, IRI=valuenumeric, num_sections)]
   
   if(iri[, .N] == 0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -238,7 +238,7 @@ cross_validation_14 = function(data){
   
   #browser()
   lane_width = data[dataitem=="LANE_WIDTH",
-                    .(routeid,beginpoint,endpoint,LANE_WIDTH=value_numeric, num_sections)]
+                    .(routeid,beginpoint,endpoint,LANE_WIDTH=valuenumeric, num_sections)]
   
   if(lane_width[, .N] == 0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -273,7 +273,7 @@ cross_validation_15 = function(data){
   # should it include a check of 0?
   
   #browser()
-  speed_limit = data[dataitem=="SPEED_LIMIT",.(routeid,beginpoint,endpoint,SPEED_LIMIT=value_numeric, num_sections)]
+  speed_limit = data[dataitem=="SPEED_LIMIT",.(routeid,beginpoint,endpoint,SPEED_LIMIT=valuenumeric, num_sections)]
   
   if(speed_limit[, .N] == 0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -308,9 +308,9 @@ cross_validation_16 = function(data){
   # Counter_Peak_Lanes is NULL if FACILITY_TYPE is 1
   
   facility_type      = data[dataitem=="FACILITY_TYPE",
-                            .(routeid,beginpoint,endpoint,FACILITY_TYPE=value_numeric,num_sections)]
+                            .(routeid,beginpoint,endpoint,FACILITY_TYPE=valuenumeric,num_sections)]
   counter_peak_lanes = data[dataitem=="COUNTER_PEAK_LANES",
-                            .(routeid,beginpoint,endpoint,COUNTER_PEAK_LANES=value_numeric)]
+                            .(routeid,beginpoint,endpoint,COUNTER_PEAK_LANES=valuenumeric)]
   
   if(facility_type[, .N] == 0 | counter_peak_lanes[, .N] == 0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -347,11 +347,11 @@ cross_validation_17 = function(data){
   
   #browser()
   aadt_single_unit = data[dataitem=="AADT_SINGLE_UNIT",
-                          .(routeid,beginpoint,endpoint,AADT_SINGLE_UNIT=value_numeric, num_sections)]
+                          .(routeid,beginpoint,endpoint,AADT_SINGLE_UNIT=valuenumeric, num_sections)]
   aadt_combination = data[dataitem=="AADT_COMBINATION",
-                          .(routeid,beginpoint,endpoint,AADT_COMBINATION=value_numeric)]
+                          .(routeid,beginpoint,endpoint,AADT_COMBINATION=valuenumeric)]
   aadt = data[dataitem=="AADT",
-              .(routeid,beginpoint,endpoint,AADT=value_numeric)]
+              .(routeid,beginpoint,endpoint,AADT=valuenumeric)]
   
   if(aadt_single_unit[, .N] == 0 | aadt_combination[, .N] == 0 | aadt[, .N] == 0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -393,11 +393,11 @@ cross_validation_20 = function(data){
   
   #browser()
   median_width = data[dataitem=="MEDIAN_TYPE",
-                      .(routeid,beginpoint,endpoint,MEDIAN_TYPE=value_numeric, num_sections)]
+                      .(routeid,beginpoint,endpoint,MEDIAN_TYPE=valuenumeric, num_sections)]
   median_type = data[dataitem=="MEDIAN_WIDTH",
-                     .(routeid,beginpoint,endpoint,MEDIAN_WIDTH=value_numeric)]
+                     .(routeid,beginpoint,endpoint,MEDIAN_WIDTH=valuenumeric)]
   facility_type = data[dataitem=="FACILITY_TYPE",
-                       .(routeid,beginpoint,endpoint,FACILITY_TYPE=value_numeric)]
+                       .(routeid,beginpoint,endpoint,FACILITY_TYPE=valuenumeric)]
 
   if(median_width[, .N] == 0|median_type[, .N] == 0|facility_type[, .N] == 0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -434,9 +434,9 @@ cross_validation_22 = function(data){
   
   #browser()
   median_width = data[dataitem=="MEDIAN_TYPE",
-                      .(routeid,beginpoint,endpoint,MEDIAN_TYPE=value_numeric, num_sections)]
+                      .(routeid,beginpoint,endpoint,MEDIAN_TYPE=valuenumeric, num_sections)]
   median_type = data[dataitem=="MEDIAN_WIDTH",
-                     .(routeid,beginpoint,endpoint,MEDIAN_WIDTH=value_numeric)]
+                     .(routeid,beginpoint,endpoint,MEDIAN_WIDTH=valuenumeric)]
 
   if(median_width[, .N] == 0|median_type[, .N] == 0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -474,7 +474,7 @@ cross_validation_23 = function(data){
   widening_obstacle = data[dataitem=="WIDENING_OBSTACLE", 
                            .(routeid,beginpoint,endpoint,WIDENING_OBSTACLE=value_text, num_sections)]
   widening_potential = data[dataitem=="WIDENING_POTENTIAL",
-                            .(routeid,beginpoint,endpoint,WIDENING_POTENTIAL=value_numeric)]
+                            .(routeid,beginpoint,endpoint,WIDENING_POTENTIAL=valuenumeric)]
   
   if(widening_obstacle[, .N] == 0 | widening_potential[, .N] == 0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -510,9 +510,9 @@ cross_validation_39 = function(data){
   
   #browser()
   facility_type = data[dataitem=="FACILITY_TYPE",
-                       .(routeid,beginpoint,endpoint,FACILITY_TYPE=value_numeric, num_sections)]
+                       .(routeid,beginpoint,endpoint,FACILITY_TYPE=valuenumeric, num_sections)]
   dir_factor = data[dataitem=="DIR_FACTOR",
-                    .(routeid,beginpoint,endpoint,DIR_FACTOR=value_numeric)]
+                    .(routeid,beginpoint,endpoint,DIR_FACTOR=valuenumeric)]
   
   if(facility_type[, .N] == 0 | dir_factor[, .N] == 0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -548,9 +548,9 @@ cross_validation_40 = function(data){
   
   #browser()
   facility_type = data[dataitem=="FACILITY_TYPE",
-                       .(routeid,beginpoint,endpoint,FACILITY_TYPE=value_numeric, num_sections)]
+                       .(routeid,beginpoint,endpoint,FACILITY_TYPE=valuenumeric, num_sections)]
   dir_factor = data[dataitem=="DIR_FACTOR",
-                    .(routeid,beginpoint,endpoint,DIR_FACTOR=value_numeric)]
+                    .(routeid,beginpoint,endpoint,DIR_FACTOR=valuenumeric)]
   
   if(facility_type[, .N] == 0|dir_factor[, .N] == 0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -587,9 +587,9 @@ cross_validation_41 = function(data){
   
   #browser()
   future_aadt = data[dataitem=="FUTURE_AADT",
-                     .(routeid, beginpoint, endpoint, FUTURE_AADT=value_numeric, num_sections)]
+                     .(routeid, beginpoint, endpoint, FUTURE_AADT=valuenumeric, num_sections)]
   aadt = data[dataitem=="AADT",
-              .(routeid,beginpoint,endpoint,AADT=value_numeric)]
+              .(routeid,beginpoint,endpoint,AADT=valuenumeric)]
 
   if(future_aadt[, .N] == 0|aadt[, .N] == 0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -626,15 +626,15 @@ cross_validation_42 = function(data){
   # browser()
   pct_peak_single = data[
     dataitem=="PCT_DH_SINGLE_UNIT",
-    .(routeid,beginpoint,endpoint,PCT_DH_SINGLE_UNIT=value_numeric, num_sections)]
+    .(routeid,beginpoint,endpoint,PCT_DH_SINGLE_UNIT=valuenumeric, num_sections)]
 
   aadt_single_unit = data[
     dataitem=="AADT_SINGLE_UNIT",
-    .(routeid,beginpoint,endpoint,AADT_SINGLE_UNIT=value_numeric)]
+    .(routeid,beginpoint,endpoint,AADT_SINGLE_UNIT=valuenumeric)]
   
   aadt = data[
     dataitem=="AADT",
-    .(routeid,beginpoint,endpoint,AADT=value_numeric)]
+    .(routeid,beginpoint,endpoint,AADT=valuenumeric)]
   
   if(pct_peak_single[, .N] == 0 | aadt_single_unit[, .N] == 0 | aadt[, .N] == 0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -679,11 +679,11 @@ cross_validation_43 = function(data){
   # (AADT_COMBINATION x 0.025) < (AADT x (PCT_DH_COMBINATION/100)) < (AADT_COMBINATION x 0.4)  
 
   pct_combination = data[dataitem=="PCT_DH_COMBINATION",
-                         .(routeid,beginpoint,endpoint,PCT_DH_COMBINATION=value_numeric, num_sections)]
+                         .(routeid,beginpoint,endpoint,PCT_DH_COMBINATION=valuenumeric, num_sections)]
   aadt_combination = data[dataitem=="AADT_COMBINATION",
-                          .(routeid,beginpoint,endpoint,AADT_COMBINATION=value_numeric)]
+                          .(routeid,beginpoint,endpoint,AADT_COMBINATION=valuenumeric)]
   aadt = data[dataitem=="AADT",
-              .(routeid,beginpoint,endpoint,AADT=value_numeric)]
+              .(routeid,beginpoint,endpoint,AADT=valuenumeric)]
 
   if(pct_combination[, .N] == 0 | aadt_combination[, .N] == 0 | aadt[, .N] == 0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -723,9 +723,9 @@ cross_validation_44 = function(data){
 
   #browser()
   aadt_combination = data[dataitem=="AADT_COMBINATION",
-                          .(routeid,beginpoint,endpoint,AADT_COMBINATION=value_numeric, num_sections)]
+                          .(routeid,beginpoint,endpoint,AADT_COMBINATION=valuenumeric, num_sections)]
   aadt = data[dataitem=="AADT",
-              .(routeid,beginpoint,endpoint,AADT=value_numeric)]
+              .(routeid,beginpoint,endpoint,AADT=valuenumeric)]
   
   if(aadt_combination[, .N] == 0 | aadt[, .N] == 0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -760,8 +760,8 @@ cross_validation_45 = function(data){
   # AADT_Single_Unit < AADT * 0.4
   
   #browser()
-  aadt_single_unit = data[dataitem=="AADT_SINGLE_UNIT",.(routeid,beginpoint,endpoint,AADT_SINGLE_UNIT=value_numeric, num_sections)]
-  aadt = data[dataitem=="AADT",.(routeid,beginpoint,endpoint,AADT=value_numeric)]
+  aadt_single_unit = data[dataitem=="AADT_SINGLE_UNIT",.(routeid,beginpoint,endpoint,AADT_SINGLE_UNIT=valuenumeric, num_sections)]
+  aadt = data[dataitem=="AADT",.(routeid,beginpoint,endpoint,AADT=valuenumeric)]
   
   if(aadt_single_unit[, .N] == 0 | aadt[, .N] == 0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -837,7 +837,7 @@ cross_validation_47 = function(data){
   
   #browser()
   faulting = data[dataitem=="FAULTING",
-                  .(routeid,beginpoint,endpoint,FAULTING=value_numeric, num_sections)]
+                  .(routeid,beginpoint,endpoint,FAULTING=valuenumeric, num_sections)]
   
   if(faulting[, .N] == 0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -878,7 +878,7 @@ cross_validation_49 = function(data){
   
   #browser()
   k_factor = data[dataitem=="K_FACTOR",
-                  .(routeid,beginpoint,endpoint,K_FACTOR=value_numeric, num_sections)]
+                  .(routeid,beginpoint,endpoint,K_FACTOR=valuenumeric, num_sections)]
 
   if(k_factor[, .N] == 0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -913,9 +913,9 @@ cross_validation_51 = function(data){
   
   #browser()
   cracking_percent = data[dataitem=="CRACKING_PERCENT", 
-                          .(routeid,beginpoint,endpoint,CRACKING_PERCENT=value_numeric, num_sections)]
+                          .(routeid,beginpoint,endpoint,CRACKING_PERCENT=valuenumeric, num_sections)]
   surface_type = data[dataitem=="SURFACE_TYPE",
-                      .(routeid,beginpoint,endpoint,SURFACE_TYPE=value_numeric)]
+                      .(routeid,beginpoint,endpoint,SURFACE_TYPE=valuenumeric)]
   
   if(cracking_percent[, .N] == 0 | surface_type[, .N] == 0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -951,7 +951,7 @@ cross_validation_52 = function(data){
   
   #browser()
   rutting = data[dataitem=="RUTTING",
-                 .(routeid,beginpoint,endpoint,RUTTING=value_numeric, num_sections)]
+                 .(routeid,beginpoint,endpoint,RUTTING=valuenumeric, num_sections)]
   
   if(rutting[, .N] ==0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -985,8 +985,8 @@ cross_validation_52 = function(data){
 cross_validation_53 = function(data){
   # Through_Lanes>1 when Facility_Type = 2
   
-  through_lanes = data[dataitem=="THROUGH_LANES",.(routeid,beginpoint,endpoint,THROUGH_LANES=value_numeric,num_sections)]
-  facility_type = data[dataitem=="FACILITY_TYPE",.(routeid,beginpoint,endpoint,FACILITY_TYPE=value_numeric)]
+  through_lanes = data[dataitem=="THROUGH_LANES",.(routeid,beginpoint,endpoint,THROUGH_LANES=valuenumeric,num_sections)]
+  facility_type = data[dataitem=="FACILITY_TYPE",.(routeid,beginpoint,endpoint,FACILITY_TYPE=valuenumeric)]
 
   if(through_lanes[, .N] == 0 | facility_type[, .N] == 0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -1022,7 +1022,7 @@ cross_validation_54 = function(data){
   
   #browser()
   aadt_combination = data[dataitem=="AADT_COMBINATION",
-                          .(routeid, beginpoint, endpoint, AADT_COMBINATION=value_numeric, num_sections)]
+                          .(routeid, beginpoint, endpoint, AADT_COMBINATION=valuenumeric, num_sections)]
   
   if(aadt_combination[, .N] == 0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -1057,7 +1057,7 @@ cross_validation_55 = function(data){
   
   #browser()
   aadt_single_unit = data[dataitem=="AADT_SINGLE_UNIT",
-                          .(routeid,beginpoint,endpoint,AADT_SINGLE_UNIT=value_numeric, num_sections)]
+                          .(routeid,beginpoint,endpoint,AADT_SINGLE_UNIT=valuenumeric, num_sections)]
   
   if(aadt_single_unit[, .N] == 0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -1092,7 +1092,7 @@ cross_validation_56 = function(data){
   
   #browser()
   pct_peak_combination = data[dataitem=="PCT_DH_COMBINATION",
-                              .(routeid,beginpoint,endpoint,PCT_DH_COMBINATION=value_numeric, num_sections)]
+                              .(routeid,beginpoint,endpoint,PCT_DH_COMBINATION=valuenumeric, num_sections)]
   
   if(pct_peak_combination[, .N] == 0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -1127,7 +1127,7 @@ cross_validation_57 = function(data){
 
   #browser()
   pct_peak_single = data[dataitem=="PCT_DH_SINGLE_UNIT",
-                         .(routeid,beginpoint,endpoint,PCT_DH_SINGLE_UNIT=value_numeric, num_sections)]
+                         .(routeid,beginpoint,endpoint,PCT_DH_SINGLE_UNIT=valuenumeric, num_sections)]
 
   if(pct_peak_single[, .N] == 0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -1162,9 +1162,9 @@ cross_validation_60 = function(data){
   
   # browser()
   left_shoulder_width = data[dataitem=="SHOULDER_WIDTH_L",
-                             .(routeid,beginpoint,endpoint,SHOULDER_WIDTH_L=value_numeric, num_sections)]
+                             .(routeid,beginpoint,endpoint,SHOULDER_WIDTH_L=valuenumeric, num_sections)]
   median_width = data[dataitem=="MEDIAN_WIDTH",
-                      .(routeid,beginpoint,endpoint,MEDIAN_WIDTH=value_numeric)]
+                      .(routeid,beginpoint,endpoint,MEDIAN_WIDTH=valuenumeric)]
   
   if(left_shoulder_width[, .N] == 0 | median_width[, .N] == 0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -1239,10 +1239,10 @@ cross_validation_62 = function(data){
 
   psr = data[dataitem == "PSR",
                     .(routeid, beginpoint, endpoint,
-                      F_SYTEMorig, value_text, value_numeric, num_sections)]
+                      F_SYTEMorig, value_text, valuenumeric, num_sections)]
   
   iri = data[dataitem == 'IRI',
-             .(routeid, beginpoint, endpoint, IRI = value_numeric)]
+             .(routeid, beginpoint, endpoint, IRI = valuenumeric)]
   
   if(psr[, .N] == 0 | iri[, .N] == 0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -1259,7 +1259,7 @@ cross_validation_62 = function(data){
                          mileage      = sum(endpoint-beginpoint)
                        ),
                        .(applies = is.na(IRI) & F_SYTEMorig == 1, 
-                         passes  = value_numeric > 0 & value_text == 'A')][order(applies,passes)]
+                         passes  = valuenumeric > 0 & value_text == 'A')][order(applies,passes)]
   
   if(nrow(results[applies == TRUE]) == 0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -1279,11 +1279,11 @@ cross_validation_63 = function(data){
   
   #browser()
   cracking_percent = data[dataitem=="CRACKING_PERCENT", 
-                          .(routeid,beginpoint,endpoint,CRACKING_PERCENT=value_numeric, num_sections)]
+                          .(routeid,beginpoint,endpoint,CRACKING_PERCENT=valuenumeric, num_sections)]
   lane_width = data[dataitem=="SURFACE_TYPE",
-                    .(routeid,beginpoint,endpoint,SURFACE_TYPE=value_numeric)]
+                    .(routeid,beginpoint,endpoint,SURFACE_TYPE=valuenumeric)]
   surface_type = data[dataitem=="LANE_WIDTH",
-                      .(routeid,beginpoint,endpoint,LANE_WIDTH=value_numeric)]
+                      .(routeid,beginpoint,endpoint,LANE_WIDTH=valuenumeric)]
   
   if(cracking_percent[, .N] ==0 | lane_width[, .N] == 0 | surface_type[, .N] == 0 ){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -1440,11 +1440,11 @@ cross_validation_x = function(data){
   
   # Counter_Peak_Lanes and Peak_Lanes are SP
   through_lanes      = data[dataitem=="THROUGH_LANES",
-                            .(routeid,beginpoint,endpoint,THROUGH_LANES=value_numeric,num_sections)]
+                            .(routeid,beginpoint,endpoint,THROUGH_LANES=valuenumeric,num_sections)]
   counter_peak_lanes = data[dataitem=="COUNTER_PEAK_LANES",
-                            .(routeid,beginpoint,endpoint,COUNTER_PEAK_LANES=value_numeric)]
+                            .(routeid,beginpoint,endpoint,COUNTER_PEAK_LANES=valuenumeric)]
   peak_lanes         = data[dataitem=="PEAK_LANES",
-                            .(routeid,beginpoint,endpoint,PEAK_LANES=value_numeric)]
+                            .(routeid,beginpoint,endpoint,PEAK_LANES=valuenumeric)]
 
   if(through_lanes[, .N] == 0 | (counter_peak_lanes[, .N] + peak_lanes[, .N]) == 0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -1487,11 +1487,11 @@ cross_validation_x = function(data){
 cross_validation_y = function(data){
   
   signal_type = data[dataitem=="SIGNAL_TYPE",
-                     .(routeid,beginpoint,endpoint,SIGNAL_TYPE=value_numeric, num_sections)]
+                     .(routeid,beginpoint,endpoint,SIGNAL_TYPE=valuenumeric, num_sections)]
   f_system = data[dataitem=="F_SYSTEM",
-                  .(routeid,beginpoint,endpoint,F_SYSTEM=value_numeric)]
+                  .(routeid,beginpoint,endpoint,F_SYSTEM=valuenumeric)]
   urban_id = data[dataitem=="URBAN_ID", 
-                    .(routeid,beginpoint,endpoint,URBAN_ID=value_numeric)]
+                    .(routeid,beginpoint,endpoint,URBAN_ID=valuenumeric)]
 
   if(signal_type[, .N] == 0|f_system[, .N] == 0|urban_id[, .N] == 0){
     warning("Not applicable - Sufficient data from the state are not available")

@@ -44,22 +44,22 @@ create_travel_data_assessment <- function(
   
      aadt    <- data[stateid == state & datayear == year &
                        dataitem == "AADT" & FACILITY_TYPE!=4,
-                     list(routeid, beginpoint, endpoint, value_numeric, 
+                     list(routeid, beginpoint, endpoint, valuenumeric, 
                           F_SYSTEM, NHS, Interstate, num_sections)]
      
      aadt_cu <- data[stateid == state & datayear == year &
                        dataitem == "AADT_COMBINATION" & FACILITY_TYPE != 4,
-                     list(routeid, beginpoint, endpoint, value_numeric,
+                     list(routeid, beginpoint, endpoint, valuenumeric,
                           F_SYSTEM, NHS, Interstate, num_sections)]
      
      aadt_su <- data[stateid == state & datayear == year &
                        dataitem == "AADT_SINGLE_UNIT" & FACILITY_TYPE != 4,
-                     list(routeid, beginpoint, endpoint, value_numeric,
+                     list(routeid, beginpoint, endpoint, valuenumeric,
                           F_SYSTEM, NHS, Interstate, num_sections)]
      
      faadt   <- data[stateid == state & datayear == year &
                        dataitem == "FUTURE_AADT" & FACILITY_TYPE != 4,
-                     list(routeid, beginpoint, endpoint, value_numeric,
+                     list(routeid, beginpoint, endpoint, valuenumeric,
                           F_SYSTEM, NHS, Interstate, num_sections)]
      
      aadt    <- unique(aadt)
@@ -71,8 +71,8 @@ create_travel_data_assessment <- function(
      comparison <- merge(aadt, faadt,
                          by=c("routeid", "beginpoint", "endpoint", "F_SYSTEM", "Interstate", "NHS"),
                          all.y=TRUE, all.x=FALSE)
-     setnames(comparison,"value_numeric.x","AADT")
-     setnames(comparison,"value_numeric.y","FUTURE_AADT")
+     setnames(comparison,"valuenumeric.x","AADT")
+     setnames(comparison,"valuenumeric.y","FUTURE_AADT")
      
      comparison[, miles := sum(endpoint-beginpoint), by=.(F_SYSTEM)]
      
@@ -99,8 +99,8 @@ create_travel_data_assessment <- function(
      comparison <- merge(aadt, aadt_cu,
                          by=c("routeid", "beginpoint", "endpoint", "F_SYSTEM", "Interstate", "NHS"),
                          all.y=TRUE, all.x=FALSE)     
-     setnames(comparison,"value_numeric.x","AADT")
-     setnames(comparison,"value_numeric.y","AADT_COMBINATION")
+     setnames(comparison,"valuenumeric.x","AADT")
+     setnames(comparison,"valuenumeric.y","AADT_COMBINATION")
      
      aadt_combo.compare.1      <- comparison[Interstate==1,sf(AADT_COMBINATION/AADT,weight=num_sections.x),]
      aadt_combo.compare.2      <- comparison[NHS==1,sf(AADT_COMBINATION/AADT,weight=num_sections.x),]
@@ -120,8 +120,8 @@ create_travel_data_assessment <- function(
      comparison <- merge(aadt, aadt_su, 
                          by=c("routeid", "beginpoint", "endpoint", "F_SYSTEM", "Interstate", "NHS"),
                          all.y=TRUE, all.x=FALSE)
-     setnames(comparison,"value_numeric.x","AADT")
-     setnames(comparison,"value_numeric.y","AADT_SINGLE_UNIT")
+     setnames(comparison,"valuenumeric.x","AADT")
+     setnames(comparison,"valuenumeric.y","AADT_SINGLE_UNIT")
      
      aadt_su.compare.1      <- comparison[Interstate==1,sf(AADT_SINGLE_UNIT/AADT,weight=num_sections.x),]
      aadt_su.compare.2      <- comparison[NHS==1,sf(AADT_SINGLE_UNIT/AADT,weight=num_sections.x),]

@@ -28,14 +28,14 @@ create_travel_data_outlier <- function(
   # FUTURE_AADT
   
   aadt    <- data[stateid==state&datayear==year&dataitem=="AADT",
-                  list(routeid, beginpoint, endpoint, value_numeric, F_SYSTEM, NHS, Interstate)]
+                  list(routeid, beginpoint, endpoint, valuenumeric, F_SYSTEM, NHS, Interstate)]
   faadt   <- data[stateid==state&datayear==year&dataitem=="FUTURE_AADT",
-                  list(routeid, beginpoint, endpoint, value_numeric, F_SYSTEM, NHS, Interstate)]
+                  list(routeid, beginpoint, endpoint, valuenumeric, F_SYSTEM, NHS, Interstate)]
   
   comparison <- merge(aadt, faadt,
                       by=c("routeid", "beginpoint", "endpoint", "F_SYSTEM", "NHS", "Interstate"), all.y=TRUE, all.x=FALSE)
-  setnames(comparison, "value_numeric.x", "AADT")
-  setnames(comparison, "value_numeric.y", "FUTURE_AADT")
+  setnames(comparison, "valuenumeric.x", "AADT")
+  setnames(comparison, "valuenumeric.y", "FUTURE_AADT")
   
   result.1 <- comparison[Interstate == 1 & ((FUTURE_AADT > 3 * AADT) | (FUTURE_AADT < AADT)),
                          list(miles=sum(endpoint - beginpoint))]

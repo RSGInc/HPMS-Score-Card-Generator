@@ -1,7 +1,7 @@
 Name,extent,coverage_group,criteria
-NN,FE**,1,"data[dataitem == variable & datayear == year & !is.na(value_numeric), .N] > 0"
-STRAHNET_TYPE,FE**,1,"data[dataitem == variable & datayear == year & !is.na(value_numeric), .N] > 0"
-STRUCTURE_TYPE,FE**,1,"data[dataitem == variable & datayear == year & !is.na(value_numeric), .N] > 0"
+NN,FE**,1,"data[dataitem == variable & datayear == year & !is.na(valuenumeric), .N] > 0"
+STRAHNET_TYPE,FE**,1,"data[dataitem == variable & datayear == year & !is.na(valuenumeric), .N] > 0"
+STRUCTURE_TYPE,FE**,1,"data[dataitem == variable & datayear == year & !is.na(valuenumeric), .N] > 0"
 AT_GRADE_OTHER,SP,2,"data[dataitem == variable & datayear == year & is.na(expansion_factor), .N] == 0"
 DIR_FACTOR,SP,2,"data[dataitem == variable & datayear == year & is.na(expansion_factor), .N] == 0"
 FUTURE_AADT,SP,2,"data[dataitem == variable & datayear == year & is.na(expansion_factor), .N] == 0"

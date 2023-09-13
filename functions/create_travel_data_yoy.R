@@ -39,22 +39,22 @@ create_travel_data_yoy <- function(
       var.1 = data[stateid == state & datayear == year &
                      dataitem == variable & FACILITY_TYPE == 4,
                    list(routeid, beginpoint, endpoint,
-                        value.1 = value_numeric, F_SYSTEM)]
+                        value.1 = valuenumeric, F_SYSTEM)]
       
       var.2 = data[stateid == state & datayear == yearcomparison &
                      dataitem == variable & FACILITY_TYPE == 4,
                    list(routeid,beginpoint,endpoint,
-                        value.2 = value_numeric, F_SYSTEM)]
+                        value.2 = valuenumeric, F_SYSTEM)]
     } else {
       var.1 = data[stateid == state & datayear == year &
                      dataitem == variable & FACILITY_TYPE != 4,
                    list(routeid,beginpoint,endpoint,
-                        value.1 = value_numeric, F_SYSTEM)]
+                        value.1 = valuenumeric, F_SYSTEM)]
       
       var.2 = data[stateid == state & datayear == yearcomparison &
                      dataitem == variable & FACILITY_TYPE != 4,
                    list(routeid,beginpoint,endpoint,
-                        value.2 = value_numeric, F_SYSTEM)]       
+                        value.2 = valuenumeric, F_SYSTEM)]       
     }   
   }
   

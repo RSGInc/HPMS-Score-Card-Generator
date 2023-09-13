@@ -17,14 +17,14 @@ getLimits <- function(dt, trim=TRUE){
   
   # Get max and min x values, max y
   
-  if(nrow(dt[!is.na(value_numeric), ]) > 2){
+  if(nrow(dt[!is.na(valuenumeric), ]) > 2){
     
     if ( trim ){
-      minvalue <- quantile(dt[, value_numeric], probs=0.05, na.rm=TRUE)
-      maxvalue <- quantile(dt[, value_numeric], probs=0.95, na.rm=TRUE)
+      minvalue <- quantile(dt[, valuenumeric], probs=0.05, na.rm=TRUE)
+      maxvalue <- quantile(dt[, valuenumeric], probs=0.95, na.rm=TRUE)
     } else {
-      minvalue = min(dt[, value_numeric], na.rm=TRUE)
-      maxvalue = max(dt[, value_numeric], na.rm=TRUE)
+      minvalue = min(dt[, valuenumeric], na.rm=TRUE)
+      maxvalue = max(dt[, valuenumeric], na.rm=TRUE)
     }
     
     if(minvalue == maxvalue){
@@ -32,7 +32,7 @@ getLimits <- function(dt, trim=TRUE){
     }
     
     # Get max y by fitting a weighted density
-    x <- dt[, value_numeric]
+    x <- dt[, valuenumeric]
     w <- dt[, (endpoint - beginpoint) / sum(endpoint - beginpoint)]
     w <- w[!is.na(x)]
     ymax <- max(density(x, weights=w, na.rm=TRUE)$y)
@@ -97,9 +97,9 @@ densityPlot <- function(
     
     adjustment <- NA  # adjust is not used for geom_bar
     
-    unique_vals <- sort(c(unique(d1$value_numeric),
-                        unique(d2$value_numeric),
-                        unique(d3$value_numeric)))
+    unique_vals <- sort(c(unique(d1$valuenumeric),
+                        unique(d2$valuenumeric),
+                        unique(d3$valuenumeric)))
     
     if ( all(unique_vals %% 1 == 0) ){
       breaks = minvalue:maxvalue
@@ -135,15 +135,15 @@ densityPlot <- function(
   if((nrow(d1) > 2 | nrow(d2) > 2) & !is.null(minvalue)){
     # if we have something to report (density plots require at least 3 points to draw)
     
-    p1 <- ggplot(data = d1, aes(x = value_numeric,
+    p1 <- ggplot(data = d1, aes(x = valuenumeric,
                                 weight=(endpoint - beginpoint) / sum(endpoint - beginpoint)))
-    p2 <- ggplot(data = d1, aes(x = value_numeric,
+    p2 <- ggplot(data = d1, aes(x = valuenumeric,
                                 weight=(endpoint - beginpoint) / sum(endpoint - beginpoint)))
-    p3 <- ggplot(data = d1, aes(x = value_numeric,
+    p3 <- ggplot(data = d1, aes(x = valuenumeric,
                                 weight=(endpoint - beginpoint) / sum(endpoint - beginpoint)))
     
     if(nrow(d1) > 2){
-      nunique = length(unique(d1[, value_numeric]))
+      nunique = length(unique(d1[, valuenumeric]))
       
       p1 <- p1 +
         plotfun(data = d1,
@@ -170,7 +170,7 @@ densityPlot <- function(
     }
     
     if(nrow(d2) > 2) {
-      nunique = length(unique(d2[, value_numeric]))
+      nunique = length(unique(d2[, valuenumeric]))
       
       p2 <- p2 + plotfun(data = d2,
                          color =col_year2,
@@ -194,7 +194,7 @@ densityPlot <- function(
     }
     
     if(!is.null(d3)) {
-      nunique = length(unique(d3[, value_numeric]))
+      nunique = length(unique(d3[, valuenumeric]))
       
       p3 <- p3 + plotfun(data = d3,
                          color =col_national,

@@ -351,10 +351,10 @@ SegmentDataSet <- function(dat) {
   
 }
 
-# Create a column for a particular dataitem from value_numeric
+# Create a column for a particular dataitem from valuenumeric
 transposeItem <- function(dfname, dataitem){
 
-    sql <- paste0('select A.*, B.value_numeric as ', dataitem, ' ',
+    sql <- paste0('select A.*, B.valuenumeric as ', dataitem, ' ',
                'from [', dfname, '] A ',
                'left join [', dfname, '] B on A.routeid = B.routeid and ',
                'A.datayear = B.datayear and ',
@@ -370,8 +370,8 @@ transposeItem <- function(dfname, dataitem){
 
 append_column = function(data,column){
   
-  data.column = data[dataitem==column,.(datayear,routeid,beginpoint,endpoint,value_numeric)]
-  setnames(data.column,"value_numeric",column)
+  data.column = data[dataitem==column,.(datayear,routeid,beginpoint,endpoint,valuenumeric)]
+  setnames(data.column,"valuenumeric",column)
   data[data.column,(column):=get(column),on=.(datayear,routeid,beginpoint,endpoint)]
   return(data)
 }

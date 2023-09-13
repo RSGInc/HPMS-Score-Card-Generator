@@ -4,8 +4,8 @@ library(tictoc)
 # Compare two different joins --------------------------------------------------
 
 coverage <- sqldf("select 
- A.routeid,A.beginpoint,A.endpoint,A.dataitem,A.value_numeric as FACILITYTYPE, 
- B.value_numeric as variable,B.expansion_factor 
+ A.routeid,A.beginpoint,A.endpoint,A.dataitem,A.valuenumeric as FACILITYTYPE, 
+ B.valuenumeric as variable,B.expansion_factor 
  from [dat.FACILITY_TYPE] A 
  left join [dat.variable] B on 
  A.routeid = B.routeid and (
@@ -14,8 +14,8 @@ coverage <- sqldf("select
  )")
 setDT(coverage)
 
-A = dat.FACILITY_TYPE[, .(routeid, beginpoint, endpoint, dataitem, FACILITYTYPE = value_numeric)]
-B = dat.variable[, .(routeid, beginpoint, endpoint, variable = value_numeric, expansion_factor)]
+A = dat.FACILITY_TYPE[, .(routeid, beginpoint, endpoint, dataitem, FACILITYTYPE = valuenumeric)]
+B = dat.variable[, .(routeid, beginpoint, endpoint, variable = valuenumeric, expansion_factor)]
 
 setkey(A, routeid, beginpoint, endpoint)
 setkey(B, routeid, beginpoint, endpoint)
@@ -65,8 +65,8 @@ all.equal(coverage, coverage2)
 tic('sqldf')
 
 coverage1 <- sqldf("select 
- A.routeid,A.beginpoint,A.endpoint,A.dataitem,A.value_numeric as FACILITYTYPE, 
- B.value_numeric as variable,B.expansion_factor 
+ A.routeid,A.beginpoint,A.endpoint,A.dataitem,A.valuenumeric as FACILITYTYPE, 
+ B.valuenumeric as variable,B.expansion_factor 
  from [dat.FACILITY_TYPE] A 
  left join [dat.variable] B on 
  A.routeid = B.routeid and (
@@ -77,7 +77,7 @@ setDT(coverage1)
 
 coverage2 <- sqldf("select 
  A.*, 
- B.value_numeric as FSYSTEM 
+ B.valuenumeric as FSYSTEM 
  from [coverage1] A 
  left join [dat.F_SYSTEM] B on 
  A.routeid = B.routeid and (
@@ -87,7 +87,7 @@ coverage2 <- sqldf("select
 
 coverage3 <- sqldf("select 
  A.*, 
- B.value_numeric as NHS 
+ B.valuenumeric as NHS 
  from [coverage2] A 
  left join [dat.NHS] B on 
  A.routeid = B.routeid and (
@@ -105,16 +105,16 @@ toc()  # 67.5 seconds.
 tic('data.table')
 
 cov1 = coverage_join(
-  dat.FACILITY_TYPE[, .(routeid, beginpoint, endpoint, dataitem, FACILITYTYPE = value_numeric)],
-  dat.variable[, .(routeid, beginpoint, endpoint, variable = value_numeric, expansion_factor)])
+  dat.FACILITY_TYPE[, .(routeid, beginpoint, endpoint, dataitem, FACILITYTYPE = valuenumeric)],
+  dat.variable[, .(routeid, beginpoint, endpoint, variable = valuenumeric, expansion_factor)])
 
 cov2 = coverage_join(
   cov1,
-  dat.F_SYSTEM[, .(routeid, beginpoint, endpoint, FSYSTEM = value_numeric)])
+  dat.F_SYSTEM[, .(routeid, beginpoint, endpoint, FSYSTEM = valuenumeric)])
 
 cov3 = coverage_join(
   cov2,
-  dat.NHS[, .(routeid, beginpoint, endpoint, NHS = value_numeric)])
+  dat.NHS[, .(routeid, beginpoint, endpoint, NHS = valuenumeric)])
 
 toc()
 

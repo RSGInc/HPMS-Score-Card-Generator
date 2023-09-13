@@ -18,7 +18,7 @@ getAdjacency <- function(data, year, variable, adjacency_change){
   # Retain only one row per section_id
   data <- unique(data[dataitem == variable & datayear == year,
                       .(routeid, section_id, beginpoint_og, endpoint_og,
-                        value_numeric, F_SYSTEM, Interstate, NHS)])
+                        valuenumeric, F_SYSTEM, Interstate, NHS)])
   
   d.l <- data[order(routeid, beginpoint_og)]
   
@@ -26,20 +26,20 @@ getAdjacency <- function(data, year, variable, adjacency_change){
     report.1 <- data.table(groupCat = c(3, 4), N = NA, miles = NA, perc_miles = NA)
   } else {
     
-    # Instead of a join, use a lagged value_numeric
+    # Instead of a join, use a lagged valuenumeric
     # # https://stackoverflow.com/questions/26291988/how-to-create-a-lag-variable-within-each-group
-    d.adj <- d.l[, value_numeric_lag := data.table::shift(value_numeric),
+    d.adj <- d.l[, valuenumeric_lag := data.table::shift(valuenumeric),
                  by = routeid]
-    d.adj <- d.adj[!is.na(value_numeric_lag)]
+    d.adj <- d.adj[!is.na(valuenumeric_lag)]
     
     if ( adjacency_change == 'N' ){
-      result <- d.adj[value_numeric == value_numeric_lag,
+      result <- d.adj[valuenumeric == valuenumeric_lag,
                       list(miles=round(sum(endpoint_og - beginpoint_og), 2), .N),
                       by = list(F_SYSTEM)]
     }
     
     if (adjacency_change == 'Y' ){
-      result <- d.adj[value_numeric != value_numeric_lag,
+      result <- d.adj[valuenumeric != valuenumeric_lag,
                       list(miles = round(sum(endpoint_og - beginpoint_og), 2), .N),
                       by = list(F_SYSTEM)]
     }  
@@ -76,18 +76,18 @@ getAdjacency <- function(data, year, variable, adjacency_change){
     
   } else {
     
-    d.adj <- d.l[, value_numeric_lag := data.table::shift(value_numeric),
+    d.adj <- d.l[, valuenumeric_lag := data.table::shift(valuenumeric),
                  by = routeid]
-    d.adj <- d.adj[!is.na(value_numeric_lag)]
+    d.adj <- d.adj[!is.na(valuenumeric_lag)]
     
     if ( adjacency_change == 'N'){
-      result <- d.adj[value_numeric == value_numeric_lag,
+      result <- d.adj[valuenumeric == valuenumeric_lag,
                       list(miles=round(sum(endpoint_og - beginpoint_og), 2), .N),]
       
     }
     
     if ( adjacency_change == 'Y'){
-      result <- d.adj[value_numeric != value_numeric_lag,
+      result <- d.adj[valuenumeric != valuenumeric_lag,
                       list(miles=round(sum(endpoint_og - beginpoint_og), 2), .N),]
       
     }
@@ -114,17 +114,17 @@ getAdjacency <- function(data, year, variable, adjacency_change){
     report.3 <- data.table(groupCat = 2, N = NA, miles = NA, perc_miles = NA)
   } else {
     
-    d.adj <- d.l[, value_numeric_lag := data.table::shift(value_numeric),
+    d.adj <- d.l[, valuenumeric_lag := data.table::shift(valuenumeric),
                  by = routeid]
-    d.adj <- d.adj[!is.na(value_numeric_lag)]
+    d.adj <- d.adj[!is.na(valuenumeric_lag)]
     
     if ( adjacency_change == 'N'){
-      result <- d.adj[value_numeric == value_numeric_lag,
+      result <- d.adj[valuenumeric == valuenumeric_lag,
                       list(miles=round(sum(endpoint_og-beginpoint_og),2), .N),]
     }
     
     if ( adjacency_change == 'Y'){
-      result <- d.adj[value_numeric != value_numeric_lag,
+      result <- d.adj[valuenumeric != valuenumeric_lag,
                       list(miles=round(sum(endpoint_og-beginpoint_og),2), .N),]
     }
     
