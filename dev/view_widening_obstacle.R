@@ -16,9 +16,9 @@ library(forcats)
 dirname = file.path('data', '+National', year)
 
 
-# value_text ===========================================================
+# valuetext ===========================================================
 
-# Which variables have valid values of value_text?
+# Which variables have valid values of valuetext?
 
 # Get a list of variables
 vars = dirname %>%
@@ -37,7 +37,7 @@ for (variable in vars){
   dt = readRDS(path)
   dt_list[[variable]] = 
     dt[, .(nona_pct_numeric = sum(!is.na(valuenumeric)) / .N,
-           nona_pct_text = sum(!is.na(value_text) & value_text != '') / .N,
+           nona_pct_text = sum(!is.na(valuetext) & valuetext != '') / .N,
            nona_pct_date = sum(!is.na(value_date)) / .N), stateid]
 }
 
@@ -63,10 +63,10 @@ path = file.path(dirname, str_c(variable, '.rds'))
 
 dt = readRDS(path)
 
-dt[, .N, value_text]
+dt[, .N, valuetext]
 
 # How many combinations of widening obstacle are there typically?
-dt[, .N, .(value_text, stateid)
+dt[, .N, .(valuetext, stateid)
    ][, .(n_codes = .N), stateid] %>%
   ggplot(aes(x = n_codes)) +
   geom_histogram(color='white', binwidth=10) +
@@ -76,19 +76,19 @@ dt[, .N, .(value_text, stateid)
   theme_minimal()
 
 st_code = 47
-dt[stateid == st_code, .N, value_text]
+dt[stateid == st_code, .N, valuetext]
 
 
 # How many unique combinations (need to sort all of them)
 
-str = dt[stateid == st_code, value_text]
+str = dt[stateid == st_code, valuetext]
 
 # sort an individual string:
 sort_string = function(x){
   str_c(str_sort(x), collapse='')
 }
 
-wo_combo = dt[stateid == st_code, value_text] %>%
+wo_combo = dt[stateid == st_code, valuetext] %>%
   # str_replace_all('(?<=[A-Z]*) ', '') %>%
   str_replace_all('[ ]', '') %>%
   str_split('') %>%
@@ -110,7 +110,7 @@ wo_combo_dt[order(-n)][1:10] %>%
 
 
 # Frequency of letters regardless of combination
-wo_code = dt[stateid == st_code, value_text] %>%
+wo_code = dt[stateid == st_code, valuetext] %>%
   str_replace_all(' ', '') %>%
   str_split('') %>%
   unlist()

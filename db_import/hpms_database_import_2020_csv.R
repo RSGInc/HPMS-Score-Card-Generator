@@ -29,7 +29,7 @@ csv_to_stage = function(file, con, stage_table){
     endpoint = 'numeric',
     dataitem = 'character',
     valuenumeric = 'numeric',
-    value_text = 'character',
+    valuetext = 'character',
     value_date = 'POSIXct',
     natrouteid = 'character'
   )
@@ -125,7 +125,7 @@ socrata_to_stage = function(url, con, stage_table){
     endpoint = 'numeric',
     dataitem = 'character',
     valuenumeric = 'numeric',
-    value_text = 'character',
+    valuetext = 'character',
     value_date = 'POSIXct',
     natrouteid = 'character'
   )

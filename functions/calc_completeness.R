@@ -73,7 +73,7 @@ get_coverage_data = function(
   variable,
   dataitems,
   value_date = c('YEAR_LAST_IMPROVEMENT', 'YEAR_LAST_CONSTRUCTION'),
-  value_text = c()){
+  valuetext = c()){
   
   coverage_list = list()
   
@@ -81,8 +81,8 @@ get_coverage_data = function(
   
   if ( variable %in% value_date ){
     value_var = 'value_date'
-    # } else if ( variable %in% value_text ){  # Assume target variable is not value_text
-    #   value_var = 'value_text'
+    # } else if ( variable %in% valuetext ){  # Assume target variable is not valuetext
+    #   value_var = 'valuetext'
   } else {
     value_var = 'valuenumeric'
   }
@@ -101,8 +101,8 @@ get_coverage_data = function(
     # List cols to keep
     if ( di %in% value_date ){
       value_var = 'value_date'
-    } else if ( di %in% value_text ){
-      value_var = 'value_text'
+    } else if ( di %in% valuetext ){
+      value_var = 'valuetext'
     } else {
       value_var = 'valuenumeric'
     }
@@ -468,7 +468,7 @@ calc_completeness <- function(data, year, variable){
       dataitems = c(
         'F_SYSTEM', 'URBAN_ID', 'SURFACE_TYPE', 'DIR_THROUGH_LANES', 
         'FACILITY_TYPE', 'NHS', 'PSR'),
-      value_text = 'PSR')
+      valuetext = 'PSR')
     
     coverage[, required := SURFACE_TYPE > 1 & 
                (DIR_THROUGH_LANES > 0 |
@@ -783,7 +783,7 @@ calc_completeness <- function(data, year, variable){
       dataitems = c(
         'F_SYSTEM', 'URBAN_ID', 'FACILITY_TYPE', 'SURFACE_TYPE', 'NHS', 'PSR', 'IRI'
       ),
-      value_text = 'PSR')
+      valuetext = 'PSR')
     
     coverage[, required := (is.na(IRI) & FACILITY_TYPE %in% c(1, 2) & SURFACE_TYPE > 1) &
                (
@@ -833,7 +833,7 @@ calc_completeness <- function(data, year, variable){
     # F_SYSTEM=1 AND FACILITY_TYPE=6 AND DIR_THROUGH_LANES > 0 AND (IRI IS NOT NULL OR PSR IS NOT NULL)
     
     dat.variable <- data[dataitem == variable & datayear == year,]
-    dat.variable[, value_text := as.character(value_text)]
+    dat.variable[, valuetext := as.character(valuetext)]
     
     dat.FACILITY_TYPE <- data[dataitem == "FACILITY_TYPE" & datayear == year,]
     dat.F_SYSTEM <- data[dataitem == "F_SYSTEM" & datayear == year,]
@@ -848,7 +848,7 @@ calc_completeness <- function(data, year, variable){
     coverage = dat.FACILITY_TYPE[, .(routeid, beginpoint, endpoint, expansion_factor, FACILITY_TYPE = valuenumeric)] %>%
       coverage_join(
         dat.variable[, .(routeid, beginpoint, endpoint, expansion_factor,
-                         variable = fcoalesce(as.character(value_text), as.character(valuenumeric)))]) %>%
+                         variable = fcoalesce(as.character(valuetext), as.character(valuenumeric)))]) %>%
       coverage_join(
         dat.F_SYSTEM[, .(routeid, beginpoint, endpoint, F_SYSTEM = valuenumeric)]) %>%
       coverage_join(

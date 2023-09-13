@@ -86,21 +86,21 @@ create_travel_data_yoy <- function(
   if(type == 'text'){
     if(ramps){
       var.1 = data[stateid == state & datayear == year &
-                     dataitem == variable & FACILITY_TYPE == 4 & !is.na(value_text),
-                   list(routeid,beginpoint,endpoint,value.1 = value_text,F_SYSTEM)]
+                     dataitem == variable & FACILITY_TYPE == 4 & !is.na(valuetext),
+                   list(routeid,beginpoint,endpoint,value.1 = valuetext,F_SYSTEM)]
       
       var.2 = data[stateid == state&datayear == yearcomparison &
-                     dataitem == variable & FACILITY_TYPE == 4 & !is.na(value_text),
-                   list(routeid,beginpoint,endpoint,value.2 = value_text,F_SYSTEM)]
+                     dataitem == variable & FACILITY_TYPE == 4 & !is.na(valuetext),
+                   list(routeid,beginpoint,endpoint,value.2 = valuetext,F_SYSTEM)]
       
     } else {
       var.1 = data[stateid == state & datayear == year &
-                     dataitem == variable & FACILITY_TYPE != 4 & !is.na(value_text),
-                   list(routeid,beginpoint,endpoint, value.1 = value_text,F_SYSTEM)]
+                     dataitem == variable & FACILITY_TYPE != 4 & !is.na(valuetext),
+                   list(routeid,beginpoint,endpoint, value.1 = valuetext,F_SYSTEM)]
       
       var.2 = data[stateid == state & datayear == yearcomparison &
-                     dataitem == variable & FACILITY_TYPE != 4 & !is.na(value_text),
-                   list(routeid,beginpoint,endpoint,value.2 = value_text,F_SYSTEM)]       
+                     dataitem == variable & FACILITY_TYPE != 4 & !is.na(valuetext),
+                   list(routeid,beginpoint,endpoint,value.2 = valuetext,F_SYSTEM)]       
     }
   }
 
