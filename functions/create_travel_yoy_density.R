@@ -51,7 +51,7 @@ create_travel_yoy_density <- function(
   density_type = gVariables[Name == variable, Density_Type]
   
   # Which columns to keep from data?
-  keep_cols = c('route_id', 'begin_point', 'end_point', 'value_numeric',
+  keep_cols = c('routeid', 'begin_point', 'end_point', 'value_numeric',
                 'F_SYSTEM', 'Interstate', 'NHS', 'num_sections')
   
   # get common indices to increase readability

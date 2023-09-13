@@ -267,7 +267,7 @@ getStateDataSets <- function(state_selection, year_selection, year_compare) {
   dat.prev <- do.call(rbind, dat.prev)
   dat <- rbind(dat, dat.prev, fill = TRUE)
   
-  setkeyv(dat, c("stateid","datayear","route_id","data_item","begin_point","end_point"))
+  setkeyv(dat, c("stateid","datayear","routeid","data_item","begin_point","end_point"))
   
   return(list(dat = dat,
               year_selection = as.numeric(year_selection),

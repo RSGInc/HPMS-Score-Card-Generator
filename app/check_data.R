@@ -52,7 +52,7 @@ checkSummary <- function(year, stateid, data){
     keys <- c('datayear', 'stateid', 'data_item')
     
     sql_sum[, record_count := as.numeric(record_count)]
-    sql_sum[, route_id_count := as.numeric(route_id_count)]
+    sql_sum[, routeid_count := as.numeric(routeid_count)]
     sql_sum1 <- data.table::melt(sql_sum, id.vars=keys, variable.name = 'measure',
                       value.name = 'from_sql')
     
@@ -61,7 +61,7 @@ checkSummary <- function(year, stateid, data){
     r_sum <- copy(data)
     r_sum <- r_sum[, .(record_count = as.numeric(.N),
                            miles = sum(end_point-begin_point),
-                           route_id_count = as.numeric(length(unique(route_id)))),
+                           routeid_count = as.numeric(length(unique(routeid)))),
                        by=list(datayear, stateid, data_item)]
     
     r_sum1 <- data.table::melt(r_sum, id.vars=keys, variable.name='measure',

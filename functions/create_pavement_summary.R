@@ -46,7 +46,7 @@ create_pavement_summary <- function(data, state, year){
   
   # Summarize surface type
   dt_surftype <- unique(dt[data_item == 'SURFACE_TYPE',
-                        .(data_item, route_id, section_id, begin_point_og, end_point_og, value_numeric, group)])
+                        .(data_item, routeid, section_id, begin_point_og, end_point_og, value_numeric, group)])
   dt_surf_sum <- dt_surftype[,
             list(n_missing = sum((is.na(value_numeric) | is.null(value_numeric))),
             n_1 =  sum((value_numeric == 1 & !is.na(value_numeric))),

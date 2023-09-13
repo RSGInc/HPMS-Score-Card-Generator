@@ -55,7 +55,7 @@ cleanUpQuery <- function(data){
 
 ## Compare distinct route ids from SQL vs R ---------------------------------
 
-# Get distinct route_ids for a single state, year, data_item
+# Get distinct routeids for a single state, year, data_item
 
 con <- connect_to_db()
 
@@ -76,7 +76,7 @@ names(sql) <- tolower(names(sql))
 
 ## Compare distinct route ids from SQL vs R ---------------------------------
 
-# Get distinct route_ids for a single state, year, data_item
+# Get distinct routeids for a single state, year, data_item
 
 
 # stateid <- 34    # NJ
@@ -96,11 +96,11 @@ odbcClose(con)
 r <- ReadData(stateid, 2016) %>% as.data.frame()
 r <- r %>% 
   filter(data_item == data_item_) %>% 
-  select(route_id) %>% 
+  select(routeid) %>% 
   distinct
 
-sql <- sql$route_id
-r <- r$route_id
+sql <- sql$routeid
+r <- r$routeid
 
 sql[!sql %in% r]
 r[!r %in% sql]
@@ -136,12 +136,12 @@ r[!r %in% sql]
 # fhwa1 <- fhwa %>%
 #   mutate(data_item = tolower(data_item)) %>%
 #   select(-stateyearkey) %>%
-#   gather(key='measure', value='fhwa', record_count, miles, route_id_count)
+#   gather(key='measure', value='fhwa', record_count, miles, routeid_count)
 # 
 # db1 <- db %>%
 #   mutate(data_item = tolower(data_item)) %>%
 #   filter(datayear == 2015) %>%
-#   gather(key='measure', value='from_db', record_count, miles, route_id_count)
+#   gather(key='measure', value='from_db', record_count, miles, routeid_count)
 # 
 # by_vars <- c('datayear', 'stateid', 'data_item')
 # 

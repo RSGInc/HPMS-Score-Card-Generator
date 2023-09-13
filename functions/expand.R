@@ -26,7 +26,7 @@ expand = function(data,increment){
                        on=.(begin_point <= start, end_point >= end),
                        allow.cartesian=TRUE]
   
-  data.expanded = data.expanded[!is.na(route_id),]
+  data.expanded = data.expanded[!is.na(routeid),]
   
   return(data.expanded)
 }

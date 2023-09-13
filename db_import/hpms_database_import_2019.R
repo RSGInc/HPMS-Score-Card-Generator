@@ -27,14 +27,14 @@ download_socrata = function(url, con, stage_table){
   col_type_chk = c(
     datayear = 'integer',
     stateid = 'integer',
-    route_id = 'character',
+    routeid = 'character',
     begin_point = 'numeric',
     end_point = 'numeric',
     data_item = 'character',
     value_numeric = 'numeric',
     value_text = 'character',
     value_date = 'POSIXct',
-    natroute_id = 'character'
+    natrouteid = 'character'
   )
   
   coltype_chk_dt = data.table(field = names(col_type_chk), chk = col_type_chk)
@@ -155,7 +155,7 @@ copy_rows = function(con, prod_table, stage_table){
   }
   
   # setdiff(tolower(new_fields), tolower(old_fields))
-  new_fields = new_fields[!new_fields %in% 'natroute_id']
+  new_fields = new_fields[!new_fields %in% 'natrouteid']
   
   # stopifnot(
   #   length(setdiff(tolower(new_fields), tolower(old_fields))) == 0,

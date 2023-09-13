@@ -12,29 +12,29 @@
 # Replace text
 # dat.$1 = data[
 #   data_item == $1 & datayear == year,
-#   .(route_id, begin_point, end_point, expansion_factor, $1 = value_numeric)]
+#   .(routeid, begin_point, end_point, expansion_factor, $1 = value_numeric)]
 
-dat.variable[, .(route_id, begin_point, end_point, variable = value_numeric)]
+dat.variable[, .(routeid, begin_point, end_point, variable = value_numeric)]
 
-dat.FACILITY_TYPE[, .(route_id, begin_point, end_point, FACILITY_TYPE = value_numeric)]
-dat.F_SYSTEM[, .(route_id, begin_point, end_point, F_SYSTEM = value_numeric)]
-dat.URBAN_ID[, .(route_id, begin_point, end_point, URBAN_ID = value_numeric)]
-dat.NHS[, .(route_id, begin_point, end_point, NHS = value_numeric)]
+dat.FACILITY_TYPE[, .(routeid, begin_point, end_point, FACILITY_TYPE = value_numeric)]
+dat.F_SYSTEM[, .(routeid, begin_point, end_point, F_SYSTEM = value_numeric)]
+dat.URBAN_ID[, .(routeid, begin_point, end_point, URBAN_ID = value_numeric)]
+dat.NHS[, .(routeid, begin_point, end_point, NHS = value_numeric)]
 
-dat.THROUGH_LANES[, .(route_id, begin_point, end_point, THROUGH_LANES = value_numeric)]
-dat.MEDIAN_TYPE[, .(route_id, begin_point, end_point, MEDIAN_TYPE = value_numeric)]
+dat.THROUGH_LANES[, .(routeid, begin_point, end_point, THROUGH_LANES = value_numeric)]
+dat.MEDIAN_TYPE[, .(routeid, begin_point, end_point, MEDIAN_TYPE = value_numeric)]
 
 target = copy(coverage)
 
 # Change for variable --------------------
 
-coverage = dat.FACILITY_TYPE[, .(route_id, begin_point, end_point, FACILITY_TYPE = value_numeric)] %>%
+coverage = dat.FACILITY_TYPE[, .(routeid, begin_point, end_point, FACILITY_TYPE = value_numeric)] %>%
   coverage_join(
-    dat.variable[, .(route_id, begin_point, end_point, variable = value_numeric)]) %>%
+    dat.variable[, .(routeid, begin_point, end_point, variable = value_numeric)]) %>%
   coverage_join(
-    dat.F_SYSTEM[, .(route_id, begin_point, end_point, F_SYSTEM = value_numeric)]) %>%
+    dat.F_SYSTEM[, .(routeid, begin_point, end_point, F_SYSTEM = value_numeric)]) %>%
   coverage_join(
-    dat.NHS[, .(route_id, begin_point, end_point, NHS = value_numeric)])
+    dat.NHS[, .(routeid, begin_point, end_point, NHS = value_numeric)])
 
 coverage[, required := FACILITY_TYPE %in% c(1,2) & (F_SYSTEM %in% c(1,2,3,4)|!is.na(NHS))]
 
@@ -51,7 +51,7 @@ setcolorder(target, neworder=names(coverage))
 all.equal(target, coverage)
 address(target) == address(coverage)
 
-coverage[target, i.required := i.required, on = .(route_id, begin_point, end_point)]
+coverage[target, i.required := i.required, on = .(routeid, begin_point, end_point)]
 
 coverage[required != i.required, .N] / coverage[, .N] * 100
 

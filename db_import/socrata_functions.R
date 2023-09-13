@@ -260,7 +260,7 @@ write_to_stage = function(cache_path, con, stage_table, chunk_size=100000){
     old_fields = dbListFields(con, stage_table)
     old_fields = str_to_lower(old_fields)
     # FIXME: it seems like sectionlength should be in the table
-    #old_fields = old_fields[!old_fields %in% c('natroute_id', 'sectionlength')]
+    #old_fields = old_fields[!old_fields %in% c('natrouteid', 'sectionlength')]
     
     if ( stage_table == 'rs_stage' ){
       old_fields = setdiff(old_fields, 'stateyearkey') # this is computed in rs_stage
@@ -375,7 +375,7 @@ copy_rows = function(con, stage_table, prod_table, counts_local){
   }
   
   # setdiff(tolower(new_fields), tolower(old_fields))
-  new_fields = new_fields[!new_fields %in% 'natroute_id']
+  new_fields = new_fields[!new_fields %in% 'natrouteid']
   
   if (
     length(setdiff(tolower(new_fields), tolower(old_fields))) > 0 |

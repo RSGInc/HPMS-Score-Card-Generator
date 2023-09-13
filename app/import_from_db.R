@@ -356,7 +356,7 @@ transposeItem <- function(dfname, data_item){
 
     sql <- paste0('select A.*, B.value_numeric as ', data_item, ' ',
                'from [', dfname, '] A ',
-               'left join [', dfname, '] B on A.route_id = B.route_id and ',
+               'left join [', dfname, '] B on A.routeid = B.routeid and ',
                'A.datayear = B.datayear and ',
                'A.stateid = B.stateid and ',
                'A.begin_point <= B.end_point and ',
@@ -370,9 +370,9 @@ transposeItem <- function(dfname, data_item){
 
 append_column = function(data,column){
   
-  data.column = data[data_item==column,.(datayear,route_id,begin_point,end_point,value_numeric)]
+  data.column = data[data_item==column,.(datayear,routeid,begin_point,end_point,value_numeric)]
   setnames(data.column,"value_numeric",column)
-  data[data.column,(column):=get(column),on=.(datayear,route_id,begin_point,end_point)]
+  data[data.column,(column):=get(column),on=.(datayear,routeid,begin_point,end_point)]
   return(data)
 }
 
@@ -387,8 +387,8 @@ FormatDataSet <- function(dat, state_abbr, year) {
   # Any section that has a blank section extent in the extent details spreadsheet.
   
   # Keep track of the original sections 
-  dat <- dat[order(route_id, data_item, begin_point)]
-  dat[, section_id := 1:.N, by=.(route_id, data_item)]
+  dat <- dat[order(routeid, data_item, begin_point)]
+  dat[, section_id := 1:.N, by=.(routeid, data_item)]
   dat[, c('begin_point_og', 'end_point_og') := list(begin_point, end_point)]
   
   data.formatted = expand(dat,0.1)
@@ -454,8 +454,8 @@ FormatDataSet <- function(dat, state_abbr, year) {
     
     sp <- cleanUpQuery(sp)
     
-    stopifnot(sp[str_detect(route_id, 'e[+-][0-9]'), .N] == 0,
-              data_noFT6[str_detect(route_id, 'e[+-][0-9]'), .N] == 0)
+    stopifnot(sp[str_detect(routeid, 'e[+-][0-9]'), .N] == 0,
+              data_noFT6[str_detect(routeid, 'e[+-][0-9]'), .N] == 0)
     
     sp = expand(sp,0.1)
     
@@ -466,13 +466,13 @@ FormatDataSet <- function(dat, state_abbr, year) {
     sp[,stateyearkey:=NULL]
     sp[,stateid:=NULL]
     
-    data_noFT6[, route_id := as.character(route_id)]
-    sp[, route_id := as.character(route_id)]
+    data_noFT6[, routeid := as.character(routeid)]
+    sp[, routeid := as.character(routeid)]
     
     
     # Checks ----------------------------------------------
-    rid_sec = data_noFT6[, route_id] %>% unique() %>% sort()
-    rid_sp = sp[, route_id] %>% unique() %>% sort()
+    rid_sec = data_noFT6[, routeid] %>% unique() %>% sort()
+    rid_sp = sp[, routeid] %>% unique() %>% sort()
 
     # route_ID in samples but not in sections? (should be zero)
     if ( 
@@ -483,7 +483,7 @@ FormatDataSet <- function(dat, state_abbr, year) {
       compare_ids = data.table(sp = rid_sp, sec = rid_sec[1:length(rid_sp)])
       
       # Check for data in sp that don't match anything in data_noFT6
-      join_vars = c('datayear', 'route_id', 'begin_point', 'end_point')
+      join_vars = c('datayear', 'routeid', 'begin_point', 'end_point')
       
       problems1 = data_noFT6[!sp, on=join_vars]
       problems2 = sp[!data_noFT6, on=join_vars]
@@ -491,7 +491,7 @@ FormatDataSet <- function(dat, state_abbr, year) {
     }
     
     data_exp = merge(data_noFT6, sp,
-                     by = c('datayear', 'route_id', 'begin_point', 'end_point'),
+                     by = c('datayear', 'routeid', 'begin_point', 'end_point'),
                      all.x=TRUE)
     
     data_exp[, expansion_factor := as.numeric(expansion_factor)]
@@ -579,7 +579,7 @@ FormatDataSet <- function(dat, state_abbr, year) {
   
   data_exp[, (drop_cols) := NULL]
   
-  setkeyv(data_exp, c("stateid","datayear","route_id","data_item","begin_point","end_point"))
+  setkeyv(data_exp, c("stateid","datayear","routeid","data_item","begin_point","end_point"))
 
   if ( nrow(data_exp) == 0 & debugmode ){browser()}
   return(data_exp)
