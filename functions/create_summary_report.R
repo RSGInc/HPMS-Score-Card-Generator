@@ -22,10 +22,10 @@ create_summary_report <- function(
   # F_SYSTEM = 1, 2?
   
   if( ramps ){
-    result1 <- data[state_code == state & year_record == year &
+    result1 <- data[state_code == state & datayear == year &
                       data_item == variable & FACILITY_TYPE == 4, , ] 
   } else {
-    result1 <- data[state_code == state & year_record == year &
+    result1 <- data[state_code == state & datayear == year &
                       data_item == variable & FACILITY_TYPE != 4, , ]
   }
   
@@ -77,10 +77,10 @@ create_summary_report <- function(
   # interstate aggregation (Interstate == 1, groupCat = 1) ---------------------
   
   if(ramps){
-    result2 <- data[Interstate == 1 & state_code == state & year_record == year &
+    result2 <- data[Interstate == 1 & state_code == state & datayear == year &
                       data_item == variable & FACILITY_TYPE == 4, , ]
   } else {
-    result2 <- data[Interstate == 1 & state_code == state & year_record == year &
+    result2 <- data[Interstate == 1 & state_code == state & datayear == year &
                       data_item == variable & FACILITY_TYPE != 4, , ] 
   }
   
@@ -120,12 +120,12 @@ create_summary_report <- function(
   
   if(ramps){
     
-    result3 <- data[NHS == 1 & state_code == state & year_record == year &
+    result3 <- data[NHS == 1 & state_code == state & datayear == year &
                       data_item == variable & FACILITY_TYPE == 4, , ]
   
   } else {
     
-    result3 <- data[NHS==1 & state_code == state & year_record == year &
+    result3 <- data[NHS==1 & state_code == state & datayear == year &
                       data_item == variable & FACILITY_TYPE != 4, , ]
   
   }

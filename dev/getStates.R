@@ -52,12 +52,12 @@ if ( file.exists(dofile) ){
   con <- connect_to_db()
   on.exit({odbcClose(con)})
   
-  query <- paste("select distinct state_code, year_record from", sections_table,
-                 "order by state_code, year_record")
+  query <- paste("select distinct state_code, datayear from", sections_table,
+                 "order by state_code, datayear")
   
   st_yr_table <- data.table(sqlQuery(con, query))
     
-  avail_states <- st_yr_table[year_record == year_selection]$state_code
+  avail_states <- st_yr_table[datayear == year_selection]$state_code
   
   
   if ( length(args) == 1 && str_detect(tolower(args), 'all')){

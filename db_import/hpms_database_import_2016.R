@@ -95,7 +95,7 @@ names_orig <- names(tbl)
 names(tbl) <- tolower(names(tbl))
 
 # List and range checks
-with(tbl, table(year_record, useNA='always'))
+with(tbl, table(datayear, useNA='always'))
 with(tbl, table(state_code, useNA='always'))
 sort(unique(tbl$route_id))
 

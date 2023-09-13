@@ -16,7 +16,7 @@ getAdjacency <- function(data, year, variable, adjacency_change){
   # if ( variable == 'FAULTING' ) browser()
   
   # Retain only one row per section_id
-  data <- unique(data[data_item == variable & year_record == year,
+  data <- unique(data[data_item == variable & datayear == year,
                       .(route_id, section_id, begin_point_og, end_point_og,
                         value_numeric, F_SYSTEM, Interstate, NHS)])
   

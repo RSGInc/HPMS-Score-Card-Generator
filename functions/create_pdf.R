@@ -63,7 +63,7 @@ create_pdf <- function(data, state, year, year_compare, path) {
   # cat('\tMemory used: ', round(mem_used() / 1e9, 3), 'GB \n')
 
   # subset data
-  # data <- data[year_record %in% c(year, year_compare), ]
+  # data <- data[datayear %in% c(year, year_compare), ]
   #
 
   # Documentation page ------------------------------------------------------

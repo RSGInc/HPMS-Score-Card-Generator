@@ -140,17 +140,17 @@ r[!r %in% sql]
 # 
 # db1 <- db %>%
 #   mutate(data_item = tolower(data_item)) %>%
-#   filter(year_record == 2015) %>%
+#   filter(datayear == 2015) %>%
 #   gather(key='measure', value='from_db', record_count, miles, route_id_count)
 # 
-# by_vars <- c('year_record', 'state_code', 'data_item')
+# by_vars <- c('datayear', 'state_code', 'data_item')
 # 
 # no_db <- anti_join(fhwa1, db1, by=by_vars)
 # count(no_db, state_code)
 # 
 # no_fhwa <- anti_join(db1, fhwa1, by=by_vars)
 # 
-# diffs <- inner_join(fhwa1, db1, by=c('year_record', 'state_code', 'data_item', 'measure')) %>%
+# diffs <- inner_join(fhwa1, db1, by=c('datayear', 'state_code', 'data_item', 'measure')) %>%
 #   mutate(diff = from_db - fhwa)
 # 
 # count(diffs, diff != 0)

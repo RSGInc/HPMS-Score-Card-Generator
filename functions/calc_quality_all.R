@@ -41,7 +41,7 @@ calc_quality_all <- function(data, year, year_compare){
 
     message('\t', variable)
     
-    if (nrow(data[year_record == year & data_item == variable]) == 0){
+    if (nrow(data[datayear == year & data_item == variable]) == 0){
       
       score <- NA
       

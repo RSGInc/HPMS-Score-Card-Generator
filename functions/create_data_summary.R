@@ -24,8 +24,8 @@ create_data_summary <- function(data, state, year, year_compare){
   # (total length for Rural Minor Collectors x 2)
   
 
-  n_Records.1   <- data[state_code == state & year_record == year, sum(num_sections), ]        
-  n_Records.2   <- data[state_code == state & year_record == year_compare, sum(num_sections), ]
+  n_Records.1   <- data[state_code == state & datayear == year, sum(num_sections), ]        
+  n_Records.2   <- data[state_code == state & datayear == year_compare, sum(num_sections), ]
 
   # Generate an index to keep only certain rows that meet certain criteria
   idx_st_fsystem <- with(data, (state_code == state & data_item == 'F_SYSTEM'))
@@ -34,23 +34,23 @@ create_data_summary <- function(data, state, year, year_compare){
   IDX <- idx_st_fsystem & (idx_fs15 | idx_fs6)
 
   # Centerline
-  n_CtrLine.1 <- data[IDX & year_record == year,         sum(end_point-begin_point,na.rm = TRUE),]
-  n_CtrLine.2 <- data[IDX & year_record == year_compare, sum(end_point-begin_point,na.rm = TRUE),]
+  n_CtrLine.1 <- data[IDX & datayear == year,         sum(end_point-begin_point,na.rm = TRUE),]
+  n_CtrLine.2 <- data[IDX & datayear == year_compare, sum(end_point-begin_point,na.rm = TRUE),]
 
   # Lane miles
-  n_LaneMiles.1 <- data[IDX & year_record==year,
+  n_LaneMiles.1 <- data[IDX & datayear==year,
                         sum(THROUGH_LANES * (end_point - begin_point), na.rm = TRUE), ]
   
-  n_LaneMiles.2 <- data[IDX & year_record == year_compare,
+  n_LaneMiles.2 <- data[IDX & datayear == year_compare,
                         sum(THROUGH_LANES * (end_point - begin_point), na.rm = TRUE), ]
 
   # Data items
-  n_Variables.1 <- length(data[state_code == state & year_record == year, unique(data_item), ])
-  n_Variables.2 <- length(data[state_code == state & year_record == year_compare, unique(data_item), ])
+  n_Variables.1 <- length(data[state_code == state & datayear == year, unique(data_item), ])
+  n_Variables.2 <- length(data[state_code == state & datayear == year_compare, unique(data_item), ])
   
   # Route ids
-  route_id.1 <- unique(data[IDX & year_record == year]$route_id)
-  route_id.2 <- unique(data[IDX & year_record == year_compare]$route_id)
+  route_id.1 <- unique(data[IDX & datayear == year]$route_id)
+  route_id.2 <- unique(data[IDX & datayear == year_compare]$route_id)
 
   n_routes.1 <- length(route_id.1)
   n_routes.2 <- length(route_id.2)
@@ -63,10 +63,10 @@ create_data_summary <- function(data, state, year, year_compare){
   pct_route_nomatch.2 <- n_route_nomatch.2 / n_routes.2 * 100
 
   # Get n_sections  
-  dt_sections.1 <- data[IDX & year_record == year,
+  dt_sections.1 <- data[IDX & datayear == year,
                        list(route_id, begin_point, end_point, num_sections)]
   
-  dt_sections.2 <- data[IDX & year_record == year_compare,
+  dt_sections.2 <- data[IDX & datayear == year_compare,
                        list(route_id, begin_point, end_point, num_sections)]
 
   # Add an id column so we can easily pull out the unmatched rows later

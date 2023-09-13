@@ -49,7 +49,7 @@ state_code = gState_Labels[abbr == this_abbrev, index]
 # Sample Sections
 rss = read.socrata(url=urls['rss'], email=email, password=password)
 setDT(rss)
-rss = rss[state_code == state_code & year_record == year]
+rss = rss[state_code == state_code & datayear == year]
 rss[, .N]
 
 # Load Review Sections

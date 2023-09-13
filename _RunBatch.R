@@ -80,16 +80,16 @@ cat('Checking availability of states for', year_selection, '\n')
 con <- connect_to_db()
 
 query <- paste(
-  "select distinct state_code, year_record from", 
+  "select distinct state_code, datayear from", 
   sections_table,
-  "order by state_code, year_record"
+  "order by state_code, datayear"
 )
 
 st_yr_table <- data.table(sqlQuery(con, query))
 
 odbcClose(con)
 
-avail_states <- st_yr_table[year_record == year_selection]$state_code
+avail_states <- st_yr_table[datayear == year_selection]$state_code
 
 if ( length(states) == 1 && str_detect(tolower(states), 'all')){
   

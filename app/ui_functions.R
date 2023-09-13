@@ -240,10 +240,10 @@ getStateDataSets <- function(state_selection, year_selection, year_compare) {
   }
   
   dat <- readRDS(data_file)
-  dat[, year_record := as.numeric(year_selection)]
+  dat[, datayear := as.numeric(year_selection)]
   if (!is.null(year_compare)) {
     dat.compare <- readRDS(paste0("data/", getStateLabel(state_selection), "/", year_compare, ".rds"))
-    dat.compare[, year_record := as.numeric(year_compare)]
+    dat.compare[, datayear := as.numeric(year_compare)]
     dat <- rbind(dat, dat.compare, fill = TRUE)
   }
   
@@ -267,7 +267,7 @@ getStateDataSets <- function(state_selection, year_selection, year_compare) {
   dat.prev <- do.call(rbind, dat.prev)
   dat <- rbind(dat, dat.prev, fill = TRUE)
   
-  setkeyv(dat, c("state_code","year_record","route_id","data_item","begin_point","end_point"))
+  setkeyv(dat, c("state_code","datayear","route_id","data_item","begin_point","end_point"))
   
   return(list(dat = dat,
               year_selection = as.numeric(year_selection),

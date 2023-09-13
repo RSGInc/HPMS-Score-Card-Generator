@@ -42,22 +42,22 @@ create_travel_data_assessment <- function(
      # AADT_SINGLE_UNIT = Single Unit Trucks/Buses
      # FUTURE_AADT
   
-     aadt    <- data[state_code == state & year_record == year &
+     aadt    <- data[state_code == state & datayear == year &
                        data_item == "AADT" & FACILITY_TYPE!=4,
                      list(route_id, begin_point, end_point, value_numeric, 
                           F_SYSTEM, NHS, Interstate, num_sections)]
      
-     aadt_cu <- data[state_code == state & year_record == year &
+     aadt_cu <- data[state_code == state & datayear == year &
                        data_item == "AADT_COMBINATION" & FACILITY_TYPE != 4,
                      list(route_id, begin_point, end_point, value_numeric,
                           F_SYSTEM, NHS, Interstate, num_sections)]
      
-     aadt_su <- data[state_code == state & year_record == year &
+     aadt_su <- data[state_code == state & datayear == year &
                        data_item == "AADT_SINGLE_UNIT" & FACILITY_TYPE != 4,
                      list(route_id, begin_point, end_point, value_numeric,
                           F_SYSTEM, NHS, Interstate, num_sections)]
      
-     faadt   <- data[state_code == state & year_record == year &
+     faadt   <- data[state_code == state & datayear == year &
                        data_item == "FUTURE_AADT" & FACILITY_TYPE != 4,
                      list(route_id, begin_point, end_point, value_numeric,
                           F_SYSTEM, NHS, Interstate, num_sections)]

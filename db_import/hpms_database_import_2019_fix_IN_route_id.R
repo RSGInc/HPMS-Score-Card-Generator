@@ -53,7 +53,7 @@ fixed %>%
 
 stage_tbl = tbl(con, from=stage_name)
 stage_tbl %>%
-  count(state_code, year_record)
+  count(state_code, datayear)
 
 message('writing to database')
 dbWriteTable(con, stage_name, fixed, overwrite=TRUE)
@@ -72,9 +72,9 @@ sql = paste0(
   "SELECT StateId, DataYear, COUNT(*) FROM ",
   prod_name,
   " WHERE StateId in (", paste(count_stage$StateId, collapse=', '), ")",
-  " AND year_record in (", paste(count_stage$DataYear, collapse=', '), ")",
+  " AND datayear in (", paste(count_stage$DataYear, collapse=', '), ")",
   " AND RouteId like '%[e][+][0-9]%'",
-  " GROUP BY state_code, year_record")
+  " GROUP BY state_code, datayear")
 
 count_prod = dbGetQuery(con, sql)
 count_prod
@@ -84,7 +84,7 @@ sql = paste0(
   "DELETE FROM ",
   prod_name,
   " WHERE state_code in (", paste(count_stage$StateId, collapse=', '), ")",
-  " AND year_record in (", paste(count_stage$DataYear, collapse=', '), ")",
+  " AND datayear in (", paste(count_stage$DataYear, collapse=', '), ")",
   " AND RouteId like '%[e][+][0-9]%'")
 
 dbExecute(con, sql)

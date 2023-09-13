@@ -3,7 +3,7 @@
 calc_cross_validation = function(data, year){
   
   # filter ramps (facility type == 4) 
-  data = data[year_record == year & FACILITY_TYPE %in% c(1,2)]
+  data = data[datayear == year & FACILITY_TYPE %in% c(1,2)]
   
   results = list()
 
@@ -202,7 +202,7 @@ cross_validation_9 = function(data){
   
   #browser()
   year_last_construction = data[data_item=="YEAR_LAST_CONSTRUCTION",
-                                .(route_id,begin_point,end_point,YEAR_LAST_CONSTRUCTION=value_date, year_record, num_sections)]
+                                .(route_id,begin_point,end_point,YEAR_LAST_CONSTRUCTION=value_date, datayear, num_sections)]
 
   if(year_last_construction[, .N] == 0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -220,7 +220,7 @@ cross_validation_9 = function(data){
                mileage      = sum(end_point-begin_point)
               ),
              .(applies = !is.na(YEAR_LAST_CONSTRUCTION), 
-               passes  = !is.na(YEAR_LAST_CONSTRUCTION)&year(YEAR_LAST_CONSTRUCTION)<=year_record)][order(applies,passes)]
+               passes  = !is.na(YEAR_LAST_CONSTRUCTION)&year(YEAR_LAST_CONSTRUCTION)<=datayear)][order(applies,passes)]
   
   if(nrow(results[applies == TRUE])==0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -802,7 +802,7 @@ cross_validation_46 = function(data, variable){
   # browser()
   
   comparison = data[data_item == variable,
-               .(route_id, begin_point, end_point, year_record, F_SYTEMorig, NHS,
+               .(route_id, begin_point, end_point, datayear, F_SYTEMorig, NHS,
                  value_date, value_text, sample = !is.na(expansion_factor), num_sections)]
   
   if(comparison[, .N] == 0){
@@ -819,7 +819,7 @@ cross_validation_46 = function(data, variable){
                          mileage      = sum(end_point-begin_point)
                        ),
                        .(applies = sample | (is.na(value_text) & F_SYTEMorig > 1 & NHS %in% 1:9), 
-                         passes  = year(value_date) >= year_record - 1)][order(applies,passes)]
+                         passes  = year(value_date) >= datayear - 1)][order(applies,passes)]
   
   if(nrow(results[applies == TRUE])==0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -1202,7 +1202,7 @@ cross_validation_61 = function(data, variable){
   # variable %in% c('IRI', 'RUTTING', 'FAULTING', 'CRACKING_PERCENT')
   
   comparison = data[data_item == variable,
-                    .(route_id, begin_point, end_point, year_record, F_SYTEMorig,
+                    .(route_id, begin_point, end_point, datayear, F_SYTEMorig,
                       value_date, value_text, num_sections)]
   
   if(comparison[, .N] == 0){
@@ -1219,7 +1219,7 @@ cross_validation_61 = function(data, variable){
                          mileage      = sum(end_point-begin_point)
                        ),
                        .(applies = (is.na(value_text) | value_text == '') & F_SYTEMorig == 1, 
-                         passes  = year(value_date) >= year_record - 2)][order(applies,passes)]
+                         passes  = year(value_date) >= datayear - 2)][order(applies,passes)]
   
   if(nrow(results[applies == TRUE])==0){
     warning("Not applicable - no sections meet application criteria")
@@ -1330,7 +1330,7 @@ cross_validation_64 = function(data, variable){
   # browser()
   
   comparison = data[data_item == variable,
-                    .(route_id, begin_point, end_point, year_record, F_SYTEMorig, NHS,
+                    .(route_id, begin_point, end_point, datayear, F_SYTEMorig, NHS,
                       value_date, value_text, num_sections)]
   
   if(comparison[, .N] == 0){
@@ -1346,7 +1346,7 @@ cross_validation_64 = function(data, variable){
                          num_sections = sum(num_sections,na.rm=TRUE),
                          mileage      = sum(end_point-begin_point)
                        ),
-                       .(applies = (year(value_date) != year_record & F_SYTEMorig == 1) | (year(value_date) < year_record - 1 & NHS > 1), 
+                       .(applies = (year(value_date) != datayear & F_SYTEMorig == 1) | (year(value_date) < datayear - 1 & NHS > 1), 
                          passes  = value_text %in% c('A', 'B', 'C', 'D', 'E'))][order(applies,passes)]
   
   if(nrow(results[applies == TRUE])==0){
@@ -1366,7 +1366,7 @@ cross_validation_65 = function(data){
     # NHS in (1,2,3,4,5,6,7,8,9)
 
   comparison = data[data_item == "PSR",
-                    .(route_id, begin_point, end_point, year_record,
+                    .(route_id, begin_point, end_point, datayear,
                       F_SYTEMorig, NHS,
                       value_date, sample = !is.na(expansion_factor), num_sections)]
   
@@ -1384,7 +1384,7 @@ cross_validation_65 = function(data){
                          mileage      = sum(end_point-begin_point)
                        ),
                        .(applies = sample | (F_SYTEMorig > 1 & NHS %in% 1:9), 
-                         passes  = year(value_date) >= year_record - 1)][order(applies,passes)]
+                         passes  = year(value_date) >= datayear - 1)][order(applies,passes)]
   
   if(nrow(results[applies == TRUE])==0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -1403,7 +1403,7 @@ cross_validation_66 = function(data){
 
 
   comparison = data[data_item == "PSR",
-                    .(route_id, begin_point, end_point, year_record,
+                    .(route_id, begin_point, end_point, datayear,
                       F_SYTEMorig, value_text, value_date, num_sections)]
   
   if(comparison[, .N] == 0){
@@ -1420,7 +1420,7 @@ cross_validation_66 = function(data){
                          mileage      = sum(end_point-begin_point)
                        ),
                        .(applies = value_text == 'A' & F_SYTEMorig == 1, 
-                         passes  = year(value_date) == year_record)][order(applies,passes)]
+                         passes  = year(value_date) == datayear)][order(applies,passes)]
   
   if(nrow(results[applies == TRUE]) == 0){
     warning("Not applicable - Sufficient data from the state are not available")
