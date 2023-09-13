@@ -5,7 +5,7 @@ library(tictoc)
 
 coverage <- sqldf("select 
  A.routeid,A.beginpoint,A.endpoint,A.dataitem,A.valuenumeric as FACILITYTYPE, 
- B.valuenumeric as variable,B.expansion_factor 
+ B.valuenumeric as variable,B.expansionfactor 
  from [dat.FACILITY_TYPE] A 
  left join [dat.variable] B on 
  A.routeid = B.routeid and (
@@ -15,7 +15,7 @@ coverage <- sqldf("select
 setDT(coverage)
 
 A = dat.FACILITY_TYPE[, .(routeid, beginpoint, endpoint, dataitem, FACILITYTYPE = valuenumeric)]
-B = dat.variable[, .(routeid, beginpoint, endpoint, variable = valuenumeric, expansion_factor)]
+B = dat.variable[, .(routeid, beginpoint, endpoint, variable = valuenumeric, expansionfactor)]
 
 setkey(A, routeid, beginpoint, endpoint)
 setkey(B, routeid, beginpoint, endpoint)
@@ -53,7 +53,7 @@ test[FACILITYTYPE.x != FACILITYTYPE.y, .N]
 test[variable.x != variable.y, .N]
 
 test[variable.x != variable.y][order(routeid, beginpoint, endpoint),
-  .(routeid, beginpoint, endpoint, variable.x, variable.y, expansion_factor.x, expansion_factor.y)]
+  .(routeid, beginpoint, endpoint, variable.x, variable.y, expansionfactor.x, expansionfactor.y)]
 
 B[routeid == '00400I00' & beginpoint >= 119 & endpoint <= 122]
 all.equal(coverage, coverage2)
@@ -66,7 +66,7 @@ tic('sqldf')
 
 coverage1 <- sqldf("select 
  A.routeid,A.beginpoint,A.endpoint,A.dataitem,A.valuenumeric as FACILITYTYPE, 
- B.valuenumeric as variable,B.expansion_factor 
+ B.valuenumeric as variable,B.expansionfactor 
  from [dat.FACILITY_TYPE] A 
  left join [dat.variable] B on 
  A.routeid = B.routeid and (
@@ -106,7 +106,7 @@ tic('data.table')
 
 cov1 = coverage_join(
   dat.FACILITY_TYPE[, .(routeid, beginpoint, endpoint, dataitem, FACILITYTYPE = valuenumeric)],
-  dat.variable[, .(routeid, beginpoint, endpoint, variable = valuenumeric, expansion_factor)])
+  dat.variable[, .(routeid, beginpoint, endpoint, variable = valuenumeric, expansionfactor)])
 
 cov2 = coverage_join(
   cov1,
@@ -125,6 +125,6 @@ test = merge(coverage3, cov3, all=TRUE)
 test[dataitem.x != dataitem.y, .N]
 test[FACILITYTYPE.x != FACILITYTYPE.y, .N]
 test[variable.x != variable.y, .N]
-test[expansion_factor.x != expansion_factor.y, .N]
+test[expansionfactor.x != expansionfactor.y, .N]
 test[FSYSTEM.x != FSYSTEM.y, .N]
 test[NHS.x != NHS.y, .N]

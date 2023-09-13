@@ -494,11 +494,11 @@ FormatDataSet <- function(dat, state_abbr, year) {
                      by = c('datayear', 'routeid', 'beginpoint', 'endpoint'),
                      all.x=TRUE)
     
-    data_exp[, expansion_factor := as.numeric(expansion_factor)]
+    data_exp[, expansionfactor := as.numeric(expansionfactor)]
     
   } else {
     data_exp <- data_noFT6
-    data_exp[, expansion_factor := as.numeric(NA)]
+    data_exp[, expansionfactor := as.numeric(NA)]
     warning('Result of query:"', query, '" had zero rows.')
   }
   
@@ -532,12 +532,12 @@ FormatDataSet <- function(dat, state_abbr, year) {
   warning(
     "Mileage removed for SP sections with no expansion factors: ",
     data_exp[
-      (section_extent %in% c('SP', 'SP*') & is.na(data_exp$expansion_factor)),
+      (section_extent %in% c('SP', 'SP*') & is.na(data_exp$expansionfactor)),
       sum(endpoint-beginpoint)],
     "\n")
   
   data_exp = data_exp[
-    !(section_extent %in% c('SP', 'SP*') & is.na(data_exp$expansion_factor))]
+    !(section_extent %in% c('SP', 'SP*') & is.na(data_exp$expansionfactor))]
   
   
   if ( debugmode ){
@@ -560,7 +560,7 @@ FormatDataSet <- function(dat, state_abbr, year) {
     data_exp[, .N, keyby=.(has_se, rural_urban, F_SYTEMorig)] %>%
       dcast(rural_urban + F_SYTEMorig ~ has_se, value.var = 'N')
     
-    data_exp[, .N, keyby= .(has_se, has_ef = 1 * !is.na(expansion_factor))]
+    data_exp[, .N, keyby= .(has_se, has_ef = 1 * !is.na(expansionfactor))]
   }
   
   

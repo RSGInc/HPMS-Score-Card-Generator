@@ -166,7 +166,7 @@ cross_validation_2 = function(data){
   
   comparison = data[, 
                     .(routeid, beginpoint, endpoint, num_sections,
-                      sample = !is.na(expansion_factor), F_SYTEMorig, 
+                      sample = !is.na(expansionfactor), F_SYTEMorig, 
                       URBAN_ID, FACILITY_TYPE)]
   
   if(comparison[, .N]==0){
@@ -803,7 +803,7 @@ cross_validation_46 = function(data, variable){
   
   comparison = data[dataitem == variable,
                .(routeid, beginpoint, endpoint, datayear, F_SYTEMorig, NHS,
-                 valuedate, valuetext, sample = !is.na(expansion_factor), num_sections)]
+                 valuedate, valuetext, sample = !is.na(expansionfactor), num_sections)]
   
   if(comparison[, .N] == 0){
     warning("Not applicable - Sufficient data from the state are not available")
@@ -1368,7 +1368,7 @@ cross_validation_65 = function(data){
   comparison = data[dataitem == "PSR",
                     .(routeid, beginpoint, endpoint, datayear,
                       F_SYTEMorig, NHS,
-                      valuedate, sample = !is.na(expansion_factor), num_sections)]
+                      valuedate, sample = !is.na(expansionfactor), num_sections)]
   
   if(comparison[, .N] == 0){
     warning("Not applicable - Sufficient data from the state are not available")

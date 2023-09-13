@@ -12,7 +12,7 @@
 # Replace text
 # dat.$1 = data[
 #   dataitem == $1 & datayear == year,
-#   .(routeid, beginpoint, endpoint, expansion_factor, $1 = valuenumeric)]
+#   .(routeid, beginpoint, endpoint, expansionfactor, $1 = valuenumeric)]
 
 dat.variable[, .(routeid, beginpoint, endpoint, variable = valuenumeric)]
 
