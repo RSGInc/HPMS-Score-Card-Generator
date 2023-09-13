@@ -27,9 +27,9 @@ create_travel_data_outlier <- function(
   # AADT_SINGLE_UNIT = Single Unit Trucks/Buses
   # FUTURE_AADT
   
-  aadt    <- data[stateid==state&datayear==year&data_item=="AADT",
+  aadt    <- data[stateid==state&datayear==year&dataitem=="AADT",
                   list(routeid, beginpoint, endpoint, value_numeric, F_SYSTEM, NHS, Interstate)]
-  faadt   <- data[stateid==state&datayear==year&data_item=="FUTURE_AADT",
+  faadt   <- data[stateid==state&datayear==year&dataitem=="FUTURE_AADT",
                   list(routeid, beginpoint, endpoint, value_numeric, F_SYSTEM, NHS, Interstate)]
   
   comparison <- merge(aadt, faadt,

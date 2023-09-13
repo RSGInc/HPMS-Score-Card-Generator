@@ -23,7 +23,7 @@ section_tbl = tbl(src = con, 'Review_Sections')
 #   count(DataYear)
 
 # read renames
-rename_tbl = read_csv(file = 'db_import/data_item_rename_8_9.csv')
+rename_tbl = read_csv(file = 'db_import/dataitem_rename_8_9.csv')
 
 
 # Rename 2019 except where incompatible

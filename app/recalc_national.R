@@ -68,7 +68,7 @@ SummarizeNation <- function(year) {
       
       message('Variable: ', variable, ', State: ', basename(dirname(RDSfiles[stateRDS])),
               ', year:', year)
-      stateDT <- readRDS(RDSfiles[stateRDS])[data_item == variable, ]
+      stateDT <- readRDS(RDSfiles[stateRDS])[dataitem == variable, ]
       #if ( !is.null(sumDT) && (ncol(stateDT) != ncol(sumDT))) browser()
       sumDT <- rbind(sumDT, stateDT, fill=TRUE)
     }

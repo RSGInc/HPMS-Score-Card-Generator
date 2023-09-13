@@ -7,11 +7,11 @@
 # data replacements ---------------------------------------------------------
 
 # Search text
-# dat[.](.*) <- data\[data_item == .* & datayear == year, \]
+# dat[.](.*) <- data\[dataitem == .* & datayear == year, \]
 
 # Replace text
 # dat.$1 = data[
-#   data_item == $1 & datayear == year,
+#   dataitem == $1 & datayear == year,
 #   .(routeid, beginpoint, endpoint, expansion_factor, $1 = value_numeric)]
 
 dat.variable[, .(routeid, beginpoint, endpoint, variable = value_numeric)]

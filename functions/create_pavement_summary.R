@@ -18,7 +18,7 @@ create_pavement_summary <- function(data, state, year){
   # Subset the data
   dt <- data[stateid == state & 
              datayear == year &
-             data_item %in% c('THROUGH_LANES', 'SURFACE_TYPE'),]
+             dataitem %in% c('THROUGH_LANES', 'SURFACE_TYPE'),]
   
   # Create "by" variable for summaries
   # warning("Jeff, please check the calculation of the group variable",
@@ -32,21 +32,21 @@ create_pavement_summary <- function(data, state, year){
   setkey(dt, group)
   
   # Check
-  #dt[, list(data_item, F_SYSTEM, Interstate, NHS, group)]
+  #dt[, list(dataitem, F_SYSTEM, Interstate, NHS, group)]
   #with(dt, table(group, F_SYSTEM, NHS, Interstate, useNA='always'))
   
   
   # Missing through lanes
   dt_through_lanes <- 
-    dt[data_item == "THROUGH_LANES",
+    dt[dataitem == "THROUGH_LANES",
        list(n_missing = sum(num_sections * ( is.na(value_numeric) | is.null(value_numeric)))),
        by=group]
   
   dt_through_lanes = merge(data.table(group=1:length(gF_SYSTEM_levels)),dt_through_lanes,by="group",all.x=T)
   
   # Summarize surface type
-  dt_surftype <- unique(dt[data_item == 'SURFACE_TYPE',
-                        .(data_item, routeid, section_id, beginpoint_og, endpoint_og, value_numeric, group)])
+  dt_surftype <- unique(dt[dataitem == 'SURFACE_TYPE',
+                        .(dataitem, routeid, section_id, beginpoint_og, endpoint_og, value_numeric, group)])
   dt_surf_sum <- dt_surftype[,
             list(n_missing = sum((is.na(value_numeric) | is.null(value_numeric))),
             n_1 =  sum((value_numeric == 1 & !is.na(value_numeric))),

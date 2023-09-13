@@ -105,7 +105,7 @@ gCrossLabels     <- fread('resources/dat/cross_validation_labels.csv')
 gCrossLabels$Description <- str_replace(gCrossLabels$Description, '[(][0-9xy]*[)]$', '')
 gExtentDetail    <- fread('resources/dat/extent_detail.csv')
 
-gReqs <- fread("resources/dat/data_items_required_by_state.csv")
+gReqs <- fread("resources/dat/dataitems_required_by_state.csv")
 gReqs <- gReqs[Name %in% gVariables[, Name]]
 
 gScoreWeights <- fread("resources/dat/scoringweights.csv")

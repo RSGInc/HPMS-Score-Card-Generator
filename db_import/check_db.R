@@ -27,14 +27,14 @@ rss = tbl(con, from = 'Review_Sample_Sections')
 rs
 
 # Type queries below --------------------------------------------------------
-data_item = 'BASE_TYPE'
+dataitem = 'BASE_TYPE'
 
 rs_dt = rs %>%
   filter(DataYear == year, StateId == stateid) %>%
   collect() %>%
   data.table()
 
-rs_dt[DataItem == data_item, .N]
+rs_dt[DataItem == dataitem, .N]
 
 
 

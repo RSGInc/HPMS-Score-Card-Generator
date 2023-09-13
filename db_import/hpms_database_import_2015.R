@@ -70,7 +70,7 @@ if ( choice == 1 ){
              RouteId = route_ID,
              BeginPoint = begin_Point,
              EndPoint = endpoint,
-             DataItem = data_item) %>%
+             DataItem = dataitem) %>%
       mutate(SectionLength = as.numeric(EndPoint) - as.numeric(BeginPoint),
              StateYearKey = str_c(StateId, str_sub(DataYear, start = 3, end=4)))
     

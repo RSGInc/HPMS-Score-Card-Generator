@@ -49,7 +49,7 @@ checkSummary <- function(year, stateid, data){
     # names(sql_sum) <- tolower(names(sql_sum))
     if ('stateyearkey' %in% names(sql_sum)) sql_sum[, stateyearkey := NULL]
     
-    keys <- c('datayear', 'stateid', 'data_item')
+    keys <- c('datayear', 'stateid', 'dataitem')
     
     sql_sum[, record_count := as.numeric(record_count)]
     sql_sum[, routeid_count := as.numeric(routeid_count)]
@@ -62,7 +62,7 @@ checkSummary <- function(year, stateid, data){
     r_sum <- r_sum[, .(record_count = as.numeric(.N),
                            miles = sum(endpoint-beginpoint),
                            routeid_count = as.numeric(length(unique(routeid)))),
-                       by=list(datayear, stateid, data_item)]
+                       by=list(datayear, stateid, dataitem)]
     
     r_sum1 <- data.table::melt(r_sum, id.vars=keys, variable.name='measure',
                      value.name='from_r')
@@ -130,7 +130,7 @@ CheckImport <- function(year, stateid, dat) {
   
   ### Other data checks go here, for example:
   # make sure state codes are correct
-  # make sure there's an F_SYSTEM data_item
+  # make sure there's an F_SYSTEM dataitem
   
   if (!passedChecks) warning(paste("The", year, getStateLabelFromNum(stateid), "data set has failed a data check. Skipping."), immediate. = TRUE, call. = FALSE)
   

@@ -17,27 +17,27 @@ create_overall_condition <- function(data, state, year, population)
      # the algorithm is described in detail in the file title MAP-21 Pavement Condition Rule
   
      # four metrics are used based on the surface type
-     rutting  <- data[stateid  ==  state & datayear == year & data_item == "RUTTING" & FACILITY_TYPE!=4,
+     rutting  <- data[stateid  ==  state & datayear == year & dataitem == "RUTTING" & FACILITY_TYPE!=4,
                       list(routeid, beginpoint, endpoint, value_numeric), ]
      setnames(rutting, "value_numeric", "rutting")
 
-     iri      <- data[stateid == state & datayear == year & data_item == "IRI" & FACILITY_TYPE!=4,
+     iri      <- data[stateid == state & datayear == year & dataitem == "IRI" & FACILITY_TYPE!=4,
                       list(routeid, beginpoint, endpoint, value_numeric), ]
      setnames(iri, "value_numeric", "iri")
      
-     faulting <- data[stateid == state & datayear == year & data_item == "FAULTING" & FACILITY_TYPE!=4,
+     faulting <- data[stateid == state & datayear == year & dataitem == "FAULTING" & FACILITY_TYPE!=4,
                       list(routeid, beginpoint, endpoint, value_numeric), ]
      setnames(faulting, "value_numeric", "faulting")
      
-     cracking <- data[stateid == state & datayear == year & data_item == "CRACKING_PERCENT" & FACILITY_TYPE!=4,
+     cracking <- data[stateid == state & datayear == year & dataitem == "CRACKING_PERCENT" & FACILITY_TYPE!=4,
                       list(routeid, beginpoint, endpoint, value_numeric), ]
      setnames(cracking, "value_numeric", "cracking")
      
-     surface <- data[stateid == state & datayear == year & data_item == "SURFACE_TYPE" & FACILITY_TYPE!=4,
+     surface <- data[stateid == state & datayear == year & dataitem == "SURFACE_TYPE" & FACILITY_TYPE!=4,
                      list(routeid, F_SYSTEM, Interstate, NHS, beginpoint, endpoint, value_numeric), ]
      setnames(surface, "value_numeric", "surface")
      
-     urban <- data[stateid == state & datayear == year & data_item == "URBAN_ID" & FACILITY_TYPE!=4,
+     urban <- data[stateid == state & datayear == year & dataitem == "URBAN_ID" & FACILITY_TYPE!=4,
                    list(routeid, beginpoint, endpoint, value_numeric), ]
      setnames(urban, "value_numeric", "urban_id")
      

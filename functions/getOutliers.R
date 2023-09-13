@@ -18,7 +18,7 @@ getOutliers <- function(data, year, variable){
   
   if ( is.na(outlier_threshold_high) & is.na(outlier_threshold_low) ) return(NULL)
   
-  data <- data[data_item==variable & datayear==year,]
+  data <- data[dataitem==variable & datayear==year,]
   
   d.l <- data    
   

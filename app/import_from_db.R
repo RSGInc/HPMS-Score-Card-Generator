@@ -283,9 +283,9 @@ cleanUpQuery <- function(data){
   # make names lower case
   names(data) <- tolower(names(data))
 
-  # if data_item is present, make upper case
-  if('data_item' %in% names(data)){
-    data$data_item <- toupper(data$data_item)
+  # if dataitem is present, make upper case
+  if('dataitem' %in% names(data)){
+    data$dataitem <- toupper(data$dataitem)
   }
 
   # Strip white space from text columns so things join properly
@@ -351,10 +351,10 @@ SegmentDataSet <- function(dat) {
   
 }
 
-# Create a column for a particular data_item from value_numeric
-transposeItem <- function(dfname, data_item){
+# Create a column for a particular dataitem from value_numeric
+transposeItem <- function(dfname, dataitem){
 
-    sql <- paste0('select A.*, B.value_numeric as ', data_item, ' ',
+    sql <- paste0('select A.*, B.value_numeric as ', dataitem, ' ',
                'from [', dfname, '] A ',
                'left join [', dfname, '] B on A.routeid = B.routeid and ',
                'A.datayear = B.datayear and ',
@@ -363,14 +363,14 @@ transposeItem <- function(dfname, data_item){
                'A.beginpoint >= B.beginpoint and ',
                'A.endpoint <= B.endpoint and ',
                'A.endpoint >= B.beginpoint and ',
-               "B.data_item = '", data_item, "'")
+               "B.dataitem = '", dataitem, "'")
   
   return(sql)  
 }
 
 append_column = function(data,column){
   
-  data.column = data[data_item==column,.(datayear,routeid,beginpoint,endpoint,value_numeric)]
+  data.column = data[dataitem==column,.(datayear,routeid,beginpoint,endpoint,value_numeric)]
   setnames(data.column,"value_numeric",column)
   data[data.column,(column):=get(column),on=.(datayear,routeid,beginpoint,endpoint)]
   return(data)
@@ -387,8 +387,8 @@ FormatDataSet <- function(dat, state_abbr, year) {
   # Any section that has a blank section extent in the extent details spreadsheet.
   
   # Keep track of the original sections 
-  dat <- dat[order(routeid, data_item, beginpoint)]
-  dat[, section_id := 1:.N, by=.(routeid, data_item)]
+  dat <- dat[order(routeid, dataitem, beginpoint)]
+  dat[, section_id := 1:.N, by=.(routeid, dataitem)]
   dat[, c('beginpoint_og', 'endpoint_og') := list(beginpoint, endpoint)]
   
   data.formatted = expand(dat,0.1)
@@ -436,7 +436,7 @@ FormatDataSet <- function(dat, state_abbr, year) {
   
   data_noFT6 = data_noFT6[
     (FACILITY_TYPE == 4 & 
-       data_item %in% c("AADT","F_SYSTEM","FACILITY_TYPE","THROUGH_LANES","URBAN_ID"))|
+       dataitem %in% c("AADT","F_SYSTEM","FACILITY_TYPE","THROUGH_LANES","URBAN_ID"))|
       (FACILITY_TYPE %in% c(1,2))]
   
   # merge in expansion factors ---------------------------------------------
@@ -509,7 +509,7 @@ FormatDataSet <- function(dat, state_abbr, year) {
   data_exp = merge(
     data_exp,
     gExtentDetail,
-    by  = c('data_item', 'rural_urban'),
+    by  = c('dataitem', 'rural_urban'),
     all.x=TRUE)
 
   # Create section_extent based on data item, f-system and rural/urban designation
@@ -551,8 +551,8 @@ FormatDataSet <- function(dat, state_abbr, year) {
     
     data_exp[, .N, has_ext]
     
-    data_exp[, .N, keyby=.(has_se, data_item, rural_urban)] %>%
-      dcast(data_item + rural_urban ~ has_se, value.var = 'N')
+    data_exp[, .N, keyby=.(has_se, dataitem, rural_urban)] %>%
+      dcast(dataitem + rural_urban ~ has_se, value.var = 'N')
   
     data_exp[, .N, keyby=.(has_se, rural_urban, F_SYTEMorig)] %>%
       dcast(rural_urban + F_SYTEMorig ~ has_se, value.var = 'N')
@@ -579,7 +579,7 @@ FormatDataSet <- function(dat, state_abbr, year) {
   
   data_exp[, (drop_cols) := NULL]
   
-  setkeyv(data_exp, c("stateid","datayear","routeid","data_item","beginpoint","endpoint"))
+  setkeyv(data_exp, c("stateid","datayear","routeid","dataitem","beginpoint","endpoint"))
 
   if ( nrow(data_exp) == 0 & debugmode ){browser()}
   return(data_exp)

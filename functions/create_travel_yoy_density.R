@@ -57,11 +57,11 @@ create_travel_yoy_density <- function(
   # get common indices to increase readability
   idx_var1 <- data[, stateid == state &
                      datayear == year &
-                     data_item == variable ] 
+                     dataitem == variable ] 
   
   idx_var2 <- data[, stateid == state &
                      datayear == yearcomparison &
-                     data_item == variable ]
+                     dataitem == variable ]
   
   if ( ramps ){
     

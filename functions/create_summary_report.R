@@ -23,10 +23,10 @@ create_summary_report <- function(
   
   if( ramps ){
     result1 <- data[stateid == state & datayear == year &
-                      data_item == variable & FACILITY_TYPE == 4, , ] 
+                      dataitem == variable & FACILITY_TYPE == 4, , ] 
   } else {
     result1 <- data[stateid == state & datayear == year &
-                      data_item == variable & FACILITY_TYPE != 4, , ]
+                      dataitem == variable & FACILITY_TYPE != 4, , ]
   }
   
   result1[, miles := sum(endpoint - beginpoint, na.rm = TRUE), by=list(F_SYSTEM)]
@@ -78,10 +78,10 @@ create_summary_report <- function(
   
   if(ramps){
     result2 <- data[Interstate == 1 & stateid == state & datayear == year &
-                      data_item == variable & FACILITY_TYPE == 4, , ]
+                      dataitem == variable & FACILITY_TYPE == 4, , ]
   } else {
     result2 <- data[Interstate == 1 & stateid == state & datayear == year &
-                      data_item == variable & FACILITY_TYPE != 4, , ] 
+                      dataitem == variable & FACILITY_TYPE != 4, , ] 
   }
   
   result2[,miles := sum(endpoint - beginpoint, na.rm = TRUE),]
@@ -121,12 +121,12 @@ create_summary_report <- function(
   if(ramps){
     
     result3 <- data[NHS == 1 & stateid == state & datayear == year &
-                      data_item == variable & FACILITY_TYPE == 4, , ]
+                      dataitem == variable & FACILITY_TYPE == 4, , ]
   
   } else {
     
     result3 <- data[NHS==1 & stateid == state & datayear == year &
-                      data_item == variable & FACILITY_TYPE != 4, , ]
+                      dataitem == variable & FACILITY_TYPE != 4, , ]
   
   }
   
