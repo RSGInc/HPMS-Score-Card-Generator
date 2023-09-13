@@ -52,13 +52,13 @@ sort(unique(tbl$RouteId))
 with(tbl, summary(BeginPoint))
 with(tbl, summary(EndPoint))
 with(tbl, summary(as.numeric(SectionLength)))
-tbl2 <- mutate(tbl, section_length_o = as.numeric(SectionLength),
+tbl2 <- mutate(tbl, sectionlength_o = as.numeric(SectionLength),
                SectionLength = EndPoint - BeginPoint)
 
-#qplot(x=section_length_o, y=SectionLength, data=tbl2)
+#qplot(x=sectionlength_o, y=SectionLength, data=tbl2)
 
-filter(tbl2, is.na(section_length_o)) %>%
-  select(section_length_o, SectionLength, BeginPoint, EndPoint)
+filter(tbl2, is.na(sectionlength_o)) %>%
+  select(sectionlength_o, SectionLength, BeginPoint, EndPoint)
 
 with(tbl, summary(ValueNumeric))
 with(tbl, summary(ValueDate))

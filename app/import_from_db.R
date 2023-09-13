@@ -462,7 +462,7 @@ FormatDataSet <- function(dat, state_abbr, year) {
     # things we do not need in SP
     
     sp[,num_sections:=NULL]
-    sp[,section_length:=NULL]
+    sp[,sectionlength:=NULL]
     sp[,stateyearkey:=NULL]
     sp[,stateid:=NULL]
     

@@ -365,7 +365,7 @@ copy_rows = function(con, stage_table, prod_table, counts_local){
     new_fields = c(new_fields, 'StateYearKey')
   }
   
-  # Create section_length
+  # Create sectionlength
   if ( !'sectionlength' %in% str_to_lower(new_fields) ){
     sql = str_glue(
       'alter table {stage_table} ',

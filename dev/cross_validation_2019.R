@@ -1178,9 +1178,9 @@ measurement_checks = function(data){
   
   comparison = data[DataItem%in%c("IRI","PSR","RUTTING","FAULTING","CRACKING_PERCENT"),.(RouteId,BeginPoint,EndPoint,DataItem)]
   
-  comparison[,section_length:=EndPoint-BeginPoint]
+  comparison[,sectionlength:=EndPoint-BeginPoint]
   
-  results = comparison[,.(num_sections=.N,mileage = sum(section_length)),.(DataItem,Passes=section_length<=0.11)][order(DataItem,Passes)]
+  results = comparison[,.(num_sections=.N,mileage = sum(sectionlength)),.(DataItem,Passes=sectionlength<=0.11)][order(DataItem,Passes)]
   
   results[,c("section_total","mileage_total"):=.(sum(num_sections),sum(mileage)),.(DataItem)]
   results[,c("sections_pass","mileage_pass"):=.(num_sections/section_total,mileage/mileage_total)]

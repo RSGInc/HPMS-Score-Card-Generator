@@ -1538,10 +1538,10 @@ measurement_checks = function(data){
   comparison = data[dataitem %in% c("IRI", "PSR", "RUTTING", "FAULTING", "CRACKING_PERCENT"),
                     .(routeid, section_id, beginpoint_og, endpoint_og, dataitem)]
   comparison <- unique(comparison)
-  comparison[, section_length := endpoint_og - beginpoint_og]
+  comparison[, sectionlength := endpoint_og - beginpoint_og]
   
-  results = comparison[, .(num_sections = .N, mileage = sum(section_length)),
-                       .(dataitem, passes = section_length <= 0.11)][order(dataitem,passes)]
+  results = comparison[, .(num_sections = .N, mileage = sum(sectionlength)),
+                       .(dataitem, passes = sectionlength <= 0.11)][order(dataitem,passes)]
   
   results[, c("section_total", "mileage_total") := .(sum(num_sections), sum(mileage)), .(dataitem)]
   results[, c("sections_pass", "mileage_pass") := .(num_sections / section_total, mileage/mileage_total)]
