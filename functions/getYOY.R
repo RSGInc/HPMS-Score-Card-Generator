@@ -16,15 +16,17 @@ getYOY <- function(data, year, yearcomparison, variable, yoy_change){
   #data <- data[!(F_SYTEMorig == 7 & NHS != 1), ]
   
   var.1    <- data[datayear == year & dataitem==variable,
-                   list(routeid, beginpoint, endpoint, valuenumeric, valuetext, valuedate,
+                   list(routeid, beginpoint, endpoint, valuenumeric, valuetext, valuedate, begindate, datayear,
                         F_SYSTEM, NHS, Interstate, num_sections)]
   
   var.2    <- data[datayear == yearcomparison & dataitem==variable,
-                   list(routeid, beginpoint, endpoint, valuenumeric, valuetext, valuedate)]
+                   list(routeid, beginpoint, endpoint, valuenumeric, valuetext, valuedate, begindate, datayear)]
   
   if ( variable %in% c('YEAR_LAST_IMPROVEMENT', 'YEAR_LAST_CONSTRUCTION') ){
-    var.1[is.na(valuenumeric) | valuenumeric == 0, valuenumeric := year(valuedate)]
-    var.2[is.na(valuenumeric) | valuenumeric == 0, valuenumeric := year(valuedate)]
+    #var.1[is.na(valuenumeric) | valuenumeric == 0, valuenumeric := year(valuedate)]
+    #var.2[is.na(valuenumeric) | valuenumeric == 0, valuenumeric := year(valuedate)]
+	var.1[is.na(valuenumeric) | valuenumeric == 0, valuenumeric := ifelse( datayear <= 2020, year(begindate), year(valuedate) )]
+    var.2[is.na(valuenumeric) | valuenumeric == 0, valuenumeric := ifelse( datayear <= 2020, year(begindate), year(valuedate) )]
   }
   
   if ( variable == 'WIDENING_OBSTACLE'){

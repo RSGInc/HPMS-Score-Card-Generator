@@ -72,14 +72,18 @@ create_travel_data_yoy <- function(
       
     } else {
       var.1 = data[stateid == state & datayear == year &
-                     dataitem == variable & FACILITY_TYPE != 4 & !is.na(valuedate),
+                     # dataitem == variable & FACILITY_TYPE != 4 & !is.na(valuedate),
+                     dataitem == variable & FACILITY_TYPE != 4 & ( (datayear <= 2020 & !is.na(begindate)) | !is.na(valuedate) ),
                    list(routeid,beginpoint,endpoint,
-                        value.1 = year(valuedate),F_SYSTEM)]
+                        # value.1 = year(valuedate),F_SYSTEM)
+                        value.1 = ifelse( datayear <= 2020, year(begindate), year(valuedate) ), F_SYSTEM)]
       
       var.2 = data[stateid == state & datayear == yearcomparison &
-                     dataitem == variable & FACILITY_TYPE != 4 & !is.na(valuedate),
+                     #dataitem == variable & FACILITY_TYPE != 4 & !is.na(valuedate),
+                     dataitem == variable & FACILITY_TYPE != 4 & ( (datayear <= 2020 & !is.na(begindate)) | !is.na(valuedate) ),
                    list(routeid,beginpoint,endpoint,
-                        value.2 = year(valuedate),F_SYSTEM)]       
+                        #value.2 = year(valuedate),F_SYSTEM)]   
+                        value.2 = ifelse( datayear <= 2020, year(begindate), year(valuedate) ), F_SYSTEM)]
     }
   }
   

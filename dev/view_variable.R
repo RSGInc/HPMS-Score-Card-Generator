@@ -21,7 +21,7 @@ view_variable = function(data.list, variable = NULL, var.label = NULL){
     
   }
   
-  
+  browser()
   x1 = which(gVariables[, Name] == variable)
   create_page_summary(data = data.list$dat,
                       state = data.list$stateid,
@@ -39,7 +39,7 @@ view_variable = function(data.list, variable = NULL, var.label = NULL){
 
 year_selection=2020
 year_compare = 2019
-state = 'TX'
+state = 'DE'
 
 
 # Load data
@@ -47,6 +47,6 @@ state = 'TX'
 data.list = getStateDataSets(state, year_selection, year_compare)
 
 debug(create_page_summary)
-view_variable(data.list, var.label='Cracking Percent')
+view_variable(data.list, var.label='Year of Last Improvement')
 
 

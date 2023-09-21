@@ -20,7 +20,7 @@ create_travel_yoy_density <- function(
   ramps,
   nvalues_bar = 11
 ){
-  
+  # if(variable %in% c('YEAR_LAST_CONSTRUCTION', 'YEAR_LAST_IMPROVEMENT')) {browser()}
   if ( yearcomparison <= 2020 ){
     expectedChange <- gVariables[Name == variable, Expect_YOY_change_2020]
 
@@ -77,8 +77,10 @@ create_travel_yoy_density <- function(
 
   if ( type == 'date' ){ # DATE
     
+    # data[(idx_var1 | idx_var2) & (is.na(valuenumeric) | valuenumeric == 0),
+    #      valuenumeric := year(valuedate)]
     data[(idx_var1 | idx_var2) & (is.na(valuenumeric) | valuenumeric == 0),
-         valuenumeric := year(valuedate)]
+         valuenumeric := ifelse( !is.na(valuedate), year(valuedate), year(begindate) )]
     
   }
   
@@ -105,7 +107,7 @@ create_travel_yoy_density <- function(
     
     if ( type == 'date'){
       national[is.na(valuenumeric) | valuenumeric == 0, 
-               valuenumeric := year(valuedate)]
+               valuenumeric := ifelse( !is.na(valuedate), year(valuedate), year(begindate) )]#year(valuedate)]
     }
     
     if(ramps){

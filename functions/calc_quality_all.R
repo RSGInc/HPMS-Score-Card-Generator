@@ -38,7 +38,7 @@ calc_quality_all <- function(data, year, year_compare){
   for ( i in 1:nrow(dt_output)){
 
     variable <- dt_output$Name[i]
-
+#if(variable %in% c("YEAR_LAST_IMPROVEMENT","YEAR_LAST_CONSTRUCTION")) {browser()}
     message('\t', variable)
     
     if (nrow(data[datayear == year & dataitem == variable]) == 0){

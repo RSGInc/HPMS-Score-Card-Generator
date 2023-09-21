@@ -61,7 +61,7 @@ event_urls = c(
 )
 
 
-update_tt = TRUE
+update_tt = FALSE
 update_samples = TRUE
 update_sections = TRUE
 overwrite_cache = FALSE
