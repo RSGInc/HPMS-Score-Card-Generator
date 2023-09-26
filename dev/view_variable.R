@@ -47,6 +47,6 @@ state = 'DE'
 data.list = getStateDataSets(state, year_selection, year_compare)
 
 debug(create_page_summary)
-view_variable(data.list, var.label='Year of Last Improvement')
+view_variable(data.list, var.label='Combination Truck AADT')
 
 
