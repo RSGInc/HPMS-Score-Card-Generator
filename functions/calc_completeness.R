@@ -991,6 +991,8 @@ calc_completeness <- function(data, year, variable){
   
   if ( variable == 'SPEED_LIMIT' ){
     
+    # HPMS9 -- must exist on NHS as well as Samples
+    
     dat.variable = data[
       dataitem == variable & datayear == year, 
       .(routeid, beginpoint, endpoint, variable = valuenumeric, expansionfactor)]

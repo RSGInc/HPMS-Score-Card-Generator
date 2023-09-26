@@ -6,7 +6,7 @@ calc_cross_validation = function(data, year){
   data = data[datayear == year & FACILITY_TYPE %in% c(1,2)]
   
   results = list()
-browser()
+
   # Tests not used here: evaluated as outliers
 
   # results[["1"]]  = summarize_validation(cross_validation_1(data))
@@ -274,10 +274,9 @@ cross_validation_14 = function(data){
 cross_validation_15 = function(data){
   # SPEED_LIMIT should be divisible by 5, and < 90 OR = 999
   # should it include a check of 0?
-  
+ 
   speed_limit = data[dataitem=="SPEED_LIMIT",.(routeid,beginpoint,endpoint,SPEED_LIMIT=valuenumeric, num_sections)]
-  speed_limit = data[dataitem=="SPEED_LIMIT",.(routeid,beginpoint,endpoint,SPEED_LIMIT=valuenumeric, num_sections, NHS, expansionfactor)]
-  
+
   if(speed_limit[, .N] == 0){
     warning("Not applicable - Sufficient data from the state are not available")
     return(list(results=NULL,comparison=NULL))  
@@ -293,9 +292,7 @@ cross_validation_15 = function(data){
                mileage      = sum(endpoint-beginpoint)
               ),
              .(applies = !is.na(SPEED_LIMIT), 
-               passes  = 
-                 ( (SPEED_LIMIT == 999) | (SPEED_LIMIT %% 5 == 0 & SPEED_LIMIT < 90) ) &
-                 !is.na(NHS)  & !is.na(expansionfactor) # new NHS/Sample criteria
+               passes  = ( (SPEED_LIMIT == 999) | (SPEED_LIMIT %% 5 == 0 & SPEED_LIMIT < 90) ) 
                
              )
   ][order(applies,passes)]
