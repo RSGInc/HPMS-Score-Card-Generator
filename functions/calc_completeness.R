@@ -566,14 +566,14 @@ calc_completeness <- function(data, year, variable){
   } else
     
     # maintenance_operations ---------------------------------------------------
-  
-  # if(variable %in% c("MAINTENANCE_OPERATIONS")){
-  #   
-  #   # coverage = data[dataitem == variable & datayear == year,]
-  #   # coverage[, required := TRUE]
-  #   browser()
-  #   
-  # } else
+
+  if(variable %in% c("MAINTENANCE_OPERATIONS")){
+
+    coverage = data[dataitem == variable & datayear == year,]
+    coverage[, required := FALSE]
+    #browser()
+
+  } else
     
     # managed_lanes ---------------------------------------------------------------
   
