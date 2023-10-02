@@ -11,23 +11,26 @@
 22,"Median Type in (2,3,4,5,6,7): Median Width > 0 (22)"
 23,Widening_Obstacle: must be A-G where Widening_Potential <9 (23)
 39,DIR_Factor : = 100 where Facility_Type = 1 (39)
-40,DIR_Factor: >=  50 and <=70 where Facility_Type = 2 (40)
-41,Future_AADT: AADT < FAADT < 4*AADT (41)
-42,PCT_DH_SINGLE_UNIT: (SU AADT x 0.025) < (AADT x PCT_DH_SINGLE_UNIT / 100) < (SU AADT x 0.4)  (42)
-43,PCT_DH_COMBINATION: (CU AADT x 0.025) < (AADT x PCT_DH_COMBINATION / 100) < (CU AADT x 0.4) (43)
+40,DIR_Factor: >=  50 and <= 75 where Facility_Type = 2 (40)
+41,Future_AADT: AADT < FAADT < 4*AADT where ValueDate is NULL OR FAADT < AADT*0.2(ValueDate-BeginDate) (41)
+42,PCT_DH_SINGLE_UNIT: (SU AADT x 0.01) < (AADT x PCT_DH_SINGLE_UNIT / 100) < (SU AADT x 0.5)  (42)
+43,PCT_DH_COMBINATION: (CU AADT x 0.01) < (AADT x PCT_DH_COMBINATION / 100) < (CU AADT x 0.5) (43)
 44,AADT Combination: < AADT * 0.4 (44)
 45,AADT_Single_Unit :  < AADT * 0.4 (45)
-46.1,IRI: ValueDate >= DataYear � 1 where Sample OR (ValueText Null AND F_System >1 and NHS in 1-9 ) (46)
-46.2,Rutting: ValueDate >= DataYear � 1 where Sample OR (ValueText Null AND F_System >1 and NHS in 1-9 ) (46)
-46.3,Faulting: ValueDate >= DataYear � 1 where Sample OR (ValueText Null AND F_System >1 and NHS in 1-9 ) (46)
-46.4,Cracking_Percent: ValueDate >= DataYear � 1 where Sample OR (ValueText Null AND F_System >1 and NHS in 1-9 ) (46)
+46.1,IRI: ValueDate >= BeginDate � 1 where Sample OR (ValueText Null AND F_System >1 and NHS in 1-9 ) (46)
+46.2,Rutting: ValueDate >= BeginDate � 1 where Sample OR (ValueText Null AND F_System >1 and NHS in 1-9 ) (46)
+46.3,Faulting: ValueDate >= BeginDate � 1 where Sample OR (ValueText Null AND F_System >1 and NHS in 1-9 ) (46)
+46.4,Cracking_Percent: ValueDate >= BeginDate � 1 where Sample OR (ValueText Null AND F_System >1 and NHS in 1-9 ) (46)
 47,Faulting: <=1 (47)
-49,K_Factor : > 4 and <20  (49)
+49,K_Factor : > 4 and <30  (49)
 51,"Cracking_Percent: < 75 Where Surface Type is in (3,4,5,9,10)  (51)"
 52,Rutting: < 1 (52)
 53,Through_Lanes: >1 when Facility_Type = 2 (53)
-54,AADT Combination: > 0  (54)
-55,AADT_Single_Unit :  > 0 (55)
+54.1,AADT Combination: > 0 where AADT >500  (54)
+54.2,AADT Combination: < 50 where PCT_DH_Combination = 0  (54)
+55.1,AADT_Single_Unit :  > 0 where AADT >500 (55)
+55.2,AADT_Single_Unit :  AADT_Single_Unit + AADT_Combination < 0.8*AADT (55)
+55.3,AADT_Single_Unit :  < 50 where PCT_DH_Single_Unit = 0 (55)
 56,PCT_DH_COMBINATION: >0 and < 25% (56)
 57,PCT_DH_SINGLE_UNIT: >0 and < 25% (57)
 60,Left Shoulder Width:  < Median_Width (60)
@@ -41,12 +44,21 @@
 64.2,"Rutting: ValueText In (A,B,C,D,E)�where ValueDate <> Year Record and F_Sytem = 1 OR (ValueDate < Year Record -1 on NHS) (64)"
 64.3,"Faulting: ValueText In (A,B,C,D,E)�where ValueDate <> Year Record and F_Sytem = 1 OR (ValueDate < Year Record -1 on NHS) (64)"
 64.4,"Cracking_Percent: ValueText In (A,B,C,D,E)�where ValueDate <> Year Record and F_Sytem = 1 OR (ValueDate < Year Record -1 on NHS) (64)"
-65,"PSR: ValueDate >= DataYear � 1 where Sample OR F_System >1 and NHS in (1,2,3,4,5,6,7,8,9) (65)"
-66,"PSR: ValueDate = Year Record  where ValueText = ""A"" AND F_System =1  (66)"
+65,"PSR: ValueDate >= BeginDate � 1 where Sample OR F_System >1 and NHS in (1,2,3,4,5,6,7,8,9) (65)"
+66,"PSR: ValueDate = BeginDate  where ValueText = ""A"" AND F_System =1  (66)"
+68, MAINTENANCE_OPERATIONS: <> Ownership (68)
+70, DIR_THROUGH_LANES:  < or = Through_Lanes (70)
+72, If URBAN_ID ValueNumeric = 99999 then NHFN ValueNumeric must not = 2 AND If URBAN_ID ValueNumeric < 99999 then NHFN ValueNumeric must not = 3
+73, If F_SYSTEM ValueNumeric = 1 Then NN must exist and NN ValueNumeric must = 1 (73)
+74, Where ROUTE_NUMBER ValueNumeric or ValueText is not NULL; ROUTE_SIGNING ValueNumeric must not be NULL (74)
+75.1, DIR_THROUGH_LANES:  < or = Through_Lanes (75.1)
+75.2, Where ROUTE_NUMBER ValueNumeric or ValueText is not NULL; ROUTE_QUALIFIER ValueNumeric must not be NULL (75.2)
+76.1, If F_SYSTEM ValueNumeric = 1 Then STRAHNET_TYPE must exist and STRAHNET_TYPE ValueNumeric must = 1 (76.1)
+76.2, If STRAHNET_TYPE ValueNumeric is in the range (1;2) then NHS ValueNumeric must = 1 (76.2)
 129,IRI: Section Length <= 0.11 Miles (129)
 129,PSR: Section Length <=  0.11 Miles (129)
 129,Rutting: Section Length <=  0.11 Miles (129)
 129,Faulting: Section Length <= 0.11 Miles (129)
 129,Cracking_Percent: Section Length <= 0.11 Miles (129)
-x,Through_Lanes: Counter_Peak_Lanes + Peak_Lanes Must Be >= Through Lanes (x)
+x,Through_Lanes: Counter_Peak_Lanes + Peak_Lanes Must Be >= Through Lanes on Samples (x)
 y,Signal_Type: = 5 where F_System = 1 and Urban Code <> 99999(y)
