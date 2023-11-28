@@ -20,8 +20,8 @@ create_page_summary <- function(
   title,icontext,
   page,
   ramps=FALSE){
-  
-  width <- unit(
+
+    width <- unit(
     c(1.5, 0.05,
       4-(0.5-0.1333+0.3)/3, 0.05,
       4-(0.5-0.1333+0.3)/3, 0.05,

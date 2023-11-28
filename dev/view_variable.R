@@ -37,8 +37,8 @@ view_variable = function(data.list, variable = NULL, var.label = NULL){
 
 # Set parameters
 
-year_selection=2020
-year_compare = 2019
+year_selection=2022
+year_compare = 2020
 state = 'DE'
 
 
@@ -47,6 +47,7 @@ state = 'DE'
 data.list = getStateDataSets(state, year_selection, year_compare)
 
 debug(create_page_summary)
-view_variable(data.list, var.label='Combination Truck AADT')
+debug(create_traffic_detailed_review)
+view_variable(data.list, variable = 'TURN_LANES_L', var.label='LEFT TURN LANES')
 
 

@@ -1,4 +1,301 @@
 
+# Dev script for new HPMS9 cross-validations before porting to cross_validation.R 
+
+###################################################################
+cross_validation_101 = function(data){
+  
+  # NHS
+  # If F_SYSTEM ValueNumeric = 1 AND FACILITY_TYPE is IN (1,2) then NHS must exist and NHS ValueNumeric must = 1
+  
+  nhs = data[dataitem == "NHS",
+                            .(routeid, beginpoint, endpoint, datayear, NHS = valuenumeric, 
+                              valuetext, valuedate, begindate, num_sections)]  
+  
+  f_system  = data[dataitem=="F_SYSTEM",
+                       .(routeid,beginpoint,endpoint,F_SYSTEM=valuenumeric,num_sections)]
+  
+  facility_type = data[dataitem=="FACILITY_TYPE",
+                       .(routeid,beginpoint,endpoint,FACILITY_TYPE=valuenumeric,num_sections)]
+  
+  if(nhs[, .N] == 0){
+    warning("Not applicable - Sufficient data from the state are not available")
+    return(list(results=NULL, comparison=NULL))  
+  }
+  
+  comparison =        nhs[f_system, on = .(routeid, beginpoint, endpoint)]
+  comparison = comparison[facility_type, on = .(routeid, beginpoint, endpoint)]
+  
+  # apply the condition
+  results = comparison[,
+                       .(
+                         .N,
+                         num_sections = sum(num_sections,na.rm=TRUE),
+                         mileage      = sum(endpoint-beginpoint)
+                       ),
+                       .(applies = F_SYSTEM == 1 & FACILITY_TYPE %in% c(1,2), 
+                         passes  = !is.na(NHS) & NHS == 1)][order(applies,passes)]
+  
+  if(nrow(results[applies == TRUE]) == 0){
+    warning("Not applicable - Sufficient data from the state are not available")
+    return(list(results=NULL,comparison=NULL))  
+  }
+  
+  
+  return(list(results=results, comparison=comparison))
+  
+  
+}
+
+###################################################################
+cross_validation_102 = function(data){
+  
+  # NN
+  # If F_SYSTEM ValueNumeric = 1 Then NN must exist and NN ValueNumeric must = 1
+  
+  nn = data[dataitem == "NN",
+             .(routeid, beginpoint, endpoint, datayear, NN = valuenumeric, 
+               valuetext, valuedate, begindate, num_sections)]  
+  
+  f_system  = data[dataitem=="F_SYSTEM",
+                   .(routeid,beginpoint,endpoint,F_SYSTEM=valuenumeric,num_sections)]
+  
+  if(nhs[, .N] == 0){
+    warning("Not applicable - Sufficient data from the state are not available")
+    return(list(results=NULL, comparison=NULL))  
+  }
+  
+  comparison = nn[f_system, on = .(routeid, beginpoint, endpoint)]
+  
+  # apply the condition
+  results = comparison[,
+                       .(
+                         .N,
+                         num_sections = sum(num_sections,na.rm=TRUE),
+                         mileage      = sum(endpoint-beginpoint)
+                       ),
+                       .(applies = F_SYSTEM == 1, 
+                         passes  = !is.na(NN) & NN == 1)][order(applies,passes)]
+  
+  if(nrow(results[applies == TRUE]) == 0){
+    warning("Not applicable - Sufficient data from the state are not available")
+    return(list(results=NULL,comparison=NULL))  
+  }
+  
+  
+  return(list(results=results, comparison=comparison))
+  
+  
+}
+
+###################################################################
+cross_validation_IRI = function(data){
+  
+  # IRI values < 30 and > 400 should be reviewed and where valid; explanation provided in submission comments.
+  
+  thickness_flexible = data[dataitem == "IRI",
+                            .(routeid, beginpoint, endpoint, datayear, THICKNESS_FLEXIBLE = valuenumeric, 
+                              valuetext, valuedate, begindate, num_sections)]  #TODO: clarify difference between F_SYTEMorig and F_SYSTEM
+  
+  surface_type  = data[dataitem=="SURFACE_TYPE",
+                       .(routeid,beginpoint,endpoint,SURFACE_TYPE=valuenumeric,num_sections)]
+  
+  if(thickness_flexible[, .N] == 0){
+    warning("Not applicable - Sufficient data from the state are not available")
+    return(list(results=NULL, comparison=NULL))  
+  }
+  
+  comparison = thickness_flexible[surface_type, on = .(routeid, beginpoint, endpoint)]
+  
+  # apply the condition
+  results = comparison[,
+                       .(
+                         .N,
+                         num_sections = sum(num_sections,na.rm=TRUE),
+                         mileage      = sum(endpoint-beginpoint)
+                       ),
+                       .(applies = SURFACE_TYPE %in% c(3, 4, 5, 9, 10), 
+                         passes  = is.na(THICKNESS_FLEXIBLE) 
+                       )][order(applies,passes)]
+  
+  if(nrow(results[applies == TRUE]) == 0){
+    warning("Not applicable - Sufficient data from the state are not available")
+    return(list(results=NULL,comparison=NULL))  
+  }
+  
+  
+  return(list(results=results, comparison=comparison))
+  
+  
+}
+
+###################################################################
+cross_validation_58_1 = function(data){
+  
+  # 1 - THICKNESS_FLEXIBLE must be Null WHERE SURFACE_TYPE in (3;4;5;9;10)
+  # 2 - THICKNESS_FLEXIBLE MUST NOT be Null WHERE SURFACE_TYPE IN (7;8)
+  
+  thickness_flexible = data[dataitem == "THICKNESS_FLEXIBLE",
+                       .(routeid, beginpoint, endpoint, datayear, THICKNESS_FLEXIBLE = valuenumeric, 
+                         valuetext, valuedate, begindate, num_sections)]  #TODO: clarify difference between F_SYTEMorig and F_SYSTEM
+  
+  surface_type  = data[dataitem=="SURFACE_TYPE",
+              .(routeid,beginpoint,endpoint,SURFACE_TYPE=valuenumeric,num_sections)]
+  
+  if(thickness_flexible[, .N] == 0){
+    warning("Not applicable - Sufficient data from the state are not available")
+    return(list(results=NULL, comparison=NULL))  
+  }
+  
+  comparison = thickness_flexible[surface_type, on = .(routeid, beginpoint, endpoint)]
+  
+  # apply the condition
+  results = comparison[,
+                       .(
+                         .N,
+                         num_sections = sum(num_sections,na.rm=TRUE),
+                         mileage      = sum(endpoint-beginpoint)
+                       ),
+                       .(applies = SURFACE_TYPE %in% c(3, 4, 5, 9, 10), 
+                         passes  = is.na(THICKNESS_FLEXIBLE) 
+                       )][order(applies,passes)]
+  
+  if(nrow(results[applies == TRUE]) == 0){
+    warning("Not applicable - Sufficient data from the state are not available")
+    return(list(results=NULL,comparison=NULL))  
+  }
+  
+  
+  return(list(results=results, comparison=comparison))
+  
+  
+}
+
+###################################################################
+cross_validation_58_2 = function(data){
+  
+  # 1 - THICKNESS_FLEXIBLE must be Null WHERE SURFACE_TYPE in (3;4;5;9;10)
+  # 2 - THICKNESS_FLEXIBLE MUST NOT be Null WHERE SURFACE_TYPE IN (7;8)
+  
+  thickness_flexible = data[dataitem == "THICKNESS_FLEXIBLE",
+                            .(routeid, beginpoint, endpoint, datayear, THICKNESS_FLEXIBLE = valuenumeric, 
+                              valuetext, valuedate, begindate, num_sections)]  #TODO: clarify difference between F_SYTEMorig and F_SYSTEM
+  
+  surface_type  = data[dataitem=="SURFACE_TYPE",
+                       .(routeid,beginpoint,endpoint,SURFACE_TYPE=valuenumeric,num_sections)]
+  
+  if(thickness_flexible[, .N] == 0){
+    warning("Not applicable - Sufficient data from the state are not available")
+    return(list(results=NULL, comparison=NULL))  
+  }
+  
+  comparison = thickness_flexible[surface_type, on = .(routeid, beginpoint, endpoint)]
+  
+  # apply the condition
+  results = comparison[,
+                       .(
+                         .N,
+                         num_sections = sum(num_sections,na.rm=TRUE),
+                         mileage      = sum(endpoint-beginpoint)
+                       ),
+                       .(applies = SURFACE_TYPE %in% c(7,8), 
+                         passes  = !is.na(THICKNESS_FLEXIBLE) 
+                       )][order(applies,passes)]
+  
+  if(nrow(results[applies == TRUE]) == 0){
+    warning("Not applicable - Sufficient data from the state are not available")
+    return(list(results=NULL,comparison=NULL))  
+  }
+  
+  
+  return(list(results=results, comparison=comparison))
+  
+  
+}
+
+###################################################################
+cross_validation_59_1 = function(data){
+  
+  # 1 - THICKNESS_RIGID must be Null WHERE SURFACE_TYPE in (2;6)
+  # 2 - THICKNESS_RIGID MUST NOT be Null WHERE SURFACE_TYPE IN (7;8)
+  
+  thickness_rigid = data[dataitem == "THICKNESS_RIGID",
+                            .(routeid, beginpoint, endpoint, datayear, THICKNESS_RIGID = valuenumeric, 
+                              valuetext, valuedate, begindate, num_sections)]  #TODO: clarify difference between F_SYTEMorig and F_SYSTEM
+  
+  surface_type  = data[dataitem=="SURFACE_TYPE",
+                       .(routeid,beginpoint,endpoint,SURFACE_TYPE=valuenumeric,num_sections)]
+  
+  if(thickness_rigid[, .N] == 0){
+    warning("Not applicable - Sufficient data from the state are not available")
+    return(list(results=NULL, comparison=NULL))  
+  }
+  
+  comparison = thickness_rigid[surface_type, on = .(routeid, beginpoint, endpoint)]
+  
+  # apply the condition
+  results = comparison[,
+                       .(
+                         .N,
+                         num_sections = sum(num_sections,na.rm=TRUE),
+                         mileage      = sum(endpoint-beginpoint)
+                       ),
+                       .(applies = SURFACE_TYPE %in% c(2,6), 
+                         passes  = is.na(THICKNESS_RIGID) 
+                       )][order(applies,passes)]
+  
+  if(nrow(results[applies == TRUE]) == 0){
+    warning("Not applicable - Sufficient data from the state are not available")
+    return(list(results=NULL,comparison=NULL))  
+  }
+  
+  
+  return(list(results=results, comparison=comparison))
+  
+  
+}
+
+###################################################################
+cross_validation_59_2 = function(data){
+  
+  # 1 - THICKNESS_RIGID must be Null WHERE SURFACE_TYPE in (2;6)
+  # 2 - THICKNESS_RIGID MUST NOT be Null WHERE SURFACE_TYPE IN (7;8)
+  
+  thickness_rigid = data[dataitem == "THICKNESS_RIGID",
+                         .(routeid, beginpoint, endpoint, datayear, THICKNESS_RIGID = valuenumeric, 
+                           valuetext, valuedate, begindate, num_sections)]  #TODO: clarify difference between F_SYTEMorig and F_SYSTEM
+  
+  surface_type  = data[dataitem=="SURFACE_TYPE",
+                       .(routeid,beginpoint,endpoint,SURFACE_TYPE=valuenumeric,num_sections)]
+  
+  if(thickness_rigid[, .N] == 0){
+    warning("Not applicable - Sufficient data from the state are not available")
+    return(list(results=NULL, comparison=NULL))  
+  }
+  
+  comparison = thickness_rigid[surface_type, on = .(routeid, beginpoint, endpoint)]
+  
+  # apply the condition
+  results = comparison[,
+                       .(
+                         .N,
+                         num_sections = sum(num_sections,na.rm=TRUE),
+                         mileage      = sum(endpoint-beginpoint)
+                       ),
+                       .(applies = SURFACE_TYPE %in% c(7,8), 
+                         passes  = !is.na(THICKNESS_RIGID) 
+                       )][order(applies,passes)]
+  
+  if(nrow(results[applies == TRUE]) == 0){
+    warning("Not applicable - Sufficient data from the state are not available")
+    return(list(results=NULL,comparison=NULL))  
+  }
+  
+  
+  return(list(results=results, comparison=comparison))
+  
+  
+}
+
 ###################################################################
 cross_validation_68 = function(data){
   
@@ -87,7 +384,7 @@ cross_validation_70 = function(data){
 }
 
 ###################################################################
-cross_validation_72 = function(data){
+cross_validation_72_1 = function(data){
   
   # If URBAN_ID ValueNumeric < 99999 then NHFN ValueNumeric must not = 3 
   # If URBAN_ID ValueNumeric = 99999 then NHFN ValueNumeric must not = 2
@@ -114,9 +411,49 @@ cross_validation_72 = function(data){
                          mileage      = sum(endpoint-beginpoint)
                        ),
                        .(applies = !is.na(NHFN), 
-                         passes  = (URBAN_ID < 99999 & NHFN != 3) |
-                                   (URBAN_ID = 99999 & NHFN != 2)
-                       )][order(applies,passes)]
+                         passes  = (URBAN_ID < 99999 & NHFN != 3) )][order(applies,passes)]
+  # passes  = year(valuedate) == datayear)][order(applies,passes)]
+  
+  if(nrow(results[applies == TRUE]) == 0){
+    warning("Not applicable - Sufficient data from the state are not available")
+    return(list(results=NULL,comparison=NULL))  
+  }
+  
+  
+  return(list(results=results, comparison=comparison))
+  
+  
+}
+
+###################################################################
+cross_validation_72_2 = function(data){
+  
+  # If URBAN_ID ValueNumeric < 99999 then NHFN ValueNumeric must not = 3 
+  # If URBAN_ID ValueNumeric = 99999 then NHFN ValueNumeric must not = 2
+  
+  nhfn = data[dataitem == "NHFN",
+              .(routeid, beginpoint, endpoint, datayear, NHFN = valuenumeric,
+                F_SYTEMorig, valuetext, valuedate, begindate, num_sections)]  #TODO: clarify difference between F_SYTEMorig and F_SYSTEM
+  
+  urban_id      = data[dataitem=="THROUGH_LANES",
+                       .(routeid,beginpoint,endpoint,URBAN_ID=valuenumeric,num_sections)]
+  
+  if(nhfn[, .N] == 0){
+    warning("Not applicable - Sufficient data from the state are not available")
+    return(list(results=NULL, comparison=NULL))  
+  }
+  
+  comparison = nhfn[urban_id, on = .(routeid, beginpoint, endpoint)]
+  
+  # apply the condition
+  results = comparison[,
+                       .(
+                         .N,
+                         num_sections = sum(num_sections,na.rm=TRUE),
+                         mileage      = sum(endpoint-beginpoint)
+                       ),
+                       .(applies = !is.na(NHFN), 
+                         passes  = (URBAN_ID = 99999 & NHFN != 2) )][order(applies,passes)]
   # passes  = year(valuedate) == datayear)][order(applies,passes)]
   
   if(nrow(results[applies == TRUE]) == 0){
@@ -385,6 +722,8 @@ cross_validation_76_2 = function(data){
   
   
 }
+
+
 ###################################################################
 # cross_validation_40 = function(data, sub_check = 2){
 #   # DIR_Factor must be 50=< and <=70 where Facility_Type = 2

@@ -1,64 +1,48 @@
-.id,Description
+﻿.id,Description
 1,IRI: >= 30 and <= 400 (1)
 2,"Sample: only where Facility_Type IN 1,2 and (F_System = 1-5 or F_System = 6 and Urban Code <99999) (2)"
 4,TOPS Not Found: No TOPS record was created for a given section of the network.  One or more of the five TOPS data items is likely missing from this section. (4)
-9,Year_Last_Construction: <= DataYear or NULL (9)
+9,Year_Last_Construction: <= BeginDate (9)
 14,Lane Width: > 5 and <19 (14)
 15,Speed Limit: Divisible by 5 and < 90 OR = 999 (15)
 16,Counter Peak Lanes: NULL if FACILITY_TYPE is 1 (16)
 17,Single Unit / Combination: SU AADT + CU AADT < (0.8*AADT) (17)
-20,Median Width: NULL if (FACILITY_TYPE is 1 or 4) or Median_Type Code <2 (20)
-22,"Median Type in (2,3,4,5,6,7): Median Width > 0 (22)"
+20,Median Width: NULL if (FACILITY_TYPE is 1 or 4) or Median_Type Code = 1 (20)
+22,"Median Type in (2,3,4,5,6): Median Width > 0 (22)"
 23,Widening_Obstacle: must be A-G where Widening_Potential <9 (23)
 39,DIR_Factor : = 100 where Facility_Type = 1 (39)
-40,DIR_Factor: >=  50 and <= 75 where Facility_Type = 2 (40)
-41,Future_AADT: AADT < FAADT < 4*AADT where ValueDate is NULL OR FAADT < AADT*0.2(ValueDate-BeginDate) (41)
+40,DIR_Factor: >=  50 and <=75 where Facility_Type = 2 (40)
+41,Future_AADT: AADT < FAADT < 4*AADT where ValueDate is NULL or FAADT < AADT*0.2*(ValueDate - BeginDate year) (41)
 42,PCT_DH_SINGLE_UNIT: (SU AADT x 0.01) < (AADT x PCT_DH_SINGLE_UNIT / 100) < (SU AADT x 0.5)  (42)
 43,PCT_DH_COMBINATION: (CU AADT x 0.01) < (AADT x PCT_DH_COMBINATION / 100) < (CU AADT x 0.5) (43)
 44,AADT Combination: < AADT * 0.4 (44)
 45,AADT_Single_Unit :  < AADT * 0.4 (45)
-46.1,IRI: ValueDate >= BeginDate � 1 where Sample OR (ValueText Null AND F_System >1 and NHS in 1-9 ) (46)
-46.2,Rutting: ValueDate >= BeginDate � 1 where Sample OR (ValueText Null AND F_System >1 and NHS in 1-9 ) (46)
-46.3,Faulting: ValueDate >= BeginDate � 1 where Sample OR (ValueText Null AND F_System >1 and NHS in 1-9 ) (46)
-46.4,Cracking_Percent: ValueDate >= BeginDate � 1 where Sample OR (ValueText Null AND F_System >1 and NHS in 1-9 ) (46)
+46.1,IRI: Value_Date = BeginDate where Sample OR (Value_Text Null AND F_System >1 and NHS in 1-9 ) (46)
+46.2,Rutting: Value_Date = BeginDate where Sample OR (Value_Text Null AND F_System >1 and NHS in 1-9 ) (46)
+46.3,Faulting: Value_Date = BeginDate where Sample OR (Value_Text Null AND F_System >1 and NHS in 1-9 ) (46)
+46.4,Cracking_Percent: Value_Date >=BeginDate ï¿½ 1 where Sample OR (Value_Text Null AND F_System >1 and NHS in 1-9 ) (46)
 47,Faulting: <=1 (47)
-49,K_Factor : > 4 and <30  (49)
+49,K_Factor : > 4 and <20  (49)
 51,"Cracking_Percent: < 75 Where Surface Type is in (3,4,5,9,10)  (51)"
 52,Rutting: < 1 (52)
 53,Through_Lanes: >1 when Facility_Type = 2 (53)
-54.1,AADT Combination: > 0 where AADT >500  (54)
-54.2,AADT Combination: < 50 where PCT_DH_Combination = 0  (54)
-55.1,AADT_Single_Unit :  > 0 where AADT >500 (55)
-55.2,AADT_Single_Unit :  AADT_Single_Unit + AADT_Combination < 0.8*AADT (55)
-55.3,AADT_Single_Unit :  < 50 where PCT_DH_Single_Unit = 0 (55)
+54,AADT Combination: > 0  (54)
+55,AADT_Single_Unit :  > 0 (55)
 56,PCT_DH_COMBINATION: >0 and < 25% (56)
 57,PCT_DH_SINGLE_UNIT: >0 and < 25% (57)
-58.1, THICKNESS_FLEXIBLE must be Null WHERE SURFACE_TYPE in (3;4;5;9;10)  (58)
-58.2, THICKNESS_FLEXIBLE MUST NOT be Null WHERE SURFACE_TYPE IN (7;8)  (58)
-59.1, THICKNESS_RIGID must be Null WHERE SURFACE_TYPE in (2;6)  (59)
-59.2, THICKNESS_RIGID MUST NOT be Null WHERE SURFACE_TYPE IN (7;8)  (59)
 60,Left Shoulder Width:  < Median_Width (60)
-61.1,IRI: ValueDate = Year Record where ValueText is Null AND F_System =1  (61)
-61.2,Rutting: ValueDate = Year Record where ValueText is Null AND F_System =1  (61)
-61.3,Faulting: ValueDate = Year Record where ValueText is Null AND F_System =1  (61)
-61.4,Cracking_Percent: ValueDate = Year Record where ValueText is Null AND F_System =1  (61)
-62,PSR: PSR ValueNumeric > 0 and PSR ValueText = A where F_System =1 and IRI is Null (62)
-63,"Cracking_Percent: Should be < X where Surface Type is in (2,6,7,8) (63)"
-64.1,"IRI: ValueText In (A,B,C,D,E)�where ValueDate <> Year Record and F_Sytem = 1 OR (ValueDate < Year Record -1 on NHS) (64)"
-64.2,"Rutting: ValueText In (A,B,C,D,E)�where ValueDate <> Year Record and F_Sytem = 1 OR (ValueDate < Year Record -1 on NHS) (64)"
-64.3,"Faulting: ValueText In (A,B,C,D,E)�where ValueDate <> Year Record and F_Sytem = 1 OR (ValueDate < Year Record -1 on NHS) (64)"
-64.4,"Cracking_Percent: ValueText In (A,B,C,D,E)�where ValueDate <> Year Record and F_Sytem = 1 OR (ValueDate < Year Record -1 on NHS) (64)"
-65,"PSR: ValueDate >= BeginDate � 1 where Sample OR F_System >1 and NHS in (1,2,3,4,5,6,7,8,9) (65)"
-66,"PSR: ValueDate = BeginDate  where ValueText = ""A"" AND F_System =1  (66)"
-68, MAINTENANCE_OPERATIONS: <> Ownership (68)
-70, DIR_THROUGH_LANES:  < or = Through_Lanes (70)
-72, If URBAN_ID ValueNumeric = 99999 then NHFN ValueNumeric must not = 2 AND If URBAN_ID ValueNumeric < 99999 then NHFN ValueNumeric must not = 3
-73, If F_SYSTEM ValueNumeric = 1 Then NN must exist and NN ValueNumeric must = 1 (73)
-74, Where ROUTE_NUMBER ValueNumeric or ValueText is not NULL; ROUTE_SIGNING ValueNumeric must not be NULL (74)
-75.1, DIR_THROUGH_LANES:  < or = Through_Lanes (75.1)
-75.2, Where ROUTE_NUMBER ValueNumeric or ValueText is not NULL; ROUTE_QUALIFIER ValueNumeric must not be NULL (75.2)
-76.1, If F_SYSTEM ValueNumeric = 1 Then STRAHNET_TYPE must exist and STRAHNET_TYPE ValueNumeric must = 1 (76.1)
-76.2, If STRAHNET_TYPE ValueNumeric is in the range (1;2) then NHS ValueNumeric must = 1 (76.2)
+61.1,IRI: Value_Date = BeginDate where Value_Text is Null AND F_System =1  (61)
+61.2,Rutting: Value_Date = BeginDate where Value_Text is Null AND F_System =1  (61)
+61.3,Faulting: Value_Date = BeginDate where Value_Text is Null AND F_System =1  (61)
+61.4,Cracking_Percent: Value_Date = BeginDate where Value_Text is Null AND F_System =1  (61)
+62,PSR: PSR Value_Numeric > 0 and PSR Value_Text = A where F_System =1 and IRI is Null (62)
+63,"Cracking_Percent: Should be <= X where Surface Type is in (2,6,7,8) (63)"
+64.1,"IRI: Value_Text In (A,B,C,D,E)ï¿½where Value_Date <> BeginDate and F_Sytem = 1 OR (Value_Date < BeginDate -1 on NHS) (64)"
+64.2,"Rutting: Value_Text In (A,B,C,D,E)ï¿½where Value_Date <> BeginDate and F_Sytem = 1 OR (Value_Date < BeginDate -1 on NHS) (64)"
+64.3,"Faulting: Value_Text In (A,B,C,D,E)ï¿½where Value_Date <> BeginDate and F_Sytem = 1 OR (Value_Date < BeginDate -1 on NHS) (64)"
+64.4,"Cracking_Percent: Value_Text In (A,B,C,D,E)ï¿½where Value_Date <> BeginDate and F_Sytem = 1 OR (Value_Date < BeginDate -1 on NHS) (64)"
+65,"PSR: Value_Date >= Year_Record ï¿½ 1 where Sample OR F_System >1 and NHS in (1,2,3,4,5,6,7,8,9) (65)"
+66,"PSR: Value_Date = BeginDate  where Value_Text = ""A"" AND F_System =1  (66)"
 129,IRI: Section Length <= 0.11 Miles (129)
 129,PSR: Section Length <=  0.11 Miles (129)
 129,Rutting: Section Length <=  0.11 Miles (129)

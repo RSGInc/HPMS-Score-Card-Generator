@@ -39,10 +39,10 @@ if (!interactive() & (length(cargs) < 1) ){
   reimport <- cargs[4]
 }
 
-reimport = TRUE
+reimport = FALSE
 year_selection = 2022
 year_compare = 2020
-states = 'DE' #c('VT','CA')
+states = c('DE') #,'WY') #c('VT','CA')
 
 submission_deadline <- paste(year_selection, '-06-15', sep="")
 
