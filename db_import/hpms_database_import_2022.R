@@ -25,7 +25,7 @@ password = readRDS('db_import/datahub_pw.rds')
 
 # URLS ========================================================================
 
-# FIXME: Manage URLS in a spreadsheet
+# TODO: Manage URLS in a spreadsheet
 
 # NB!! Specify URLs as JSON, not CSV.  JSON reads all fields as character
 # and then converts to the appropriate type whereas CSV guesses datatypes 

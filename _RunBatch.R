@@ -25,7 +25,7 @@ codefiles = c(Sys.glob('app/*.R'), Sys.glob('functions/*.R'))
 invisible(sapply(X =codefiles , FUN = source))
 
 # Read args from the command line ---------------------------------------------
-# FIXME: Use named arguments with argparse package
+# TODO: Use named arguments with argparse package
 # states, year_selection, year_compare, reimport
 
 cargs = commandArgs(trailingOnly = TRUE)

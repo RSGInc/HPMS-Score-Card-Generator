@@ -1245,7 +1245,7 @@ calc_completeness <- function(data, year, variable){
     # turn_lanes_r, turn_lanes_l ----------------------------------------------
   
   if(variable %in% c("TURN_LANES_R","TURN_LANES_L")){
-    
+    #browser()
     dat.variable <- data[dataitem == variable & datayear == year,]
     dat.URBAN_ID <- data[dataitem == "URBAN_ID" & datayear == year,]
     dat.ACCESS_CONTROL <- data[dataitem == "ACCESS_CONTROL" & datayear == year,]

@@ -138,8 +138,9 @@ create_pdf <- function(data, state, year, year_compare, path) {
     x2 <- todo[i, 2]
     x3 <- todo[i, 3]
 
-    if( gVariables[x1][['Name']] == 'TURN_LANES_L' | gVariables[x2][['Name']] == 'TURN_LANES_L' | gVariables[x3][['Name']] == 'TURN_LANES_L')
-    browser()
+    # if( gVariables[x1][['Name']] == 'TURN_LANES_L' | gVariables[x2][['Name']] == 'TURN_LANES_L' | gVariables[x3][['Name']] == 'TURN_LANES_L')
+    # browser()
+    
     gPageNumber <<- gPageNumber + 1
     create_page_summary(data, state, year, year_compare,
                         x1 = x1, x2 = x2, x3 = x3,
