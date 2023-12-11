@@ -13,10 +13,8 @@ calc_cross_validation = function(data, year){
  source("dev/functionality_experiments/cross_validations_HPMS9.R")
  
   # results[["1"]]  = summarize_validation(cross_validation_1(data))
-  # results[["14"]] = summarize_validation(cross_validation_14(data))
-  # results[["47"]] = summarize_validation(cross_validation_47(data))
-  # results[["49"]] = summarize_validation(cross_validation_49(data))
-  # results[["52"]] = summarize_validation(cross_validation_52(data))
+  
+  
   # results[["54"]] = summarize_validation(cross_validation_54(data))
   # results[["55"]] = summarize_validation(cross_validation_55(data))
   # results[["56"]] = summarize_validation(cross_validation_56(data))
@@ -51,6 +49,7 @@ calc_cross_validation = function(data, year){
 
   results[["9"]]  = summarize_validation(cross_validation_9(data))
   
+  results[["14"]] = summarize_validation(cross_validation_14(data))
   results[["15"]] = summarize_validation(cross_validation_15(data))
   results[["16"]] = summarize_validation(cross_validation_16(data))
   results[["17"]] = summarize_validation(cross_validation_17(data))
@@ -66,7 +65,9 @@ calc_cross_validation = function(data, year){
   results[["40"]] = summarize_validation(cross_validation_40(data))
   results[["41"]] = summarize_validation(cross_validation_41(data))
   results[["42"]] = summarize_validation(cross_validation_42(data))
+  results[["42.2"]] = summarize_validation(cross_validation_42_2(data))
   results[["43"]] = summarize_validation(cross_validation_43(data))
+  results[["43.2"]] = summarize_validation(cross_validation_43_2(data))
   results[["44"]] = summarize_validation(cross_validation_44(data))
   results[["45"]] = summarize_validation(cross_validation_45(data))
 
@@ -75,21 +76,23 @@ calc_cross_validation = function(data, year){
   results[["46.2"]] = summarize_validation(cross_validation_46(data, 'RUTTING'))
   results[["46.3"]] = summarize_validation(cross_validation_46(data, 'FAULTING'))
   results[["46.4"]] = summarize_validation(cross_validation_46_2(data))
+  results[["47"]] = summarize_validation(cross_validation_47(data))
+  results[["49"]] = summarize_validation(cross_validation_49(data))
   
   results[["51"]] = summarize_validation(cross_validation_51(data))
-
+  results[["52"]] = summarize_validation(cross_validation_52(data))
   results[["53"]] = summarize_validation(cross_validation_53(data))
 
-  # results[["54.1"]] = summarize_validation(cross_validation_54_1(data))
-  # results[["54.2"]] = summarize_validation(cross_validation_54_2(data))
-  # results[["55.1"]] = summarize_validation(cross_validation_55_1(data))
-  # results[["55.2"]] = summarize_validation(cross_validation_55_2(data))
+  results[["54.1"]] = summarize_validation(cross_validation_54_1(data))
+  results[["54.2"]] = summarize_validation(cross_validation_54_2(data))
+  results[["55.1"]] = summarize_validation(cross_validation_55_1(data))
+  results[["55.2"]] = summarize_validation(cross_validation_55_2(data))
   # results[["55.3"]] = summarize_validation(cross_validation_55_3(data))
   # 
-  # results[["58.1"]] = summarize_validation(cross_validation_58_1(data))
-  # results[["58.2"]] = summarize_validation(cross_validation_58_2(data))
-  # results[["59.1"]] = summarize_validation(cross_validation_59_1(data))
-  # results[["59.2"]] = summarize_validation(cross_validation_59_2(data))
+  results[["58.1"]] = summarize_validation(cross_validation_58_1(data))
+  results[["58.2"]] = summarize_validation(cross_validation_58_2(data))
+  results[["59.1"]] = summarize_validation(cross_validation_59_1(data))
+  results[["59.2"]] = summarize_validation(cross_validation_59_2(data))
   
   results[["60"]] = summarize_validation(cross_validation_60(data))
 
@@ -112,22 +115,23 @@ calc_cross_validation = function(data, year){
   results[["65"]] = summarize_validation(cross_validation_65(data))
   results[["66"]] = summarize_validation(cross_validation_66(data))
   
-  # results[["68"]]   = summarize_validation(cross_validation_68(data))
-  # results[["70"]]   = summarize_validation(cross_validation_70(data))
-  # results[["72"]]   = summarize_validation(cross_validation_72(data))
+  results[["68"]]   = summarize_validation(cross_validation_68(data))
+  results[["70"]]   = summarize_validation(cross_validation_70(data))
+  #browser()
+  #results[["72"]]   = summarize_validation(cross_validation_72(data))
   # results[["73"]]   = summarize_validation(cross_validation_73(data))
   # results[["74"]]   = summarize_validation(cross_validation_74(data))
-  # results[["75.1"]] = summarize_validation(cross_validation_75_1(data))
-  # results[["75.2"]] = summarize_validation(cross_validation_75_2(data))
-  # results[["76.1"]] = summarize_validation(cross_validation_76_1(data))
-  # results[["76.2"]] = summarize_validation(cross_validation_76_2(data))
+  results[["75.1"]] = summarize_validation(cross_validation_75_1(data))
+  results[["75.2"]] = summarize_validation(cross_validation_75_2(data))
+  results[["76.1"]] = summarize_validation(cross_validation_76_1(data))
+  results[["76.2"]] = summarize_validation(cross_validation_76_2(data))
   
   results[["x"]]  = summarize_validation(cross_validation_x(data))
   results[["y"]]  = summarize_validation(cross_validation_y(data))
 
   results = rbindlist(results, idcol=TRUE)
   results = rbindlist(list(gCrossLabels[results, on=.(.id)], measurement_checks(data)))
-  
+  #browser()
   return(results)
 }
 
@@ -744,9 +748,9 @@ cross_validation_42 = function(data){
 }
 
 ###################################################################
-cross_validation_42_1 = function(data){
+cross_validation_42_2 = function(data){
   
-  # (AADT_SINGLE_UNIT x 0.01) < (AADT x (PCT_DH_SINGLE_UNIT/100)) < (AADT_SINGLE_UNIT x 0.5)  
+  # PCT_DH_SINGLE_UNIT should be > 0 and < 25% 
   
   # browser()
   pct_peak_single = data[
@@ -844,9 +848,9 @@ cross_validation_43 = function(data){
 }
 
 ###################################################################
-cross_validation_43_1 = function(data){
+cross_validation_43_2 = function(data){
   
-  # (AADT_COMBINATION x 0.01) < (AADT x (PCT_DH_COMBINATION/100)) < (AADT_COMBINATION x 0.5) 
+  # PCT_DH_COMBINATION should be > 0 and < 25%
   
   #browser()
   pct_combination = data[dataitem=="PCT_DH_COMBINATION",
@@ -971,7 +975,7 @@ cross_validation_46 = function(data, variable){
   # browser()
   
   comparison = data[dataitem == variable,
-                    .(routeid, beginpoint, endpoint, datayear, F_SYSTEM, F_SYTEMorig, NHS,
+                    .(routeid, beginpoint, endpoint, datayear, F_SYTEMorig, NHS, # F_SYSTEM
                       valuedate, begindate, valuetext, sample = !is.na(expansionfactor), num_sections)]
   
   if(comparison[, .N] == 0){
@@ -986,7 +990,7 @@ cross_validation_46 = function(data, variable){
                          num_sections = sum(num_sections,na.rm=TRUE),
                          mileage      = sum(endpoint-beginpoint)
                        ),
-                       .(applies = sample | (is.na(valuetext) & F_SYSTEM > 1 & NHS %in% 1:9), #F_SYTEMorig > 1
+                       .(applies = sample | (is.na(valuetext) & F_SYTEMorig > 1 & NHS %in% 1:9), #F_SYSTEM > 1
                          passes  = year(valuedate) == year(begindate))][order(applies,passes)]
   #passes  = year(valuedate) >= datayear - 1)][order(applies,passes)]
   
@@ -1032,7 +1036,7 @@ cross_validation_46_2 = function(data){
                          num_sections = sum(num_sections,na.rm=TRUE),
                          mileage      = sum(endpoint-beginpoint)
                        ),
-                       .(applies = sample | (is.na(valuetext) & F_SYSTEM > 1 & NHS %in% 1:9), #F_SYTEMorig > 1
+                       .(applies = sample | (is.na(valuetext) & F_SYTEMorig > 1 & NHS %in% 1:9), #F_SYSTEM > 1
                          passes  = year(valuedate) >= year(begindate) - 1)][order(applies,passes)]
                          #passes  = year(valuedate) >= datayear - 1)][order(applies,passes)]
 
@@ -1615,14 +1619,14 @@ cross_validation_60 = function(data){
 
 }
 
-#FIXME: test and double check
+
 ###################################################################
 # ValueDate Must = Year Record  Where ValueText is Null AND F_System =1 
 cross_validation_61 = function(data, variable){
   variable %in% c('IRI', 'RUTTING', 'FAULTING', 'CRACKING_PERCENT')
   
   comparison = data[dataitem %in% variable, # c('IRI', 'RUTTING', 'FAULTING', 'CRACKING_PERCENT'), 
-                    .(routeid, beginpoint, endpoint, datayear, F_SYSTEM,
+                    .(routeid, beginpoint, endpoint, datayear, F_SYTEMorig, # F_SYSTEM,
                       valuedate, begindate, valuetext, num_sections,
                       iri              = 1 * ( dataitem == 'IRI' ),
                       rutting          = 1 * ( dataitem == 'RUTTING' ),
@@ -1654,7 +1658,7 @@ cross_validation_61 = function(data, variable){
                          num_sections = sum(num_sections,na.rm=TRUE),
                          mileage      = sum(endpoint-beginpoint)
                        ),
-                       .(applies = (is.na(valuetext) | valuetext == '') & F_SYSTEM == 1 & datayear > 2020, #F_SYTEMorig == 1, 
+                       .(applies = (is.na(valuetext) | valuetext == '') & F_SYTEMorig == 1 & datayear > 2020,  
                          passes  = ( valuedate == begindate ))][order(applies,passes)]
                          #passes  = year(valuedate) >= datayear - 2)][order(applies,passes)]
   
@@ -1696,7 +1700,7 @@ cross_validation_62 = function(data){
                          num_sections = sum(num_sections,na.rm=TRUE),
                          mileage      = sum(endpoint-beginpoint)
                        ),
-                       .(applies = is.na(IRI) & F_SYSTEM == 1, # F_SYTEMorig == 1, 
+                       .(applies = is.na(IRI) & F_SYTEMorig == 1,  
                          passes  = valuenumeric > 0 & valuetext == 'A')][order(applies,passes)]
   
   if(nrow(results[applies == TRUE]) == 0){
@@ -1769,7 +1773,7 @@ cross_validation_64 = function(data, variable){
   # browser()
   
   comparison = data[dataitem == variable,
-                    .(routeid, beginpoint, endpoint, datayear, F_SYSTEM, NHS,
+                    .(routeid, beginpoint, endpoint, datayear, F_SYTEMorig, NHS,
                       valuedate, begindate, valuetext, num_sections)]
   
   if(comparison[, .N] == 0){
@@ -1786,7 +1790,7 @@ cross_validation_64 = function(data, variable){
                          mileage      = sum(endpoint-beginpoint)
                        ),
                        # .(applies = (year(valuedate) != datayear & F_SYTEMorig == 1) | (year(valuedate) < datayear - 1 & NHS > 1), 
-                       .(applies = ( year(valuedate) != year(begindate) & F_SYSTEM == 1 ) | (year(valuedate) < year(begindate) - 1 & !is.na(NHS)), 
+                       .(applies = ( year(valuedate) != year(begindate) & F_SYTEMorig == 1 ) | (year(valuedate) < year(begindate) - 1 & !is.na(NHS)), 
                          passes  = valuetext %in% c('A', 'B', 'C', 'D', 'E'))][order(applies,passes)]
   
   
@@ -1811,7 +1815,7 @@ cross_validation_65 = function(data){
 
   comparison = data[dataitem == "PSR",
                     .(routeid, beginpoint, endpoint, datayear,
-                      F_SYSTEM, NHS,
+                      F_SYTEMorig, NHS,
                       valuedate, begindate, sample = !is.na(expansionfactor), num_sections)]
   
   if(comparison[, .N] == 0){
@@ -1827,7 +1831,7 @@ cross_validation_65 = function(data){
                          num_sections = sum(num_sections,na.rm=TRUE),
                          mileage      = sum(endpoint-beginpoint)
                        ),
-                       .(applies = sample | (F_SYSTEM > 1 & NHS %in% 1:9), 
+                       .(applies = sample | (F_SYTEMorig > 1 & NHS %in% 1:9), 
                          passes  =  (datayear <= 2020 & year(valuedate) >= datayear - 1) |
                                     (datayear >  2020 & year(valuedate) >= year(begindate) - 1))
                         # passes  = year(valuedate) >= datayear - 1)

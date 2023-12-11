@@ -56,7 +56,17 @@ create_pdf <- function(data, state, year, year_compare, path) {
   # Show the results of the cross-validations
   message('Cross-validations...')
   ts <- Sys.time()
-  create_cross_validation_page(scores_list$cross_validation, state, year)
+  browser()
+  # test adding multiple xval pages
+  #row_cutoff = as.integer( nrow(scores_list$cross_validation)/2 )
+  row_cutoff = 42
+  
+  cv_list1 = scores_list$cross_validation[1:row_cutoff]
+  cv_list2 = scores_list$cross_validation[(row_cutoff + 1):nrow(scores_list$cross_validation)]
+  
+  #create_cross_validation_page(scores_list$cross_validation, state, year)
+  create_cross_validation_page(cv_list1, state, year)
+  create_cross_validation_page(cv_list2, state, year)
 
   message(paste0(' completed in: ',
              round(difftime(Sys.time(), ts, units='secs'), 2), ' seconds!\n'))
@@ -138,8 +148,23 @@ create_pdf <- function(data, state, year, year_compare, path) {
     x2 <- todo[i, 2]
     x3 <- todo[i, 3]
 
-    # if( gVariables[x1][['Name']] == 'TURN_LANES_L' | gVariables[x2][['Name']] == 'TURN_LANES_L' | gVariables[x3][['Name']] == 'TURN_LANES_L')
-    # browser()
+    browser()
+    
+    if (FALSE)
+      
+      #item_num_tll = gVariables[Name == 'TURN_LANES_L', Item_Number]
+      
+      # Make sure TURN_LANES_L and TURN_LANES_R are on the same page
+      idx_tll = gVariables[Name == 'TURN_LANES_L', which = TRUE]
+      idx_tlr = gVariables[Name == 'TURN_LANES_R', which = TRUE]
+      
+      row_tll = ceiling(match(idx_tll, todo_vec) / 3)
+      row_tlr = ceiling(match(idx_tlr, todo_vec) / 3)
+      
+      if (row_tll != row_tlr) {
+        ## re-arrange
+      }
+    }
     
     gPageNumber <<- gPageNumber + 1
     create_page_summary(data, state, year, year_compare,

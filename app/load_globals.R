@@ -100,7 +100,6 @@ gF_SYSTEM_levels <- c("Interstate",
 gVariables       <- fread("resources/dat/data_elements.csv")
 gVariables <- gVariables[!is.na(Grouping) & Grouping != '']
 
-
 gCrossLabels     <- fread('resources/dat/cross_validation_labels.csv')
 gCrossLabels$Description <- str_replace(gCrossLabels$Description, '[(][0-9xy]*[)]$', '')
 gExtentDetail    <- fread('resources/dat/extent_detail.csv')

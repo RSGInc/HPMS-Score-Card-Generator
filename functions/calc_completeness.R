@@ -404,15 +404,18 @@ calc_completeness <- function(data, year, variable){
     
     
     # curves and grades ------------------------------------------------------
-  if(variable %like% 'CURVES|GRADES'){
-
+  if(variable %like% 'CURVES|GRADES'){ # CURVES/GRADES _A act as proxy for all items
+   
     # HPMS 9: each Sample needs at least one CURVES_A-F and at least one GRADES_A-F
-    data_items = paste0(gsub("_.","", variable), c('_A', '_B', '_C', '_D', '_E', '_F'))
+    # data_items = paste0(gsub("_.","", variable), c('_A', '_B', '_C', '_D', '_E', '_F'))
+    
+    c_or_g = ifelse(variable %like% 'CURVES', 'CURVES', 'GRADES')
+    data_items = unique(data$dataitem[data$dataitem %like% c_or_g])
     
     coverage = get_coverage_data(
       data,
       year      = year,
-      variable  = variable,
+      variable  = variable, # expansion factor is NA when variable is NA. If we want all curves/grades to have the same score, this should be set to just one
       dataitems = c(data_items, 'F_SYSTEM', 'URBAN_ID', 'SURFACE_TYPE') 
     )
 
@@ -427,10 +430,11 @@ calc_completeness <- function(data, year, variable){
     
     coverage[, one_of_A_F := row_any(coverage, paste0(data_items,'_exists'))]
     
-    coverage[, required := one_of_A_F == TRUE &
-               !is.na(expansionfactor) & 
-               ( F_SYSTEM %in% c(1,2,3) | 
-                   (F_SYSTEM == 4 & URBAN_ID == 99999 & SURFACE_TYPE > 1) )]
+    # Treat one_of_A_F as the variable in these cases
+    coverage[, variable := one_of_A_F]
+    coverage[variable == FALSE, variable := NA ] # consider variable missing if none of A-F exist
+    
+    coverage[, required := !is.na(expansionfactor)]
     
     # Calculate fraction of rows with expansionfactors
     # score = data[dataitem == variable & datayear == year & !is.na(expansionfactor), .N] /

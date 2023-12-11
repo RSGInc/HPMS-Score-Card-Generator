@@ -34,7 +34,7 @@ calc_completeness_all <- function(data, year, reqs){
     
     dt_output[i, coverage_score := score] 
   }
-  
+  #browser()
   dt_output[, coverage_type := 1] # Not submitted
   dt_output[coverage_score > 0, coverage_type := 2]     # Submitted but incomplete
   dt_output[coverage_score >= complete_threshold, coverage_type := 3]    # Submitted and complete
