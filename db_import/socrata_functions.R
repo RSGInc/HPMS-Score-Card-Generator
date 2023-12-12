@@ -6,7 +6,7 @@ create_sections_tables = function(
   overwrite = FALSE
 ) {
   
-  # FIXME: put into make_cache_path ?
+  # TODO: put into make_cache_path
   ## Make path -----------------------------------------------------------------
   # Get state abbreviation, ensure both urls are for same state
   state_suffix = substr( names(events_url), 
@@ -30,16 +30,13 @@ create_sections_tables = function(
   
   events_tbl      = readRDS(events_path)
   designation_tbl = readRDS(designation_path)
-  
-  # FIXME: unequal number of fields
-  # valuedate missing from designations 
+   
   if ( !'valuedate' %in% tolower(names(designation_tbl)) ) {
 
     designation_tbl[, valuedate := as.character(NA) ]
 
   }
   
-  # FIXME
   # can assume the data is okay from here, skip to rbind -----------------------
   # Check fields now match
   events_only = setdiff(names(events_tbl), names(designation_tbl))
@@ -259,8 +256,6 @@ write_to_stage = function(cache_path, con, stage_table, chunk_size=100000){
     
     old_fields = dbListFields(con, stage_table)
     old_fields = str_to_lower(old_fields)
-    # FIXME: it seems like sectionlength should be in the table
-    #old_fields = old_fields[!old_fields %in% c('natrouteid', 'sectionlength')]
     
     if ( stage_table == 'rs_stage' ){
       old_fields = setdiff(old_fields, 'stateyearkey') # this is computed in rs_stage

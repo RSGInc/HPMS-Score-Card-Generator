@@ -220,7 +220,7 @@ getStateDataSets <- function(state_selection, year_selection, year_compare) {
     if (length(years_for_comparison) > 0) {
       year_compare <- getUserInput(valid = years_for_comparison, prompt = "What year of STATE data would you like to compare against?\nEnter the comparison year (e.g., 2013): ", warning.text = "That is not a valid response. Note that a comparison data set must be older.\n")
     } else {
-      # FIXME: What should happen if length(years_for_comparison) == 0 ?
+      # TODO: determine behaviour when length(years_for_comparison) == 0 
       stop('No years available for comparison')
     }
   }

@@ -59,7 +59,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
   dt_coverage[coverage_type == 1, card_score := CompleteLow]
   dt_coverage[coverage_type == 2, card_score := CompleteMed]
   dt_coverage[coverage_type == 3, card_score := CompleteHigh]
-  
+  #browser()
   # Take into account Curves and grades (only one of A-F required)
   dt_other = dt_coverage[!Name %like% 'CURVES|GRADES']
   dt_curves = dt_coverage[Name %like% 'CURVES'][which.max(coverage_score)]

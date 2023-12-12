@@ -565,7 +565,7 @@ FormatDataSet <- function(dat, state_abbr, year) {
   
   
   # Drop rows that have no designated section_extent
-  # FIXME: why would these have no section_extent?
+  # TODO: check why would these would have no section_extent
   # depends on F_SYSTEM, rural/urban, and data item
   
   data_exp = data_exp[section_extent != '',]

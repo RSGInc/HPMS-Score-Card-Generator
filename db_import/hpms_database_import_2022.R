@@ -196,17 +196,11 @@ if ( update_sections ){
   
   stopifnot( length(designation_urls) == length(event_urls) )
   
-  # FIXME: for now testing just with Designations
-  # for ( i in seq_along(section_urls) ){
   for ( i in seq_along(designation_urls) ){
-    # url = section_urls[i]
     
     url_ev  = event_urls[i]
     url_des = designation_urls[i]
     
-    # FIXME
-    #if (url == '') next()
-    # cache_path = download_socrata(url, overwrite=overwrite_cache)
     cache_path = create_sections_tables(url_ev, url_des, overwrite=overwrite_cache)
     counts_local = write_to_stage(cache_path, con, stage_table)
     copy_rows(con, stage_table, prod_table, counts_local)

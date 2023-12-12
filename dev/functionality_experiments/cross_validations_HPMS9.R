@@ -298,7 +298,7 @@ cross_validation_59_2 = function(data){
 
 ###################################################################
 cross_validation_68 = function(data){
-  # broswer()
+  browser()
   # MAINTENANCE_OPERATIONS ValueNumeric <> OWNERSHIP ValueNumeric 
   
   
@@ -324,7 +324,7 @@ cross_validation_68 = function(data){
                          mileage      = sum(endpoint-beginpoint)
                        ),
                        .(applies = !is.na(MAINTENANCE_OPERATIONS), 
-                         passes  = MAINTENANCE_OPERATIONS != OWNERSHIP
+                         passes  = MAINTENANCE_OPERATIONS != OWNERSHIP #TODO: verify for cases when MAINTENANCE_OPERATIONS is NA
                        )][order(applies,passes)]
   # passes  = year(valuedate) == datayear)][order(applies,passes)]
   
@@ -511,7 +511,7 @@ cross_validation_73 = function(data){
 
 ###################################################################
 cross_validation_74 = function(data){
-  broswer()
+  browser()
   # If F_SYSTEM ValueNumeric = 1 Then NN must exist and NN ValueNumeric must = 1
   
   nn = data[dataitem == "NN",

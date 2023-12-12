@@ -529,9 +529,7 @@ cross_validation_22 = function(data){
 ###################################################################
 cross_validation_23 = function(data){
   # Widening_Obstacle must contain A-G where Widening_Potential <9
-  
-  # TODO: verify widening variables will need no cross checks
-  
+    
   #browser()
   widening_obstacle = data[dataitem=="WIDENING_OBSTACLE", 
                            .(routeid,beginpoint,endpoint,WIDENING_OBSTACLE=valuetext, num_sections)]
@@ -671,7 +669,7 @@ cross_validation_41 = function(data){
                num_sections = sum(num_sections,na.rm=TRUE),
                mileage      = sum(endpoint-beginpoint)
               ),
-             .(applies = !is.na(FUTURE_AADT),  # TODO: check if fix may be needed for 2020 and earlier
+             .(applies = !is.na(FUTURE_AADT),  
                passes  =  ( FUTURE_AADT > AADT  & FUTURE_AADT < 4 * AADT & is.na(valuedate) ) |
                             FUTURE_AADT < AADT * 0.2 * ( year(valuedate) - year(begindate) )
                  ) ][order(applies,passes)] 
@@ -801,7 +799,7 @@ cross_validation_43 = function(data){
 
   # (AADT_COMBINATION x 0.01) < (AADT x (PCT_DH_COMBINATION/100)) < (AADT_COMBINATION x 0.5) 
 
-  #browser()
+  # browser()
   pct_combination = data[dataitem=="PCT_DH_COMBINATION",
                          .(routeid,beginpoint,endpoint,PCT_DH_COMBINATION=valuenumeric, num_sections)]
   
@@ -1240,7 +1238,6 @@ cross_validation_53 = function(data){
 ###################################################################
 # cross_validation_54 = function(data){
 #   # AADT_Combination Should be > 0 
-#   # TODO: replace with 2 new x-vals
 #   #browser()
 #   aadt_combination = data[dataitem=="AADT_COMBINATION",
 #                           .(routeid, beginpoint, endpoint, AADT_COMBINATION=valuenumeric, num_sections)]
@@ -1313,7 +1310,6 @@ cross_validation_54_1 = function(data){
 ###################################################################
 cross_validation_54_2 = function(data){
   # AADT_Combination Should be > 0 
-  # TODO: replace with 2 new x-vals
   #browser()
   aadt_combination = data[dataitem=="AADT_COMBINATION",
                           .(routeid, beginpoint, endpoint, AADT_COMBINATION=valuenumeric, num_sections)]
@@ -1339,7 +1335,7 @@ cross_validation_54_2 = function(data){
                          num_sections = sum(num_sections,na.rm=TRUE),
                          mileage      = sum(endpoint-beginpoint)
                        ),
-                       .(applies = !is.na(AADT_COMBINATION) & PCT_DH_COMBINATION == 0 , # FIXME: only applies = PCT_DH_COMBINATION == 0
+                       .(applies = !is.na(AADT_COMBINATION) & PCT_DH_COMBINATION == 0 , 
                          passes  = AADT_COMBINATION < 50 )][order(applies,passes)]
   # passes  = AADT_COMBINATION > 0 )][order(applies,passes)]
   
@@ -1355,7 +1351,6 @@ cross_validation_54_2 = function(data){
 ###################################################################
 # cross_validation_55 = function(data){
 #   # AADT_Single_Unit Shoud be > 0
-#   # TODO: replace with 2 new x-vals
 #   
 #   #browser()
 #   aadt_single_unit = data[dataitem=="AADT_SINGLE_UNIT",
@@ -1623,34 +1618,18 @@ cross_validation_60 = function(data){
 ###################################################################
 # ValueDate Must = Year Record  Where ValueText is Null AND F_System =1 
 cross_validation_61 = function(data, variable){
-  variable %in% c('IRI', 'RUTTING', 'FAULTING', 'CRACKING_PERCENT')
+  # variable %in% c('IRI', 'RUTTING', 'FAULTING', 'CRACKING_PERCENT')
+  # browser()
   
-  comparison = data[dataitem %in% variable, # c('IRI', 'RUTTING', 'FAULTING', 'CRACKING_PERCENT'), 
+  comparison = data[dataitem == variable,
                     .(routeid, beginpoint, endpoint, datayear, F_SYTEMorig, # F_SYSTEM,
-                      valuedate, begindate, valuetext, num_sections,
-                      iri              = 1 * ( dataitem == 'IRI' ),
-                      rutting          = 1 * ( dataitem == 'RUTTING' ),
-                      faulting         = 1 * ( dataitem == 'FAULTING' ),
-                      cracking_percent = 1 * ( dataitem == 'CRACKING_PERCENT' ) 
-                      ) ]
-  
-  # comparison = data[dataitem == 'IRI',
-  #                   .(routeid, beginpoint, endpoint, datayear, F_SYSTEM,
-  #                     valuedate, begindate, valuetext, num_sections)]
-  # 
-  # comparison[]
-  
-  # comparison = data[dataitem == variable,
-  #                   .(routeid, beginpoint, endpoint, datayear, F_SYTEMorig,
-  #                     valuedate, begindate, valuetext, num_sections)]
-  
+                      valuedate, begindate, valuetext, num_sections) ] 
+
   if(comparison[, .N] == 0){
     warning("Not applicable - Sufficient data from the state are not available")
     return(list(results=NULL, comparison=NULL))  
   }
   
-  #FIXME: break out by each of the below variables
-  #comparison[, .N, .(iri, rutting, faulting, cracking_percent)]
   # apply the condition
   results = comparison[,
                        .(
@@ -1762,7 +1741,6 @@ cross_validation_63 = function(data){
 
 }
 
-# FIXME: test more
 ###################################################################
 cross_validation_64 = function(data, variable){
 
@@ -1770,7 +1748,7 @@ cross_validation_64 = function(data, variable){
   # F_Sytem = 1 OR if ValueDate < Year Record -1 on NHS
 
   # variable %in% c('IRI', 'RUTTING', 'FAULTING', 'CRACKING_PERCENT')
-  # browser()
+  browser()
   
   comparison = data[dataitem == variable,
                     .(routeid, beginpoint, endpoint, datayear, F_SYTEMorig, NHS,
@@ -1855,8 +1833,7 @@ cross_validation_66 = function(data){
 
   comparison = data[dataitem == "PSR",
                     .(routeid, beginpoint, endpoint, datayear,
-                      F_SYTEMorig, valuetext, valuedate, begindate, num_sections)]  #TODO: clarify difference between F_SYTEMorig and F_SYSTEM
-  
+                      F_SYTEMorig, valuetext, valuedate, begindate, num_sections)]  
   if(comparison[, .N] == 0){
     warning("Not applicable - Sufficient data from the state are not available")
     return(list(results=NULL, comparison=NULL))  
@@ -1928,7 +1905,7 @@ cross_validation_x = function(data){
                mileage      = sum(endpoint-beginpoint)
               ),
              .(applies = !is.na(expansionfactor), # !is.na(THROUGH_LANES), # always applies if through_lanes exists
-               passes  = COUNTER_PEAK_LANES + PEAK_LANES >= THROUGH_LANES #|  # TODO: double check if this check still holds, or if only reporting necessary
+               passes  = COUNTER_PEAK_LANES + PEAK_LANES >= THROUGH_LANES #
                          # ( COUNTER_PEAK_LANES == 0 & FACILITY_TYPE == 1 )
                )][order(applies,passes)]
               # passes  = COUNTER_PEAK_LANES + PEAK_LANES >= THROUGH_LANES )][order(applies,passes)]

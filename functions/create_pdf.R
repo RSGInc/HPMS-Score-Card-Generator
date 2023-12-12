@@ -56,10 +56,10 @@ create_pdf <- function(data, state, year, year_compare, path) {
   # Show the results of the cross-validations
   message('Cross-validations...')
   ts <- Sys.time()
-  browser()
+  #browser()
   # test adding multiple xval pages
   #row_cutoff = as.integer( nrow(scores_list$cross_validation)/2 )
-  row_cutoff = 42
+  row_cutoff = 36
   
   cv_list1 = scores_list$cross_validation[1:row_cutoff]
   cv_list2 = scores_list$cross_validation[(row_cutoff + 1):nrow(scores_list$cross_validation)]
@@ -142,29 +142,37 @@ create_pdf <- function(data, state, year, year_compare, path) {
   todo <- matrix(todo_vec, ncol = 3, byrow = TRUE)
   todo <- todo[rowSums(!is.na(todo)) > 0, , drop = FALSE]
   
+  # Put TURN_LANES_L next to TURN_LANES_R if not already
+  idx_tll = gVariables[Name == 'TURN_LANES_L', which = TRUE]
+  idx_tlr = gVariables[Name == 'TURN_LANES_R', which = TRUE]
+  
+  tll = which(todo==idx_tll, arr.ind = TRUE)
+  tlr = which(todo==idx_tlr, arr.ind = TRUE)
+  
+  row_tll = tll[1]
+  row_tlr = tlr[1]
+  
+  if (row_tll != row_tlr) {
+    
+    col_tlr = tlr[2]
+    col_tll = tll[2]
+    
+    ## find index of item next to right-turn-lane, swap with left-turn-lane
+    posy = ifelse(col_tlr < 3, col_tlr + 1, col_tlr - 1)
+    
+    item_xy = todo[row_tlr, posy]
+    todo[row_tlr, posy] = idx_tll
+    
+    todo[row_tll, col_tll] = item_xy
+    
+  }
+  
+  #browser()
   for (i in 1:nrow(todo)) {
     
     x1 <- todo[i, 1]
     x2 <- todo[i, 2]
     x3 <- todo[i, 3]
-
-    browser()
-    
-    if (FALSE)
-      
-      #item_num_tll = gVariables[Name == 'TURN_LANES_L', Item_Number]
-      
-      # Make sure TURN_LANES_L and TURN_LANES_R are on the same page
-      idx_tll = gVariables[Name == 'TURN_LANES_L', which = TRUE]
-      idx_tlr = gVariables[Name == 'TURN_LANES_R', which = TRUE]
-      
-      row_tll = ceiling(match(idx_tll, todo_vec) / 3)
-      row_tlr = ceiling(match(idx_tlr, todo_vec) / 3)
-      
-      if (row_tll != row_tlr) {
-        ## re-arrange
-      }
-    }
     
     gPageNumber <<- gPageNumber + 1
     create_page_summary(data, state, year, year_compare,

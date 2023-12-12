@@ -13,7 +13,7 @@
 create_cross_validation_page <- function(dt_cross, state, year){
   color <- gColors$blank
   
-  maxrows <- 21
+  maxrows <- 18# 21
   max_stringwidth <- 90
   desc_width <- 120 # mm
   rowHeight <- 8   # mm
