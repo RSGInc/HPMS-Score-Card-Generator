@@ -405,7 +405,7 @@ calc_completeness <- function(data, year, variable){
     
   # curves and grades ------------------------------------------------------
   if(variable %like% 'CURVES_A|GRADES_A'){ # CURVES/GRADES _A act as proxy for all items
-    #browser()
+    browser()
     # HPMS 9: each Sample needs at least one CURVES_A-F and at least one GRADES_A-F
     # data_items = paste0(gsub("_.","", variable), c('_A', '_B', '_C', '_D', '_E', '_F'))
     
@@ -438,7 +438,7 @@ calc_completeness <- function(data, year, variable){
     
     coverage[, 
       required := !is.na(expansionfactor) & 
-        ( F_SYSTEM %in% 1:3 | (F_SYSTEM == 4 & URBAN_ID == 99999 & SURFACE_TYPE > 1) )
+        ( F_SYSTEM %in% 1:3 | (F_SYSTEM == 4 & URBAN_ID == 99999 ) ) & SURFACE_TYPE > 1 
     ]
     
     # Calculate fraction of rows with expansionfactors
