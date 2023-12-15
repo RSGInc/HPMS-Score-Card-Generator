@@ -405,7 +405,7 @@ calc_completeness <- function(data, year, variable){
     
   # curves and grades ------------------------------------------------------
   if(variable %like% 'CURVES_A|GRADES_A'){ # CURVES/GRADES _A act as proxy for all items
-    browser()
+    # browser()
     # HPMS 9: each Sample needs at least one CURVES_A-F and at least one GRADES_A-F
     # data_items = paste0(gsub("_.","", variable), c('_A', '_B', '_C', '_D', '_E', '_F'))
     
@@ -419,40 +419,38 @@ calc_completeness <- function(data, year, variable){
       dataitems = c(data_items, 'F_SYSTEM', 'URBAN_ID', 'SURFACE_TYPE') 
     )
 
+    coverage[, one_of_A_F := any(.SD[, ..data_items]), by = 'sampleid'] 
     
-    coverage[, 
-      (paste0(data_items,'_exists')) := lapply(data_items, function(x) {!is.na(get(x))})
-    ]
     
-    # TODO: explore use of grouping + any
-    # TODO: add assertions to insure correct behavior
-    row_any = function(dt, cols) {
-      return(dt[, Reduce(`|`, .SD), .SDcols=cols])
-    }
-    #coverage[, check_one_of_A_F := any(.SD[, ..data_items]), by = 'sampleid'] # Should by be more granular?
-    coverage[, one_of_A_F := row_any(coverage, paste0(data_items,'_exists'))]
-    
+    # coverage[, 
+    #   (paste0(data_items,'_exists')) := lapply(data_items, function(x) {!is.na(get(x))})
+    # ]
+    # 
+    # # TODO: add assertions to insure correct behavior
+    # row_any = function(dt, cols) {
+    #   return(dt[, Reduce(`|`, .SD), .SDcols=cols])
+    # }
+    # coverage[, one_of_A_F := row_any(coverage, paste0(data_items,'_exists'))]
     # Treat one_of_A_F as the variable in these cases
-    coverage[, variable := ifelse( one_of_A_F, TRUE, NA )]
     # coverage[variable == FALSE, variable := NA ] # consider variable missing if none of A-F exist
+    
+    coverage[, variable := ifelse( one_of_A_F, TRUE, NA )]
+    
+    check = coverage[, .N, .(F_SYTEMorig, F_SYSTEM)]
+    stopifnot(all.equal(check$F_SYTEMorig,check$F_SYSTEM))
     
     coverage[, 
       required := !is.na(expansionfactor) & 
         ( F_SYSTEM %in% 1:3 | (F_SYSTEM == 4 & URBAN_ID == 99999 ) ) & SURFACE_TYPE > 1 
     ]
     
-    # Calculate fraction of rows with expansionfactors
-    # score = data[dataitem == variable & datayear == year & !is.na(expansionfactor), .N] /
-    #   data[dataitem == variable & datayear == year, .N]
-    # 
-    # return(score)
     
   } else 
     
     if (variable %like% c("CURVES|GRADES")){
       ## Not required, all required/coverage = FALSE
       coverage = data.table(required = c(FALSE), variable = c(NA))
-      
+
     } else
     
     if(variable %in% c("DIR_THROUGH_LANES")){
@@ -1334,6 +1332,7 @@ calc_completeness <- function(data, year, variable){
                             (YEAR_LAST_CONSTRUCTION < year(begindate) - 20)]
     
   }
+  
   
   # Score calculation ========================================================= 
   

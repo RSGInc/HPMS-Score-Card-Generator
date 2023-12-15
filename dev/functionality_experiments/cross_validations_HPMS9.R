@@ -298,7 +298,7 @@ cross_validation_59_2 = function(data){
 
 ###################################################################
 cross_validation_68 = function(data){
-  browser()
+  #browser()
   # MAINTENANCE_OPERATIONS ValueNumeric <> OWNERSHIP ValueNumeric 
   
   

@@ -1748,7 +1748,7 @@ cross_validation_64 = function(data, variable){
   # F_Sytem = 1 OR if ValueDate < Year Record -1 on NHS
 
   # variable %in% c('IRI', 'RUTTING', 'FAULTING', 'CRACKING_PERCENT')
-  browser()
+  #browser()
   
   comparison = data[dataitem == variable,
                     .(routeid, beginpoint, endpoint, datayear, F_SYTEMorig, NHS,
