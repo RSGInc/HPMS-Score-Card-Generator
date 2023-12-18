@@ -80,11 +80,9 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
   CompletedScore = dt_coverage2[, sum(card_score * Completeness_Weight, na.rm=TRUE)]
   CompletedScoreMax = dt_coverage2[, sum(CompleteHigh * (!is.na(card_score)) * Completeness_Weight)]
   
-  browser()
-  # FIXME: items not required should not count towards top level score
-  dt_quality[reqs, required := i.required, on = 'Name']
-  # QualityScore    <- dt_quality[, sum(Quality_Score * Quality_Weight, na.rm=TRUE)]
-  # QualityScoreMax <- dt_quality[, sum(!is.na(Quality_Score) * Quality_Weight) * 100]
+  # browser()
+
+    dt_quality[reqs, required := i.required, on = 'Name']
   QualityScore    <- dt_quality[required == 1, sum(Quality_Score * Quality_Weight, na.rm=TRUE)]
   QualityScoreMax <- dt_quality[required == 1, sum(!is.na(Quality_Score) * Quality_Weight) * 100]
   qMean <- QualityScore / QualityScoreMax
