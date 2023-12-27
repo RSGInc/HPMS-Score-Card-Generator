@@ -28,6 +28,11 @@ invisible(sapply(X =codefiles , FUN = source))
 # TODO: Use named arguments with argparse package
 # states, year_selection, year_compare, reimport
 
+reimport = FALSE
+year_selection = 2022
+year_compare = 2020
+states = c('DE') #,'WY') #c('VT','CA')
+
 cargs = commandArgs(trailingOnly = TRUE)
 
 if (!interactive() & (length(cargs) < 1) ){
@@ -38,11 +43,6 @@ if (!interactive() & (length(cargs) < 1) ){
   year_compare <- cargs[3]
   reimport <- cargs[4]
 }
-
-reimport = FALSE
-year_selection = 2022
-year_compare = 2020
-states = c('DE') #,'WY') #c('VT','CA')
 
 submission_deadline <- paste(year_selection, '-06-15', sep="")
 
