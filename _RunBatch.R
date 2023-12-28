@@ -36,12 +36,17 @@ states = c('DE') #,'WY') #c('VT','CA')
 cargs = commandArgs(trailingOnly = TRUE)
 
 if (!interactive() & (length(cargs) < 1) ){
+  
   stop('Please supply a comma-delimited list of states or specify "ALL"\nFor example: Rscript RunBatch.R PA,NY,NH,VT', call.=FALSE)
-} else {
+
+  
+  } else if(!interactive() & (length(cargs) > 0) ) {
+  
   states <- cargs[1]
   year_selection <- cargs[2]
   year_compare <- cargs[3]
   reimport <- cargs[4]
+  
 }
 
 submission_deadline <- paste(year_selection, '-06-15', sep="")
