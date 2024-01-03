@@ -14,7 +14,7 @@
 
 coverage_join = function(a, b, check=FALSE){
   
-  join_cols = c('route_id', 'begin_point', 'end_point')
+  join_cols = c('routeid', 'beginpoint', 'endpoint')
   setkeyv(a, cols=join_cols)
   setkeyv(b, cols=join_cols)
   
@@ -27,15 +27,15 @@ coverage_join = function(a, b, check=FALSE){
     mult='first',
     nomatch=NA)
   
-  if ( 'i.expansion_factor' %in% names(ab) ){
+  if ( 'i.expansionfactor' %in% names(ab) ){
     
-    # coalesce(expansion_factor, i.expansion_factor)
-    ab[is.na(expansion_factor), expansion_factor := i.expansion_factor]
-    ab[, i.expansion_factor := NULL]
+    # coalesce(expansionfactor, i.expansionfactor)
+    ab[is.na(expansionfactor), expansionfactor := i.expansionfactor]
+    ab[, i.expansionfactor := NULL]
   }
   
-  ab[, (c('begin_point', 'end_point')) := NULL]
-  setnames(ab, c('i.begin_point', 'i.end_point'), c('begin_point', 'end_point'))
+  ab[, (c('beginpoint', 'endpoint')) := NULL]
+  setnames(ab, c('i.beginpoint', 'i.endpoint'), c('beginpoint', 'endpoint'))
   setkeyv(ab, join_cols)
   
   # ba = foverlaps(
@@ -47,8 +47,8 @@ coverage_join = function(a, b, check=FALSE){
   #   mult='first',
   #   nomatch=NA)
   # 
-  # ba[, (c('begin_point', 'end_point')) := NULL]
-  # setnames(ba, c('i.begin_point', 'i.end_point'), c('begin_point', 'end_point'))
+  # ba[, (c('beginpoint', 'endpoint')) := NULL]
+  # setnames(ba, c('i.beginpoint', 'i.endpoint'), c('beginpoint', 'endpoint'))
   # setkeyv(ba, join_cols)
   # 
   # measure_cols = setdiff(names(ba), join_cols)
@@ -61,7 +61,7 @@ coverage_join = function(a, b, check=FALSE){
   #   all.x=TRUE)
   # 
   # abba[variable != variable_tmp]
-  # abba[expansion_factor != expansion_factor_tmp]
+  # abba[expansionfactor != expansionfactor_tmp]
   
   return(ab)
   
@@ -71,52 +71,52 @@ get_coverage_data = function(
   data,
   year,
   variable,
-  data_items,
-  value_date = c('YEAR_LAST_IMPROVEMENT', 'YEAR_LAST_CONSTRUCTION'),
-  value_text = c()){
+  dataitems,
+  valuedate = c('YEAR_LAST_IMPROVEMENT', 'YEAR_LAST_CONSTRUCTION'),
+  valuetext = c()){
   
   coverage_list = list()
   
   # List cols to keep
   
-  if ( variable %in% value_date ){
-    value_var = 'value_date'
-    # } else if ( variable %in% value_text ){  # Assume target variable is not value_text
-    #   value_var = 'value_text'
+  if ( variable %in% valuedate ){
+    value_var = 'valuedate'
+    # } else if ( variable %in% valuetext ){  # Assume target variable is not valuetext
+    #   value_var = 'valuetext'
   } else {
-    value_var = 'value_numeric'
+    value_var = 'valuenumeric'
   }
   
-  keep_cols = c('route_id', 'begin_point', 'end_point', value_var)
+  keep_cols = c('routeid', 'beginpoint', 'endpoint', 'F_SYTEMorig', 'sampleid', value_var)
   
   variable_dt = data[
-    data_item == variable & year_record == year, 
-    c(keep_cols, 'expansion_factor'), with = FALSE]
+    dataitem == variable & datayear == year, 
+    c(keep_cols, 'expansionfactor'), with = FALSE]
   
   setnames(variable_dt, value_var, 'variable')
   
   # Get all the other data items
-  for ( di in data_items ){
+  for ( di in dataitems ){
     
     # List cols to keep
-    if ( di %in% value_date ){
-      value_var = 'value_date'
-    } else if ( di %in% value_text ){
-      value_var = 'value_text'
+    if ( di %in% valuedate ){
+      value_var = 'valuedate'
+    } else if ( di %in% valuetext ){
+      value_var = 'valuetext'
     } else {
-      value_var = 'value_numeric'
+      value_var = 'valuenumeric'
     }
     
-    keep_cols = c('route_id', 'begin_point', 'end_point', value_var)
+    keep_cols = c('routeid', 'beginpoint', 'endpoint', value_var)
     
-    di_dt = data[data_item == di & year_record == year, keep_cols, with = FALSE]
+    di_dt = data[dataitem == di & datayear == year, keep_cols, with = FALSE]
     
     setnames(di_dt, value_var, di)
     
     coverage_list[[di]] = di_dt
   }
   
-  # Join each data set on route_id, begin_point, end_point
+  # Join each data set on routeid, beginpoint, endpoint
   # These are left joins.  Start with data with largest number of rows
   # like URBAN_ID or F_SYSTEM
   
@@ -144,7 +144,7 @@ calc_completeness <- function(data, year, variable){
   })
   
   # If item is not present, return 0
-  if ( data[data_item == variable & year_record == year, .N] == 0 ){
+  if ( data[dataitem == variable & datayear == year, .N] == 0 ){
     score = 0
     return(score)
   } else
@@ -153,7 +153,7 @@ calc_completeness <- function(data, year, variable){
   # these variables just need to have something to be complete
   
   if( (variable %in% c(
-    "STRUCTURE_TYPE", "STRAHNET_TYPE", "NN"))){
+    "STRUCTURE_TYPE", "STRAHNET_TYPE","MAINTENANCE_OPERATIONS", "NN"))){
     score = 1
     return(score)
   } else
@@ -172,9 +172,9 @@ calc_completeness <- function(data, year, variable){
     "SHOULDER_TYPE", "STOP_SIGNS",
     "WIDENING_POTENTIAL")){
     
-    # Calculate fraction of rows with expansion_factors
-    score = data[data_item == variable & year_record == year & !is.na(expansion_factor), .N] /
-      data[data_item == variable & year_record == year, .N]
+    # Calculate fraction of rows with expansionfactors
+    score = data[dataitem == variable & datayear == year & !is.na(expansionfactor), .N] /
+      data[dataitem == variable & datayear == year, .N]
     
     return(score)
     
@@ -186,30 +186,30 @@ calc_completeness <- function(data, year, variable){
     
     # FACILITY_TYPE in (1,2,4) AND (F_SYSTEM in (1,2,3,4,5) or (F_SYSTEM = 6 and URBAN_ID  <99999) or NHS)
     
-    # dat.variable <- data[data_item == variable & year_record == year,]
-    # dat.FACILITY_TYPE <- data[data_item == "FACILITY_TYPE" & year_record == year,]
-    # dat.F_SYSTEM <- data[data_item == "F_SYSTEM" & year_record == year,]
-    # dat.URBAN_ID <- data[data_item == "URBAN_ID" & year_record == year,]
-    # dat.NHS <- data[data_item == "NHS" & year_record == year,]
+    # dat.variable <- data[dataitem == variable & datayear == year,]
+    # dat.FACILITY_TYPE <- data[dataitem == "FACILITY_TYPE" & datayear == year,]
+    # dat.F_SYSTEM <- data[dataitem == "F_SYSTEM" & datayear == year,]
+    # dat.URBAN_ID <- data[dataitem == "URBAN_ID" & datayear == year,]
+    # dat.NHS <- data[dataitem == "NHS" & datayear == year,]
     # 
     # 
-    # coverage = dat.FACILITY_TYPE[, .(route_id, begin_point, end_point, FACILITY_TYPE = value_numeric)] %>%
+    # coverage = dat.FACILITY_TYPE[, .(routeid, beginpoint, endpoint, FACILITY_TYPE = valuenumeric)] %>%
     #   coverage_join(
-    #     dat.variable[, .(route_id, begin_point, end_point, variable = value_numeric)]) %>%
+    #     dat.variable[, .(routeid, beginpoint, endpoint, variable = valuenumeric)]) %>%
     #   coverage_join(
-    #     dat.F_SYSTEM[, .(route_id, begin_point, end_point, F_SYSTEM = value_numeric)]) %>%
+    #     dat.F_SYSTEM[, .(routeid, beginpoint, endpoint, F_SYSTEM = valuenumeric)]) %>%
     #   coverage_join(
-    #     dat.URBAN_ID[, .(route_id, begin_point, end_point, URBAN_ID = value_numeric)]) %>%
+    #     dat.URBAN_ID[, .(routeid, beginpoint, endpoint, URBAN_ID = valuenumeric)]) %>%
     #   coverage_join(
-    #     dat.NHS[, .(route_id, begin_point, end_point, NHS = value_numeric)]) 
+    #     dat.NHS[, .(routeid, beginpoint, endpoint, NHS = valuenumeric)]) 
     # 
-    # browser()
+    #browser()
     
     coverage = get_coverage_data(
       data,
       year=year,
       variable = variable,
-      data_items = c('F_SYSTEM', 'URBAN_ID', 'FACILITY_TYPE',  'NHS'))
+      dataitems = c('F_SYSTEM', 'URBAN_ID', 'FACILITY_TYPE',  'NHS'))
     
     coverage[,
              required := FACILITY_TYPE %in% c(1,2,4) &
@@ -221,21 +221,23 @@ calc_completeness <- function(data, year, variable){
     # aadt_single_unit, aadt_combination --------------------------------------
   
   if(variable %in% c("AADT_SINGLE_UNIT", "AADT_COMBINATION")){
+    #browser()
+    dat.variable <- data[dataitem == variable & datayear == year,]
+    dat.FACILITY_TYPE <- data[dataitem == "FACILITY_TYPE" & datayear == year,]
+    dat.F_SYSTEM <- data[dataitem == "F_SYSTEM" & datayear == year,]
+    dat.NHS <- data[dataitem == "NHS" & datayear == year,]
     
-    dat.variable <- data[data_item == variable & year_record == year,]
-    dat.FACILITY_TYPE <- data[data_item == "FACILITY_TYPE" & year_record == year,]
-    dat.F_SYSTEM <- data[data_item == "F_SYSTEM" & year_record == year,]
-    dat.NHS <- data[data_item == "NHS" & year_record == year,]
+    # HPMS9
+    data.AADT = data[dataitem == 'AADT' & datayear == year, ]
+    coverage = dat.FACILITY_TYPE[, .(routeid, beginpoint, endpoint, FACILITY_TYPE = valuenumeric)] %>%
+      coverage_join(
+        dat.variable[, .(routeid, beginpoint, endpoint, expansionfactor, variable = valuenumeric)]) %>%
+      coverage_join(
+        dat.F_SYSTEM[, .(routeid, beginpoint, endpoint, F_SYSTEM = valuenumeric)]) %>%
+      coverage_join(
+        dat.NHS[, .(routeid, beginpoint, endpoint, NHS = valuenumeric)]) 
     
-    coverage = dat.FACILITY_TYPE[, .(route_id, begin_point, end_point, FACILITY_TYPE = value_numeric)] %>%
-      coverage_join(
-        dat.variable[, .(route_id, begin_point, end_point, expansion_factor, variable = value_numeric)]) %>%
-      coverage_join(
-        dat.F_SYSTEM[, .(route_id, begin_point, end_point, F_SYSTEM = value_numeric)]) %>%
-      coverage_join(
-        dat.NHS[, .(route_id, begin_point, end_point, NHS = value_numeric)]) 
-    
-    coverage[, required := (F_SYSTEM == 1 | !is.na(NHS)) & FACILITY_TYPE %in% c(1,2) |!is.na(expansion_factor)]
+    coverage[, required := (F_SYSTEM == 1 | !is.na(NHS)) & FACILITY_TYPE %in% c(1,2) |!is.na(expansionfactor)]
     
   } else 
     
@@ -244,21 +246,24 @@ calc_completeness <- function(data, year, variable){
   
   if(variable == "ACCESS_CONTROL"){
     
-    dat.variable <- data[data_item == variable & year_record == year,]
-    dat.FACILITY_TYPE <- data[data_item == "FACILITY_TYPE" & year_record == year,]
-    dat.F_SYSTEM <- data[data_item == "F_SYSTEM" & year_record == year,]
-    dat.NHS <- data[data_item == "NHS" & year_record == year,]
+    dat.variable <- data[dataitem == variable & datayear == year,]
+    dat.FACILITY_TYPE <- data[dataitem == "FACILITY_TYPE" & datayear == year,]
+    dat.F_SYSTEM <- data[dataitem == "F_SYSTEM" & datayear == year,]
+    dat.NHS <- data[dataitem == "NHS" & datayear == year,]
     
     coverage = coverage_join(
-      dat.FACILITY_TYPE[, .(route_id, begin_point, end_point, FACILITY_TYPE = value_numeric)],
-      dat.variable[, .(route_id, begin_point, end_point, variable = value_numeric, expansion_factor)]) %>%
-      coverage_join(dat.F_SYSTEM[, .(route_id, begin_point, end_point, F_SYSTEM = value_numeric)]) %>%
-      coverage_join(dat.NHS[, .(route_id, begin_point, end_point, NHS = value_numeric)])
+      dat.FACILITY_TYPE[, .(routeid, beginpoint, endpoint, FACILITY_TYPE = valuenumeric)],
+      dat.variable[, .(routeid, beginpoint, endpoint, variable = valuenumeric, expansionfactor)]) %>%
+      coverage_join(dat.F_SYSTEM[, .(routeid, beginpoint, endpoint, F_SYSTEM = valuenumeric)]) %>%
+      coverage_join(dat.NHS[, .(routeid, beginpoint, endpoint, NHS = valuenumeric)])
     
     setDT(coverage)
     
-    coverage[, required := 
-               !is.na(expansion_factor) & FACILITY_TYPE %in% c(1,2) & (F_SYSTEM %in% c(1,2,3,4) | !is.na(NHS))]
+    coverage[, required := #is.na(variable) & 
+                           FACILITY_TYPE %in% c(1,2) & 
+                            (F_SYSTEM %in% c(1,2,3) | !is.na(NHS) | !is.na(expansionfactor))]
+    # coverage[, required := 
+    #            is.na(expansionfactor) & FACILITY_TYPE %in% c(1,2) & (F_SYSTEM %in% c(1,2,3,4) | !is.na(NHS))]
     
   } else 
     
@@ -268,18 +273,18 @@ calc_completeness <- function(data, year, variable){
   if(variable %in% c("BASE_THICKNESS")){
     
     
-    dat.variable <- data[data_item == variable & year_record == year,]
-    dat.SURFACE_TYPE <- data[data_item == "SURFACE_TYPE" & year_record == year,] 
-    dat.BASE_TYPE <- data[data_item == "BASE_TYPE" & year_record == year,] 
+    dat.variable <- data[dataitem == variable & datayear == year,]
+    dat.SURFACE_TYPE <- data[dataitem == "SURFACE_TYPE" & datayear == year,] 
+    dat.BASE_TYPE <- data[dataitem == "BASE_TYPE" & datayear == year,] 
     
-    coverage = dat.SURFACE_TYPE[, .(route_id, begin_point, end_point, SURFACE_TYPE = value_numeric)] %>%
+    coverage = dat.SURFACE_TYPE[, .(routeid, beginpoint, endpoint, SURFACE_TYPE = valuenumeric)] %>%
       coverage_join(
-        dat.variable[, .(route_id, begin_point, end_point, expansion_factor, variable = value_numeric)]) %>%
+        dat.variable[, .(routeid, beginpoint, endpoint, expansionfactor, variable = valuenumeric)]) %>%
       coverage_join(
-        dat.BASE_TYPE[, .(route_id, begin_point, end_point, BASE_TYPE = value_numeric)]
+        dat.BASE_TYPE[, .(routeid, beginpoint, endpoint, BASE_TYPE = valuenumeric)]
       )
     
-    coverage[, required := !is.na(expansion_factor) & SURFACE_TYPE>1 & BASE_TYPE>1]
+    coverage[, required := !is.na(expansionfactor) & SURFACE_TYPE>1 & BASE_TYPE>1]
     
   } else
     
@@ -289,15 +294,15 @@ calc_completeness <- function(data, year, variable){
   if(variable %in% c("BASE_TYPE")){
     
     
-    dat.variable <- data[data_item == variable & year_record == year,]
-    dat.SURFACE_TYPE <- data[data_item == "SURFACE_TYPE" & year_record == year,] 
+    dat.variable <- data[dataitem == variable & datayear == year,]
+    dat.SURFACE_TYPE <- data[dataitem == "SURFACE_TYPE" & datayear == year,] 
     
     
-    coverage = dat.SURFACE_TYPE[, .(route_id, begin_point, end_point, SURFACE_TYPE = value_numeric)] %>%
+    coverage = dat.SURFACE_TYPE[, .(routeid, beginpoint, endpoint, SURFACE_TYPE = valuenumeric)] %>%
       coverage_join(
-        dat.variable[, .(route_id, begin_point, end_point, expansion_factor, variable = value_numeric)])
+        dat.variable[, .(routeid, beginpoint, endpoint, expansionfactor, variable = valuenumeric)])
     
-    coverage[, required := !is.na(expansion_factor) & SURFACE_TYPE > 1]
+    coverage[, required := !is.na(expansionfactor) & SURFACE_TYPE > 1]
     
     
   } else
@@ -309,20 +314,20 @@ calc_completeness <- function(data, year, variable){
     
     # Sample and FACILITY_TYPE = 2 AND (URBAN_ID < 99999 OR THROUGH_LANES >=4)
     
-    dat.variable <- data[data_item == variable & year_record == year,]
-    dat.FACILITY_TYPE <- data[data_item == "FACILITY_TYPE" & year_record == year,]
-    dat.THROUGH_LANES <- data[data_item == "THROUGH_LANES" & year_record == year,]
-    dat.URBAN_ID <- data[data_item == "URBAN_ID" & year_record == year,]
+    dat.variable <- data[dataitem == variable & datayear == year,]
+    dat.FACILITY_TYPE <- data[dataitem == "FACILITY_TYPE" & datayear == year,]
+    dat.THROUGH_LANES <- data[dataitem == "THROUGH_LANES" & datayear == year,]
+    dat.URBAN_ID <- data[dataitem == "URBAN_ID" & datayear == year,]
     
     coverage = coverage_join(
-      dat.FACILITY_TYPE[, .(route_id, begin_point, end_point, FACILITY_TYPE = value_numeric)],
-      dat.variable[, .(route_id, begin_point, end_point, variable = value_numeric, expansion_factor)]) %>%
+      dat.FACILITY_TYPE[, .(routeid, beginpoint, endpoint, FACILITY_TYPE = valuenumeric)],
+      dat.variable[, .(routeid, beginpoint, endpoint, variable = valuenumeric, expansionfactor)]) %>%
       coverage_join(
-        dat.THROUGH_LANES[, .(route_id, begin_point, end_point, THROUGH_LANES = value_numeric)]) %>%
+        dat.THROUGH_LANES[, .(routeid, beginpoint, endpoint, THROUGH_LANES = valuenumeric)]) %>%
       coverage_join(
-        dat.URBAN_ID[, .(route_id, begin_point, end_point, URBAN_ID = value_numeric)])
+        dat.URBAN_ID[, .(routeid, beginpoint, endpoint, URBAN_ID = valuenumeric)])
     
-    coverage[, required := !is.na(expansion_factor) & FACILITY_TYPE == 2 & (URBAN_ID < 99999 | THROUGH_LANES >= 4)]
+    coverage[, required := !is.na(expansionfactor) & FACILITY_TYPE == 2 & (URBAN_ID < 99999 | THROUGH_LANES >= 4)]
     
   } else
     
@@ -333,21 +338,21 @@ calc_completeness <- function(data, year, variable){
     
     # FACILITY_TYPE in (1,2) AND (F_SYSTEM in (1,2,3,4,5) or (F_SYSTEM = 6 and URBAN_ID <99999) or NHS
     
-    dat.variable <- data[data_item == variable & year_record == year,]
-    dat.FACILITY_TYPE <- data[data_item == "FACILITY_TYPE" & year_record == year,]
-    dat.F_SYSTEM <- data[data_item == "F_SYSTEM" & year_record == year,]
-    dat.URBAN_ID <- data[data_item == "URBAN_ID" & year_record == year,]
-    dat.NHS <- data[data_item == "NHS" & year_record == year,]
+    dat.variable <- data[dataitem == variable & datayear == year,]
+    dat.FACILITY_TYPE <- data[dataitem == "FACILITY_TYPE" & datayear == year,]
+    dat.F_SYSTEM <- data[dataitem == "F_SYSTEM" & datayear == year,]
+    dat.URBAN_ID <- data[dataitem == "URBAN_ID" & datayear == year,]
+    dat.NHS <- data[dataitem == "NHS" & datayear == year,]
     
     coverage = coverage_join(
-      dat.FACILITY_TYPE[, .(route_id, begin_point, end_point, FACILITY_TYPE = value_numeric)],
-      dat.variable[, .(route_id, begin_point, end_point, variable = value_numeric)]) %>%
+      dat.FACILITY_TYPE[, .(routeid, beginpoint, endpoint, FACILITY_TYPE = valuenumeric)],
+      dat.variable[, .(routeid, beginpoint, endpoint, variable = valuenumeric)]) %>%
       coverage_join(
-        dat.F_SYSTEM[, .(route_id, begin_point, end_point, F_SYSTEM = value_numeric)]) %>%
+        dat.F_SYSTEM[, .(routeid, beginpoint, endpoint, F_SYSTEM = valuenumeric)]) %>%
       coverage_join(
-        dat.URBAN_ID[, .(route_id, begin_point, end_point, URBAN_ID = value_numeric)]) %>%
+        dat.URBAN_ID[, .(routeid, beginpoint, endpoint, URBAN_ID = valuenumeric)]) %>%
       coverage_join(
-        dat.NHS[, .(route_id, begin_point, end_point, NHS = value_numeric)])
+        dat.NHS[, .(routeid, beginpoint, endpoint, NHS = valuenumeric)])
     
     coverage[, required := FACILITY_TYPE %in% c(1,2) &
                (F_SYSTEM %in% c(1,2,3,4,5) | (F_SYSTEM == 6 & URBAN_ID == 99999) | !is.na(NHS))]
@@ -359,44 +364,129 @@ calc_completeness <- function(data, year, variable){
   
   if(variable %in% c("CRACKING_PERCENT")){
     
-    dat.variable <- data[data_item == variable & year_record == year,]
-    dat.SURFACE_TYPE <- data[data_item == "SURFACE_TYPE" & year_record == year,] 
+    # dat.variable <- data[dataitem == variable & datayear == year,]
+    # dat.SURFACE_TYPE <- data[dataitem == "SURFACE_TYPE" & datayear == year,] 
+    # 
+    # coverage = dat.SURFACE_TYPE[, .(routeid, beginpoint, endpoint, SURFACE_TYPE = valuenumeric)] %>%
+    #   coverage_join(
+    #     dat.variable[, .(routeid, beginpoint, endpoint, expansionfactor, variable = valuenumeric # )]) 
+    #                      # HPMS updates
+    #                      , FACILITY_TYPE, F_SYSTEM, NHS
+    #                      )])
+    # 
+    # coverage[, required := !is.na(expansionfactor) & SURFACE_TYPE %in% 2:10]
     
-    coverage = dat.SURFACE_TYPE[, .(route_id, begin_point, end_point, SURFACE_TYPE = value_numeric)] %>%
-      coverage_join(
-        dat.variable[, .(route_id, begin_point, end_point, expansion_factor, variable = value_numeric)])
+    # HPMS9
     
-    coverage[, required := !is.na(expansion_factor) & SURFACE_TYPE %in% 2:10]
+    coverage = get_coverage_data(
+      data,
+      year      = year,
+      variable  = variable,
+      dataitems = c(
+        'SURFACE_TYPE', 'FACILITY_TYPE', 'F_SYSTEM', 'NHS', 'DIR_THROUGH_LANES', 'IRI', 'PSR'
+      ),
+      valuetext = 'PSR'
+    )
+    
+    
+    coverage[, 
+       required := #!is.na(variable) & 
+                  SURFACE_TYPE %in% 2:10 & 
+                   ( FACILITY_TYPE %in% 1:2 &  
+                     ( F_SYSTEM == 1 | !is.na(NHS) | !is.na(expansionfactor) |
+                        ( DIR_THROUGH_LANES > 0 & 
+                          ( !is.na(IRI) | !is.na(PSR) ) ) )
+                   )
+    ]
     
     
   } else
     
     
-    # curves and grades ------------------------------------------------------
-  if(variable %like% 'CURVES|GRADES'){
+  # curves and grades ------------------------------------------------------
+  if(variable %like% 'CURVES_A|GRADES_A'){ # CURVES/GRADES _A act as proxy for all items
+    #browser()
+    # HPMS 9: each Sample needs at least one CURVES_A-F and at least one GRADES_A-F
+    # data_items = paste0(gsub("_.","", variable), c('_A', '_B', '_C', '_D', '_E', '_F'))
     
-    # Calculate fraction of rows with expansion_factors
-    score = data[data_item == variable & year_record == year & !is.na(expansion_factor), .N] /
-      data[data_item == variable & year_record == year, .N]
+    c_or_g = ifelse(variable %like% 'CURVES', 'CURVES', 'GRADES')
+    data_items = unique(data$dataitem[data$dataitem %like% c_or_g])
     
-    return(score)
+    coverage = get_coverage_data(
+      data,
+      year      = year,
+      variable  = variable, # expansion factor is NA when variable is NA. If we want all curves/grades to have the same score, this should be set to just one
+      dataitems = c(data_items, 'F_SYSTEM', 'URBAN_ID', 'SURFACE_TYPE') 
+    )
+
+    coverage[, one_of_A_F := any(.SD[, ..data_items]), by = 'sampleid'] 
+    
+    
+    # coverage[, 
+    #   (paste0(data_items,'_exists')) := lapply(data_items, function(x) {!is.na(get(x))})
+    # ]
+    # 
+    # # TODO: add assertions to insure correct behavior
+    # row_any = function(dt, cols) {
+    #   return(dt[, Reduce(`|`, .SD), .SDcols=cols])
+    # }
+    # coverage[, one_of_A_F := row_any(coverage, paste0(data_items,'_exists'))]
+    # Treat one_of_A_F as the variable in these cases
+    # coverage[variable == FALSE, variable := NA ] # consider variable missing if none of A-F exist
+    
+    coverage[, variable := ifelse( one_of_A_F, TRUE, NA )]
+    
+    check = coverage[, .N, .(F_SYTEMorig, F_SYSTEM)]
+    stopifnot(all.equal(check$F_SYTEMorig,check$F_SYSTEM))
+    
+    coverage[, 
+      required := !is.na(expansionfactor) & 
+        ( F_SYSTEM %in% 1:3 | (F_SYSTEM == 4 & URBAN_ID == 99999 ) ) & SURFACE_TYPE > 1 
+    ]
+    
     
   } else 
     
+    if (variable %like% c("CURVES|GRADES")){
+      ## Not required, all required/coverage = FALSE
+      coverage = data.table(required = c(FALSE), variable = c(NA))
+
+    } else
+    
+    if(variable %in% c("DIR_THROUGH_LANES")){
+
+      coverage = get_coverage_data(
+        data,
+        year      = year,
+        variable  = variable,
+        dataitems = c(
+          'DIR_THROUGH_LANES', 'SURFACE_TYPE', 'FACILITY_TYPE', 'F_SYSTEM', 'NHS', 'IRI', 'PSR'
+        ),
+        valuetext = 'PSR'
+      )
+      
+      
+      coverage[, required := ( F_SYSTEM == 1 ) & (FACILITY_TYPE == 6) & ( IRI > 0 | PSR > 0 ) ] 
+      
+      
+    } else
     
     # f_system ----------------------------------------------------------------
   
   if(variable == "F_SYSTEM"){
     
-    dat.variable <- data[data_item == variable & year_record == year,]
-    dat.FACILITY_TYPE <- data[data_item == "FACILITY_TYPE" & year_record == year,]
+    dat.variable <- data[dataitem == variable & datayear == year,]
+    dat.FACILITY_TYPE <- data[dataitem == "FACILITY_TYPE" & datayear == year,]
     
-    coverage = dat.FACILITY_TYPE[, .(route_id, begin_point, end_point, FACILITY_TYPE = value_numeric)] %>%
-      .[FACILITY_TYPE %in% c(1, 2, 4)] %>%
+    coverage = dat.FACILITY_TYPE[, .(routeid, beginpoint, endpoint, FACILITY_TYPE = valuenumeric)] %>%
+      # .[FACILITY_TYPE %in% c(1, 2, 4)] %>%
+      .[FACILITY_TYPE %in% c(1, 2, 4, 5, 6)] %>%
       coverage_join(
-        dat.variable[, .(route_id, begin_point, end_point, variable = value_numeric)])
+        dat.variable[, .(routeid, beginpoint, endpoint, variable = valuenumeric)])
     
-    coverage[, required := TRUE]
+    #coverage[, required := TRUE]
+    
+    coverage[ , required := FACILITY_TYPE %in% c(1,2,4,5,6)]  
     
   } else # end F_SYSTEM
     
@@ -405,20 +495,21 @@ calc_completeness <- function(data, year, variable){
   
   if(variable == "FACILITY_TYPE"){
     
-    dat.variable <- data[data_item == variable & year_record == year,]
-    dat.F_SYSTEM <- data[data_item == "F_SYSTEM" & year_record == year,]
-    dat.URBAN_ID <- data[data_item == "URBAN_ID" & year_record == year,]
-    dat.NHS <- data[data_item == "NHS" & year_record == year,]
+    dat.variable <- data[dataitem == variable & datayear == year,]
+    dat.F_SYSTEM <- data[dataitem == "F_SYSTEM" & datayear == year,]
+    dat.URBAN_ID <- data[dataitem == "URBAN_ID" & datayear == year,]
+    dat.NHS <- data[dataitem == "NHS" & datayear == year,]
     
     coverage = coverage_join(
-      dat.variable[, .(route_id, begin_point, end_point, variable = value_numeric)],
-      dat.F_SYSTEM[, .(route_id, begin_point, end_point, F_SYSTEM = value_numeric)]) %>%
+      dat.variable[, .(routeid, beginpoint, endpoint, variable = valuenumeric)],
+      dat.F_SYSTEM[, .(routeid, beginpoint, endpoint, F_SYSTEM = valuenumeric)]) %>%
       coverage_join(
-        dat.URBAN_ID[, .(route_id, begin_point, end_point, URBAN_ID = value_numeric)]) %>%
+        dat.URBAN_ID[, .(routeid, beginpoint, endpoint, URBAN_ID = valuenumeric)]) %>%
       coverage_join(
-        dat.NHS[, .(route_id, begin_point, end_point, NHS = value_numeric)]) 
+        dat.NHS[, .(routeid, beginpoint, endpoint, NHS = valuenumeric)]) 
     
-    coverage[, required := (F_SYSTEM %in% c(1,2,3,4,5)|(F_SYSTEM == 6 & URBAN_ID == 99999)|!is.na(NHS))]
+    # coverage[, required := (F_SYSTEM %in% c(1,2,3,4,5)|(F_SYSTEM == 6 & URBAN_ID == 99999)|!is.na(NHS))]
+    coverage[, required := (F_SYSTEM %in% c(1:7))]
     
   } else 
     
@@ -427,23 +518,45 @@ calc_completeness <- function(data, year, variable){
   
   if(variable %in% c("FAULTING")){
     
-    dat.variable <- data[data_item == variable & year_record == year,]
-    dat.SURFACE_TYPE <- data[data_item == "SURFACE_TYPE" & year_record == year,] 
+    # HPMS9
     
-    coverage <- sqldf(
-      "select 
-        A.route_id,A.begin_point,A.end_point,A.data_item,A.value_numeric as SURFACE_TYPE, 
-        B.value_numeric as variable,B.expansion_factor 
-        from [dat.SURFACE_TYPE] A 
-        left join [dat.variable] B on 
-        A.route_id = B.route_id and (
-        ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
-        ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
-        )")
+    coverage = get_coverage_data(
+      data,
+      year      = year,
+      variable  = variable,
+      dataitems = c(
+        'SURFACE_TYPE', 'FACILITY_TYPE', 'F_SYSTEM', 'NHS', 'DIR_THROUGH_LANES', 'IRI', 'PSR'
+      ),
+      valuetext = 'PSR'
+    )
     
-    setDT(coverage)
     
-    coverage[, required := !is.na(expansion_factor) & SURFACE_TYPE %in% c(3,4,9,10)]
+    coverage[, 
+             required := SURFACE_TYPE %in% c(3,4,9,10) & 
+               ( FACILITY_TYPE %in% 1:2 &  
+                   ( F_SYSTEM == 1 | !is.na(NHS) | !is.na(expansionfactor) |
+                       ( DIR_THROUGH_LANES > 0 & 
+                           ( !is.na(IRI) | !is.na(PSR) ) ) )
+               )
+    ]
+    
+    # dat.variable <- data[dataitem == variable & datayear == year,]
+    # dat.SURFACE_TYPE <- data[dataitem == "SURFACE_TYPE" & datayear == year,] 
+    # 
+    # coverage <- sqldf(
+    #   "select 
+    #     A.routeid,A.beginpoint,A.endpoint,A.dataitem,A.valuenumeric as SURFACE_TYPE, 
+    #     B.valuenumeric as variable,B.expansionfactor 
+    #     from [dat.SURFACE_TYPE] A 
+    #     left join [dat.variable] B on 
+    #     A.routeid = B.routeid and (
+    #     ( A.beginpoint between B.beginpoint and B.endpoint and A.endpoint between B.beginpoint and B.endpoint ) or
+    #     ( B.beginpoint between A.beginpoint and A.endpoint and B.endpoint between A.beginpoint and A.endpoint )
+    #     )")
+    # 
+    # setDT(coverage)
+    # 
+    # coverage[, required := !is.na(expansionfactor) & SURFACE_TYPE %in% c(3,4,9,10)]
     
   } else
     
@@ -451,69 +564,27 @@ calc_completeness <- function(data, year, variable){
   
   if(variable %in% c("IRI")){
     
-    # IRI ValueNumeric Must Exist Where SURFACE_TYPE >1 AND 
-    # ( FACILITY_TYPE IN (1,2) AND 
-    #  (
-    #         PSR ValueText <> 'A'   AND ( F_SYSTEM in (1,2,3)  OR NHS )
-    #         OR 
-    #        (Sample and F_SYSTEM = 4 and URBAN_ID = 99999)
-    #  ) 
-    #  OR DIR_THROUGH_LANES >0
-    # )
-    
     coverage = get_coverage_data(
       data,
       year = year,
       variable = variable, 
-      data_items = c(
+      dataitems = c(
         'F_SYSTEM', 'URBAN_ID', 'SURFACE_TYPE', 'DIR_THROUGH_LANES', 
         'FACILITY_TYPE', 'NHS', 'PSR'),
-      value_text = 'PSR')
+      valuetext = 'PSR')
     
     coverage[, required := SURFACE_TYPE > 1 & 
                (DIR_THROUGH_LANES > 0 |
                   (FACILITY_TYPE %in% c(1,2) & (
-                    (PSR != 'A' & (F_SYSTEM %in% c(1,2,3) | !is.na(NHS))) |
-                      (!is.na(expansion_factor) & F_SYSTEM == 4 & URBAN_ID == 99999)
-                  )
+                    (PSR != 'A' & (F_SYSTEM %in% c(1,2,3) | NHS != 1)) |
+                      (!is.na(expansionfactor) & F_SYSTEM == 4 & URBAN_ID == 99999))
+                    
+                    # (PSR != 'A' & (F_SYSTEM %in% c(1,2,3) | !is.na(NHS))) |
+                    #   (!is.na(expansionfactor) & F_SYSTEM == 4 & URBAN_ID == 99999)
+                  
                   ) 
                )
     ]
-    
-    # dat.variable <- data[data_item == variable & year_record == year,]
-    # dat.FACILITY_TYPE <- data[data_item == "FACILITY_TYPE" & year_record == year,]
-    # dat.F_SYSTEM <- data[data_item == "F_SYSTEM" & year_record == year,]
-    # dat.URBAN_ID <- data[data_item == "URBAN_ID" & year_record == year,]
-    # dat.NHS <- data[data_item == "NHS" & year_record == year,]
-    # dat.SURFACE_TYPE <- data[data_item == "SURFACE_TYPE" & year_record == year,] 
-    
-    
-    # coverage <- sqldf(
-    #   "select 
-    #       A.route_id, A.begin_point, A.end_point,
-    #           A.data_item, A.value_numeric as FACILITY_TYPE, 
-    #       B.value_numeric as SURFACE_TYPE,
-    #           coalesce(A.expansion_factor,B.expansion_factor) as expansion_factor
-    #     from [dat.FACILITY_TYPE] A 
-    #     inner join [dat.SURFACE_TYPE] B on 
-    #           A.route_id = B.route_id and
-    #             A.begin_point = B.begin_point and
-    #             A.end_point = B.end_point")
-    
-    # setDT(coverage)
-    # coverage = coverage %>% 
-    #   coverage_join(
-    #     dat.URBAN_ID[, .(route_id, begin_point, end_point, expansion_factor,
-    #       URBAN_ID = value_numeric)]) %>%
-    #   coverage_join(
-    #     dat.F_SYSTEM[, .(route_id, begin_point, end_point, expansion_factor,
-    #       F_SYSTEM = value_numeric)]) %>%
-    #   coverage_join(
-    #     dat.NHS[, .(route_id, begin_point, end_point, expansion_factor, 
-    #       NHS = value_numeric)]) %>%
-    #   coverage_join(
-    #     dat.variable[, .(route_id, begin_point, end_point, expansion_factor,
-    #       variable = value_numeric)])
     
   } else 
     
@@ -525,47 +596,48 @@ calc_completeness <- function(data, year, variable){
       data,
       year = year,
       variable,
-      data_items = c('YEAR_LAST_IMPROVEMENT'))
+      dataitems = c('YEAR_LAST_IMPROVEMENT'))
     
     # dat_variable = data[
-    #   data_item == variable & year_record == year,
-    #   .(route_id, begin_point, end_point, variable == value_numeric, expansion_factor)]
+    #   dataitem == variable & datayear == year,
+    #   .(routeid, beginpoint, endpoint, variable == valuenumeric, expansionfactor)]
     
     # dat_YEAR_LAST_CONSTRUCTION = data[
-    #   data_item == 'YEAR_LAST_CONSTRUCTION' & year_record == year,
-    #   .(route_id, begin_point, end_point, YEAR_LAST_CONSTRUCTION == value_date)]
+    #   dataitem == 'YEAR_LAST_CONSTRUCTION' & datayear == year,
+    #   .(routeid, beginpoint, endpoint, YEAR_LAST_CONSTRUCTION == valuedate)]
     
     # coverage = coverage_join(dat_variable, dat_YEAR_LAST_CONSTRUCTION)
     
-    coverage[, required := !is.na(expansion_factor) & !is.na(YEAR_LAST_IMPROVEMENT)] 
+    coverage[, required := !is.na(expansionfactor) & !is.na(YEAR_LAST_IMPROVEMENT)] 
     
   } else
     
     # maintenance_operations ---------------------------------------------------
-  
-  if(variable %in% c("MAINTENANCE_OPERATIONS")){
-    
-    coverage = data[data_item == variable & year_record == year,]
-    coverage[, required := TRUE]
-    
-  } else
+
+  # if(variable %in% c("MAINTENANCE_OPERATIONS")){
+  # 
+  #   coverage = data[dataitem == variable & datayear == year,]
+  #   coverage[, required := FALSE]
+  #   #browser()
+  # 
+  # } else
     
     # managed_lanes ---------------------------------------------------------------
   
   if(variable == "MANAGED_LANES"){
     
-    dat.variable <- data[data_item == variable & year_record == year,]
-    dat.MANAGED_LANES_TYPE <- data[data_item == "MANAGED_LANES_TYPE" & year_record == year,]
+    dat.variable <- data[dataitem == variable & datayear == year,]
+    dat.MANAGED_LANES_TYPE <- data[dataitem == "MANAGED_LANES_TYPE" & datayear == year,]
     
     coverage <- sqldf(
       "select 
-        A.route_id,A.begin_point,A.end_point,A.data_item,A.value_numeric as MANAGED_LANES_TYPE, 
-        B.value_numeric as variable 
+        A.routeid,A.beginpoint,A.endpoint,A.dataitem,A.valuenumeric as MANAGED_LANES_TYPE, 
+        B.valuenumeric as variable 
         from [dat.MANAGED_LANES_TYPE] A 
         left join [dat.variable] B on 
-        A.route_id = B.route_id and (
-        ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
-        ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
+        A.routeid = B.routeid and (
+        ( A.beginpoint between B.beginpoint and B.endpoint and A.endpoint between B.beginpoint and B.endpoint ) or
+        ( B.beginpoint between A.beginpoint and A.endpoint and B.endpoint between A.beginpoint and A.endpoint )
         )")
     
     setDT(coverage)
@@ -580,18 +652,18 @@ calc_completeness <- function(data, year, variable){
   
   if(variable == "MANAGED_LANES_TYPE"){
     
-    dat.variable <- data[data_item == variable & year_record == year,]
-    dat.MANAGED_LANES <- data[data_item == "MANAGED_LANES" & year_record == year,]
+    dat.variable <- data[dataitem == variable & datayear == year,]
+    dat.MANAGED_LANES <- data[dataitem == "MANAGED_LANES" & datayear == year,]
     
     coverage <- sqldf(
       "select 
-        A.route_id,A.begin_point,A.end_point,A.data_item,A.value_numeric as MANAGED_LANES, 
-        B.value_numeric as variable 
+        A.routeid,A.beginpoint,A.endpoint,A.dataitem,A.valuenumeric as MANAGED_LANES, 
+        B.valuenumeric as variable 
         from [dat.MANAGED_LANES] A 
         left join [dat.variable] B on 
-        A.route_id = B.route_id and (
-        ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
-        ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
+        A.routeid = B.routeid and (
+        ( A.beginpoint between B.beginpoint and B.endpoint and A.endpoint between B.beginpoint and B.endpoint ) or
+        ( B.beginpoint between A.beginpoint and A.endpoint and B.endpoint between A.beginpoint and A.endpoint )
         )")
     
     setDT(coverage)
@@ -605,16 +677,16 @@ calc_completeness <- function(data, year, variable){
   
   if(variable == "MEDIAN_WIDTH"){
     
-    dat.variable <- data[data_item == variable & year_record == year,]
-    dat.MEDIAN_TYPE <- data[data_item == "MEDIAN_TYPE" & year_record == year,]
+    dat.variable <- data[dataitem == variable & datayear == year,]
+    dat.MEDIAN_TYPE <- data[dataitem == "MEDIAN_TYPE" & datayear == year,]
     
     # Change for variable --------------------
     
-    coverage = dat.MEDIAN_TYPE[, .(route_id, begin_point, end_point, MEDIAN_TYPE = value_numeric)] %>%
+    coverage = dat.MEDIAN_TYPE[, .(routeid, beginpoint, endpoint, MEDIAN_TYPE = valuenumeric)] %>%
       coverage_join(
-        dat.variable[, .(route_id, begin_point, end_point, expansion_factor, variable = value_numeric)])
+        dat.variable[, .(routeid, beginpoint, endpoint, expansionfactor, variable = valuenumeric)])
     
-    coverage[, required := MEDIAN_TYPE %in% 2:7 & (!is.na(expansion_factor))]
+    coverage[, required := MEDIAN_TYPE %in% 2:7 & (!is.na(expansionfactor))]
     
   } else
     
@@ -623,17 +695,18 @@ calc_completeness <- function(data, year, variable){
   
   if(variable %in% c("NHS")){
     
-    dat.variable <- data[data_item == variable & year_record == year,]
-    dat.FACILITY_TYPE <- data[data_item == "FACILITY_TYPE" & year_record == year,]
-    dat.F_SYSTEM <- data[data_item == "F_SYSTEM" & year_record == year,]
+    dat.variable <- data[dataitem == variable & datayear == year,]
+    dat.FACILITY_TYPE <- data[dataitem == "FACILITY_TYPE" & datayear == year,]
+    dat.F_SYSTEM <- data[dataitem == "F_SYSTEM" & datayear == year,]
     
-    coverage = dat.FACILITY_TYPE[, .(route_id, begin_point, end_point, FACILITY_TYPE = value_numeric)] %>%
+    coverage = dat.FACILITY_TYPE[, .(routeid, beginpoint, endpoint, FACILITY_TYPE = valuenumeric)] %>%
       coverage_join(
-        dat.variable[, .(route_id, begin_point, end_point, expansion_factor, variable = value_numeric)]) %>%
+        dat.variable[, .(routeid, beginpoint, endpoint, expansionfactor, variable = valuenumeric)]) %>%
       coverage_join(
-        dat.F_SYSTEM[, .(route_id, begin_point, end_point, F_SYSTEM = value_numeric)]) 
+        dat.F_SYSTEM[, .(routeid, beginpoint, endpoint, F_SYSTEM = valuenumeric)]) 
     
-    coverage[, required :=  (F_SYSTEM == 1 & FACILITY_TYPE < 4)]
+    # coverage[, required :=  (F_SYSTEM == 1 & FACILITY_TYPE < 4)]
+    coverage[, required :=  (F_SYSTEM == 1 & FACILITY_TYPE %in% c(1,2,6))]
     
   } else
     
@@ -642,36 +715,39 @@ calc_completeness <- function(data, year, variable){
   
   if(variable %in% c("NUMBER_SIGNALS")){
     
-    dat.variable <- data[data_item == variable & year_record == year,]
-    dat.SIGNAL_TYPE <- data[data_item == "SIGNAL_TYPE" & year_record == year,]
-    dat.PCT_GREEN_TIME <- data[data_item == "PCT_GREEN_TIME" & year_record == year,]
+    dat.variable <- data[dataitem == variable & datayear == year,]
+    dat.SIGNAL_TYPE <- data[dataitem == "SIGNAL_TYPE" & datayear == year,]
+    dat.PCT_GREEN_TIME <- data[dataitem == "PCT_GREEN_TIME" & datayear == year,]
     
     coverage <- sqldf(
       "select 
-        A.route_id,A.begin_point,A.end_point,A.data_item,A.value_numeric as SIGNALTYPE , 
-        B.value_numeric as variable,B.expansion_factor 
+        A.routeid,A.beginpoint,A.endpoint,A.dataitem,A.valuenumeric as SIGNALTYPE , 
+        B.valuenumeric as variable,B.expansionfactor 
         from [dat.SIGNAL_TYPE] A 
         left join [dat.variable] B on 
-        A.route_id = B.route_id and (
-        ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
-        ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
+        A.routeid = B.routeid and (
+        ( A.beginpoint between B.beginpoint and B.endpoint and A.endpoint between B.beginpoint and B.endpoint ) or
+        ( B.beginpoint between A.beginpoint and A.endpoint and B.endpoint between A.beginpoint and A.endpoint )
         )")
     
     coverage <- sqldf(
       "select 
         A.*, 
-        B.value_numeric as PCTGREENTIME 
+        B.valuenumeric as PCTGREENTIME 
         from [coverage] A 
         left join [dat.PCT_GREEN_TIME] B on 
-        A.route_id = B.route_id and (
-        ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
-        ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
+        A.routeid = B.routeid and (
+        ( A.beginpoint between B.beginpoint and B.endpoint and A.endpoint between B.beginpoint and B.endpoint ) or
+        ( B.beginpoint between A.beginpoint and A.endpoint and B.endpoint between A.beginpoint and A.endpoint )
         ) ")
     
     
     setDT(coverage)
+    #browser()
     
-    coverage[, required :=  (!is.na(expansion_factor) & !is.na(PCTGREENTIME)) |(!is.na(expansion_factor) & SIGNALTYPE %in% c(1,2,3,4) )]
+    coverage[, required := (!is.na(expansionfactor) & SIGNALTYPE %in% c(1,2,3,4) )]
+    
+    # coverage[, required :=  (!is.na(expansionfactor) & !is.na(PCTGREENTIME)) |(!is.na(expansionfactor) & SIGNALTYPE %in% c(1,2,3,4) )]
     
   } else
     
@@ -680,24 +756,24 @@ calc_completeness <- function(data, year, variable){
   
   if(variable == "OWNERSHIP"){
     
-    dat.variable <- data[data_item == variable & year_record == year,]
-    dat.FACILITY_TYPE <- data[data_item == "FACILITY_TYPE" & year_record == year,]
-    dat.F_SYSTEM <- data[data_item == "F_SYSTEM" & year_record == year,]
-    dat.URBAN_ID <- data[data_item == "URBAN_ID" & year_record == year,]
-    dat.NHS <- data[data_item == "NHS" & year_record == year,]
+    dat.variable <- data[dataitem == variable & datayear == year,]
+    dat.FACILITY_TYPE <- data[dataitem == "FACILITY_TYPE" & datayear == year,]
+    dat.F_SYSTEM <- data[dataitem == "F_SYSTEM" & datayear == year,]
+    dat.URBAN_ID <- data[dataitem == "URBAN_ID" & datayear == year,]
+    dat.NHS <- data[dataitem == "NHS" & datayear == year,]
     
-    coverage = dat.FACILITY_TYPE[, .(route_id, begin_point, end_point, FACILITY_TYPE = value_numeric)] %>%
+    coverage = dat.FACILITY_TYPE[, .(routeid, beginpoint, endpoint, FACILITY_TYPE = valuenumeric)] %>%
       coverage_join(
-        dat.variable[, .(route_id, begin_point, end_point, variable = value_numeric)]) %>%
+        dat.variable[, .(routeid, beginpoint, endpoint, variable = valuenumeric)]) %>%
       coverage_join(
-        dat.F_SYSTEM[, .(route_id, begin_point, end_point, F_SYSTEM = value_numeric)]) %>%
+        dat.F_SYSTEM[, .(routeid, beginpoint, endpoint, F_SYSTEM = valuenumeric)]) %>%
       coverage_join(
-        dat.URBAN_ID[, .(route_id, begin_point, end_point, URBAN_ID = value_numeric)]) %>%
+        dat.URBAN_ID[, .(routeid, beginpoint, endpoint, URBAN_ID = valuenumeric)]) %>%
       coverage_join(
-        dat.NHS[, .(route_id, begin_point, end_point, NHS = value_numeric)]) 
+        dat.NHS[, .(routeid, beginpoint, endpoint, NHS = valuenumeric)]) 
     
-    coverage[, required := FACILITY_TYPE %in% c(1,2) & (F_SYSTEM %in% c(1,2,3,4,5)|((F_SYSTEM == 6) & (URBAN_ID<99999))|!is.na(NHS))]
-    
+    # coverage[, required := FACILITY_TYPE %in% c(1,2) & (F_SYSTEM %in% c(1,2,3,4,5)|((F_SYSTEM == 6) & (URBAN_ID<99999))|!is.na(NHS))]
+    coverage[, required := FACILITY_TYPE %in% c(1,2,5,6) & F_SYSTEM %in% 1:7]
     
   } else
     
@@ -706,16 +782,16 @@ calc_completeness <- function(data, year, variable){
   
   if(variable %in% c("PCT_GREEN_TIME")){
     
-    dat.variable <- data[data_item == variable & year_record == year,]
-    dat.URBAN_ID <- data[data_item == "URBAN_ID" & year_record == year,]
-    dat.NUMBER_SIGNALS <- data[data_item == "NUMBER_SIGNALS" & year_record == year,]
+    dat.variable <- data[dataitem == variable & datayear == year,]
+    dat.URBAN_ID <- data[dataitem == "URBAN_ID" & datayear == year,]
+    dat.NUMBER_SIGNALS <- data[dataitem == "NUMBER_SIGNALS" & datayear == year,]
     
-    coverage = dat.URBAN_ID[, .(route_id, begin_point, end_point, URBAN_ID = value_numeric)] %>%
+    coverage = dat.URBAN_ID[, .(routeid, beginpoint, endpoint, URBAN_ID = valuenumeric)] %>%
       coverage_join(
-        dat.variable[, .(route_id, begin_point, end_point, expansion_factor, variable = value_numeric)]) %>%
-      coverage_join(dat.NUMBER_SIGNALS[, .(route_id, begin_point, end_point, NUMBER_SIGNALS = value_numeric)])
+        dat.variable[, .(routeid, beginpoint, endpoint, expansionfactor, variable = valuenumeric)]) %>%
+      coverage_join(dat.NUMBER_SIGNALS[, .(routeid, beginpoint, endpoint, NUMBER_SIGNALS = valuenumeric)])
     
-    coverage[, required := ( URBAN_ID < 99999 & NUMBER_SIGNALS >= 1 & !is.na(expansion_factor) )]
+    coverage[, required := ( URBAN_ID < 99999 & NUMBER_SIGNALS >= 1 & !is.na(expansionfactor) )]
     
   } else
     
@@ -724,26 +800,27 @@ calc_completeness <- function(data, year, variable){
   
   if(variable %in% c("PCT_PASS_SIGHT")){
     
-    # dat.variable <- data[data_item == variable & year_record == year,]
-    # dat.URBAN_ID <- data[data_item == "URBAN_ID" & year_record == year,]
-    # dat.THROUGH_LANES <- data[data_item == "THROUGH_LANES" & year_record == year,]
-    # dat.MEDIAN_TYPE <- data[data_item == "MEDIAN_TYPE" & year_record == year,]
+    # dat.variable <- data[dataitem == variable & datayear == year,]
+    # dat.URBAN_ID <- data[dataitem == "URBAN_ID" & datayear == year,]
+    # dat.THROUGH_LANES <- data[dataitem == "THROUGH_LANES" & datayear == year,]
+    # dat.MEDIAN_TYPE <- data[dataitem == "MEDIAN_TYPE" & datayear == year,]
     
-    # coverage = dat.URBAN_ID[, .(route_id, begin_point, end_point, URBAN_ID = value_numeric)] %>%
+    # coverage = dat.URBAN_ID[, .(routeid, beginpoint, endpoint, URBAN_ID = valuenumeric)] %>%
     #   coverage_join(
-    #     dat.variable[, .(route_id, begin_point, end_point, expansion_factor, variable = value_numeric)]) %>%
+    #     dat.variable[, .(routeid, beginpoint, endpoint, expansionfactor, variable = valuenumeric)]) %>%
     #   coverage_join(
-    #     dat.THROUGH_LANES[, .(route_id, begin_point, end_point, THROUGH_LANES = value_numeric)]) %>%
+    #     dat.THROUGH_LANES[, .(routeid, beginpoint, endpoint, THROUGH_LANES = valuenumeric)]) %>%
     #   coverage_join(
-    #     dat.MEDIAN_TYPE[, .(route_id, begin_point, end_point, MEDIAN_TYPE = value_numeric)])
+    #     dat.MEDIAN_TYPE[, .(routeid, beginpoint, endpoint, MEDIAN_TYPE = valuenumeric)])
     
     coverage = get_coverage_data(
       data,
       year = year,
       variable = variable,
-      data_items = c('URBAN_ID', 'SURFACE_TYPE', 'THROUGH_LANES', 'MEDIAN_TYPE'))
+      dataitems = c('URBAN_ID', 'SURFACE_TYPE', 'THROUGH_LANES', 'MEDIAN_TYPE'))
     
-    coverage[, required := (!is.na(expansion_factor) & URBAN_ID == 99999 & THROUGH_LANES == 2 & MEDIAN_TYPE %in% c(1,2) & SURFACE_TYPE > 1)]
+    # coverage[, required := (!is.na(expansionfactor) & URBAN_ID == 99999 & THROUGH_LANES == 2 & MEDIAN_TYPE %in% c(1,2) & SURFACE_TYPE > 1)]
+    coverage[, required := (!is.na(expansionfactor) & URBAN_ID == 99999 & THROUGH_LANES == 2 & MEDIAN_TYPE %in% c(1,2) & SURFACE_TYPE > 1)]
     
     
   } else
@@ -752,14 +829,14 @@ calc_completeness <- function(data, year, variable){
   
   if(variable == "PEAK_PARKING"){
     
-    dat.variable <- data[data_item == variable & year_record == year,]
-    dat.URBAN_ID <- data[data_item == "URBAN_ID" & year_record == year,]
+    dat.variable <- data[dataitem == variable & datayear == year,]
+    dat.URBAN_ID <- data[dataitem == "URBAN_ID" & datayear == year,]
     
-    coverage = dat.URBAN_ID[, .(route_id, begin_point, end_point, URBAN_ID = value_numeric)] %>%
+    coverage = dat.URBAN_ID[, .(routeid, beginpoint, endpoint, URBAN_ID = valuenumeric)] %>%
       coverage_join(
-        dat.variable[, .(route_id, begin_point, end_point, expansion_factor, variable = value_numeric)])
+        dat.variable[, .(routeid, beginpoint, endpoint, expansionfactor, variable = valuenumeric)])
     
-    coverage[, required := URBAN_ID < 99999 & (!is.na(expansion_factor))]
+    coverage[, required := URBAN_ID < 99999 & (!is.na(expansionfactor))]
     
   } else
     
@@ -780,49 +857,68 @@ calc_completeness <- function(data, year, variable){
       data,
       year = year,
       variable = variable, 
-      data_items = c(
+      dataitems = c(
         'F_SYSTEM', 'URBAN_ID', 'FACILITY_TYPE', 'SURFACE_TYPE', 'NHS', 'PSR', 'IRI'
       ),
-      value_text = 'PSR')
+      valuetext = 'PSR')
     
     coverage[, required := (is.na(IRI) & FACILITY_TYPE %in% c(1, 2) & SURFACE_TYPE > 1) &
                (
-                 !is.na(expansion_factor) & (
+                 !is.na(expansionfactor) & (
                    ( (F_SYSTEM %in% c(4, 6) & URBAN_ID < 99999) | F_SYSTEM == 5 ) |
-                     ( (F_SYSTEM == 1 | NHS) & PSR == 'A' ) 
+                     ( (F_SYSTEM == 1 | !is.na(NHS)) & PSR == 'A' ) 
                  )
                )
     ]
     
-    # keep_cols <- c('route_id', 'begin_point', 'end_point', 'value_numeric')
-    # keep_cols2 = c(keep_cols, 'expansion_factor')
-    # dat.variable <- data[data_item == variable & year_record == year, ..keep_cols2]
-    # dat.FACILITY_TYPE <- data[data_item == "FACILITY_TYPE" & year_record == year, ..keep_cols]
-    # dat.F_SYSTEM <- data[data_item == "F_SYSTEM" & year_record == year, ..keep_cols]
-    # dat.URBAN_ID <- data[data_item == "URBAN_ID" & year_record == year, ..keep_cols]
-    # dat.IRI <- data[data_item == "IRI" & year_record == year & is.na(value_numeric), ..keep_cols]
-    # dat.SURFACE_TYPE <- data[data_item == "SURFACE_TYPE" & year_record == year & value_numeric > 1, ..keep_cols] 
+    # keep_cols <- c('routeid', 'beginpoint', 'endpoint', 'valuenumeric')
+    # keep_cols2 = c(keep_cols, 'expansionfactor')
+    # dat.variable <- data[dataitem == variable & datayear == year, ..keep_cols2]
+    # dat.FACILITY_TYPE <- data[dataitem == "FACILITY_TYPE" & datayear == year, ..keep_cols]
+    # dat.F_SYSTEM <- data[dataitem == "F_SYSTEM" & datayear == year, ..keep_cols]
+    # dat.URBAN_ID <- data[dataitem == "URBAN_ID" & datayear == year, ..keep_cols]
+    # dat.IRI <- data[dataitem == "IRI" & datayear == year & is.na(valuenumeric), ..keep_cols]
+    # dat.SURFACE_TYPE <- data[dataitem == "SURFACE_TYPE" & datayear == year & valuenumeric > 1, ..keep_cols] 
     
-    # setnames(dat.variable, 'value_numeric', 'variable')
-    # setnames(dat.FACILITY_TYPE, 'value_numeric', 'FACILITY_TYPE')
-    # setnames(dat.IRI, 'value_numeric', 'IRI')
-    # setnames(dat.SURFACE_TYPE, 'value_numeric', 'SURFACE_TYPE')
-    # setnames(dat.F_SYSTEM, 'value_numeric', 'F_SYSTEM')
-    # setnames(dat.URBAN_ID, 'value_numeric', 'URBAN_ID')
+    # setnames(dat.variable, 'valuenumeric', 'variable')
+    # setnames(dat.FACILITY_TYPE, 'valuenumeric', 'FACILITY_TYPE')
+    # setnames(dat.IRI, 'valuenumeric', 'IRI')
+    # setnames(dat.SURFACE_TYPE, 'valuenumeric', 'SURFACE_TYPE')
+    # setnames(dat.F_SYSTEM, 'valuenumeric', 'F_SYSTEM')
+    # setnames(dat.URBAN_ID, 'valuenumeric', 'URBAN_ID')
     
-    # coverage = dat.variable[!is.na(expansion_factor)] %>%
+    # coverage = dat.variable[!is.na(expansionfactor)] %>%
     #   coverage_join(dat.FACILITY_TYPE[!is.na(FACILITY_TYPE)]) %>%
     #   coverage_join(dat.IRI[is.na(IRI)]) %>%
     #   coverage_join(dat.SURFACE_TYPE) %>%
     #   coverage_join(dat.F_SYSTEM) %>%
     #   coverage_join(dat.URBAN_ID)
     
-    # coverage[, required := (is.na(IRI) & !is.na(expansion_factor) & SURFACE_TYPE > 1 & 
+    # coverage[, required := (is.na(IRI) & !is.na(expansionfactor) & SURFACE_TYPE > 1 & 
     #            ((F_SYSTEM %in% c(4, 5, 6) & URBAN_ID < 99999 & FACILITY_TYPE %in% c(1, 2)) |
     #               (F_SYSTEM == 5 & FACILITY_TYPE %in% c(1, 2) & URBAN_ID == 99999))]
     
   } else
     
+    if(variable %in% c("ROUTE_NAME")){
+      
+      # ROUTE_NAME must exist where (F_SYSTEM in (1;2;3;4) or NHS) and FACILITY_TYPE (1;2)
+      
+      coverage = get_coverage_data(
+        data,
+        year = year,
+        variable = variable, 
+        dataitems = c(
+          'F_SYSTEM', 'FACILITY_TYPE', 'NHS'
+        ),
+        valuetext = 'PSR')
+      
+      coverage[,
+               required := ((F_SYSTEM %in% c(1,2,3,4) | !is.na(NHS)) & FACILITY_TYPE %in% 1:2 )]
+      
+      
+    } else 
+      
     
     # route_number ------------------------------------------------------------
   
@@ -832,35 +928,35 @@ calc_completeness <- function(data, year, variable){
     # (F_SYSTEM in (1,2,3,4) or NHS) and FACILITY_TYPE (1,2) and ROUTE_SIGNING in (2,3,4,5,6,7,8,9)  OR
     # F_SYSTEM=1 AND FACILITY_TYPE=6 AND DIR_THROUGH_LANES > 0 AND (IRI IS NOT NULL OR PSR IS NOT NULL)
     
-    dat.variable <- data[data_item == variable & year_record == year,]
-    dat.variable[, value_text := as.character(value_text)]
+    dat.variable <- data[dataitem == variable & datayear == year,]
+    dat.variable[, valuetext := as.character(valuetext)]
     
-    dat.FACILITY_TYPE <- data[data_item == "FACILITY_TYPE" & year_record == year,]
-    dat.F_SYSTEM <- data[data_item == "F_SYSTEM" & year_record == year,]
-    dat.ROUTE_SIGNING <- data[data_item == "ROUTE_SIGNING" & year_record == year,]
-    dat.DIR_THROUGH_LANES = data[data_item == 'DIR_THROUGH_LANES' & year_record == year, ]
-    dat.NHS <- data[data_item == "NHS" & year_record == year,]
-    dat.IRI <- data[data_item == 'IRI' & year_record == year,]
-    dat.PSR <- data[data_item == 'PSR' & year_record == year,]
+    dat.FACILITY_TYPE <- data[dataitem == "FACILITY_TYPE" & datayear == year,]
+    dat.F_SYSTEM <- data[dataitem == "F_SYSTEM" & datayear == year,]
+    dat.ROUTE_SIGNING <- data[dataitem == "ROUTE_SIGNING" & datayear == year,]
+    dat.DIR_THROUGH_LANES = data[dataitem == 'DIR_THROUGH_LANES' & datayear == year, ]
+    dat.NHS <- data[dataitem == "NHS" & datayear == year,]
+    dat.IRI <- data[dataitem == 'IRI' & datayear == year,]
+    dat.PSR <- data[dataitem == 'PSR' & datayear == year,]
     
     # NOTE: coalesce used here
     
-    coverage = dat.FACILITY_TYPE[, .(route_id, begin_point, end_point, expansion_factor, FACILITY_TYPE = value_numeric)] %>%
+    coverage = dat.FACILITY_TYPE[, .(routeid, beginpoint, endpoint, expansionfactor, FACILITY_TYPE = valuenumeric)] %>%
       coverage_join(
-        dat.variable[, .(route_id, begin_point, end_point, expansion_factor,
-                         variable = fcoalesce(as.character(value_text), as.character(value_numeric)))]) %>%
+        dat.variable[, .(routeid, beginpoint, endpoint, expansionfactor,
+                         variable = fcoalesce(as.character(valuetext), as.character(valuenumeric)))]) %>%
       coverage_join(
-        dat.F_SYSTEM[, .(route_id, begin_point, end_point, F_SYSTEM = value_numeric)]) %>%
+        dat.F_SYSTEM[, .(routeid, beginpoint, endpoint, F_SYSTEM = valuenumeric)]) %>%
       coverage_join(
-        dat.ROUTE_SIGNING[, .(route_id, begin_point, end_point, ROUTE_SIGNING = value_numeric)]) %>%
+        dat.ROUTE_SIGNING[, .(routeid, beginpoint, endpoint, ROUTE_SIGNING = valuenumeric)]) %>%
       coverage_join(
-        dat.DIR_THROUGH_LANES[, .(route_id, begin_point, end_point, DIR_THROUGH_LANES = value_numeric)]) %>%
+        dat.DIR_THROUGH_LANES[, .(routeid, beginpoint, endpoint, DIR_THROUGH_LANES = valuenumeric)]) %>%
       coverage_join(
-        dat.NHS[, .(route_id, begin_point, end_point, NHS = value_numeric)])  %>%
+        dat.NHS[, .(routeid, beginpoint, endpoint, NHS = valuenumeric)])  %>%
       coverage_join(
-        dat.PSR[, .(route_id, begin_point, end_point, IRI = value_numeric)]) %>%
+        dat.PSR[, .(routeid, beginpoint, endpoint, IRI = valuenumeric)]) %>%
       coverage_join(
-        dat.IRI[, .(route_id, begin_point, end_point, PSR = value_numeric)])
+        dat.IRI[, .(routeid, beginpoint, endpoint, PSR = valuenumeric)])
     
     
     coverage[,
@@ -874,18 +970,18 @@ calc_completeness <- function(data, year, variable){
   
   if(variable %in% c("ROUTE_SIGNING","ROUTE_QUALIFIER")){
     
-    dat.variable <- data[data_item == variable & year_record == year,]
-    dat.FACILITY_TYPE <- data[data_item == "FACILITY_TYPE" & year_record == year,]
-    dat.F_SYSTEM <- data[data_item == "F_SYSTEM" & year_record == year,]
-    dat.NHS <- data[data_item == "NHS" & year_record == year,]
+    dat.variable <- data[dataitem == variable & datayear == year,]
+    dat.FACILITY_TYPE <- data[dataitem == "FACILITY_TYPE" & datayear == year,]
+    dat.F_SYSTEM <- data[dataitem == "F_SYSTEM" & datayear == year,]
+    dat.NHS <- data[dataitem == "NHS" & datayear == year,]
     
-    coverage = dat.FACILITY_TYPE[, .(route_id, begin_point, end_point, FACILITY_TYPE = value_numeric)] %>%
+    coverage = dat.FACILITY_TYPE[, .(routeid, beginpoint, endpoint, FACILITY_TYPE = valuenumeric)] %>%
       coverage_join(
-        dat.variable[, .(route_id, begin_point, end_point, variable = value_numeric)]) %>%
+        dat.variable[, .(routeid, beginpoint, endpoint, variable = valuenumeric)]) %>%
       coverage_join(
-        dat.F_SYSTEM[, .(route_id, begin_point, end_point, F_SYSTEM = value_numeric)]) %>%
+        dat.F_SYSTEM[, .(routeid, beginpoint, endpoint, F_SYSTEM = valuenumeric)]) %>%
       coverage_join(
-        dat.NHS[, .(route_id, begin_point, end_point, NHS = value_numeric)])
+        dat.NHS[, .(routeid, beginpoint, endpoint, NHS = valuenumeric)])
     
     coverage[, required := FACILITY_TYPE %in% c(1,2) & (F_SYSTEM %in% c(1,2,3,4)|!is.na(NHS))]
     
@@ -897,13 +993,13 @@ calc_completeness <- function(data, year, variable){
   
   if(variable %in% c("RUTTING")){
     
-    # dat.variable <- data[data_item == variable & year_record == year,]
-    # dat.SURFACE_TYPE <- data[data_item == "SURFACE_TYPE" & year_record == year,] 
+    # dat.variable <- data[dataitem == variable & datayear == year,]
+    # dat.SURFACE_TYPE <- data[dataitem == "SURFACE_TYPE" & datayear == year,] 
     
-    # coverage = dat.SURFACE_TYPE[, .(route_id, begin_point, end_point, SURFACE_TYPE = value_numeric)] %>%
-    #   coverage_join(dat.variable[, .(route_id, begin_point, end_point, variable = value_numeric, expansion_factor)])
+    # coverage = dat.SURFACE_TYPE[, .(routeid, beginpoint, endpoint, SURFACE_TYPE = valuenumeric)] %>%
+    #   coverage_join(dat.variable[, .(routeid, beginpoint, endpoint, variable = valuenumeric, expansionfactor)])
     
-    # coverage[, required := !is.na(expansion_factor) & SURFACE_TYPE%in%c(2,6,7,8)]
+    # coverage[, required := !is.na(expansionfactor) & SURFACE_TYPE%in%c(2,6,7,8)]
     
     # ----------------
     
@@ -916,15 +1012,21 @@ calc_completeness <- function(data, year, variable){
       data,
       year = year,
       variable = variable,
-      data_items = c(
+      dataitems = c(
         'F_SYSTEM', 'SURFACE_TYPE', 'FACILITY_TYPE', 'DIR_THROUGH_LANES', 'NHS', 'IRI', 'PSR'))
     
     coverage[, required := 
                (SURFACE_TYPE %in% c(2,6, 7, 8)) & (
-                 (FACILITY_TYPE %in% c(1, 2) & (F_SYSTEM == 1 | NHS | !is.na(expansion_factor))) |
+                 (FACILITY_TYPE %in% c(1, 2) & (F_SYSTEM == 1 | !is.na(NHS) | !is.na(expansionfactor))) |
                    (DIR_THROUGH_LANES > 0 & ( !is.na(IRI) | !is.na(PSR) ))
                )
     ]
+    # coverage[, required := 
+    #            (SURFACE_TYPE %in% c(2,6, 7, 8)) & (
+    #              (FACILITY_TYPE %in% c(1, 2) & (F_SYSTEM == 1 | NHS | !is.na(expansionfactor))) |
+    #                (DIR_THROUGH_LANES > 0 & ( !is.na(IRI) | !is.na(PSR) ))
+    #            )
+    # ]
     
   } else
     
@@ -933,17 +1035,17 @@ calc_completeness <- function(data, year, variable){
   
   if(variable == "SHOULDER_WIDTH_L"){
     
-    dat.variable <- data[data_item == variable & year_record == year,]
-    dat.SHOULDER_TYPE <- data[data_item == "SHOULDER_TYPE" & year_record == year,]
-    dat.MEDIAN_TYPE <- data[data_item == "MEDIAN_TYPE" & year_record == year,]
+    dat.variable <- data[dataitem == variable & datayear == year,]
+    dat.SHOULDER_TYPE <- data[dataitem == "SHOULDER_TYPE" & datayear == year,]
+    dat.MEDIAN_TYPE <- data[dataitem == "MEDIAN_TYPE" & datayear == year,]
     
     coverage = coverage_join(
-      dat.SHOULDER_TYPE[, .(route_id, begin_point, end_point, SHOULDER_TYPE = value_numeric)],
-      dat.variable[, .(route_id, begin_point, end_point, variable = value_numeric, expansion_factor)]) %>%
+      dat.SHOULDER_TYPE[, .(routeid, beginpoint, endpoint, SHOULDER_TYPE = valuenumeric)],
+      dat.variable[, .(routeid, beginpoint, endpoint, variable = valuenumeric, expansionfactor)]) %>%
       coverage_join(
-        dat.MEDIAN_TYPE[, .(route_id, begin_point, end_point, MEDIAN_TYPE = value_numeric)])
+        dat.MEDIAN_TYPE[, .(routeid, beginpoint, endpoint, MEDIAN_TYPE = valuenumeric)])
     
-    coverage[, required := SHOULDER_TYPE %in% 2:6 & MEDIAN_TYPE %in% 2:7 & (!is.na(expansion_factor))]
+    coverage[, required := SHOULDER_TYPE %in% 2:6 & MEDIAN_TYPE %in% 2:7 & (!is.na(expansionfactor))]
     
     
   } else
@@ -952,13 +1054,13 @@ calc_completeness <- function(data, year, variable){
   
   if(variable == "SHOULDER_WIDTH_R"){
     
-    dat.variable <- data[data_item == variable & year_record == year,]
-    dat.SHOULDER_TYPE <- data[data_item == "SHOULDER_TYPE" & year_record == year,]
+    dat.variable <- data[dataitem == variable & datayear == year,]
+    dat.SHOULDER_TYPE <- data[dataitem == "SHOULDER_TYPE" & datayear == year,]
     
-    coverage = dat.SHOULDER_TYPE[, .(route_id, begin_point, end_point, SHOULDER_TYPE = value_numeric)] %>%
-      coverage_join(dat.variable[, .(route_id, begin_point, end_point, variable = value_numeric, expansion_factor)])
+    coverage = dat.SHOULDER_TYPE[, .(routeid, beginpoint, endpoint, SHOULDER_TYPE = valuenumeric)] %>%
+      coverage_join(dat.variable[, .(routeid, beginpoint, endpoint, variable = valuenumeric, expansionfactor)])
     
-    coverage[, required := SHOULDER_TYPE %in% 2:6 & (!is.na(expansion_factor))]
+    coverage[, required := SHOULDER_TYPE %in% 2:6 & (!is.na(expansionfactor))]
     
   } else
     
@@ -966,24 +1068,24 @@ calc_completeness <- function(data, year, variable){
   
   if(variable %in% c("SIGNAL_TYPE")){
     
-    # dat.variable <- data[data_item == variable & year_record == year,]
-    # dat.URBAN_ID <- data[data_item == "URBAN_ID" & year_record == year,]
-    # dat.ACCESS_CONTROL <- data[data_item == "ACCESS_CONTROL" & year_record == year,]
+    # dat.variable <- data[dataitem == variable & datayear == year,]
+    # dat.URBAN_ID <- data[dataitem == "URBAN_ID" & datayear == year,]
+    # dat.ACCESS_CONTROL <- data[dataitem == "ACCESS_CONTROL" & datayear == year,]
     
-    # coverage = dat.URBAN_ID[, .(route_id, begin_point, end_point, URBAN_ID = value_numeric)] %>%
-    #   coverage_join(dat.variable[, .(route_id, begin_point, end_point, variable = value_numeric, expansion_factor)]) %>%
-    #   coverage_join(dat.ACCESS_CONTROL[, .(route_id, begin_point, end_point, ACCESS_CONTROL = value_numeric)])
+    # coverage = dat.URBAN_ID[, .(routeid, beginpoint, endpoint, URBAN_ID = valuenumeric)] %>%
+    #   coverage_join(dat.variable[, .(routeid, beginpoint, endpoint, variable = valuenumeric, expansionfactor)]) %>%
+    #   coverage_join(dat.ACCESS_CONTROL[, .(routeid, beginpoint, endpoint, ACCESS_CONTROL = valuenumeric)])
     
-    # coverage[, required :=  (URBAN_ID != 99999 & ACCESS_CONTROL == 1 & !is.na(expansion_factor))]
+    # coverage[, required :=  (URBAN_ID != 99999 & ACCESS_CONTROL == 1 & !is.na(expansionfactor))]
     
     coverage = get_coverage_data(
       data,
       year = year,
       variable = variable,
-      data_items = c('URBAN_ID', 'NUMBER_SIGNALS')
+      dataitems = c('URBAN_ID', 'NUMBER_SIGNALS')
     )
     
-    coverage[, required := !is.na(expansion_factor) & URBAN_ID != 99999 & NUMBER_SIGNALS >= 1]
+    coverage[, required := !is.na(expansionfactor) & URBAN_ID != 99999 & NUMBER_SIGNALS >= 1]
     
   } else 
     
@@ -991,18 +1093,20 @@ calc_completeness <- function(data, year, variable){
   
   if ( variable == 'SPEED_LIMIT' ){
     
+    # HPMS9 -- must exist on NHS as well as Samples
+    
     dat.variable = data[
-      data_item == variable & year_record == year, 
-      .(route_id, begin_point, end_point, variable = value_numeric, expansion_factor)]
+      dataitem == variable & datayear == year, 
+      .(routeid, beginpoint, endpoint, variable = valuenumeric, expansionfactor)]
     
     dat.NHS = data[
-      data_item == 'NHS' & year_record == year, 
-      .(route_id, begin_point, end_point, NHS = value_numeric)]
+      dataitem == 'NHS' & datayear == year, 
+      .(routeid, beginpoint, endpoint, NHS = valuenumeric)]
     
     coverage = dat.variable %>% 
       coverage_join(dat.NHS)
     
-    coverage[, required := !is.na(NHS) & !is.na(expansion_factor)]
+    coverage[, required := !is.na(NHS) | !is.na(expansionfactor)]
     
     
   } else 
@@ -1015,11 +1119,11 @@ calc_completeness <- function(data, year, variable){
       data,
       year = year,
       variable = variable,
-      data_items = c(
+      dataitems = c(
         'F_SYSTEM', 'FACILITY_TYPE', 'NHS', 'DIR_THROUGH_LANES', 'IRI', 'PSR'))
     
     coverage[, required := 
-               ( FACILITY_TYPE %in% c(1, 2) & (F_SYSTEM == 1 | !is.na(NHS) | !is.na(expansion_factor)) ) |
+               ( FACILITY_TYPE %in% c(1, 2) & (F_SYSTEM == 1 | !is.na(NHS) | !is.na(expansionfactor)) ) |
                ( DIR_THROUGH_LANES > 0 & ( !is.na(IRI) | !is.na(PSR) ) )
     ]
     
@@ -1034,15 +1138,15 @@ calc_completeness <- function(data, year, variable){
       data,
       year = year,
       variable = variable,
-      data_items = c('F_SYSTEM', 'URBAN_ID'))
+      dataitems = c('F_SYSTEM', 'URBAN_ID'))
     
-    dat.variable <- data[data_item == variable & year_record == year,]
-    dat.URBAN_ID <- data[data_item == "URBAN_ID" & year_record == year,] 
+    dat.variable <- data[dataitem == variable & datayear == year,]
+    dat.URBAN_ID <- data[dataitem == "URBAN_ID" & datayear == year,] 
     
-    coverage2 = dat.URBAN_ID[, .(route_id, begin_point, end_point, URBAN_ID = value_numeric)] %>%
-      coverage_join(dat.variable[, .(route_id, begin_point, end_point, variable = value_numeric, expansion_factor)])
+    coverage2 = dat.URBAN_ID[, .(routeid, beginpoint, endpoint, URBAN_ID = valuenumeric)] %>%
+      coverage_join(dat.variable[, .(routeid, beginpoint, endpoint, variable = valuenumeric, expansionfactor)])
     
-    coverage[, required := !is.na(expansion_factor) & URBAN_ID == 99999 & F_SYSTEM %in% 1:5]
+    coverage[, required := !is.na(expansionfactor) & URBAN_ID == 99999 & F_SYSTEM %in% 1:5]
     
   } else
     
@@ -1051,23 +1155,23 @@ calc_completeness <- function(data, year, variable){
   
   if(variable %in% c("THICKNESS_FLEXIBLE")){
     
-    dat.variable <- data[data_item == variable & year_record == year,]
-    dat.SURFACE_TYPE <- data[data_item == "SURFACE_TYPE" & year_record == year,] 
+    dat.variable <- data[dataitem == variable & datayear == year,]
+    dat.SURFACE_TYPE <- data[dataitem == "SURFACE_TYPE" & datayear == year,] 
     
     coverage <- sqldf(
       "select 
-        A.route_id,A.begin_point,A.end_point,A.data_item,A.value_numeric as SURFACE_TYPE, 
-        B.value_numeric as variable,B.expansion_factor 
+        A.routeid,A.beginpoint,A.endpoint,A.dataitem,A.valuenumeric as SURFACE_TYPE, 
+        B.valuenumeric as variable,B.expansionfactor 
         from [dat.SURFACE_TYPE] A 
         left join [dat.variable] B on 
-        A.route_id = B.route_id and (
-        ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
-        ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
+        A.routeid = B.routeid and (
+        ( A.beginpoint between B.beginpoint and B.endpoint and A.endpoint between B.beginpoint and B.endpoint ) or
+        ( B.beginpoint between A.beginpoint and A.endpoint and B.endpoint between A.beginpoint and A.endpoint )
         )")
     
     setDT(coverage)
     
-    coverage[, required := !is.na(expansion_factor) & SURFACE_TYPE %in% c(2,6,7,8)]
+    coverage[, required := !is.na(expansionfactor) & SURFACE_TYPE %in% c(2,6,7,8)]
     
   } else
     
@@ -1076,23 +1180,43 @@ calc_completeness <- function(data, year, variable){
   
   if(variable %in% c("THICKNESS_RIGID")){
     
-    dat.variable <- data[data_item == variable & year_record == year,]
-    dat.SURFACE_TYPE <- data[data_item == "SURFACE_TYPE" & year_record == year,] 
+    dat.variable <- data[dataitem == variable & datayear == year,]
+    dat.SURFACE_TYPE <- data[dataitem == "SURFACE_TYPE" & datayear == year,] 
     
     coverage <- sqldf(
       "select 
-        A.route_id,A.begin_point,A.end_point,A.data_item,A.value_numeric as SURFACE_TYPE, 
-        B.value_numeric as variable,B.expansion_factor 
+        A.routeid,A.beginpoint,A.endpoint,A.dataitem,A.valuenumeric as SURFACE_TYPE, 
+        B.valuenumeric as variable,B.expansionfactor 
         from [dat.SURFACE_TYPE] A 
         left join [dat.variable] B on 
-        A.route_id = B.route_id and (
-        ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
-        ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
+        A.routeid = B.routeid and (
+        ( A.beginpoint between B.beginpoint and B.endpoint and A.endpoint between B.beginpoint and B.endpoint ) or
+        ( B.beginpoint between A.beginpoint and A.endpoint and B.endpoint between A.beginpoint and A.endpoint )
         )")
     
     setDT(coverage)
     
-    coverage[, required := !is.na(expansion_factor) & SURFACE_TYPE %in% 3:10]
+    coverage[, required := !is.na(expansionfactor) & SURFACE_TYPE %in% 3:10]
+    
+  } else 
+    
+    
+    # travel time code ------------------------------------------------------
+  if(variable %like% 'TRAVEL_TIME_CODE'){
+    #browser()
+    
+    coverage = get_coverage_data(
+      data,
+      year = year,
+      variable = variable,
+      dataitems = c('NHS'))
+    
+    coverage[, required := !is.na(variable) & !is.na(NHS)]
+    
+    # score = data[dataitem == variable & datayear == year & !is.na(expansionfactor), .N] /
+    #   data[dataitem == variable & datayear == year, .N]
+    
+    return(score)
     
   } else 
     
@@ -1100,30 +1224,30 @@ calc_completeness <- function(data, year, variable){
   
   if(variable == "TOLL_ID"){
     
-    dat.variable <- data[data_item == variable & year_record == year,]
+    dat.variable <- data[dataitem == variable & datayear == year,]
     
     coverage <- dat.variable
     
-    coverage[, required := !is.na(variable)]
+    coverage[, required := FALSE] # !is.na(variable)]
     
   } else # end TOLL_ID
     
     # toll_type ---------------------------------------------------------------
   
   if(variable == "TOLL_TYPE"){
-    
-    dat.variable <- data[data_item == variable & year_record == year,]
-    dat.TOLL_ID <- data[data_item == "TOLL_ID" & year_record == year,]
+    browser()
+    dat.variable <- data[dataitem == variable & datayear == year,]
+    dat.TOLL_ID <- data[dataitem == "TOLL_ID" & datayear == year,]
     
     coverage <- sqldf(
       "select 
-        A.route_id,A.begin_point,A.end_point,A.data_item,A.value_numeric as TOLL_ID, 
-        B.value_numeric as variable 
+        A.routeid,A.beginpoint,A.endpoint,A.dataitem,A.valuenumeric as TOLL_ID, 
+        B.valuenumeric as variable 
         from [dat.TOLL_ID] A 
         left join [dat.variable] B on 
-        A.route_id = B.route_id and (
-        ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
-        ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
+        A.routeid = B.routeid and (
+        ( A.beginpoint between B.beginpoint and B.endpoint and A.endpoint between B.beginpoint and B.endpoint ) or
+        ( B.beginpoint between A.beginpoint and A.endpoint and B.endpoint between A.beginpoint and A.endpoint )
         )")
     
     setDT(coverage)
@@ -1134,16 +1258,16 @@ calc_completeness <- function(data, year, variable){
     # turn_lanes_r, turn_lanes_l ----------------------------------------------
   
   if(variable %in% c("TURN_LANES_R","TURN_LANES_L")){
+    #browser()
+    dat.variable <- data[dataitem == variable & datayear == year,]
+    dat.URBAN_ID <- data[dataitem == "URBAN_ID" & datayear == year,]
+    dat.ACCESS_CONTROL <- data[dataitem == "ACCESS_CONTROL" & datayear == year,]
     
-    dat.variable <- data[data_item == variable & year_record == year,]
-    dat.URBAN_ID <- data[data_item == "URBAN_ID" & year_record == year,]
-    dat.ACCESS_CONTROL <- data[data_item == "ACCESS_CONTROL" & year_record == year,]
+    coverage = dat.URBAN_ID[, .(routeid, beginpoint, endpoint, URBAN_ID = valuenumeric)] %>%
+      coverage_join(dat.variable[, .(routeid, beginpoint, endpoint, variable = valuenumeric, expansionfactor)]) %>%
+      coverage_join(dat.ACCESS_CONTROL[, .(routeid, beginpoint, endpoint, ACCESS_CONTROL = valuenumeric)])
     
-    coverage = dat.URBAN_ID[, .(route_id, begin_point, end_point, URBAN_ID = value_numeric)] %>%
-      coverage_join(dat.variable[, .(route_id, begin_point, end_point, variable = value_numeric, expansion_factor)]) %>%
-      coverage_join(dat.ACCESS_CONTROL[, .(route_id, begin_point, end_point, ACCESS_CONTROL = value_numeric)])
-    
-    coverage[, required := URBAN_ID < 99999 & ACCESS_CONTROL > 1 & (!is.na(expansion_factor))]
+    coverage[, required := URBAN_ID < 99999 & ACCESS_CONTROL > 1 & (!is.na(expansionfactor))]
     
   } else
     
@@ -1152,35 +1276,19 @@ calc_completeness <- function(data, year, variable){
   
   if(variable == "URBAN_ID"){
     
-    # dat.variable <- data[data_item == variable & year_record == year,]
-    # dat.DIR_THROUGH_LANES = data[data_item == 'DIR_THROUGH_LANES' & year_record == year, ]
-    # dat.FACILITY_TYPE <- data[data_item == "FACILITY_TYPE" & year_record == year,]
-    # dat.F_SYSTEM <- data[data_item == "F_SYSTEM" & year_record == year,]
-    # dat.IRI <- data[data_item == 'IRI' & year_record == year,]
-    # dat.PSR <- data[data_item == 'PSR' & year_record == year,]
-    # 
-    # coverage = dat.FACILITY_TYPE[, .(route_id, begin_point, end_point, FACILITY_TYPE = value_numeric)] %>%
-    #   coverage_join(
-    #     dat.variable[, .(route_id, begin_point, end_point, variable = value_numeric)]) %>%
-    #   coverage_join(
-    #     dat.F_SYSTEM[, .(route_id, begin_point, end_point, F_SYSTEM = value_numeric)]) %>%
-    #   coverage_join(
-    #     dat.DIR_THROUGH_LANES[, .(route_id, begin_point, end_point, DIR_THROUGH_LANES = value_numeric)]) %>%
-    #   coverage_join(
-    #     dat.PSR[, .(route_id, begin_point, end_point, IRI = value_numeric)]) %>%
-    #   coverage_join(
-    #     dat.IRI[, .(route_id, begin_point, end_point, PSR = value_numeric)])
-    
     coverage = get_coverage_data(
       data = data,
       year = year,
       variable = variable,
-      data_items = c('F_SYSTEM', 'FACILITY_TYPE', 'DIR_THROUGH_LANES', 'IRI', 'PSR')
+      dataitems = c('F_SYSTEM', 'FACILITY_TYPE', 'DIR_THROUGH_LANES', 'IRI', 'PSR')
     )
     
     coverage[, required :=
-               (FACILITY_TYPE %in% c(1,2,4) & (F_SYSTEM %in% 1:7)) |
+               (FACILITY_TYPE %in% c(1,2,4) & (F_SYSTEM %in% 1:5)) |
                (FACILITY_TYPE == 6 & DIR_THROUGH_LANES > 0 & F_SYSTEM == 1 & (!is.na(IRI) | !is.na(PSR)))]
+    # coverage[, required :=
+    #            (FACILITY_TYPE %in% c(1,2,4) & (F_SYSTEM %in% 1:7)) |
+    #            (FACILITY_TYPE == 6 & DIR_THROUGH_LANES > 0 & F_SYSTEM == 1 & (!is.na(IRI) | !is.na(PSR)))]
     
     
   } else
@@ -1189,14 +1297,15 @@ calc_completeness <- function(data, year, variable){
   
   if(variable %in% c("YEAR_LAST_CONSTRUCTION")){
     
-    dat.variable <- data[data_item == variable & year_record == year,]
-    dat.SURFACE_TYPE <- data[data_item == "SURFACE_TYPE" & year_record == year,] 
+    dat.variable <- data[dataitem == variable & datayear == year,]
+    dat.SURFACE_TYPE <- data[dataitem == "SURFACE_TYPE" & datayear == year,] 
     
-    coverage = dat.SURFACE_TYPE[, .(route_id, begin_point, end_point, SURFACE_TYPE = value_numeric)] %>%
+    coverage = dat.SURFACE_TYPE[, .(routeid, beginpoint, endpoint, SURFACE_TYPE = valuenumeric)] %>%
       coverage_join(
-        dat.variable[, .(route_id, begin_point, end_point, expansion_factor, variable = value_date)])
+        dat.variable[, .(routeid, beginpoint, endpoint, expansionfactor, variable = ifelse(datayear <= 2020, begindate,valuedate))])
+        # dat.variable[, .(routeid, beginpoint, endpoint, expansionfactor, variable = valuedate)])
     
-    coverage[, required := !is.na(expansion_factor) & SURFACE_TYPE %in% 2:10]
+    coverage[, required := !is.na(expansionfactor) & SURFACE_TYPE %in% 2:10]
     
     
   } else
@@ -1204,18 +1313,26 @@ calc_completeness <- function(data, year, variable){
     # Year_last_improv ---------------------------------------------------------
   
   if(variable %in% c("YEAR_LAST_IMPROVEMENT")){
+  # browser()
+    dat.variable <- data[dataitem == variable & datayear == year,]
+    dat.SURFACE_TYPE <- data[dataitem == "SURFACE_TYPE" & datayear == year,]
+    dat.YEAR_LAST_CONSTRUCTION <- data[dataitem == "YEAR_LAST_CONSTRUCTION" & datayear == year,]
     
-    dat.variable <- data[data_item == variable & year_record == year,]
-    dat.SURFACE_TYPE <- data[data_item == "SURFACE_TYPE" & year_record == year,]
-    dat.YEAR_LAST_CONSTRUCTION <- data[data_item == "YEAR_LAST_CONSTRUCTION" & year_record == year,]
+    coverage = dat.SURFACE_TYPE[, .(routeid, beginpoint, endpoint, SURFACE_TYPE = valuenumeric)] %>%
+      coverage_join(dat.variable[, .(routeid, beginpoint, endpoint, variable = valuedate, expansionfactor, begindate)]) %>%
+                                     # variable = ifelse( datayear <= 2020, begindate, valuedate), expansionfactor)]) %>%
+      # coverage_join(dat.variable[, .(routeid, beginpoint, endpoint, variable = valuedate, expansionfactor)]) %>%
+      coverage_join(dat.YEAR_LAST_CONSTRUCTION[, .(routeid, beginpoint, endpoint, YEAR_LAST_CONSTRUCTION = 
+                                                     valuedate)])
+                                                     #ifelse( datayear <= 2020, begindate, valuedate))])
+      # coverage_join(dat.variable[, .(routeid, beginpoint, endpoint, variable = valuedate, expansionfactor)]) %>%
+      # coverage_join(dat.YEAR_LAST_CONSTRUCTION[, .(routeid, beginpoint, endpoint, YEAR_LAST_CONSTRUCTION = valuedate)])
     
-    coverage = dat.SURFACE_TYPE[, .(route_id, begin_point, end_point, SURFACE_TYPE = value_numeric)] %>%
-      coverage_join(dat.variable[, .(route_id, begin_point, end_point, variable = value_date, expansion_factor)]) %>%
-      coverage_join(dat.YEAR_LAST_CONSTRUCTION[, .(route_id, begin_point, end_point, YEAR_LAST_CONSTRUCTION = value_date)])
-    
-    coverage[, required := (!is.na(expansion_factor) & SURFACE_TYPE %in% 2:10) ]
+    coverage[, required := (!is.na(expansionfactor) & SURFACE_TYPE %in% 2:10) |
+                            (YEAR_LAST_CONSTRUCTION < year(begindate) - 20)]
     
   }
+  
   
   # Score calculation ========================================================= 
   

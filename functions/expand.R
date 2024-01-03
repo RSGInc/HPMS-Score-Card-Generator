@@ -4,15 +4,15 @@ expand = function(data,increment){
   
   if (nrow(data) == 0) return(data[, num_sections := vector(mode = 'numeric', length = 0)])
   
-  data[,begin_point:=round(begin_point+ 0.00001,nchar(1/increment)-1)] # forcing rounding to next highest integer
-  data[,  end_point:=round(end_point  + 0.00001,nchar(1/increment)-1)]
+  data[,beginpoint:=round(beginpoint+ 0.00001,nchar(1/increment)-1)] # forcing rounding to next highest integer
+  data[,  endpoint:=round(endpoint  + 0.00001,nchar(1/increment)-1)]
   
   # dividing up the num sections so we can recover the 
   # num sections later
-  data[,num_sections:=1/((end_point-begin_point)/increment)]
+  data[,num_sections:=1/((endpoint-beginpoint)/increment)]
   
   # how long do we have to make the faux road network
-  range = data[,.(start=min(begin_point),end=max(end_point))]
+  range = data[,.(start=min(beginpoint),end=max(endpoint))]
   
   route_network = data.table(end = range[,start]:(range[,end]*(1/increment))/(1/increment))
   route_network[,start:=end-increment]
@@ -23,10 +23,10 @@ expand = function(data,increment){
   route_network = route_network[start >= 0]
   
   data.expanded = data[route_network,
-                       on=.(begin_point <= start, end_point >= end),
+                       on=.(beginpoint <= start, endpoint >= end),
                        allow.cartesian=TRUE]
   
-  data.expanded = data.expanded[!is.na(route_id),]
+  data.expanded = data.expanded[!is.na(routeid),]
   
   return(data.expanded)
 }

@@ -1,0 +1,42 @@
+﻿.id,fhwa_rule,description_new
+2,,NA
+9,SJ-F-91,ValueDate <= BeginDate
+15,SJ-F-72,SPEED_LIMIT ValueNumeric must be divisible by 5; and < 90 OR = 999
+16,SJ-F-71,COUNTER_PEAK_LANES must be NULL if FACILITY_TYPE is 1
+17,SJ-T-03,AADT_SINGLE_UNIT + AADT_COMBINATION should be < (0.8*AADT)
+20,SJ-F-76,MEDIAN_WIDTH should be NULL if (FACILITY_TYPE ValueNumeric is = 1 or=  4; OR WHERE MEDIAN_TYPE ValueNumeric = 1
+22,SJ-F-75,Where MEDIAN_TYPE is in the range (2;3;4;5;6) THEN MEDIAN_WIDTH MUST BE > 0
+23,,NA
+39,SJ-T-13,DIR_FACTOR ValueNumeric must =100 where FACILITY_TYPE ValueNumeric = 1
+40,SJ-T-14,DIR_FACTOR ValueNumeric must be >50 and <=75 where FACILITY_TYPE ValueNumeric = 2
+41,SJ-T-15,Future AADT must be > AADT and < 4* AADT where ValueDate is Null; OR Future AADT must be < AADT * 0.2(ValueDate-BeginDate year)
+42,SJ-T-04,(AADT_SINGLE_UNIT x 0.01) < (AADT x (PCT_DH_SINGLE_UNIT/100)) < (AADT_SINGLE_UNIT x 0.5)Â 
+43,SJ-T-09,(AADT_COMBINATION x 0.01) < (AADT x (PCT_DH_COMBINATION/100)) < (AADT_COMBINATION x 0.5)Â 
+44,SJ-T-07,AADT_COMBINATION should be < (AADT*0.4)
+45,SJ-T-01,AADT_SINGLE_UNIT should be < (AADT*0.4)
+46.1,SJ-F-79,ValueDate Must Must = BeginDate Where Sample OR ValueText is Null AND F_SYSTEM >1 and NHS in (1;2;3;4;5;6;7;8;9)
+46.2,SJ-F-78,ValueDate Must Must = BeginDate Where Sample OR ValueText is Null AND F_SYSTEM >1 and NHS in (1;2;3;4;5;6;7;8;9)
+46.3,SJ-F-80,ValueDate Must Must = BeginDate Where Sample OR ValueText is Null AND F_SYSTEM >1 and NHS in (1;2;3;4;5;6;7;8;9)
+46.4,SJ-F-81,ValueDate Must Must >= (BeginDate – 1) Where Sample OR ValueText is Null AND F_SYSTEM >1 and NHS in (1;2;3;4;5;6;7;8;9)
+51,SJ-F-90,Where SURFACE_TYPE is in (3;4;5;9;10) CRACKING_PERCENT < 75
+53,SJ-F-69,THROUGH_LANES must be >1 WHERE FACILITY_TYPE = 2
+60,SJ-F-77,SHOULDER_WIDTH_L should be < Median_Width
+61.1,SJ-F-82c,ValueDate Must = BeginDate  Where ValueText is Null AND F_SYSTEM =1
+61.2,SJ-F-82d,ValueDate Must = BeginDate  Where ValueText is Null AND F_SYSTEM =1
+61.3,SJ-F-82b,ValueDate Must = BeginDate  Where ValueText is Null AND F_SYSTEM =1
+61.4,SJ-F-82a,ValueDate Must = BeginDate  Where ValueText is Null AND F_SYSTEM =1
+62,SJ-F-86,Where F_SYSTEM =1; and IRI is Null; PSR ValueNumeric Must be >0 and PSR ValueText must = A
+63,SJ-F-89,Where SURFACE_TYPE is in (2;6;7;8) CRACKING_PERCENT <= X based on LANE_WIDTH. Where X = Max % AC Cracking on AC Cracking Validation table.
+64.1,SJ-F-83c,ValueText Must Be In (A;B;C;D;E) Where ValueDate <> BeginDate and F_SYSTEM = 1 OR if ValueDate < BeginDate -1 on NHS
+64.2,SJ-F-83d,ValueText Must Be In (A;B;C;D;E) Where ValueDate <> BeginDate and F_SYSTEM = 1 OR if ValueDate < BeginDate -1 on NHS
+64.3,SJ-F-83b,ValueText Must Be In (A;B;C;D;E) Where ValueDate <> BeginDate and F_SYSTEM = 1 OR if ValueDate < BeginDate -1 on NHS
+64.4,SJ-F-83a,ValueText Must Be In (A;B;C;D;E) Where ValueDate <> BeginDate and F_SYSTEM = 1 OR if ValueDate < BeginDate -1 on NHS
+65,SJ-F-84,ValueDate Must Must >= BeginDate – 1 Where Sample OR F_SYSTEM >1 and NHS in (1;2;3;4;5;6;7;8;9)
+66,SJ-F-85,"ValueDate Must = BeginDate Where ValueText is """"A"""" AND F_SYSTEM =1 "
+129,,NA
+129,,NA
+129,,NA
+129,,NA
+129,,NA
+x,SJ-F-70,The sum of COUNTER_PEAK_LANES + PEAK_LANES must be >= THROUGH_LANES on Samples
+y,SJ-F-73,Where F_SYSTEM = 1 and URBAN_ID <> 99999; SIGNAL_TYPE must = 5

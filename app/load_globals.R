@@ -28,18 +28,6 @@ samples_table     <- 'Review_Sample_Sections'
 # summary_table     <- 'Section_Summaries'
 # poptable          <- "codes_urban"
 
-GetODBCConnection <- function() {
-
-  dsn = 'HPMS'
-  
-  if( exists('db_username') & exists('db_password') ) {
-    
-    return(odbcConnect(dsn, uid = db_username, pwd = db_password))
-  } else {
-    return(odbcConnect(dsn))
-  }
-}
-
 # this is the text included in the left side of the first page of the scorecard
 # carriage returns are necessary.
 title_text <- 
@@ -112,12 +100,11 @@ gF_SYSTEM_levels <- c("Interstate",
 gVariables       <- fread("resources/dat/data_elements.csv")
 gVariables <- gVariables[!is.na(Grouping) & Grouping != '']
 
-
 gCrossLabels     <- fread('resources/dat/cross_validation_labels.csv')
 gCrossLabels$Description <- str_replace(gCrossLabels$Description, '[(][0-9xy]*[)]$', '')
 gExtentDetail    <- fread('resources/dat/extent_detail.csv')
 
-gReqs <- fread("resources/dat/data_items_required_by_state.csv")
+gReqs <- fread("resources/dat/dataitems_required_by_state.csv")
 gReqs <- gReqs[Name %in% gVariables[, Name]]
 
 gScoreWeights <- fread("resources/dat/scoringweights.csv")

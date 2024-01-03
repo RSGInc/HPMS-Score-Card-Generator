@@ -25,29 +25,29 @@ download_socrata = function(url, con, stage_table){
   
   # For checking column types
   col_type_chk = c(
-    year_record = 'integer',
-    state_code = 'integer',
-    route_id = 'character',
-    begin_point = 'numeric',
-    end_point = 'numeric',
-    data_item = 'character',
-    value_numeric = 'numeric',
-    value_text = 'character',
-    value_date = 'POSIXct',
-    natroute_id = 'character'
+    datayear = 'integer',
+    stateid = 'integer',
+    routeid = 'character',
+    beginpoint = 'numeric',
+    endpoint = 'numeric',
+    dataitem = 'character',
+    valuenumeric = 'numeric',
+    valuetext = 'character',
+    valuedate = 'POSIXct',
+    natrouteid = 'character'
   )
   
   coltype_chk_dt = data.table(field = names(col_type_chk), chk = col_type_chk)
   
   query = paste0(
     url,
-    '?$query=SELECT state_code,year_record,count(state_code) ',
-    'GROUP BY state_code, year_record ',
-    'ORDER BY state_code, year_record'
+    '?$query=SELECT stateid,datayear,count(stateid) ',
+    'GROUP BY stateid, datayear ',
+    'ORDER BY stateid, datayear'
     )
   
   counts_remote = read.socrata2(query, email=email, password=password)
-  setnames(counts_remote, 'count_state_code', 'n_remote')
+  setnames(counts_remote, 'count_stateid', 'n_remote')
   
   # if (!str_detect(url, 'json$|csv$')){
   #   url = str_c(url, '.json')
@@ -61,14 +61,14 @@ download_socrata = function(url, con, stage_table){
   message('Downloaded...')
   
   #if ( names(url) %in% c('mid_atlantic', 'SC', 'AZ', 'TN') ){
-  if (class(dt$value_date) == 'character'){
-    dt[, value_date := ymd_hms(value_date)]
+  if (class(dt$valuedate) == 'character'){
+    dt[, valuedate := ymd_hms(valuedate)]
   }
   
-  dt[, year_record := as.integer(year_record)]
-  dt[, state_code := as.integer(state_code)]
-  dt[, begin_point := as.numeric(begin_point)]
-  dt[, end_point := as.numeric(end_point)]
+  dt[, datayear := as.integer(datayear)]
+  dt[, stateid := as.integer(stateid)]
+  dt[, beginpoint := as.numeric(beginpoint)]
+  dt[, endpoint := as.numeric(endpoint)]
   
   col_type_obs = sapply(dt, function(x) class(x)[1])
   coltype_obs_dt = data.table(field = names(col_type_obs), obs = col_type_obs)
@@ -87,16 +87,16 @@ download_socrata = function(url, con, stage_table){
   
   warning('Only using data from MO (29) and VA (51)')
   
-  dt = dt[state_code %in% c(29, 51)]
+  dt = dt[stateid %in% c(29, 51)]
   
-  states = unique(dt[, state_code])
-  years = unique(dt[, year_record])
+  states = unique(dt[, stateid])
+  years = unique(dt[, datayear])
   
   if (stage_table %in% dbListTables(conn = con) ){
     sql = paste0(
       'DELETE FROM ', stage_table,
-      ' WHERE state_code in (', paste(states, collapse=', '), ')',
-      ' AND year_record in (', paste(years, collapse=', '), ')')
+      ' WHERE stateid in (', paste(states, collapse=', '), ')',
+      ' AND datayear in (', paste(years, collapse=', '), ')')
     dbExecute(con, sql)
   }
   
@@ -112,15 +112,15 @@ download_socrata = function(url, con, stage_table){
   # Check that we have the right number of rows for each state.
   
   counts_local = dt_stage %>%
-    count(state_code, year_record) %>%
+    count(stateid, datayear) %>%
     collect() %>%
     rename(n_local = n)
   
   counts_check = merge(counts_remote, counts_local,
-                       by = c('state_code', 'year_record'), all=TRUE)
+                       by = c('stateid', 'datayear'), all=TRUE)
   setDT(counts_check)
   
-  counts_check = counts_check[state_code %in% c(29, 51)]
+  counts_check = counts_check[stateid %in% c(29, 51)]
   
   stopifnot(counts_check[n_local != n_remote, .N] == 0)
   
@@ -130,16 +130,16 @@ download_socrata = function(url, con, stage_table){
 copy_rows = function(con, prod_table, stage_table){
   # Move data from stage to production -----------------------------------------
   
-  # years = unique(counts_local$year_record)
-  # states = unique(counts_local$state_code)
+  # years = unique(counts_local$datayear)
+  # states = unique(counts_local$stateid)
   stage = tbl(con, from=stage_table)
   
   counts_stage = stage %>%
-    count(year_record, state_code) %>%
+    count(datayear, stateid) %>%
     collect()
   
-  years = unique(counts_stage$year_record)
-  states = unique(counts_stage$state_code)
+  years = unique(counts_stage$datayear)
+  states = unique(counts_stage$stateid)
     
   # prod = tbl(con, from=prod_table)
   
@@ -149,13 +149,13 @@ copy_rows = function(con, prod_table, stage_table){
   # Create StateYearKey
   if ( !'StateYearKey' %in% new_fields ){
     sql = paste0('alter table ', stage_table,
-                 ' add StateYearKey as (state_code * 100 + year_record % 1000)')
+                 ' add StateYearKey as (stateid * 100 + datayear % 1000)')
     dbExecute(con, sql)
     new_fields = c(new_fields, 'StateYearKey')
   }
   
   # setdiff(tolower(new_fields), tolower(old_fields))
-  new_fields = new_fields[!new_fields %in% 'natroute_id']
+  new_fields = new_fields[!new_fields %in% 'natrouteid']
   
   # stopifnot(
   #   length(setdiff(tolower(new_fields), tolower(old_fields))) == 0,
@@ -166,8 +166,8 @@ copy_rows = function(con, prod_table, stage_table){
   
   sql = paste0(
     'DELETE FROM ', prod_table,
-    ' WHERE state_code in (', paste(states, collapse=', '), ')',
-    ' AND year_record in (', paste(years, collapse=', '), ')')
+    ' WHERE stateid in (', paste(states, collapse=', '), ')',
+    ' AND datayear in (', paste(years, collapse=', '), ')')
   dbExecute(con, sql)
   
   message('Copying from stage to production')
@@ -178,21 +178,21 @@ copy_rows = function(con, prod_table, stage_table){
   
   # Get counts in production table
   counts_prod = prod %>%
-    filter(Year_Record %in% years,
-           State_Code %in% states) %>%
-    count(State_Code, Year_Record) %>%
+    filter(DataYear %in% years,
+           StateId %in% states) %>%
+    count(StateId, DataYear) %>%
     collect() %>%
-    rename(state_code = State_Code, year_record = Year_Record, n_prod = n)
+    rename(stateid = StateId, datayear = DataYear, n_prod = n)
   
-  counts_check = merge(counts_local, counts_prod, by = c('state_code', 'year_record'))
+  counts_check = merge(counts_local, counts_prod, by = c('stateid', 'datayear'))
   setDT(counts_check)
   
   stopifnot(counts_check[n_local != n_prod, .N] == 0)
   
   sql = paste0(
     'DELETE FROM ', stage_table,
-    ' WHERE state_code in (', paste(states, collapse=', '), ')',
-    ' AND year_record in (', paste(years, collapse=', '), ')')
+    ' WHERE stateid in (', paste(states, collapse=', '), ')',
+    ' AND datayear in (', paste(years, collapse=', '), ')')
   dbExecute(con, sql)
   
 }
@@ -320,8 +320,8 @@ dbDisconnect(con)
 # setDT(tbl)
 # str(tbl)
 # 
-# tbl[, year_record := as.integer(year_record)]
-# tbl[, state_code := as.integer(state_code)]
+# tbl[, datayear := as.integer(datayear)]
+# tbl[, stateid := as.integer(stateid)]
 # tbl[, submitted_on := mdy_hm(submitted_on)]
 # 
 # stage_table = 'tt_stage'
@@ -331,11 +331,11 @@ dbDisconnect(con)
 # tt = tbl(con, from=stage_table)
 # glimpse(tt)
 # tt %>%
-#   count(State_Code) %>%
+#   count(StateId) %>%
 #   print(n=Inf)
 # 
 # tt %>%
-#   count(Year_Record) %>%
+#   count(DataYear) %>%
 #   print(n=Inf)
 # 
 # # Update production table ---------------------------------------------
@@ -345,17 +345,17 @@ dbDisconnect(con)
 # tt = tbl(con, from='Timelinesstable')
 # 
 # yr_count = tt %>%
-#   filter(year_record == current_yr) %>%
+#   filter(datayear == current_yr) %>%
 #   count() %>%
 #   pull(n)
 # 
 # if ( yr_count > 0 ){
-#   dbExecute(con, paste0('DELETE FROM Timelinesstable WHERE year_record = ',
+#   dbExecute(con, paste0('DELETE FROM Timelinesstable WHERE datayear = ',
 #                         current_yr))
 # }
 # 
 # yr_count = tt %>%
-#   filter(year_record == current_yr) %>%
+#   filter(datayear == current_yr) %>%
 #   count() %>%
 #   pull(n)
 # 
@@ -376,7 +376,7 @@ dbDisconnect(con)
 # stopifnot(
 #   con %>%
 #     tbl('Timelinesstable') %>%
-#     filter(year_record == current_yr) %>%
+#     filter(datayear == current_yr) %>%
 #     count() %>%
 #     pull(n) ==
 #     con %>%

@@ -79,19 +79,19 @@ inc_rows = 5e5
 # read_csv(file = infile, n_max = 100)
 
 col_types = cols(
-  Year_Record = col_character(),
-  State_Code = col_integer(),
-  Route_ID = col_character(),
-  Begin_Point = col_double(),
-  End_Point = col_double(),
-  Data_Item = col_character(),
-  Section_Length = col_double(),
-  Value_Numeric = col_double(),
-  Value_Text = col_character(),
-  Value_Date = col_datetime(format='%m/%d/%Y %H:%M:%S %p'),
+  DataYear = col_character(),
+  StateId = col_integer(),
+  RouteId = col_character(),
+  BeginPoint = col_double(),
+  EndPoint = col_double(),
+  DataItem = col_character(),
+  SectionLength = col_double(),
+  ValueNumeric = col_double(),
+  ValueText = col_character(),
+  ValueDate = col_datetime(format='%m/%d/%Y %H:%M:%S %p'),
   # Comments = col_character(),
-  # Last_Modified_By = col_skip(),
-  # Last_Modified_On = col_skip(),
+  # LastModifiedBy = col_skip(),
+  # LastModifiedOn = col_skip(),
   Data_Source = col_skip(),
   StateYearKey = col_character()
   #WKT = col_skip(),
@@ -123,7 +123,7 @@ sql = 'alter table Review_Sections add StateYearKey integer;'
 dbExecute(con, sql)
 
 sql = 'update Review_Sections
-       set StateYearKey = concat(State_Code, substring(Year_Record, 3, 2));'
+       set StateYearKey = concat(StateId, substring(DataYear, 3, 2));'
 dbExecute(con, sql)
 
 dbDisconnect(con)
@@ -135,7 +135,7 @@ tbl_name = 'Review_Sections'
 rs = tbl(con, from=tbl_name)
 
 rs %>% 
-  count(Year_Record)
+  count(DataYear)
 
 
 # Load 2018 samples data ----------------------------------------------------
@@ -169,7 +169,7 @@ dbDisconnect(con)
 # tt = tbl(con, from='Timelinesstable')
 # glimpse(tt)
 # tt %>%
-#   count(State_Code) %>%
+#   count(StateId) %>%
 #   print(n=Inf)
 # 
 # dbDisconnect(con)

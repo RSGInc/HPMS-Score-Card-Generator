@@ -14,33 +14,34 @@
 ###########################################################################     
 
 # Load summary data for state and year
-loadSummaryData <- function(state_code, year){
+loadSummaryData <- function(stateid, year){
   
-  con <- GetODBCConnection()
+  con <- connect_to_db()
+  on.exit({odbcClose(con)})
   
-  st_yr_key = paste0(state_code, str_sub(year, start=3, end=4)) 
+  st_yr_key = paste0(stateid, str_sub(year, start=3, end=4)) 
   
   query <- str_glue(
-  'SELECT Year_Record, State_Code, Data_Item,
+  'SELECT DataYear, StateId, DataItem,
   Count(*) AS Record_Count,
-  Sum(End_Point - Begin_Point) AS Miles,
-  Count(Distinct Route_ID) AS Route_ID_Count
+  Sum(EndPoint - BeginPoint) AS Miles,
+  Count(Distinct RouteId) AS RouteId_Count
   FROM {sections_table} WHERE StateYearKey={st_yr_key} 
-  GROUP BY Year_Record, State_Code, Data_Item;'
+  GROUP BY DataYear, StateId, DataItem;'
   )
   data <- sqlQuery(con, query)
   data <- cleanUpQuery(data)
-  odbcClose(con)
+
   return(data)
 }
 
 
-checkSummary <- function(year, state_code, data){
+checkSummary <- function(year, stateid, data){
   # Load SQL summary
 
   cat('Checking R data summary against SQL summary')
 
-  sql_sum <- loadSummaryData(state_code, year)
+  sql_sum <- loadSummaryData(stateid, year)
   
   if (is.null(sql_sum)){
     return(TRUE)
@@ -48,10 +49,10 @@ checkSummary <- function(year, state_code, data){
     # names(sql_sum) <- tolower(names(sql_sum))
     if ('stateyearkey' %in% names(sql_sum)) sql_sum[, stateyearkey := NULL]
     
-    keys <- c('year_record', 'state_code', 'data_item')
+    keys <- c('datayear', 'stateid', 'dataitem')
     
     sql_sum[, record_count := as.numeric(record_count)]
-    sql_sum[, route_id_count := as.numeric(route_id_count)]
+    sql_sum[, routeid_count := as.numeric(routeid_count)]
     sql_sum1 <- data.table::melt(sql_sum, id.vars=keys, variable.name = 'measure',
                       value.name = 'from_sql')
     
@@ -59,9 +60,9 @@ checkSummary <- function(year, state_code, data){
     # Copy the data first to avoid changing by reference!
     r_sum <- copy(data)
     r_sum <- r_sum[, .(record_count = as.numeric(.N),
-                           miles = sum(end_point-begin_point),
-                           route_id_count = as.numeric(length(unique(route_id)))),
-                       by=list(year_record, state_code, data_item)]
+                           miles = sum(endpoint-beginpoint),
+                           routeid_count = as.numeric(length(unique(routeid)))),
+                       by=list(datayear, stateid, dataitem)]
     
     r_sum1 <- data.table::melt(r_sum, id.vars=keys, variable.name='measure',
                      value.name='from_r')
@@ -91,7 +92,7 @@ checkSummary <- function(year, state_code, data){
 }
 
 # Check imported data for consistency and errors
-CheckImport <- function(year, state_code, dat) {
+CheckImport <- function(year, stateid, dat) {
   
   cat(".")
   passedChecks <- TRUE
@@ -99,16 +100,16 @@ CheckImport <- function(year, state_code, dat) {
   if (nrow(dat)==0) passedChecks <- FALSE
 
   # All begin points should be before the end points
-  if (!all(dat[, begin_point <= end_point])) passedChecks <- FALSE
+  if (!all(dat[, beginpoint <= endpoint])) passedChecks <- FALSE
   
   # Check imported data against summary table -------------------------------
   
-  check <- checkSummary(year, state_code, dat)
+  check <- checkSummary(year, stateid, dat)
   
   if ( !isTRUE(check) ){
     
     # Save the mismatches
-    path <- file.path('data', getStateLabelFromNum(state_code))
+    path <- file.path('data', getStateLabelFromNum(stateid))
     file <- paste0(year, '_summary_fail_on_import.csv')
     fullpath <- file.path(path, file)
     
@@ -118,7 +119,7 @@ CheckImport <- function(year, state_code, dat) {
     # Write the file
     write.csv(x=check, file=fullpath, na='', row.names=FALSE)
     
-    warntext <- paste(year, getStateAbbrFromNum(state_code),
+    warntext <- paste(year, getStateAbbrFromNum(stateid),
                       'failed summary check.  Saving diffs to',
                       fullpath, '\n')
     warning(warntext)
@@ -129,9 +130,9 @@ CheckImport <- function(year, state_code, dat) {
   
   ### Other data checks go here, for example:
   # make sure state codes are correct
-  # make sure there's an F_SYSTEM data_item
+  # make sure there's an F_SYSTEM dataitem
   
-  if (!passedChecks) warning(paste("The", year, getStateLabelFromNum(state_code), "data set has failed a data check. Skipping."), immediate. = TRUE, call. = FALSE)
+  if (!passedChecks) warning(paste("The", year, getStateLabelFromNum(stateid), "data set has failed a data check. Skipping."), immediate. = TRUE, call. = FALSE)
   
   return(passedChecks)
   

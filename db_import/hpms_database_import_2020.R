@@ -94,8 +94,8 @@ if ( update_tt ){
   setDT(tbl)
   str(tbl)
   
-  tbl[, year_record := as.integer(year_record)]
-  tbl[, state_code := as.integer(state_code)]
+  tbl[, datayear := as.integer(datayear)]
+  tbl[, stateid := as.integer(stateid)]
   tbl[, submitted_on := mdy_hm(submitted_on)]
   
   dbWriteTable(con, name=stage_table, value=tbl, overwrite=TRUE)
@@ -104,11 +104,11 @@ if ( update_tt ){
   tt = tbl(con, from=stage_table)
   glimpse(tt)
   tt %>%
-    count(state_code) %>%
+    count(stateid) %>%
     print(n=52)
   
   tt %>%
-    count(year_record) %>%
+    count(datayear) %>%
     print(n=52)
   
   
@@ -120,17 +120,17 @@ if ( update_tt ){
   tt = tbl(con, from=prod_table)
   
   yr_count = tt %>%
-    filter(Year_Record == data_yr) %>%
+    filter(DataYear == data_yr) %>%
     count() %>%
     pull(n)
   
   if ( yr_count > 0 ){
-    dbExecute(con, paste0('DELETE FROM Timelinesstable WHERE year_record = ',
+    dbExecute(con, paste0('DELETE FROM Timelinesstable WHERE datayear = ',
                           data_yr))
   }
   
   (yr_count = tt %>%
-      filter(year_record == data_yr) %>%
+      filter(datayear == data_yr) %>%
       count() %>%
       pull(n))
   
@@ -151,7 +151,7 @@ if ( update_tt ){
   stopifnot(
     con %>%
       tbl('Timelinesstable') %>%
-      filter(year_record == data_yr) %>%
+      filter(datayear == data_yr) %>%
       count() %>%
       pull(n) ==
       con %>%

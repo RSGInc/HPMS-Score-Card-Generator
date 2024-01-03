@@ -43,16 +43,16 @@ if ( choice == 1 ){
   
   # Prepare to write to the database
   tablename <- 'Review_sections_staging'
-  var_types <- c(Year_Record='smallint',
-                 State_Code='smallint',
-                 Route_ID='varchar(120)',
-                 Begin_Point='decimal(8,3)',
-                 End_Point='decimal(8,3)',
-                 Section_Length='decimal(8,3)',
-                 Data_Item='varchar(25)',
-                 Value_Numeric='decimal(10,3)',
-                 Value_Text='varchar(50)',
-                 Value_Date='datetime',
+  var_types <- c(DataYear='smallint',
+                 StateId='smallint',
+                 RouteId='varchar(120)',
+                 BeginPoint='decimal(8,3)',
+                 EndPoint='decimal(8,3)',
+                 SectionLength='decimal(8,3)',
+                 DataItem='varchar(25)',
+                 ValueNumeric='decimal(10,3)',
+                 ValueText='varchar(50)',
+                 ValueDate='datetime',
                  StateYearKey='integer')
   
   
@@ -66,13 +66,13 @@ if ( choice == 1 ){
     # Rename columns to match schema
     
     out_tbl1 <- out_tbl %>%
-      rename(Year_Record = Year_record,
-             Route_ID = route_ID,
-             Begin_Point = begin_Point,
-             End_Point = end_point,
-             Data_Item = data_item) %>%
-      mutate(Section_Length = as.numeric(End_Point) - as.numeric(Begin_Point),
-             StateYearKey = str_c(State_Code, str_sub(Year_Record, start = 3, end=4)))
+      rename(DataYear = Year_record,
+             RouteId = route_ID,
+             BeginPoint = begin_Point,
+             EndPoint = endpoint,
+             DataItem = dataitem) %>%
+      mutate(SectionLength = as.numeric(EndPoint) - as.numeric(BeginPoint),
+             StateYearKey = str_c(StateId, str_sub(DataYear, start = 3, end=4)))
     
     ## # Test writing the table.
     ## sqlDrop(con, sqtable = tablename)
@@ -124,74 +124,74 @@ if ( choice == 1 ){
   #length(lns) - nrow(dt)           
 
   # Checks
-  sort(unique(df$Data_Item))
-  r <- which(df$Data_Item == '2.670')
+  sort(unique(df$DataItem))
+  r <- which(df$DataItem == '2.670')
   df[r:(r + 10), ]
 
   # Replace row 19415493 -- it has an extra column
   df[r, ] <- c(as.character(df[r,])[-3], NA)
 
   # Examine values of each column
-  sort(unique(df$Data_Item))
-  (r <- which(df$Data_Item == ''))
+  sort(unique(df$DataItem))
+  (r <- which(df$DataItem == ''))
   df[r, ]
 
-  (r <- which(is.na(df$Data_Item)))
+  (r <- which(is.na(df$DataItem)))
 
-  unique(df$Year_Record)
-  unique(df$State_Code)  # Only has 40 states.  
-  range(as.numeric(df$Begin_Point), na.rm=TRUE)
-  range(as.numeric(df$End_Point), na.rm=TRUE)
-  range(as.numeric(df$Value_Numeric), na.rm=TRUE)
-  df$Value_Numeric[is.na(as.numeric(df$Value_Numeric)) & !is.na(df$Value_Numeric) &
-                     df$Value_Numeric != '']
-  range(df$Value_Text, na.rm=TRUE)
-  range(df$Value_Date, na.rm=TRUE)
+  unique(df$DataYear)
+  unique(df$StateId)  # Only has 40 states.  
+  range(as.numeric(df$BeginPoint), na.rm=TRUE)
+  range(as.numeric(df$EndPoint), na.rm=TRUE)
+  range(as.numeric(df$ValueNumeric), na.rm=TRUE)
+  df$ValueNumeric[is.na(as.numeric(df$ValueNumeric)) & !is.na(df$ValueNumeric) &
+                     df$ValueNumeric != '']
+  range(df$ValueText, na.rm=TRUE)
+  range(df$ValueDate, na.rm=TRUE)
 
   # Prepare to write to the database
 
   dt <- data.table(df); rm(df); gc()
   dt <- dt[!duplicated(dt)]
   
-  dt[, Section_Length := as.numeric(End_Point) - as.numeric(Begin_Point)]
-  dt[, StateYearKey := str_c(State_Code, str_sub(Year_Record, start=3, end=4))]
+  dt[, SectionLength := as.numeric(EndPoint) - as.numeric(BeginPoint)]
+  dt[, StateYearKey := str_c(StateId, str_sub(DataYear, start=3, end=4))]
 
-  count(dt, is.na(Route_ID))
-  count(dt, is.na(Begin_Point))
-  count(dt, is.na(End_Point))
-  count(dt, is.na(Data_Item))
+  count(dt, is.na(RouteId))
+  count(dt, is.na(BeginPoint))
+  count(dt, is.na(EndPoint))
+  count(dt, is.na(DataItem))
   count(dt, is.na(StateYearKey))
 
   # Convert empty strings to NA
-  count(dt, Year_Record == '')
-  count(dt, State_Code == '')
-  count(dt, Route_ID == '')
+  count(dt, DataYear == '')
+  count(dt, StateId == '')
+  count(dt, RouteId == '')
 
-  dt[Route_ID == '']
-  dt <- dt[Route_ID != '']
+  dt[RouteId == '']
+  dt <- dt[RouteId != '']
 
-  count(dt, Begin_Point == '')
-  #dt[Begin_Point == ''] %>% View()
-  dt <- dt[Begin_Point != '']
+  count(dt, BeginPoint == '')
+  #dt[BeginPoint == ''] %>% View()
+  dt <- dt[BeginPoint != '']
 
-  count(dt, End_Point == '')
-  count(dt, Data_Item == '')
+  count(dt, EndPoint == '')
+  count(dt, DataItem == '')
 
-  dt[Value_Numeric == '', Value_Numeric := NA]
-  dt[Value_Text == '', Value_Text := NA]
-  dt[Value_Date == '', Value_Date := NA]
+  dt[ValueNumeric == '', ValueNumeric := NA]
+  dt[ValueText == '', ValueText := NA]
+  dt[ValueDate == '', ValueDate := NA]
 
   tablename <- 'Review_Sections_2014'
-  var_types <- c(Year_Record='smallint',
-                 State_Code='smallint',
-                 Route_ID='varchar(120)',
-                 Begin_Point='decimal(8,3)',
-                 End_Point='decimal(8,3)',
-                 Section_Length='decimal(8,3)',
-                 Data_Item='varchar(25)',
-                 Value_Numeric='decimal(10,3)',
-                 Value_Text='varchar(50)',
-                 Value_Date='datetime',
+  var_types <- c(DataYear='smallint',
+                 StateId='smallint',
+                 RouteId='varchar(120)',
+                 BeginPoint='decimal(8,3)',
+                 EndPoint='decimal(8,3)',
+                 SectionLength='decimal(8,3)',
+                 DataItem='varchar(25)',
+                 ValueNumeric='decimal(10,3)',
+                 ValueText='varchar(50)',
+                 ValueDate='datetime',
                  StateYearKey='integer')
 
   con <- odbcDriverConnect(connection=local_con)
@@ -219,15 +219,15 @@ if ( choice == 1 ){
   
   sm_2014 <- sqlFetch(con, 'samples2014', stringsAsFactors=FALSE) %>%
     as_tibble() %>%
-    rename(Year_Record = YEAR_RECORD,
-           State_Code = STATE_CODE,
-           Route_ID = ROUTE_ID,
-           Begin_Point = BEGIN_POINT,
-           End_Point = END_POINT,
-           Sample_ID = SAMPLE_ID,
-           Expansion_Factor = EXPANSION_FACTOR) %>%
-    mutate(Section_Length = End_Point - Begin_Point,
-           StateYearKey = str_c(State_Code, str_sub(Year_Record, start=3, end=4)))
+    rename(DataYear = YEAR_RECORD,
+           StateId = STATE_CODE,
+           RouteId = ROUTE_ID,
+           BeginPoint = BEGIN_POINT,
+           EndPoint = END_POINT,
+           SampleId = SAMPLE_ID,
+           ExpansionFactor = EXPANSION_FACTOR) %>%
+    mutate(SectionLength = EndPoint - BeginPoint,
+           StateYearKey = str_c(StateId, str_sub(DataYear, start=3, end=4)))
   
   # Check for duplicate rows
   nrow(sm_2014)
@@ -238,7 +238,7 @@ if ( choice == 1 ){
   
   # Drop near duplicates
   sm_2014 <- sm_2014 %>%
-    group_by(Route_ID, Begin_Point, End_Point, StateYearKey) %>%
+    group_by(RouteId, BeginPoint, EndPoint, StateYearKey) %>%
     mutate(drop = seq(from=0, to=(n() - 1))) %>%
     ungroup() %>%
     filter(drop == 0) %>%
@@ -247,8 +247,8 @@ if ( choice == 1 ){
   sm_2015 <- sqlFetch(con, 'Samples2015',
                       stringsAsFactors=FALSE) %>%
     as_tibble() %>%
-    mutate(Section_Length = End_Point - Begin_Point,
-           StateYearKey = str_c(State_Code, str_sub(Year_Record, start=3, end=4)))
+    mutate(SectionLength = EndPoint - BeginPoint,
+           StateYearKey = str_c(StateId, str_sub(DataYear, start=3, end=4)))
   
   nrow(sm_2015)
   nrow(distinct(sm_2015))
@@ -257,14 +257,14 @@ if ( choice == 1 ){
   
   close(con)
   
-  var_types <- c(Year_Record='smallint',
-                 State_Code='smallint',
-                 Route_ID='varchar(120)',
-                 Begin_Point='decimal(8,3)',
-                 End_Point='decimal(8,3)',
-                 Section_Length='decimal(8,3)',
-                 Sample_ID='varchar(12)',
-                 Expansion_Factor='decimal(8,3)',
+  var_types <- c(DataYear='smallint',
+                 StateId='smallint',
+                 RouteId='varchar(120)',
+                 BeginPoint='decimal(8,3)',
+                 EndPoint='decimal(8,3)',
+                 SectionLength='decimal(8,3)',
+                 SampleId='varchar(12)',
+                 ExpansionFactor='decimal(8,3)',
                  Invalid='smallint',
                  StateYearKey='integer')
   
@@ -290,20 +290,20 @@ if ( choice == 1 ){
 sum_file <- file.path(raw_dir, '2015HPMS_SectionSummaries.xlsx')
 
 sum_tbl <- read_excel(sum_file) %>%
-  rename(State_Code = state_Code,
-         Data_Item = data_Item,
+  rename(StateId = state_Code,
+         DataItem = data_Item,
          Miles = miles,
-         Route_ID_Count = route_ID_Count) %>%
-  mutate(Year_Record = '2015',
-         StateYearKey = str_c(State_Code, as.numeric(Year_Record) %% 100))
+         RouteId_Count = route_ID_Count) %>%
+  mutate(DataYear = '2015',
+         StateYearKey = str_c(StateId, as.numeric(DataYear) %% 100))
   
 
-var_types <- c(Year_Record = 'smallint',
-               State_Code = 'smallint',
-               Data_Item = 'varchar(25)',
+var_types <- c(DataYear = 'smallint',
+               StateId = 'smallint',
+               DataItem = 'varchar(25)',
                Record_Count = 'integer',
                Miles = 'decimal(10,3)',
-               Route_ID_Count = 'integer',
+               RouteId_Count = 'integer',
                StateYearKey='integer')
 
 names(sum_tbl) %in% names(var_types)
@@ -316,7 +316,7 @@ sqlSave(con, dat=sum_tbl, tablename=sum_tbl_name, verbose=FALSE, nastring=NULL,
         varTypes=var_types, fast=TRUE, rownames=FALSE)
 close(con)
 
-# In SSMS, I made a primary key out of Year_Record, State_Code, Data_Item, StateYearKey
+# In SSMS, I made a primary key out of DataYear, StateId, DataItem, StateYearKey
 
 
 
@@ -329,11 +329,11 @@ close(con)
 # Did this directly in SSMS. Some code for debugging duplicate keys follows.
 
 
-# samples table: Route_ID, Begin_Point, End_Point, StateYearKey
-# sections table: Route_ID, Begin_Point, End_Point, Data_Item, StateYearKey
+# samples table: RouteId, BeginPoint, EndPoint, StateYearKey
+# sections table: RouteId, BeginPoint, EndPoint, DataItem, StateYearKey
 
 # Identify duplicate primary keys in samples table.
-# tab <- count(sm_2014, Route_ID, Begin_Point, End_Point, StateYearKey) %>%
+# tab <- count(sm_2014, RouteId, BeginPoint, EndPoint, StateYearKey) %>%
 #   filter(n > 1)
 # tab
 # 
@@ -341,11 +341,11 @@ close(con)
 # jn
 # 
 # 
-# ex <- tab$Route_ID[1]
+# ex <- tab$RouteId[1]
 # filter(sm_tbl,
-#        Route_ID == ex,
-#        Begin_Point == 0.779,
-#        End_Point == 0.786,
+#        RouteId == ex,
+#        BeginPoint == 0.779,
+#        EndPoint == 0.786,
 #        StateYearKey == 414) %>% print(n=150)
 # 
 

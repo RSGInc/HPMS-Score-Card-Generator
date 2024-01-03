@@ -1,5 +1,73 @@
 
 
+create_sections_tables = function(
+  events_url,
+  designation_url,
+  overwrite = FALSE
+) {
+  
+  # TODO: put into make_cache_path
+  ## Make path -----------------------------------------------------------------
+  # Get state abbreviation, ensure both urls are for same state
+  state_suffix = substr( names(events_url), 
+                         nchar( names(events_url) ) - 3 + 1, 
+                         nchar( names(events_url) ))
+  
+  state_check = substr( names(designation_url), 
+                        nchar( names(designation_url) ) - 3 + 1, 
+                        nchar( names(designation_url) ))
+  
+  if( state_suffix != state_check ) browser()
+  
+  temp_url = c( sections = 'dummy_var')
+  names(temp_url) = paste0( names(temp_url), state_suffix)
+  # ----------------------------------------------------------------------------
+  
+  cache_path = make_cache_path( temp_url )
+  
+  events_path      = download_socrata(events_url, overwrite = overwrite)
+  designation_path = download_socrata(designation_url, overwrite = overwrite)
+  
+  events_tbl      = readRDS(events_path)
+  designation_tbl = readRDS(designation_path)
+   
+  if ( !'valuedate' %in% tolower(names(designation_tbl)) ) {
+
+    designation_tbl[, valuedate := as.character(NA) ]
+
+  }
+  
+  # can assume the data is okay from here, skip to rbind -----------------------
+  # Check fields now match
+  events_only = setdiff(names(events_tbl), names(designation_tbl))
+  desigs_only = setdiff(names(designation_tbl), names(events_tbl))
+  
+  if ( length(events_only) > 0 |
+       length(desigs_only) > 0 ){
+    
+    browser()
+    
+  }
+  
+  # Bind to create final table
+  setcolorder(designation_tbl, neworder = names(events_tbl))
+  sections_tbl = rbind(events_tbl, designation_tbl)
+  #-----------------------------------------------------------------------------
+  message('...saving to ', cache_path)
+  
+  # TODO: is this the right place for this?
+  # The data come in with many "NULL" entries, but they are literally interpreted as
+  # a string reading "NULL" instead of NA's
+  
+  # Replace 'NULL' with NA's
+  lapply( names(sections_tbl), function(x) { sections_tbl[get(x) == "NULL", (x) := NA] } )
+  
+  saveRDS(sections_tbl, cache_path)
+
+  return(cache_path)
+  
+}
+
 read.socrata2 = function (
   url, 
   app_token = NULL, 
@@ -102,42 +170,60 @@ write_to_stage = function(cache_path, con, stage_table, chunk_size=100000){
   message('Reading from ', cache_path)
   
   dt = readRDS(cache_path)
-  
-  # FIXME: update for 2022, and add rename from camelCase to snake_case
-  # For checking column types
+  # if ( datayear == '2022' ) use these below
   col_type_chk = c(
-    datayear = 'integer',
-    stateid = 'integer',
-    route_id = 'character',
-    begin_point = 'numeric',
-    end_point = 'numeric',
-    data_item = 'character',
-    value_numeric = 'numeric',
-    value_text = 'character',
-    value_date = 'POSIXct',
-    natroute_id = 'character'
+    datayear        = 'integer',
+    stateid         = 'integer',
+    routeid         = 'character',
+    sampleid        = 'character',
+    beginpoint      = 'numeric',
+    endpoint        = 'numeric',
+    expansionfactor = 'numeric',
+    comments        = 'character',
+    dataitem        = 'character',
+    valuenumeric    = 'numeric',
+    valuetext       = 'character',
+    begindate       = 'POSIXct'
   )
-  
   coltype_chk_dt = data.table(field = names(col_type_chk), chk = col_type_chk)
   
   message('Updating data types')
   
-  if ( class(dt$value_date)[1] == 'character' ){
-    if ( str_length(dt[!is.na(value_date), value_date][1]) > 10 ){
-      dt[, value_date := ymd_hms(value_date)]
+  if ( class(dt$valuedate)[1] == 'character' ){
+    if ( str_length(dt[!is.na(valuedate), valuedate][1]) > 10 ){
+      dt[, valuedate := ymd_hms(valuedate)]
+      # dt[, valuedate := as.POSIXct(ymd_hms(valuedate))]
     } else {
-      coltype_chk_dt[field == 'value_date', chk := 'Date']
-      dt[, value_date := ymd(value_date)]
+      coltype_chk_dt[field == 'valuedate', chk := 'Date']
+      dt[, valuedate := ymd(valuedate)]
+      # dt[, valuedate := as.POSIXct(ymd(valuedate))]
     }
   }
   
-  dt[, datayear := as.integer(datayear)]
-  dt[, stateid := as.integer(stateid)]
-  dt[, begin_point := as.numeric(begin_point)]
-  dt[, end_point := as.numeric(end_point)]
+  # dt[, datayear := as.integer(datayear)]
+  # dt[, stateid := as.integer(stateid)]
+  # dt[, beginpoint := as.numeric(beginpoint)]
+  # dt[, endpoint := as.numeric(endpoint)]
+  dt[, datayear   := as.integer(datayear)]
+  dt[, stateid    := as.integer(stateid)]
+  dt[, beginpoint := as.numeric(beginpoint)]
+  dt[, endpoint   := as.numeric(endpoint)]
   
-  if ( 'value_numeric' %in% names(dt) ){
-    dt[, value_numeric := as.numeric(value_numeric)]
+  
+  if ( 'valuenumeric' %in% names(dt) ){
+    dt[, valuenumeric := as.numeric(valuenumeric)]
+  }
+  
+  if( 'expansionfactor' %in% names(dt) ){
+    
+    dt[, expansionfactor := as.numeric(expansionfactor) ]
+    
+  }
+  
+  if( 'begindate' %in% names(dt) ){
+    
+    dt[, begindate := as.POSIXct(begindate)]
+    
   }
   
   message('Checking data types')
@@ -170,7 +256,6 @@ write_to_stage = function(cache_path, con, stage_table, chunk_size=100000){
     
     old_fields = dbListFields(con, stage_table)
     old_fields = str_to_lower(old_fields)
-    old_fields = old_fields[!old_fields %in% c('natroute_id', 'section_length')]
     
     if ( stage_table == 'rs_stage' ){
       old_fields = setdiff(old_fields, 'stateyearkey') # this is computed in rs_stage
@@ -184,9 +269,9 @@ write_to_stage = function(cache_path, con, stage_table, chunk_size=100000){
       new_fields = c(new_fields, 'stateyearkey')
     }
 
-    if ( !('value_text' %in% new_fields) & stage_table == 'rs_stage' ){
-      dt[, value_text := NA_character_]
-      new_fields = c(new_fields, 'value_text')
+    if ( !('valuetext' %in% new_fields) & stage_table == 'rs_stage' ){
+      dt[, valuetext := NA_character_]
+      new_fields = c(new_fields, 'valuetext')
     }    
     
     if ( length(setdiff(old_fields, new_fields)) > 0 |
@@ -275,17 +360,17 @@ copy_rows = function(con, stage_table, prod_table, counts_local){
     new_fields = c(new_fields, 'StateYearKey')
   }
   
-  # Create section_length
-  if ( !'section_length' %in% str_to_lower(new_fields) ){
+  # Create sectionlength
+  if ( !'sectionlength' %in% str_to_lower(new_fields) ){
     sql = str_glue(
       'alter table {stage_table} ',
-      'add Section_Length as (End_Point - Begin_Point)')
+      'add SectionLength as (EndPoint - BeginPoint)')
     dbExecute(con, sql)
-    new_fields = c(new_fields, 'Section_Length')
+    new_fields = c(new_fields, 'SectionLength')
   }
   
   # setdiff(tolower(new_fields), tolower(old_fields))
-  new_fields = new_fields[!new_fields %in% 'natroute_id']
+  new_fields = new_fields[!new_fields %in% 'natrouteid']
   
   if (
     length(setdiff(tolower(new_fields), tolower(old_fields))) > 0 |
@@ -312,11 +397,11 @@ copy_rows = function(con, stage_table, prod_table, counts_local){
   # Get counts in production table
   prod = tbl(con, from = prod_table)
   counts_prod = prod %>%
-    filter(datayear %in% years,
-           stateid %in% states) %>%
-    count(stateid, datayear) %>%
+    filter(DataYear %in% years,
+           StateId %in% states) %>%
+    count(StateId, DataYear) %>%
     collect() %>%
-    rename(stateid = stateid, datayear = datayear, n_prod = n)
+    rename(stateid = StateId, datayear = DataYear, n_prod = n)
   
   counts_check = merge(counts_stage, counts_prod, by = c('stateid', 'datayear'))
   setDT(counts_check)

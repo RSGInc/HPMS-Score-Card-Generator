@@ -74,7 +74,7 @@ tryCatch(
     data.list <- getStateDataSets(state, year_selection, year_compare)
     
     create_pdf(data = data.list[["dat"]],
-               state = data.list[["state_code"]],
+               state = data.list[["stateid"]],
                year = data.list[["year_selection"]],
                year_compare = data.list[["year_compare"]],
                # population = population,

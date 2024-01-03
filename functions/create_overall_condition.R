@@ -17,29 +17,29 @@ create_overall_condition <- function(data, state, year, population)
      # the algorithm is described in detail in the file title MAP-21 Pavement Condition Rule
   
      # four metrics are used based on the surface type
-     rutting  <- data[state_code  ==  state & year_record == year & data_item == "RUTTING" & FACILITY_TYPE!=4,
-                      list(route_id, begin_point, end_point, value_numeric), ]
-     setnames(rutting, "value_numeric", "rutting")
+     rutting  <- data[stateid  ==  state & datayear == year & dataitem == "RUTTING" & FACILITY_TYPE!=4,
+                      list(routeid, beginpoint, endpoint, valuenumeric), ]
+     setnames(rutting, "valuenumeric", "rutting")
 
-     iri      <- data[state_code == state & year_record == year & data_item == "IRI" & FACILITY_TYPE!=4,
-                      list(route_id, begin_point, end_point, value_numeric), ]
-     setnames(iri, "value_numeric", "iri")
+     iri      <- data[stateid == state & datayear == year & dataitem == "IRI" & FACILITY_TYPE!=4,
+                      list(routeid, beginpoint, endpoint, valuenumeric), ]
+     setnames(iri, "valuenumeric", "iri")
      
-     faulting <- data[state_code == state & year_record == year & data_item == "FAULTING" & FACILITY_TYPE!=4,
-                      list(route_id, begin_point, end_point, value_numeric), ]
-     setnames(faulting, "value_numeric", "faulting")
+     faulting <- data[stateid == state & datayear == year & dataitem == "FAULTING" & FACILITY_TYPE!=4,
+                      list(routeid, beginpoint, endpoint, valuenumeric), ]
+     setnames(faulting, "valuenumeric", "faulting")
      
-     cracking <- data[state_code == state & year_record == year & data_item == "CRACKING_PERCENT" & FACILITY_TYPE!=4,
-                      list(route_id, begin_point, end_point, value_numeric), ]
-     setnames(cracking, "value_numeric", "cracking")
+     cracking <- data[stateid == state & datayear == year & dataitem == "CRACKING_PERCENT" & FACILITY_TYPE!=4,
+                      list(routeid, beginpoint, endpoint, valuenumeric), ]
+     setnames(cracking, "valuenumeric", "cracking")
      
-     surface <- data[state_code == state & year_record == year & data_item == "SURFACE_TYPE" & FACILITY_TYPE!=4,
-                     list(route_id, F_SYSTEM, Interstate, NHS, begin_point, end_point, value_numeric), ]
-     setnames(surface, "value_numeric", "surface")
+     surface <- data[stateid == state & datayear == year & dataitem == "SURFACE_TYPE" & FACILITY_TYPE!=4,
+                     list(routeid, F_SYSTEM, Interstate, NHS, beginpoint, endpoint, valuenumeric), ]
+     setnames(surface, "valuenumeric", "surface")
      
-     urban <- data[state_code == state & year_record == year & data_item == "URBAN_ID" & FACILITY_TYPE!=4,
-                   list(route_id, begin_point, end_point, value_numeric), ]
-     setnames(urban, "value_numeric", "urban_id")
+     urban <- data[stateid == state & datayear == year & dataitem == "URBAN_ID" & FACILITY_TYPE!=4,
+                   list(routeid, beginpoint, endpoint, valuenumeric), ]
+     setnames(urban, "valuenumeric", "urban_id")
      
      if(nrow(rutting) == 0 | 
         nrow(iri) == 0 | 
@@ -54,7 +54,7 @@ create_overall_condition <- function(data, state, year, population)
        urban[urban_id == 99999, rural:=1]
        urban[!is.na(urban_id) & is.na(rural), rural:=0]
        
-       iri <- sqldf("select A.*, B.urban_id, B.rural from iri A left join urban B on A.route_id = B.route_id and A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point")
+       iri <- sqldf("select A.*, B.urban_id, B.rural from iri A left join urban B on A.routeid = B.routeid and A.beginpoint between B.beginpoint and B.endpoint and A.endpoint between B.beginpoint and B.endpoint")
        iri <- data.table(iri)
        
        iri <- merge(iri, population, by="urban_id", all.x=TRUE, all.y=FALSE)
@@ -85,36 +85,36 @@ create_overall_condition <- function(data, state, year, population)
        condition <- sqldf("select A.*,  B.cracking,  B.cscore
                           from iri A 
                           left join cracking B on 
-                            A.route_id = B.route_id and (
-                            ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
-                            ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
+                            A.routeid = B.routeid and (
+                            ( A.beginpoint between B.beginpoint and B.endpoint and A.endpoint between B.beginpoint and B.endpoint ) or
+                            ( B.beginpoint between A.beginpoint and A.endpoint and B.endpoint between A.beginpoint and A.endpoint )
                           )")
        
        # Join faulting
        condition <- sqldf("select A.*,  B.faulting,  B.fscore
                           from condition A 
                          left join faulting B on 
-                          A.route_id = B.route_id and (
-                         ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
-                         ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
+                          A.routeid = B.routeid and (
+                         ( A.beginpoint between B.beginpoint and B.endpoint and A.endpoint between B.beginpoint and B.endpoint ) or
+                         ( B.beginpoint between A.beginpoint and A.endpoint and B.endpoint between A.beginpoint and A.endpoint )
                      )")
        
        # Join rutting
        condition <- sqldf("select A.*,  B.rutting,  B.rscore
                           from condition A 
                           left join rutting B on 
-                            A.route_id = B.route_id and (
-                            ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
-                            ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
+                            A.routeid = B.routeid and (
+                            ( A.beginpoint between B.beginpoint and B.endpoint and A.endpoint between B.beginpoint and B.endpoint ) or
+                            ( B.beginpoint between A.beginpoint and A.endpoint and B.endpoint between A.beginpoint and A.endpoint )
                           )")
        
        # Join surface
        condition <- sqldf("select A.*,  B.surface, B.Interstate, B.NHS
                           from condition A 
                           left join surface B on 
-                            A.route_id = B.route_id and (
-                            ( A.begin_point between B.begin_point and B.end_point and A.end_point between B.begin_point and B.end_point ) or
-                            ( B.begin_point between A.begin_point and A.end_point and B.end_point between A.begin_point and A.end_point )
+                            A.routeid = B.routeid and (
+                            ( A.beginpoint between B.beginpoint and B.endpoint and A.endpoint between B.beginpoint and B.endpoint ) or
+                            ( B.beginpoint between A.beginpoint and A.endpoint and B.endpoint between A.beginpoint and A.endpoint )
                           )")
        
       condition <- data.table(condition)
@@ -141,15 +141,15 @@ create_overall_condition <- function(data, state, year, population)
             return(length(regmatches(x, gregexpr(stringtofind, x))[[1]]))
        }
        
-       condition[nchar(oscore) == 3, overallscore:=1*(countChar(oscore, "G") == 3)+3*(countChar(oscore, "P")>=2), by=.(route_id, begin_point, end_point)]
+       condition[nchar(oscore) == 3, overallscore:=1*(countChar(oscore, "G") == 3)+3*(countChar(oscore, "P")>=2), by=.(routeid, beginpoint, endpoint)]
        condition[!is.na(oscore) & overallscore == 0 & nchar(oscore) == 3, overallscore:=2]
-       condition[nchar(oscore) == 2, overallscore:=1*(countChar(oscore, "G") == 2)+3*(countChar(oscore, "P") == 2), by=.(route_id, begin_point, end_point)]
+       condition[nchar(oscore) == 2, overallscore:=1*(countChar(oscore, "G") == 2)+3*(countChar(oscore, "P") == 2), by=.(routeid, beginpoint, endpoint)]
        condition[!is.na(oscore) & overallscore == 0 & nchar(oscore) == 2, overallscore:=2]
        
        condition[, overallscore:=c(NA, "G", "F", "P")[1+overallscore]]    
        
-       results.interstate <- condition[Interstate == 1, list(.N, miles=sum(end_point-begin_point)),  by=.(overallscore)]
-       results.NHS        <- condition[NHS == 1, list(.N, miles=sum(end_point-begin_point)),  by=.(overallscore)]
+       results.interstate <- condition[Interstate == 1, list(.N, miles=sum(endpoint-beginpoint)),  by=.(overallscore)]
+       results.NHS        <- condition[NHS == 1, list(.N, miles=sum(endpoint-beginpoint)),  by=.(overallscore)]
        
        if(nrow(results.interstate)>0)
        {

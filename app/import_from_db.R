@@ -19,33 +19,32 @@ goverwrite <- ""
 showAvailableStatesYears <- function(){
   
   # Get states and years available for import -----------------------------
-  con <- GetODBCConnection()
-  
+  con <- connect_to_db()
+  on.exit({odbcClose(con)})
+
   cat('Determining available states and years...\n')
   
   # FHWA
-  #data1 <- data.table(sqlQuery(con,paste0("select distinct state_code, year_record from sections2015 order by state_code,year_record")))
-  #data2 <- data.table(sqlQuery(con,paste0("select distinct state_code, year_record from sections2014 order by state_code,year_record")))
-  #data3 <- data.table(sqlQuery(con,paste0("select distinct state_code, year_record from sections2013 order by state_code,year_record")))
+  #data1 <- data.table(sqlQuery(con,paste0("select distinct stateid, datayear from sections2015 order by stateid,datayear")))
+  #data2 <- data.table(sqlQuery(con,paste0("select distinct stateid, datayear from sections2014 order by stateid,datayear")))
+  #data3 <- data.table(sqlQuery(con,paste0("select distinct stateid, datayear from sections2013 order by stateid,datayear")))
   
   #data <- rbind(data1,data2)#,data3)
 
-  query <- paste("select distinct state_code, year_record from", sections_table,
-                 "order by state_code, year_record")
+  query <- paste("select distinct stateid, datayear from", sections_table,
+                 "order by stateid, datayear")
   
   data <- data.table(sqlQuery(con, query))
-  
-  odbcClose(con)
   
   # Print available states and years
   
   cat("Data available for import include:\n")
   
-  for(state in unique(data[,state_code])){
+  for(state in unique(data[,stateid])){
     
     cat(paste0(getStateAbbrFromNum(state),": "))
     
-    for(year in data[state_code==state,unique(year_record)]){
+    for(year in data[stateid==state,unique(datayear)]){
       
       cat(paste0(year," "))  
       
@@ -70,7 +69,7 @@ askStates <- function(data){
     
     for(st in strsplit(state,",")[[1]]){
       
-      if(!(st %in% c("ALL",sapply(unique(data[,state_code]),getStateAbbrFromNum)))){
+      if(!(st %in% c("ALL",sapply(unique(data[,stateid]),getStateAbbrFromNum)))){
         invalidresponse = TRUE
       }
     }
@@ -82,7 +81,7 @@ askStates <- function(data){
   }
   
   if(state=="ALL")  {
-    codes <- unique(data[,state_code])
+    codes <- unique(data[,stateid])
     states <- c()
     
     for(code in codes){
@@ -103,11 +102,11 @@ askYears <- function(data){
   
   year <- ""
   
-  ranges <- merge(unique(data[,year_record]),unique(data[,year_record]))
+  ranges <- merge(unique(data[,datayear]),unique(data[,datayear]))
   ranges <- ranges[ranges[,1]<ranges[,2],]
   ranges <- paste0(ranges[,1],"-",ranges[,2])
   
-  validyears <- c("ALL",unique(data[,year_record]),ranges)
+  validyears <- c("ALL",unique(data[,datayear]),ranges)
   
   while(!(year %in% validyears)){
     
@@ -121,7 +120,7 @@ askYears <- function(data){
   
   if(year=="ALL")  {
     
-    years <- unique(data[,year_record])
+    years <- unique(data[,datayear])
     
   } else {
     
@@ -155,7 +154,7 @@ ImportData <- function(state_selection, year_selection) {
   
   # Load the data -----------------------------------------------------------
   
-  if ( debugmode ) browser()
+  # if ( debugmode ) browser()
   
   for (state in states) {
     
@@ -164,7 +163,7 @@ ImportData <- function(state_selection, year_selection) {
       # Create filename to save to
 
       state_name <- getStateLabel(state)
-      state_code <- getStateNumFromCode(state)
+      stateid <- getStateNumFromCode(state)
       
       path <- file.path("data", state_name)
       file <- paste0(year, ".rds")
@@ -218,7 +217,7 @@ ImportData <- function(state_selection, year_selection) {
  
         cat("Checking imported data ...")
         
-        passedChecks <- CheckImport(year=year, state_code=state_code, dat=data)
+        passedChecks <- CheckImport(year=year, stateid=stateid, dat=data)
         
         if ( !passedChecks ){
           warning(state, '(', year, ') failed check.  Not imported.\n')
@@ -284,9 +283,9 @@ cleanUpQuery <- function(data){
   # make names lower case
   names(data) <- tolower(names(data))
 
-  # if data_item is present, make upper case
-  if('data_item' %in% names(data)){
-    data$data_item <- toupper(data$data_item)
+  # if dataitem is present, make upper case
+  if('dataitem' %in% names(data)){
+    data$dataitem <- toupper(data$dataitem)
   }
 
   # Strip white space from text columns so things join properly
@@ -308,7 +307,7 @@ cleanUpQuery <- function(data){
 ReadData <- function(state, year) {
 
   cat('Fetching the data from the database...')
-  con <- GetODBCConnection()
+  con <- connect_to_db()
 
   query <- paste0('select * from ', sections_table, ' where StateYearKey = ',
                   getStateNumFromCode(state), as.numeric(year) %% 100)
@@ -332,17 +331,17 @@ ReadData <- function(state, year) {
 SegmentDataSet <- function(dat) {
   
   dat.list <- list()
-  datasets <- unique(dat[, .(year_record, state_code)])
+  datasets <- unique(dat[, .(datayear, stateid)])
   
   cc <- 1
   
   for (i in 1:datasets[, .N]) {
     
-    year <- datasets[i, year_record]
-    state <- datasets[i, state_code]
+    year <- datasets[i, datayear]
+    state <- datasets[i, stateid]
     dat.list[[cc]] <- list("year" = year,
                            "state" = state,
-                           "data" = dat[year_record == year & state_code == state])
+                           "data" = dat[datayear == year & stateid == state])
     
     cc <- cc + 1
     
@@ -352,28 +351,28 @@ SegmentDataSet <- function(dat) {
   
 }
 
-# Create a column for a particular data_item from value_numeric
-transposeItem <- function(dfname, data_item){
+# Create a column for a particular dataitem from valuenumeric
+transposeItem <- function(dfname, dataitem){
 
-    sql <- paste0('select A.*, B.value_numeric as ', data_item, ' ',
+    sql <- paste0('select A.*, B.valuenumeric as ', dataitem, ' ',
                'from [', dfname, '] A ',
-               'left join [', dfname, '] B on A.route_id = B.route_id and ',
-               'A.year_record = B.year_record and ',
-               'A.state_code = B.state_code and ',
-               'A.begin_point <= B.end_point and ',
-               'A.begin_point >= B.begin_point and ',
-               'A.end_point <= B.end_point and ',
-               'A.end_point >= B.begin_point and ',
-               "B.data_item = '", data_item, "'")
+               'left join [', dfname, '] B on A.routeid = B.routeid and ',
+               'A.datayear = B.datayear and ',
+               'A.stateid = B.stateid and ',
+               'A.beginpoint <= B.endpoint and ',
+               'A.beginpoint >= B.beginpoint and ',
+               'A.endpoint <= B.endpoint and ',
+               'A.endpoint >= B.beginpoint and ',
+               "B.dataitem = '", dataitem, "'")
   
   return(sql)  
 }
 
 append_column = function(data,column){
   
-  data.column = data[data_item==column,.(year_record,route_id,begin_point,end_point,value_numeric)]
-  setnames(data.column,"value_numeric",column)
-  data[data.column,(column):=get(column),on=.(year_record,route_id,begin_point,end_point)]
+  data.column = data[dataitem==column,.(datayear,routeid,beginpoint,endpoint,valuenumeric)]
+  setnames(data.column,"valuenumeric",column)
+  data[data.column,(column):=get(column),on=.(datayear,routeid,beginpoint,endpoint)]
   return(data)
 }
 
@@ -388,12 +387,14 @@ FormatDataSet <- function(dat, state_abbr, year) {
   # Any section that has a blank section extent in the extent details spreadsheet.
   
   # Keep track of the original sections 
-  dat <- dat[order(route_id, data_item, begin_point)]
-  dat[, section_id := 1:.N, by=.(route_id, data_item)]
-  dat[, c('begin_point_og', 'end_point_og') := list(begin_point, end_point)]
+  dat <- dat[order(routeid, dataitem, beginpoint)]
+  dat[, section_id := 1:.N, by=.(routeid, dataitem)]
+  dat[, c('beginpoint_og', 'endpoint_og') := list(beginpoint, endpoint)]
   
   data.formatted = expand(dat,0.1)
   
+  # browser()
+
   # Merge data on itself to convert rows to columns
   data.formatted = append_column(data.formatted,"F_SYSTEM")
   data.formatted = append_column(data.formatted,"NHS")
@@ -406,8 +407,10 @@ FormatDataSet <- function(dat, state_abbr, year) {
   # (Through_Lanes x F_System in (1,2,3,4,5,6-Urban)) plus
   # (total length for Rural Minor Collectors x 2)
   
-  data.formatted[F_SYSTEM >= 6 & URBAN_ID == 99999 & FACILITY_TYPE < 6 &
-                   is.na(THROUGH_LANES), THROUGH_LANES:=2]
+  data.formatted[
+    F_SYSTEM >= 6 & URBAN_ID == 99999 & FACILITY_TYPE < 6 & is.na(THROUGH_LANES),
+    THROUGH_LANES := 2
+  ]
   
   #F_SYSTEM Codes
   # 1 Interstate
@@ -433,12 +436,12 @@ FormatDataSet <- function(dat, state_abbr, year) {
   
   data_noFT6 = data_noFT6[
     (FACILITY_TYPE == 4 & 
-       data_item %in% c("AADT","F_SYSTEM","FACILITY_TYPE","THROUGH_LANES","URBAN_ID"))|
+       dataitem %in% c("AADT","F_SYSTEM","FACILITY_TYPE","THROUGH_LANES","URBAN_ID"))|
       (FACILITY_TYPE %in% c(1,2))]
   
   # merge in expansion factors ---------------------------------------------
 
-  con <- GetODBCConnection()
+  con <- connect_to_db()
 
   query <- paste0('select * from ', samples_table, ' where StateYearKey = ',
                   getStateNumFromCode(state_abbr), as.numeric(year) %% 100)
@@ -451,25 +454,25 @@ FormatDataSet <- function(dat, state_abbr, year) {
     
     sp <- cleanUpQuery(sp)
     
-    stopifnot(sp[str_detect(route_id, 'e[+-][0-9]'), .N] == 0,
-              data_noFT6[str_detect(route_id, 'e[+-][0-9]'), .N] == 0)
+    stopifnot(sp[str_detect(routeid, 'e[+-][0-9]'), .N] == 0,
+              data_noFT6[str_detect(routeid, 'e[+-][0-9]'), .N] == 0)
     
     sp = expand(sp,0.1)
     
     # things we do not need in SP
     
     sp[,num_sections:=NULL]
-    sp[,section_length:=NULL]
+    sp[,sectionlength:=NULL]
     sp[,stateyearkey:=NULL]
-    sp[,state_code:=NULL]
+    sp[,stateid:=NULL]
     
-    data_noFT6[, route_id := as.character(route_id)]
-    sp[, route_id := as.character(route_id)]
+    data_noFT6[, routeid := as.character(routeid)]
+    sp[, routeid := as.character(routeid)]
     
     
     # Checks ----------------------------------------------
-    rid_sec = data_noFT6[, route_id] %>% unique() %>% sort()
-    rid_sp = sp[, route_id] %>% unique() %>% sort()
+    rid_sec = data_noFT6[, routeid] %>% unique() %>% sort()
+    rid_sp = sp[, routeid] %>% unique() %>% sort()
 
     # route_ID in samples but not in sections? (should be zero)
     if ( 
@@ -480,7 +483,7 @@ FormatDataSet <- function(dat, state_abbr, year) {
       compare_ids = data.table(sp = rid_sp, sec = rid_sec[1:length(rid_sp)])
       
       # Check for data in sp that don't match anything in data_noFT6
-      join_vars = c('year_record', 'route_id', 'begin_point', 'end_point')
+      join_vars = c('datayear', 'routeid', 'beginpoint', 'endpoint')
       
       problems1 = data_noFT6[!sp, on=join_vars]
       problems2 = sp[!data_noFT6, on=join_vars]
@@ -488,14 +491,14 @@ FormatDataSet <- function(dat, state_abbr, year) {
     }
     
     data_exp = merge(data_noFT6, sp,
-                     by = c('year_record', 'route_id', 'begin_point', 'end_point'),
+                     by = c('datayear', 'routeid', 'beginpoint', 'endpoint'),
                      all.x=TRUE)
     
-    data_exp[, expansion_factor := as.numeric(expansion_factor)]
+    data_exp[, expansionfactor := as.numeric(expansionfactor)]
     
   } else {
     data_exp <- data_noFT6
-    data_exp[, expansion_factor := as.numeric(NA)]
+    data_exp[, expansionfactor := as.numeric(NA)]
     warning('Result of query:"', query, '" had zero rows.')
   }
   
@@ -506,7 +509,7 @@ FormatDataSet <- function(dat, state_abbr, year) {
   data_exp = merge(
     data_exp,
     gExtentDetail,
-    by  = c('data_item', 'rural_urban'),
+    by  = c('dataitem', 'rural_urban'),
     all.x=TRUE)
 
   # Create section_extent based on data item, f-system and rural/urban designation
@@ -529,12 +532,12 @@ FormatDataSet <- function(dat, state_abbr, year) {
   warning(
     "Mileage removed for SP sections with no expansion factors: ",
     data_exp[
-      (section_extent %in% c('SP', 'SP*') & is.na(data_exp$expansion_factor)),
-      sum(end_point-begin_point)],
+      (section_extent %in% c('SP', 'SP*') & is.na(data_exp$expansionfactor)),
+      sum(endpoint-beginpoint)],
     "\n")
   
   data_exp = data_exp[
-    !(section_extent %in% c('SP', 'SP*') & is.na(data_exp$expansion_factor))]
+    !(section_extent %in% c('SP', 'SP*') & is.na(data_exp$expansionfactor))]
   
   
   if ( debugmode ){
@@ -548,8 +551,8 @@ FormatDataSet <- function(dat, state_abbr, year) {
     
     data_exp[, .N, has_ext]
     
-    data_exp[, .N, keyby=.(has_se, data_item, rural_urban)] %>%
-      dcast(data_item + rural_urban ~ has_se, value.var = 'N')
+    data_exp[, .N, keyby=.(has_se, dataitem, rural_urban)] %>%
+      dcast(dataitem + rural_urban ~ has_se, value.var = 'N')
   
     data_exp[, .N, keyby=.(has_se, rural_urban, F_SYTEMorig)] %>%
       dcast(rural_urban + F_SYTEMorig ~ has_se, value.var = 'N')
@@ -557,12 +560,12 @@ FormatDataSet <- function(dat, state_abbr, year) {
     data_exp[, .N, keyby=.(has_se, rural_urban, F_SYTEMorig)] %>%
       dcast(rural_urban + F_SYTEMorig ~ has_se, value.var = 'N')
     
-    data_exp[, .N, keyby= .(has_se, has_ef = 1 * !is.na(expansion_factor))]
+    data_exp[, .N, keyby= .(has_se, has_ef = 1 * !is.na(expansionfactor))]
   }
   
   
   # Drop rows that have no designated section_extent
-  # FIXME: why would these have no section_extent?
+  # TODO: check why would these would have no section_extent
   # depends on F_SYSTEM, rural/urban, and data item
   
   data_exp = data_exp[section_extent != '',]
@@ -576,7 +579,7 @@ FormatDataSet <- function(dat, state_abbr, year) {
   
   data_exp[, (drop_cols) := NULL]
   
-  setkeyv(data_exp, c("state_code","year_record","route_id","data_item","begin_point","end_point"))
+  setkeyv(data_exp, c("stateid","datayear","routeid","dataitem","beginpoint","endpoint"))
 
   if ( nrow(data_exp) == 0 & debugmode ){browser()}
   return(data_exp)

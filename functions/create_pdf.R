@@ -56,14 +56,24 @@ create_pdf <- function(data, state, year, year_compare, path) {
   # Show the results of the cross-validations
   message('Cross-validations...')
   ts <- Sys.time()
-  create_cross_validation_page(scores_list$cross_validation, state, year)
+  #browser()
+  # test adding multiple xval pages
+  #row_cutoff = as.integer( nrow(scores_list$cross_validation)/2 )
+  row_cutoff = 36
+  
+  cv_list1 = scores_list$cross_validation[1:row_cutoff]
+  cv_list2 = scores_list$cross_validation[(row_cutoff + 1):nrow(scores_list$cross_validation)]
+  
+  #create_cross_validation_page(scores_list$cross_validation, state, year)
+  create_cross_validation_page(cv_list1, state, year)
+  create_cross_validation_page(cv_list2, state, year)
 
   message(paste0(' completed in: ',
              round(difftime(Sys.time(), ts, units='secs'), 2), ' seconds!\n'))
   # cat('\tMemory used: ', round(mem_used() / 1e9, 3), 'GB \n')
 
   # subset data
-  # data <- data[year_record %in% c(year, year_compare), ]
+  # data <- data[datayear %in% c(year, year_compare), ]
   #
 
   # Documentation page ------------------------------------------------------
@@ -132,12 +142,38 @@ create_pdf <- function(data, state, year, year_compare, path) {
   todo <- matrix(todo_vec, ncol = 3, byrow = TRUE)
   todo <- todo[rowSums(!is.na(todo)) > 0, , drop = FALSE]
   
+  # Put TURN_LANES_L next to TURN_LANES_R if not already
+  idx_tll = gVariables[Name == 'TURN_LANES_L', which = TRUE]
+  idx_tlr = gVariables[Name == 'TURN_LANES_R', which = TRUE]
+  
+  tll = which(todo==idx_tll, arr.ind = TRUE)
+  tlr = which(todo==idx_tlr, arr.ind = TRUE)
+  
+  row_tll = tll[1]
+  row_tlr = tlr[1]
+  
+  if (row_tll != row_tlr) {
+    
+    col_tlr = tlr[2]
+    col_tll = tll[2]
+    
+    ## find index of item next to right-turn-lane, swap with left-turn-lane
+    posy = ifelse(col_tlr < 3, col_tlr + 1, col_tlr - 1)
+    
+    item_xy = todo[row_tlr, posy]
+    todo[row_tlr, posy] = idx_tll
+    
+    todo[row_tll, col_tll] = item_xy
+    
+  }
+  
+  #browser()
   for (i in 1:nrow(todo)) {
     
     x1 <- todo[i, 1]
     x2 <- todo[i, 2]
     x3 <- todo[i, 3]
-
+    
     gPageNumber <<- gPageNumber + 1
     create_page_summary(data, state, year, year_compare,
                         x1 = x1, x2 = x2, x3 = x3,

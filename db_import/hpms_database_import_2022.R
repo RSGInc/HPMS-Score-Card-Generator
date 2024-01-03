@@ -18,13 +18,14 @@ library('RSocrata')
 source('db_import/socrata_functions.R')
 source('functions/connect_to_db.R')
 
-email = 'matt.landis@rsginc.com'
+email = 'joseph.trost@rsginc.com'
 password = readRDS('db_import/datahub_pw.rds')
 
+# datafields_map = fread('resources/data_field_changes.csv')
 
 # URLS ========================================================================
 
-# FIXME: Manage URLS in a spreadsheet
+# TODO: Manage URLS in a spreadsheet
 
 # NB!! Specify URLs as JSON, not CSV.  JSON reads all fields as character
 # and then converts to the appropriate type whereas CSV guesses datatypes 
@@ -43,7 +44,7 @@ timeliness_url = 'https://datahub.transportation.gov/resource/8fiq-jstx.json'
 sample_urls = c(
   sample_de = 'https://datahub.transportation.gov/resource/wrs8-irpx.json',
   sample_wy = "https://datahub.transportation.gov/resource/u49a-f2t2.json"
-  )
+)
 
 # Designations
 
@@ -86,8 +87,8 @@ if ( update_tt ){
   setDT(tbl)
   str(tbl)
   
-  tbl[, year_record := as.integer(year_record)]
-  tbl[, state_code := as.integer(state_code)]
+  tbl[, datayear := as.integer(datayear)]
+  tbl[, stateid := as.integer(stateid)]
   tbl[, submitted_on := mdy_hm(submitted_on)]
   
   dbWriteTable(con, name=stage_table, value=tbl, overwrite=TRUE)
@@ -96,11 +97,11 @@ if ( update_tt ){
   tt = tbl(con, from=stage_table)
   glimpse(tt)
   tt %>%
-    count(state_code) %>%
+    count(stateid) %>%
     print(n=52)
   
   tt %>%
-    count(year_record) %>%
+    count(datayear) %>%
     print(n=52)
   
   
@@ -120,17 +121,18 @@ if ( update_tt ){
     tt = tbl(con, from=prod_table)
     
     yr_count = tt %>%
-      filter(Year_Record == data_yr) %>%
+      # filter(DataYear == data_yr) %>%
+      filter(datayear == data_yr) %>%
       count() %>%
       pull(n)
     
     if ( yr_count > 0 ){
-      dbExecute(con, paste0('DELETE FROM Timelinesstable WHERE year_record = ',
+      dbExecute(con, paste0('DELETE FROM Timelinesstable WHERE datayear = ',
                             data_yr))
     }
     
     (yr_count = tt %>%
-        filter(year_record == data_yr) %>%
+        filter(datayear == data_yr) %>%
         count() %>%
         pull(n))
     
@@ -151,7 +153,7 @@ if ( update_tt ){
     stopifnot(
       con %>%
         tbl('Timelinesstable') %>%
-        filter(year_record == data_yr) %>%
+        filter(datayear == data_yr) %>%
         count() %>%
         pull(n) ==
         con %>%
@@ -185,15 +187,21 @@ if ( update_samples ){
 
 # Sections data ---------------------------------------------------
 
+# NOTE: old (<2022) sections table is concatenation of Events and Designations
+
 if ( update_sections ){
   
   prod_table = 'Review_Sections'
   stage_table = 'rs_stage'
   
-  for ( i in seq_along(section_urls) ){
-    url = section_urls[i]
-    if (url == '') next()
-    cache_path = download_socrata(url, overwrite=overwrite_cache)
+  stopifnot( length(designation_urls) == length(event_urls) )
+  
+  for ( i in seq_along(designation_urls) ){
+    
+    url_ev  = event_urls[i]
+    url_des = designation_urls[i]
+    
+    cache_path = create_sections_tables(url_ev, url_des, overwrite=overwrite_cache)
     counts_local = write_to_stage(cache_path, con, stage_table)
     copy_rows(con, stage_table, prod_table, counts_local)
     

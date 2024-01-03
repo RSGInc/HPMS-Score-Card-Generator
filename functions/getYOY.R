@@ -15,55 +15,57 @@ getYOY <- function(data, year, yearcomparison, variable, yoy_change){
   
   #data <- data[!(F_SYTEMorig == 7 & NHS != 1), ]
   
-  var.1    <- data[year_record == year & data_item==variable,
-                   list(route_id, begin_point, end_point, value_numeric, value_text, value_date,
+  var.1    <- data[datayear == year & dataitem==variable,
+                   list(routeid, beginpoint, endpoint, valuenumeric, valuetext, valuedate, begindate, datayear,
                         F_SYSTEM, NHS, Interstate, num_sections)]
   
-  var.2    <- data[year_record == yearcomparison & data_item==variable,
-                   list(route_id, begin_point, end_point, value_numeric, value_text, value_date)]
+  var.2    <- data[datayear == yearcomparison & dataitem==variable,
+                   list(routeid, beginpoint, endpoint, valuenumeric, valuetext, valuedate, begindate, datayear)]
   
   if ( variable %in% c('YEAR_LAST_IMPROVEMENT', 'YEAR_LAST_CONSTRUCTION') ){
-    var.1[is.na(value_numeric) | value_numeric == 0, value_numeric := year(value_date)]
-    var.2[is.na(value_numeric) | value_numeric == 0, value_numeric := year(value_date)]
+    #var.1[is.na(valuenumeric) | valuenumeric == 0, valuenumeric := year(valuedate)]
+    #var.2[is.na(valuenumeric) | valuenumeric == 0, valuenumeric := year(valuedate)]
+	var.1[is.na(valuenumeric) | valuenumeric == 0, valuenumeric := ifelse( datayear <= 2020, year(begindate), year(valuedate) )]
+    var.2[is.na(valuenumeric) | valuenumeric == 0, valuenumeric := ifelse( datayear <= 2020, year(begindate), year(valuedate) )]
   }
   
   if ( variable == 'WIDENING_OBSTACLE'){
-    setnames(var.1, 'value_text', 'value.1')
-    setnames(var.2, 'value_text', 'value.2')
+    setnames(var.1, 'valuetext', 'value.1')
+    setnames(var.2, 'valuetext', 'value.2')
   } else {
-    setnames(var.1, 'value_numeric', 'value.1')
-    setnames(var.2, 'value_numeric', 'value.2')
+    setnames(var.1, 'valuenumeric', 'value.1')
+    setnames(var.2, 'valuenumeric', 'value.2')
   }
   
-  var.yoy = merge(var.1, var.2, by = c('route_id', 'begin_point', 'end_point'),
+  var.yoy = merge(var.1, var.2, by = c('routeid', 'beginpoint', 'endpoint'),
                   all=FALSE)
   
   # # Check result of join.  
   # # How many miles are in the joined data vs. each dataset separately?
-  # m1 <- var.1[, .(miles = sum(end_point - begin_point)), by=list(F_SYSTEM)]
-  # m2 <- data[year_record == yearcomparison & data_item==variable,
-  #            list(route_id, begin_point, end_point, value_numeric, F_SYSTEM)][
-  #              , .(miles = sum(end_point - begin_point)), by=list(F_SYSTEM)]
-  # m12 <- var.yoy[, .(miles1 = sum(end_point.x - begin_point.x),
-  #                    miles2 = sum(end_point.y - begin_point.y, na.rm=TRUE)),
+  # m1 <- var.1[, .(miles = sum(endpoint - beginpoint)), by=list(F_SYSTEM)]
+  # m2 <- data[datayear == yearcomparison & dataitem==variable,
+  #            list(routeid, beginpoint, endpoint, valuenumeric, F_SYSTEM)][
+  #              , .(miles = sum(endpoint - beginpoint)), by=list(F_SYSTEM)]
+  # m12 <- var.yoy[, .(miles1 = sum(endpoint.x - beginpoint.x),
+  #                    miles2 = sum(endpoint.y - beginpoint.y, na.rm=TRUE)),
   #                by=list(F_SYSTEM)]
   # 
   # # Miles by routeid
-  # r1 <- var.1[F_SYSTEM == 1, .(miles = sum(end_point - begin_point)), by=list(route_id)]
-  # r2 <- data[year_record == yearcomparison & data_item==variable & F_SYSTEM == 1,
-  #            list(route_id, begin_point, end_point, value_numeric, F_SYSTEM)][
-  #              , .(miles = sum(end_point - begin_point)), by=list(route_id)]
-  # r12 <- var.yoy[F_SYSTEM == 1, .(miles1 = sum(end_point.x - begin_point.x),
-  #                    miles2 = sum(end_point.y - begin_point.y, na.rm=TRUE)),
-  #                by=list(route_id)]
+  # r1 <- var.1[F_SYSTEM == 1, .(miles = sum(endpoint - beginpoint)), by=list(routeid)]
+  # r2 <- data[datayear == yearcomparison & dataitem==variable & F_SYSTEM == 1,
+  #            list(routeid, beginpoint, endpoint, valuenumeric, F_SYSTEM)][
+  #              , .(miles = sum(endpoint - beginpoint)), by=list(routeid)]
+  # r12 <- var.yoy[F_SYSTEM == 1, .(miles1 = sum(endpoint.x - beginpoint.x),
+  #                    miles2 = sum(endpoint.y - beginpoint.y, na.rm=TRUE)),
+  #                by=list(routeid)]
   # 
-  # r1r2 <- merge(r1, r2, by='route_id', all=TRUE)
-  # r_all <- merge(r1r2, r12, by='route_id', all=TRUE)
+  # r1r2 <- merge(r1, r2, by='routeid', all=TRUE)
+  # r_all <- merge(r1r2, r12, by='routeid', all=TRUE)
   # r_all[miles1 > miles.x & miles1 > miles.y]
   # 
   # # Now we're getting somewhere.
   # 
-  # var.yoy[route_id == '02SR016002']
+  # var.yoy[routeid == '02SR016002']
   
   # Calculate report.1, with percent miles where values matched across years
   # by F_SYSTEM
@@ -74,14 +76,14 @@ getYOY <- function(data, year, yearcomparison, variable, yoy_change){
     
     if ( yoy_change == 'N' ){
       result <- var.yoy[value.1 == value.2,
-                        .(miles=round(sum(end_point-begin_point), 2), 
+                        .(miles=round(sum(endpoint-beginpoint), 2), 
                           N=round(sum(num_sections))),
                         by=list(F_SYSTEM)]
     }
     
     if ( yoy_change == 'Y' ){
       result <- var.yoy[value.1 != value.2,
-                        .(miles=round(sum(end_point-begin_point), 2), 
+                        .(miles=round(sum(endpoint-beginpoint), 2), 
                           N=round(sum(num_sections))),
                         by=list(F_SYSTEM)]
     }
@@ -92,7 +94,7 @@ getYOY <- function(data, year, yearcomparison, variable, yoy_change){
     result[is.na(miles), miles := 0]
     result[is.na(N), N := 0]
     
-    total <- var.yoy[, list(totalmiles=round(sum(end_point-begin_point), 2)),
+    total <- var.yoy[, list(totalmiles=round(sum(endpoint-beginpoint), 2)),
                    by=list(F_SYSTEM)]
     
     report.1 <- merge(total, result, by="F_SYSTEM", all.x=TRUE, all.y=FALSE)
@@ -115,18 +117,18 @@ getYOY <- function(data, year, yearcomparison, variable, yoy_change){
     
     if ( yoy_change == 'N' ){
       result <- var.yoy[value.1 == value.2 & Interstate==1,
-                        .(miles=round(sum(end_point - begin_point), 2), 
+                        .(miles=round(sum(endpoint - beginpoint), 2), 
                           N=round(sum(num_sections))),]
     }
     
     if ( yoy_change == 'Y' ){
       result <- var.yoy[value.1 != value.2 & Interstate==1,
-                        .(miles=round(sum(end_point - begin_point), 2), 
+                        .(miles=round(sum(endpoint - beginpoint), 2), 
                           N=round(sum(num_sections))),]
     }
     
     total <- var.yoy[Interstate == 1,
-                   list(totalmiles = round(sum(end_point - begin_point), 2)),]
+                   list(totalmiles = round(sum(endpoint - beginpoint), 2)),]
     
     # Combine (cbind?) result and total
     if ( nrow(result) == 0 ){
@@ -156,19 +158,19 @@ getYOY <- function(data, year, yearcomparison, variable, yoy_change){
     
     if ( yoy_change == 'N' ){
       result <- var.yoy[value.1 == value.2 & NHS == 1,
-                        .(miles=round(sum(end_point-begin_point),2), 
+                        .(miles=round(sum(endpoint-beginpoint),2), 
                           N=round(sum(num_sections))),]
     }
     
     if ( yoy_change == 'Y' ){
       result <- var.yoy[value.1 != value.2 & NHS == 1,
-                        .(miles=round(sum(end_point-begin_point),2), 
+                        .(miles=round(sum(endpoint-beginpoint),2), 
                           N=round(sum(num_sections))),]
     }
     
     
     total <- var.yoy[NHS == 1, 
-                   list(totalmiles=round(sum(end_point-begin_point), 2)), ]
+                   list(totalmiles=round(sum(endpoint-beginpoint), 2)), ]
     
     if ( nrow(result) == 0 ){
       result <- data.table(miles=0, N=0)

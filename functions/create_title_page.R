@@ -18,7 +18,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
   
   # Load data -----------------------------------------------------------------
   
-  state_num = data$state_code[1]
+  state_num = data$stateid[1]
   state_name = getStateLabelFromNum(state_num)
   state_abb = getStateAbbrFromNum(state_num)
     
@@ -59,7 +59,7 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
   dt_coverage[coverage_type == 1, card_score := CompleteLow]
   dt_coverage[coverage_type == 2, card_score := CompleteMed]
   dt_coverage[coverage_type == 3, card_score := CompleteHigh]
-  
+  #browser()
   # Take into account Curves and grades (only one of A-F required)
   dt_other = dt_coverage[!Name %like% 'CURVES|GRADES']
   dt_curves = dt_coverage[Name %like% 'CURVES'][which.max(coverage_score)]
@@ -80,10 +80,11 @@ create_title_page <- function(data, state, year, year_compare = NULL) {
   CompletedScore = dt_coverage2[, sum(card_score * Completeness_Weight, na.rm=TRUE)]
   CompletedScoreMax = dt_coverage2[, sum(CompleteHigh * (!is.na(card_score)) * Completeness_Weight)]
   
-  # FIXME: items not required should not count towards top level score
-  dt_quality[reqs, required := i.required, on = 'Name']
-  QualityScore    <- dt_quality[, sum(Quality_Score * Quality_Weight, na.rm=TRUE)]
-  QualityScoreMax <- dt_quality[, sum(!is.na(Quality_Score) * Quality_Weight) * 100]
+  # browser()
+
+    dt_quality[reqs, required := i.required, on = 'Name']
+  QualityScore    <- dt_quality[required == 1, sum(Quality_Score * Quality_Weight, na.rm=TRUE)]
+  QualityScoreMax <- dt_quality[required == 1, sum(!is.na(Quality_Score) * Quality_Weight) * 100]
   qMean <- QualityScore / QualityScoreMax
   
   # Incorporate cross-validation score

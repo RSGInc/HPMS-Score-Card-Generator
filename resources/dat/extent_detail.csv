@@ -1,4 +1,4 @@
-data_item,item_number,extent,rural_urban,nhs,fs1,fs2,fs3,fs4,fs5,fs6,fs7
+dataitem,item_number,extent,rural_urban,nhs,fs1,fs2,fs3,fs4,fs5,fs6,fs7
 AADT,21,FE + R,Rural,FE + R,FE + R,FE + R,FE + R,FE + R,FE + R,,
 AADT,21,FE + R,Urban,FE + R,FE + R,FE + R,FE + R,FE + R,FE + R,FE + R,
 AADT_COMBINATION,24,FE*,Rural,FE,FE,SP,SP,SP,SP,,

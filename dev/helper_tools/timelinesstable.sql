@@ -9,8 +9,8 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 CREATE TABLE [dbo].[Timelinesstable](
-	[Year_Record] [int] NULL,
-	[State_Code] [int] NULL,
+	[DataYear] [int] NULL,
+	[StateId] [int] NULL,
 	[Submitted_By] [varchar](255) NULL,
 	[Submitted_On] [datetime] NULL,
 	[SubmissionNumber] [int] NULL

@@ -49,23 +49,22 @@ if ( file.exists(dofile) ){
   
   cat(scriptname, 'Checking availability of states for', year_selection, '\n')
   
-  con <- GetODBCConnection()
+  con <- connect_to_db()
+  on.exit({odbcClose(con)})
   
-  query <- paste("select distinct state_code, year_record from", sections_table,
-                 "order by state_code, year_record")
+  query <- paste("select distinct stateid, datayear from", sections_table,
+                 "order by stateid, datayear")
   
   st_yr_table <- data.table(sqlQuery(con, query))
-  
-  odbcClose(con)
-  
-  avail_states <- st_yr_table[year_record == year_selection]$state_code
+    
+  avail_states <- st_yr_table[datayear == year_selection]$stateid
   
   
   if ( length(args) == 1 && str_detect(tolower(args), 'all')){
     
     if ( length(avail_states) == 0 ) warning('No states available for ', year_selection, '\n')
-    state_codes <- avail_states
-    state_abbrev <- getStateAbbrFromNum(state_codes)
+    stateids <- avail_states
+    state_abbrev <- getStateAbbrFromNum(stateids)
     
   } else {
     
@@ -81,18 +80,18 @@ if ( file.exists(dofile) ){
     
     # Check to make sure all states are available
     
-    state_codes <- getStateNumFromCode(state_abbrev)
+    stateids <- getStateNumFromCode(state_abbrev)
     
     
-    which_na <- state_codes[!state_codes %in% avail_states] %>% getStateAbbrFromNum()
+    which_na <- stateids[!stateids %in% avail_states] %>% getStateAbbrFromNum()
     
     if ( length(which_na) > 0 ){
       warning('States not available in the database: ', paste(which_na, collapse=', '), '\n',
               call. = FALSE, immediate. = FALSE)
     }
     
-    state_codes <- state_codes[state_codes %in% avail_states]
-    state_abbrev <- getStateAbbrFromNum(state_codes)
+    stateids <- stateids[stateids %in% avail_states]
+    state_abbrev <- getStateAbbrFromNum(stateids)
   }
   
   write.table(data.frame(state = state_abbrev), dofile,

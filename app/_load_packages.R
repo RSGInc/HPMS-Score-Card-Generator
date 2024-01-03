@@ -28,11 +28,13 @@ cat("Loading tool components")
 # Function to auto-load packages (will attempt to download if not found)
 LoadPackages <- function(packages) {
   
-  notinstalled <- packages[!packages %in% .packages(all.available = TRUE)]
-  if (length(notinstalled) > 0){
-    install.packages(notinstalled,
-                     repos = "http://cloud.r-project.org/", dependencies = TRUE, type="win.binary")
-  }
+  # notinstalled <- packages[!packages %in% .packages(all.available = TRUE)]
+  # if (length(notinstalled) > 0){
+  #   install.packages(notinstalled,
+  #                    repos = "http://cloud.r-project.org/", dependencies = TRUE, type="win.binary")
+  # }
+  renv::restore()
+  
   for (package in packages) {
     cat(".")
     eval(parse(text = paste0("suppressMessages(library(", package, "))")),

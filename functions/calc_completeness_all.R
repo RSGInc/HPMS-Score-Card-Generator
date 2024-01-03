@@ -34,7 +34,10 @@ calc_completeness_all <- function(data, year, reqs){
     
     dt_output[i, coverage_score := score] 
   }
+  #browser()
   
+  # temporary hack for Curves/Grades_B and up. *_A acts as proxy for all
+  dt_output[stringr::str_detect(Name,'(CURVES_|GRADES_).*(?<!A)$'), required := 0]
   dt_output[, coverage_type := 1] # Not submitted
   dt_output[coverage_score > 0, coverage_type := 2]     # Submitted but incomplete
   dt_output[coverage_score >= complete_threshold, coverage_type := 3]    # Submitted and complete

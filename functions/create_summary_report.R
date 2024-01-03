@@ -16,29 +16,29 @@ create_summary_report <- function(
   variable, variable_type, variable_extent, variable_extent_fs, ramps){
 
   if ( is.na( variable_type ) ) browser()
-
+  #if ( variable == 'F_SYSTEM' ) browser()
   # functional system aggregation (groupCat = 3, 4, NA) ------------------------
   # groupCat 3,4, NA = Other/Minor Arterials, Collectors + Locals, ?
   # F_SYSTEM = 1, 2?
   
   if( ramps ){
-    result1 <- data[state_code == state & year_record == year &
-                      data_item == variable & FACILITY_TYPE == 4, , ] 
+    result1 <- data[stateid == state & datayear == year &
+                      dataitem == variable & FACILITY_TYPE == 4, , ] 
   } else {
-    result1 <- data[state_code == state & year_record == year &
-                      data_item == variable & FACILITY_TYPE != 4, , ]
+    result1 <- data[stateid == state & datayear == year &
+                      dataitem == variable & FACILITY_TYPE != 4, , ]
   }
   
-  result1[, miles := sum(end_point - begin_point, na.rm = TRUE), by=list(F_SYSTEM)]
-  result1[, lanemiles := sum((end_point - begin_point) * THROUGH_LANES, na.rm = TRUE),
+  result1[, miles := sum(endpoint - beginpoint, na.rm = TRUE), by=list(F_SYSTEM)]
+  result1[, lanemiles := sum((endpoint - beginpoint) * THROUGH_LANES, na.rm = TRUE),
           by=list(F_SYSTEM)]
   
   
   if(variable_extent %in% c("SP", "SP*", "FE*")){
-    result1[, expandedmiles := sum((end_point - begin_point) * expansion_factor,
+    result1[, expandedmiles := sum((endpoint - beginpoint) * expansionfactor,
                                    na.rm=TRUE), by=list(F_SYSTEM)]
 
-    result1[, expandedlanemiles := sum((end_point - begin_point) * THROUGH_LANES * expansion_factor,
+    result1[, expandedlanemiles := sum((endpoint - beginpoint) * THROUGH_LANES * expansionfactor,
                                        na.rm=TRUE), by=list(F_SYSTEM)]
 
     if(variable_extent_fs == 4){ # F_SYSTEM 1 is unexpanded
@@ -57,15 +57,18 @@ create_summary_report <- function(
   }
 
   if ( variable_type == 'date' ){
-    result1[is.na(value_numeric) | value_numeric == 0, value_numeric := year(value_date)]
+    #browser()
+    #result1[is.na(valuenumeric) | valuenumeric == 0, valuenumeric := year(valuedate)]
+    result1[is.na(valuenumeric) | valuenumeric == 0, 
+            valuenumeric := ifelse( !is.na(valuedate), year(valuedate), year(begindate) )]
   }
   
   result1 <- switch(variable_type,
-                    numeric = result1[, summaryFunc(value_numeric, weights=num_sections), 
+                    numeric = result1[, summaryFunc(valuenumeric, weights=num_sections), 
                             by=list(F_SYSTEM, miles, expandedmiles, lanemiles, expandedlanemiles)],
-                    date = result1[, summaryFunc(value_numeric, weights=num_sections),
+                    date = result1[, summaryFunc(valuenumeric, weights=num_sections),
                             by=list(F_SYSTEM, miles, expandedmiles, lanemiles, expandedlanemiles)],
-                    result1[, summaryFunc(value_numeric, weights=num_sections)[1:2],
+                    result1[, summaryFunc(valuenumeric, weights=num_sections)[1:2],
                             by=list(F_SYSTEM, miles, expandedmiles, lanemiles, expandedlanemiles)]
   )
   
@@ -77,20 +80,20 @@ create_summary_report <- function(
   # interstate aggregation (Interstate == 1, groupCat = 1) ---------------------
   
   if(ramps){
-    result2 <- data[Interstate == 1 & state_code == state & year_record == year &
-                      data_item == variable & FACILITY_TYPE == 4, , ]
+    result2 <- data[Interstate == 1 & stateid == state & datayear == year &
+                      dataitem == variable & FACILITY_TYPE == 4, , ]
   } else {
-    result2 <- data[Interstate == 1 & state_code == state & year_record == year &
-                      data_item == variable & FACILITY_TYPE != 4, , ] 
+    result2 <- data[Interstate == 1 & stateid == state & datayear == year &
+                      dataitem == variable & FACILITY_TYPE != 4, , ] 
   }
   
-  result2[,miles := sum(end_point - begin_point, na.rm = TRUE),]
-  result2[,lanemiles := sum((end_point - begin_point) * THROUGH_LANES, na.rm = TRUE)]
+  result2[,miles := sum(endpoint - beginpoint, na.rm = TRUE),]
+  result2[,lanemiles := sum((endpoint - beginpoint) * THROUGH_LANES, na.rm = TRUE)]
   
   if(variable_extent %in% c("SP", "SP*")){
     
-    result2[, expandedmiles := sum((end_point - begin_point) * expansion_factor, na.rm=TRUE),]
-    result2[, expandedlanemiles := sum((end_point - begin_point) * THROUGH_LANES * expansion_factor, na.rm=TRUE)]
+    result2[, expandedmiles := sum((endpoint - beginpoint) * expansionfactor, na.rm=TRUE),]
+    result2[, expandedlanemiles := sum((endpoint - beginpoint) * THROUGH_LANES * expansionfactor, na.rm=TRUE)]
   
   } else {
 
@@ -100,15 +103,17 @@ create_summary_report <- function(
   }
 
   if ( variable_type == 'date' ){
-    result2[is.na(value_numeric) | value_numeric == 0, value_numeric := year(value_date)]
+    # result2[is.na(valuenumeric) | valuenumeric == 0, valuenumeric := year(valuedate)]
+    result2[is.na(valuenumeric) | valuenumeric == 0, 
+            valuenumeric := ifelse( !is.na(valuedate), year(valuedate), year(begindate) )]
   }
   
   result2 <- switch(variable_type,
-                    numeric = result2[, summaryFunc(value_numeric, weights=num_sections), 
+                    numeric = result2[, summaryFunc(valuenumeric, weights=num_sections), 
                                       by=list(miles, expandedmiles, lanemiles, expandedlanemiles)],
-                    date = result2[, summaryFunc(value_numeric, weights=num_sections),
+                    date = result2[, summaryFunc(valuenumeric, weights=num_sections),
                                    by=list(miles, expandedmiles, lanemiles, expandedlanemiles)],
-                    result2[, summaryFunc(value_numeric, weights=num_sections)[1:2],
+                    result2[, summaryFunc(valuenumeric, weights=num_sections)[1:2],
                             by=list(miles, expandedmiles, lanemiles, expandedlanemiles)]
   )
   
@@ -120,23 +125,23 @@ create_summary_report <- function(
   
   if(ramps){
     
-    result3 <- data[NHS == 1 & state_code == state & year_record == year &
-                      data_item == variable & FACILITY_TYPE == 4, , ]
+    result3 <- data[NHS == 1 & stateid == state & datayear == year &
+                      dataitem == variable & FACILITY_TYPE == 4, , ]
   
   } else {
     
-    result3 <- data[NHS==1 & state_code == state & year_record == year &
-                      data_item == variable & FACILITY_TYPE != 4, , ]
+    result3 <- data[NHS==1 & stateid == state & datayear == year &
+                      dataitem == variable & FACILITY_TYPE != 4, , ]
   
   }
   
-  result3[, miles := sum(end_point - begin_point, na.rm=TRUE),]
-  result3[, lanemiles := sum((end_point - begin_point) * THROUGH_LANES, na.rm=TRUE)]
+  result3[, miles := sum(endpoint - beginpoint, na.rm=TRUE),]
+  result3[, lanemiles := sum((endpoint - beginpoint) * THROUGH_LANES, na.rm=TRUE)]
   
   if(variable_extent %in% c("SP", "SP*")) {
     
-    result3[, expandedmiles := sum((end_point - begin_point) * expansion_factor, na.rm=TRUE),]
-    result3[, expandedlanemiles := sum((end_point - begin_point) * THROUGH_LANES * expansion_factor,
+    result3[, expandedmiles := sum((endpoint - beginpoint) * expansionfactor, na.rm=TRUE),]
+    result3[, expandedlanemiles := sum((endpoint - beginpoint) * THROUGH_LANES * expansionfactor,
                                        na.rm = TRUE), ]
   
   } else {
@@ -147,15 +152,17 @@ create_summary_report <- function(
   }
   
   if ( variable_type == 'date' ){
-    result3[is.na(value_numeric) | value_numeric == 0, value_numeric := year(value_date)]
+    #result3[is.na(valuenumeric) | valuenumeric == 0, valuenumeric := year(valuedate)]
+    result3[is.na(valuenumeric) | valuenumeric == 0, 
+            valuenumeric := ifelse( !is.na(valuedate), year(valuedate), year(begindate) )]
   }
   
   result3 <- switch(variable_type,
-                    numeric = result3[, summaryFunc(value_numeric, weights=num_sections), 
+                    numeric = result3[, summaryFunc(valuenumeric, weights=num_sections), 
                                       by=list(miles, expandedmiles, lanemiles, expandedlanemiles)],
-                    date = result3[, summaryFunc(value_numeric, weights=num_sections),
+                    date = result3[, summaryFunc(valuenumeric, weights=num_sections),
                                    by=list(miles, expandedmiles, lanemiles, expandedlanemiles)],
-                    result3[, summaryFunc(value_numeric, weights=num_sections)[1:2],
+                    result3[, summaryFunc(valuenumeric, weights=num_sections)[1:2],
                             by=list(miles, expandedmiles, lanemiles, expandedlanemiles)]
   )
   
