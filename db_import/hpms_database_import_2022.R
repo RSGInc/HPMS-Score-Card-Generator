@@ -31,38 +31,26 @@ password = readRDS('db_import/datahub_pw.rds')
 # and then converts to the appropriate type whereas CSV guesses datatypes 
 # (as in read.csv) and convert later which can result in mistakes
 
+url_settings = yaml::read_yaml("db_import/datahub_urls.yml")
 # Note that the cache path is derived from the name of the URL.
 
 # Timelineness
 # https://datahub.transportation.gov/Roadways-and-Bridges/HPMS-Submission-Times-2020/cvaj-4fp2/data
-timeliness_url = 'https://datahub.transportation.gov/resource/8fiq-jstx.json'
+# timeliness_url = 'https://datahub.transportation.gov/resource/8fiq-jstx.json'
+timeliness_url = get('timeliness_url', url_settings)
 
 # Samples
 # https://datahub.transportation.gov/Roadways-and-Bridges/HPMS-Review-Samples-2020/md8h-imnk
 # Click on API
+sample_urls = unlist( get('sample_urls', url_settings) )
 
-sample_urls = c(
-  sample_de = 'https://datahub.transportation.gov/resource/wrs8-irpx.json',
-  sample_wy = "https://datahub.transportation.gov/resource/u49a-f2t2.json"
-)
-
-# Designations
-
-designation_urls = c(
-  designation_de = "https://datahub.transportation.gov/resource/jazs-6frs.json",
-  designation_wy = "https://datahub.transportation.gov/resource/b246-kezf.json"
-)
-
-# Events
-
-event_urls = c(
-  event_de = "https://datahub.transportation.gov/resource/w7if-nkga.json",
-  event_wy = "https://datahub.transportation.gov/resource/qdcn-kgx7.json"
-)
+designation_urls = unlist( get('designation_urls', url_settings) ) # Designations
+event_urls = unlist( get('event_urls', url_settings) ) # Events
 
 
-update_tt = TRUE
-update_samples = TRUE
+
+update_tt = FALSE
+update_samples = FALSE
 update_sections = TRUE
 overwrite_cache = FALSE
 

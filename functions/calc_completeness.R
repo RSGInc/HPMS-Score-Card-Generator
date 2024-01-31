@@ -435,8 +435,10 @@ calc_completeness <- function(data, year, variable){
     # coverage[variable == FALSE, variable := NA ] # consider variable missing if none of A-F exist
     
     coverage[, variable := ifelse( one_of_A_F, TRUE, NA )]
+    #browser()
     
-    check = coverage[, .N, .(F_SYTEMorig, F_SYSTEM)]
+    
+    check = coverage[!is.na(expansionfactor), .N, .(F_SYTEMorig, F_SYSTEM)] # Review ----
     stopifnot(all.equal(check$F_SYTEMorig,check$F_SYSTEM))
     
     coverage[, 

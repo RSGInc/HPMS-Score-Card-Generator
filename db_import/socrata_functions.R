@@ -33,9 +33,32 @@ create_sections_tables = function(
    
   if ( !'valuedate' %in% tolower(names(designation_tbl)) ) {
 
-    designation_tbl[, valuedate := as.character(NA) ]
+    designation_tbl[, valuedate := NA_character_ ]
 
   }
+  
+  # col_type_chk = c(
+  #   datayear        = 'integer',
+  #   stateid         = 'integer',
+  #   routeid         = 'character',
+  #   sampleid        = 'character',
+  #   beginpoint      = 'numeric',
+  #   endpoint        = 'numeric',
+  #   expansionfactor = 'numeric',
+  #   comments        = 'character',
+  #   dataitem        = 'character',
+  #   valuenumeric    = 'numeric',
+  #   valuetext       = 'character',
+  #   begindate       = 'POSIXct'
+  # )
+  # 
+  # x[, (.SD) := lapply(.SD, as.character), .SDcols = names(x)]
+  # 
+  # col_type_obs = sapply(events_tbl, function(x) class(x)[1])
+  # coltype_obs_dt = data.table(field = names(col_type_obs), obs = col_type_obs)
+  # 
+  # coltype_chk_dt = data.table(field = names(col_type_chk), chk = col_type_chk)
+  # coltype_dt = merge(coltype_chk_dt, coltype_obs_dt, by='field')
   
   # can assume the data is okay from here, skip to rbind -----------------------
   # Check fields now match
@@ -49,6 +72,15 @@ create_sections_tables = function(
     
   }
   
+  # Coerce into characters
+  cols = names(events_tbl)
+  events_tbl[, (cols) := lapply(.SD, as.character), .SDcols = cols]
+  designation_tbl[, (cols) := lapply(.SD, as.character), .SDcols = cols]
+  
+  # # datatype for valuedate inconsistent, enforce POSIXct
+  # designation_tbl[,valuedate := as.POSIXct(valuedate, format = "%Y-%m-%d")]
+  # events_tbl[,valuedate := as.POSIXct(valuedate, format = "%Y-%m-%d")]
+  
   # Bind to create final table
   setcolorder(designation_tbl, neworder = names(events_tbl))
   sections_tbl = rbind(events_tbl, designation_tbl)
@@ -59,8 +91,9 @@ create_sections_tables = function(
   # The data come in with many "NULL" entries, but they are literally interpreted as
   # a string reading "NULL" instead of NA's
   
-  # Replace 'NULL' with NA's
-  lapply( names(sections_tbl), function(x) { sections_tbl[get(x) == "NULL", (x) := NA] } )
+  # Replace 'NULL' with NA's 
+  lapply( names(sections_tbl), function(x) { sections_tbl[get(x) == "NULL", (x) := NA_character_] } )
+  # lapply( names(setdiff(names(sections_tbl), c('valuedate'))), function(x) { sections_tbl[get(x) == "NULL", (x) := NA] } )
   
   saveRDS(sections_tbl, cache_path)
 
@@ -281,7 +314,7 @@ write_to_stage = function(cache_path, con, stage_table, chunk_size=100000){
       only_new = setdiff(new_fields, old_fields)
       
     }
-    
+   
     dt = dt[, intersect(old_fields, new_fields), with=FALSE]
     
   }

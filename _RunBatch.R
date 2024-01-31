@@ -31,7 +31,7 @@ invisible(sapply(X =codefiles , FUN = source))
 reimport = FALSE
 year_selection = 2022
 year_compare = 2020
-states = c('DE') #,'WY') #c('VT','CA')
+states = c('NJ')
 
 cargs = commandArgs(trailingOnly = TRUE)
 
