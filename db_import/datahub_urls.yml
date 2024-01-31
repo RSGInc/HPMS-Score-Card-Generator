@@ -1,0 +1,19 @@
+timeliness_url: 'https://datahub.transportation.gov/resource/8fiq-jstx.json'
+
+sample_urls:
+  sample_mo: "https://datahub.transportation.gov/resource/n5zb-a79r.json"
+  sample_nc: "https://datahub.transportation.gov/resource/jq67-7q6z.json"
+  sample_nj: "https://datahub.transportation.gov/resource/g2ud-66xx.json"
+  sample_wy: "https://datahub.transportation.gov/resource/u49a-f2t2.json"
+  
+designation_urls:
+  designation_mo: "https://datahub.transportation.gov/resource/2i8k-368n.json"
+  designation_nc: "https://datahub.transportation.gov/resource/kbdc-8xhm.json"
+  designation_nj: "https://datahub.transportation.gov/resource/y8pz-bvwp.json"
+  designation_wy: "https://datahub.transportation.gov/resource/b246-kezf.json"
+  
+event_urls:
+  event_mo: "https://datahub.transportation.gov/resource/78mx-pzvt.json"
+  event_nc: "https://datahub.transportation.gov/resource/hnkn-45p3.json"
+  event_nj: "https://datahub.transportation.gov/resource/vm8t-e5dp.json"
+  event_wy: "https://datahub.transportation.gov/resource/qdcn-kgx7.json"
