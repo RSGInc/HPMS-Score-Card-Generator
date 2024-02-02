@@ -37,29 +37,6 @@ create_sections_tables = function(
 
   }
   
-  # col_type_chk = c(
-  #   datayear        = 'integer',
-  #   stateid         = 'integer',
-  #   routeid         = 'character',
-  #   sampleid        = 'character',
-  #   beginpoint      = 'numeric',
-  #   endpoint        = 'numeric',
-  #   expansionfactor = 'numeric',
-  #   comments        = 'character',
-  #   dataitem        = 'character',
-  #   valuenumeric    = 'numeric',
-  #   valuetext       = 'character',
-  #   begindate       = 'POSIXct'
-  # )
-  # 
-  # x[, (.SD) := lapply(.SD, as.character), .SDcols = names(x)]
-  # 
-  # col_type_obs = sapply(events_tbl, function(x) class(x)[1])
-  # coltype_obs_dt = data.table(field = names(col_type_obs), obs = col_type_obs)
-  # 
-  # coltype_chk_dt = data.table(field = names(col_type_chk), chk = col_type_chk)
-  # coltype_dt = merge(coltype_chk_dt, coltype_obs_dt, by='field')
-  
   # can assume the data is okay from here, skip to rbind -----------------------
   # Check fields now match
   events_only = setdiff(names(events_tbl), names(designation_tbl))
@@ -77,9 +54,6 @@ create_sections_tables = function(
   events_tbl[, (cols) := lapply(.SD, as.character), .SDcols = cols]
   designation_tbl[, (cols) := lapply(.SD, as.character), .SDcols = cols]
   
-  # # datatype for valuedate inconsistent, enforce POSIXct
-  # designation_tbl[,valuedate := as.POSIXct(valuedate, format = "%Y-%m-%d")]
-  # events_tbl[,valuedate := as.POSIXct(valuedate, format = "%Y-%m-%d")]
   
   # Bind to create final table
   setcolorder(designation_tbl, neworder = names(events_tbl))
