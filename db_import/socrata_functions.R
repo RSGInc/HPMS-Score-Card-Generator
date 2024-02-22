@@ -30,10 +30,10 @@ create_sections_tables = function(
   
   events_tbl      = readRDS(events_path)
   designation_tbl = readRDS(designation_path)
-   
+
   if ( !'valuedate' %in% tolower(names(designation_tbl)) ) {
 
-    designation_tbl[, valuedate := as.character(NA) ]
+    designation_tbl[, valuedate := NA_character_ ]
 
   }
   
@@ -49,19 +49,24 @@ create_sections_tables = function(
     
   }
   
+  # Coerce into characters -- read.socrata will import dates as POSIXct
+  cols = names(events_tbl)
+  events_tbl[, (cols) := lapply(.SD, as.character), .SDcols = cols]
+  designation_tbl[, (cols) := lapply(.SD, as.character), .SDcols = cols]
+  
+  
   # Bind to create final table
   setcolorder(designation_tbl, neworder = names(events_tbl))
   sections_tbl = rbind(events_tbl, designation_tbl)
   #-----------------------------------------------------------------------------
   message('...saving to ', cache_path)
   
-  # TODO: is this the right place for this?
   # The data come in with many "NULL" entries, but they are literally interpreted as
   # a string reading "NULL" instead of NA's
-  
-  # Replace 'NULL' with NA's
-  lapply( names(sections_tbl), function(x) { sections_tbl[get(x) == "NULL", (x) := NA] } )
-  
+  #
+  # Replace 'NULL' with NA's 
+  lapply( names(sections_tbl), function(x) { sections_tbl[get(x) == "NULL", (x) := NA_character_] } )
+
   saveRDS(sections_tbl, cache_path)
 
   return(cache_path)
@@ -281,7 +286,7 @@ write_to_stage = function(cache_path, con, stage_table, chunk_size=100000){
       only_new = setdiff(new_fields, old_fields)
       
     }
-    
+   
     dt = dt[, intersect(old_fields, new_fields), with=FALSE]
     
   }

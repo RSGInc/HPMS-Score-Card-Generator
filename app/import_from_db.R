@@ -490,9 +490,15 @@ FormatDataSet <- function(dat, state_abbr, year) {
       spmatch = data_noFT6[sp, on=join_vars, nomatch=NULL]
     }
     
+    #browser()
+    if( "comments" %in% names(sp) ){
+      sp[, comments := NULL]
+    }
+    
     data_exp = merge(data_noFT6, sp,
                      by = c('datayear', 'routeid', 'beginpoint', 'endpoint'),
                      all.x=TRUE)
+    
     
     data_exp[, expansionfactor := as.numeric(expansionfactor)]
     
