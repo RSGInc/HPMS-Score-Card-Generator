@@ -30,7 +30,7 @@ create_sections_tables = function(
   
   events_tbl      = readRDS(events_path)
   designation_tbl = readRDS(designation_path)
-   
+
   if ( !'valuedate' %in% tolower(names(designation_tbl)) ) {
 
     designation_tbl[, valuedate := NA_character_ ]
@@ -49,7 +49,7 @@ create_sections_tables = function(
     
   }
   
-  # Coerce into characters
+  # Coerce into characters -- read.socrata will import dates as POSIXct
   cols = names(events_tbl)
   events_tbl[, (cols) := lapply(.SD, as.character), .SDcols = cols]
   designation_tbl[, (cols) := lapply(.SD, as.character), .SDcols = cols]
@@ -61,14 +61,12 @@ create_sections_tables = function(
   #-----------------------------------------------------------------------------
   message('...saving to ', cache_path)
   
-  # TODO: is this the right place for this?
   # The data come in with many "NULL" entries, but they are literally interpreted as
   # a string reading "NULL" instead of NA's
-  
+  #
   # Replace 'NULL' with NA's 
   lapply( names(sections_tbl), function(x) { sections_tbl[get(x) == "NULL", (x) := NA_character_] } )
-  # lapply( names(setdiff(names(sections_tbl), c('valuedate'))), function(x) { sections_tbl[get(x) == "NULL", (x) := NA] } )
-  
+
   saveRDS(sections_tbl, cache_path)
 
   return(cache_path)
